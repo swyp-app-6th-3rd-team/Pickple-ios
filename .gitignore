@@ -61,9 +61,14 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 
+chore/pr-template
 # macOS
 .DS_Store
 
 # 설정/키
 *.xcconfig
 !Config.example.xcconfig
+
+#Secrets & Config
+Secrets.xconfig
+main
