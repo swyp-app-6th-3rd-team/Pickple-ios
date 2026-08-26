@@ -1,0 +1,47 @@
+name: iOS CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Resolve available iPhone simulator
+        id: destination
+        run: |
+          DEVICE=$(xcrun simctl list devices available iOS -j \
+            | /usr/bin/python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+for runtime, devices in data['devices'].items():
+    for d in devices:
+        if d['name'].startswith('iPhone'):
+            print(d['name'])
+            sys.exit(0)
+")
+          echo "선택된 시뮬레이터: $DEVICE"
+          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        run: |
+          xcodebuild -scheme Pickple \
+            -project Pickple/Pickple.xcodeproj \
+            -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,name=${{ steps.destination.outputs.device }}" \
+            build
+
+      - name: Test
+        run: |
+          xcodebuild test -scheme Pickple \
+            -project Pickple/Pickple.xcodeproj \
+            -destination "platform=iOS Simulator,name=${{ steps.destination.outputs.device }}"
