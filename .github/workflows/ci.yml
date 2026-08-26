@@ -19,16 +19,7 @@ jobs:
       - name: Resolve available iPhone simulator
         id: destination
         run: |
-          DEVICE=$(xcrun simctl list devices available iOS -j \
-            | /usr/bin/python3 -c "
-import json, sys
-data = json.load(sys.stdin)
-for runtime, devices in data['devices'].items():
-    for d in devices:
-        if d['name'].startswith('iPhone'):
-            print(d['name'])
-            sys.exit(0)
-")
+          DEVICE=$(xcrun simctl list devices available | grep -m1 -oE 'iPhone[^(]+' | sed 's/[[:space:]]*$//')
           echo "선택된 시뮬레이터: $DEVICE"
           echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
 
