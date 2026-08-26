@@ -5,13 +5,54 @@
 //  Created by 박윤수 on 8/24/26.
 //
 
+//폰트 변경해야함
+//실제 이미지 변경해야함
+//로그인 버튼 로고 추가해야함
+
 import SwiftUI
 
 struct LoginView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack(spacing: 0) {
+
+            Spacer()
+
+            //MARK: - Title & Image
+            VStack(spacing: 19) {
+                Text("Pickple")
+                    .font(.custom("Nunito-ExtraBold", size: 44.31)) // 실제 폰트로 변경 예정
+                    .tracking(-0.02)
+                    .lineSpacing(0.5)
+                    .foregroundStyle(Color.textPrimary)
+
+                VStack(spacing: 51) {
+                    Rectangle() //실제 이미지로 변경 예정
+                        .frame(width: 269, height: 262)
+                        .foregroundStyle(Color.red)
+
+                    //MARK: - Login Buttons
+                    VStack(spacing: 8) {
+                        LoginButton(provider: .kakao) { /*Kakao 로그인 구현*/ }
+                        LoginButton(provider: .apple) { /*Apple 로그인 구현*/ }
+                        LoginButton(provider: .guest) { /*Guest 로그인 구현*/ }
+                    }
+                }
+            }
+
+            Spacer()
+            
+            Text(LoginStrings.termsNotice)
+                
+                .font(.custom("Nunito-ExtraBold", size: 14))
+                .tracking(-0.02)
+                .lineSpacing(1.45)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(Color.termsNoticeText)
+
+        }
     }
 }
+
 
 #Preview {
     LoginView()
