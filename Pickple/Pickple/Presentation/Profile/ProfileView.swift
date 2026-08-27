@@ -12,7 +12,6 @@ struct ProfileView: View {
     @StateObject var profileViewModel: ProfileViewModel = ProfileViewModel()
 
     @State var selectedItem: PhotosPickerItem?
-    @State private var nickname: String = ""
 
     var body: some View {
         VStack(spacing: 32) {
@@ -41,26 +40,23 @@ struct ProfileView: View {
             
             VStack(spacing: 40) {
                 PickpleProfile(selectedItem: $selectedItem, selectedImage: profileViewModel.selectedImage, type: .offCamera)
-                
+
                 PickpleTextField(
-                    text: $nickname,
+                    text: $profileViewModel.nickname,
                     type: .both,
                     placeholder: ProfileStrings.nicknameText,
-                    trailingAccessory: .text("\(nickname.count)/\(profileViewModel.nicknameMaxLength)")
+                    trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)")
                 )
+                // TODO: 백엔드와 연동해서 닉네임 중복 검사 로직 추가
             }
-            .onChange(of: nickname) { _, newValue in
-                nickname = profileViewModel.filteredNickname(newValue)
-                // 백엔드와 연동해서 닉네임 중복 검사 로직 추가
-            }
-            
+
             Spacer()
-            
+
             Button(action: { }) {
                 Text("확인")
             }
-            .buttonStyle(.pickple(profileViewModel.isValidNickname(nickname) ? .enabled : .disabled))
-            .disabled(!profileViewModel.isValidNickname(nickname))
+            .buttonStyle(.pickple(profileViewModel.isNicknameValid ? .enabled : .disabled))
+            .disabled(!profileViewModel.isNicknameValid)
         }
         .onChange(of: selectedItem) {
             guard let selectedItem else { return }
