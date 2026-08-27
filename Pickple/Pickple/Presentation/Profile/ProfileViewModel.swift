@@ -11,7 +11,11 @@ import Combine
 class ProfileViewModel: ObservableObject {
     @Published var imageSelection: PhotosPickerItem?
     @Published var selectedImage: Image?
+    @Published var nickname: String = ""
 
+    let nicknameMaxLength = 5
+
+    //Progerss라는 진행상황 반환값을 일단 안쓰기에 표기
     @discardableResult
     func loadTransferable(from imageSelection: PhotosPickerItem) -> Progress {
         return imageSelection.loadTransferable(type: Image.self) { result in
@@ -23,9 +27,20 @@ class ProfileViewModel: ObservableObject {
                 case .success(nil):
                     self.selectedImage = nil
                 case .failure(let error):
-                    print("error")
+                    print(error.localizedDescription)
                 }
             }
         }
+    }
+    
+    func filteredNickname(_ input: String) -> String {
+        let filtered = input.filter { $0.isLetter || $0.isNumber }
+        return String(filtered.prefix(nicknameMaxLength))
+    }
+
+    var isNicknameValid: Bool {
+        if nickname.isEmpty { return false }
+        else { return true }
+        //닉네임 중복 체크 로직 추가 예정
     }
 }

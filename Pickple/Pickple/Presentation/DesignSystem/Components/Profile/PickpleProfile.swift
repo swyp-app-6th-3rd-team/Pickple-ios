@@ -11,7 +11,7 @@ import PhotosUI
 // 카메라 배지 노출 여부만 다르다. 읽기 전용(다른 유저 프로필 등) 용도는 아직 없음.
 // TODO: 실사용처가 정해지면 재검토 (읽기 전용 필요해지면 그때 분기 다시 추가)
 
-enum ProfileType {
+enum PickpleProfileType {
     case onCamera
     case offCamera
     
@@ -23,11 +23,11 @@ enum ProfileType {
     }
 }
 
-struct Profile: View {
+struct PickpleProfile: View {
     @Binding var selectedItem: PhotosPickerItem?
     
     let selectedImage: Image?
-    let type: ProfileType
+    let type: PickpleProfileType
     
     var body: some View {
         PhotosPicker(selection: $selectedItem) {
@@ -80,13 +80,13 @@ struct Profile: View {
 
     VStack(spacing: 20) {
         // 사진 없음 + 카메라 배지
-        Profile(selectedItem: $selectedItem, selectedImage: nil, type: .onCamera)
+        PickpleProfile(selectedItem: $selectedItem, selectedImage: nil, type: .onCamera)
 
         // 사진 있음 + 카메라 배지
-        Profile(selectedItem: $selectedItem, selectedImage: Image(systemName: "person.fill"), type: .onCamera)
+        PickpleProfile(selectedItem: $selectedItem, selectedImage: Image(systemName: "person.fill"), type: .onCamera)
 
         // 사진 없음 + 배지 없음
-        Profile(selectedItem: $selectedItem, selectedImage: nil, type: .offCamera)
+        PickpleProfile(selectedItem: $selectedItem, selectedImage: nil, type: .offCamera)
     }
 }
 

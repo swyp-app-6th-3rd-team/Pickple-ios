@@ -34,19 +34,19 @@ struct PickpleButton: ButtonStyle {
 
     private var backgroundColor: Color {
         switch style {
-        case ._default: return Color.black
+        case ._default: return Color.gray
         case .line: return Color.gray
-        case .disabled: return Color.white
-        case .enabled: return Color.gray
+        case .disabled: return Color.gray
+        case .enabled: return Color.black
         }
     }
 
     private var foregroundColor: Color {
         switch style {
-        case ._default: return Color.white
+        case ._default: return Color.black
         case .line: return Color.white
-        case .disabled: return Color.black
-        case .enabled: return Color.black
+        case .disabled: return Color.white
+        case .enabled: return Color.white
         }
     }
 }
