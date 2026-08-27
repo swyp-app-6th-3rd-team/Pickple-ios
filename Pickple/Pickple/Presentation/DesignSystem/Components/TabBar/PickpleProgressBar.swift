@@ -31,7 +31,7 @@ struct PickpleProgressBar: View {
         PickpleProgressBar(totalSteps: 2, currentIndex: 0)
 
         // 3단계 중 2단계까지 진행
-        PickpleProgressBar(totalSteps: 3, currentIndex: 2)
+        PickpleProgressBar(totalSteps: 3, currentIndex: 1)
     }
     .padding()
 }
