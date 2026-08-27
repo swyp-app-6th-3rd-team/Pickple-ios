@@ -47,6 +47,9 @@ struct ProfileView: View {
                     placeholder: ProfileStrings.nicknameText,
                     trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)")
                 )
+                .onChange(of: profileViewModel.nickname) { _, newValue in
+                    profileViewModel.nickname = profileViewModel.filteredNickname(newValue)
+                }
                 // TODO: 백엔드와 연동해서 닉네임 중복 검사 로직 추가
             }
 

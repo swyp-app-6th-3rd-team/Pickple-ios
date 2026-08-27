@@ -11,14 +11,7 @@ import Combine
 class ProfileViewModel: ObservableObject {
     @Published var imageSelection: PhotosPickerItem?
     @Published var selectedImage: Image?
-    @Published var nickname: String = "" {
-        didSet {
-            let filtered = filteredNickname(nickname)
-            if filtered != nickname {
-                nickname = filtered
-            }
-        }
-    }
+    @Published var nickname: String = ""
 
     let nicknameMaxLength = 5
 
