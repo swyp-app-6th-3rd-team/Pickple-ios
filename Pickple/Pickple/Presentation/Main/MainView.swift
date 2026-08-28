@@ -26,8 +26,9 @@ struct MainView: View {
                 .background(Color.blue)
             
             if selectedTab == 0 {
-                LoginView()
+                Text("A")
             } else {
+                Text("B")
                 
             }
                 
