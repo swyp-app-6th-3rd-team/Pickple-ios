@@ -61,7 +61,6 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 
-chore/pr-template
 # macOS
 .DS_Store
 
@@ -71,4 +70,3 @@ chore/pr-template
 
 #Secrets & Config
 Secrets.xconfig
-main
