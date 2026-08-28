@@ -97,7 +97,7 @@ struct PickpleTextField: View {
         .frame(width: 353, height: 56)
         .overlay {
             RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.blue10, lineWidth: 1)
+                .stroke(Color.navy10, lineWidth: 1)
         }
     }
 }

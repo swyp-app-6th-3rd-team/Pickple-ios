@@ -51,7 +51,7 @@ struct PickpleProfile: View {
             }
             .overlay {
                 Circle()
-                    .stroke(Color.blue10, lineWidth: 1)
+                    .stroke(Color.navy10, lineWidth: 1)
             }
 
             if type.isCamera {
@@ -65,13 +65,12 @@ struct PickpleProfile: View {
             .frame(width: 40, height: 40)
             .foregroundStyle(Color.white)
             .overlay {
-                Image(systemName: "PickpleCamera")
+                Image("PickpleCamera")
                     .foregroundStyle(Color.neutral20)
-                    
             }
             .overlay {
                 Circle()
-                    .stroke(Color.blue10, lineWidth: 1)
+                    .stroke(Color.navy10, lineWidth: 1)
             }
     }
 }
