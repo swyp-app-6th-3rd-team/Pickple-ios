@@ -24,10 +24,10 @@ struct PickpleTabBar: View {
                     VStack(spacing: 8) {
                         Text(tabs[index])
                             .font(.custom("Nunito-ExtraBold", size: 16)) //실제 폰트로 변경
-                            .foregroundStyle(index == selectedIndex ? Color.black : Color.gray)
+                            .foregroundStyle(index == selectedIndex ? Color.white : Color.neutral20)
 
                         Rectangle()
-                            .fill(index == selectedIndex ? Color.black : Color.clear)
+                            .fill(index == selectedIndex ? Color.yellow60 : Color.clear)
                             .frame(height: 2)
                     }
                 }

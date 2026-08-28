@@ -46,12 +46,12 @@ struct PickpleProfile: View {
                 } else {
                     Circle()
                         .frame(width: 160, height: 160)
-                        .foregroundStyle(Color.gray)
+                        .foregroundStyle(Color.neutral20)
                 }
             }
             .overlay {
                 Circle()
-                    .stroke(Color.black, lineWidth: 1)
+                    .stroke(Color.navy10, lineWidth: 1)
             }
 
             if type.isCamera {
@@ -65,12 +65,12 @@ struct PickpleProfile: View {
             .frame(width: 40, height: 40)
             .foregroundStyle(Color.white)
             .overlay {
-                Image(systemName: "camera.fill") //실제 카메라 아이콘 에셋으로 교체
-                    .foregroundStyle(Color.gray)
+                Image("PickpleCamera")
+                    .foregroundStyle(Color.neutral20)
             }
             .overlay {
                 Circle()
-                    .stroke(Color.gray, lineWidth: 1)
+                    .stroke(Color.navy10, lineWidth: 1)
             }
     }
 }

@@ -14,7 +14,7 @@ struct MainView: View {
                     PickpleGNB(
                         leading: .text("Pickple"),
                         center: .none,
-                        trailing: .button(icon: Image(systemName: "bell"), action: {})
+                        trailing: .button(icon: Image("PickpleAlertOff"), action: {})
                     )
                     
                     //추후 알림 버튼 구현
@@ -23,7 +23,7 @@ struct MainView: View {
                     
                     
                 }
-                .background(Color.blue)
+                .background(Color.navy60)
             
             if selectedTab == 0 {
                 Text("A")

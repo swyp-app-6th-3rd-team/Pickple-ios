@@ -15,17 +15,18 @@ struct PickpleBottomNav: View {
         TabView {
             LoginView()
                 .tabItem {
-                    Label("홈", systemImage: "house")
+                    Label("홈", image: "PickpleHome")
                 }
             LoginView()
                 .tabItem {
-                    Label("홈", systemImage: "house")
+                    Label("커뮤니티", image: "PickpleMessage")
                 }
             LoginView()
                 .tabItem {
-                    Label("홈", systemImage: "house")
+                    Label("마이", image: "PickpleUser")
                 }
         }
+        .tint(.navy60)
     }
 }
 
