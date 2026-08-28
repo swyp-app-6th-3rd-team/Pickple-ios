@@ -34,12 +34,12 @@ enum PickpleTextFieldStateType {
     
     var borderColor: Color {
         switch self {
-        case ._default: return Color.gray
-        case .ing: return Color.blue
-        case .complete: return Color.gray
-        case .error: return Color.red
-        case .success: return Color.green
-        case .description: return Color.mint
+        case ._default: return Color.blue10
+        case .ing: return Color.black
+        case .complete: return Color.blue10
+        case .error: return Color.red60
+        case .success: return Color.green60
+        case .description: return Color.black
         }
     }
     
@@ -48,9 +48,9 @@ enum PickpleTextFieldStateType {
         case ._default: return Color.clear
         case .ing: return Color.clear
         case .complete: return Color.clear
-        case .error: return Color.red
-        case .success: return Color.green
-        case .description: return Color.mint
+        case .error: return Color.red60
+        case .success: return Color.green60
+        case .description: return Color.neutral30
                 }
     }
 }

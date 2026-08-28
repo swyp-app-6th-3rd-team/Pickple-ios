@@ -87,7 +87,7 @@ struct PickpleTextField: View {
             .font(.custom("Nunito-ExtraBold", size: 16)) //실제 폰트로 변경
             .tracking(-0.02)
             .lineSpacing(1.5)
-            .foregroundStyle(Color.gray)
+            .foregroundStyle(Color.neutral40)
 
             if type.showTrailingAccessory {
                 PickpleTextFieldAccessoryView(accessory: trailingAccessory)
@@ -97,7 +97,7 @@ struct PickpleTextField: View {
         .frame(width: 353, height: 56)
         .overlay {
             RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.gray, lineWidth: 1)
+                .stroke(Color.blue10, lineWidth: 1)
         }
     }
 }
