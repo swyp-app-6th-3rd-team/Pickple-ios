@@ -42,6 +42,14 @@ enum LoginProvider {
         default: return nil
         }
     }
+
+    var icon: Image? {
+        switch self {
+        case .kakao: return Image("PickpleKakaoLogo")
+        case .apple: return Image("PickpleAppleLogo")
+        case .guest: return nil
+        }
+    }
 }
 
 struct LoginButton: View {
@@ -64,6 +72,12 @@ struct LoginButton: View {
                 Text(provider.title)
                     .pickpleTypography(.body01Bold)
                     .foregroundStyle(provider.foregroundColor)
+
+                if let icon = provider.icon {
+                    icon
+                        .padding(.leading, 20)
+                        .frame(width: 353, alignment: .leading)
+                }
             }
         }
     }
