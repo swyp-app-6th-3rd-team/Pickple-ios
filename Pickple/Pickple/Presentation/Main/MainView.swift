@@ -10,20 +10,22 @@ struct MainView: View {
     @State var selectedTab: Int = 0
     var body: some View {
         VStack {
-                VStack {
+            VStack {
+                ZStack {
                     PickpleGNB(
-                        leading: .text("Pickple"),
+                        leading: .text("P!ckple"),
                         center: .none,
                         trailing: .button(icon: Image("PickpleAlertOff"), action: {})
                     )
                     
-                    //추후 알림 버튼 구현
-                    
-                    PickpleTabBar(tabs: ["찬반", "AB"], selectedIndex: $selectedTab)
-                    
-                    
+                    Image("PickpleTolltip")
+                        .padding(.trailing, 2)
                 }
-                .background(Color.navy60)
+                
+                PickpleTabBar(tabs: ["찬반", "AB"], selectedIndex: $selectedTab)
+            }
+            .background(Color.navy60)
+            
             
             if selectedTab == 0 {
                 Text("A")
@@ -31,7 +33,7 @@ struct MainView: View {
                 Text("B")
                 
             }
-                
+            
             Spacer()
         }
     }

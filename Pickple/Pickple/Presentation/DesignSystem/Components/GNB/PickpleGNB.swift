@@ -29,7 +29,6 @@ struct PickpleGNBSlotView: View {
         case .button(let icon, let action):
             Button(action: action) {
                 icon
-                    .foregroundStyle(Color.black)
             }
         }
     }
