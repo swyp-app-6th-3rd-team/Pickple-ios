@@ -24,7 +24,7 @@ struct PickpleButton: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.custom("Nunito-ExtraBold", size: 16))
+            .pickpleTypography(.body01)
             .foregroundStyle(foregroundColor)
             .frame(width: 353, height: 56)
             .background(backgroundColor)

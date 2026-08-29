@@ -20,10 +20,7 @@ struct LoginView: View {
             //MARK: - Title & Image
             VStack(spacing: 19) {
                 Text("Pickple")
-                    .font(.custom("Nunito-ExtraBold", size: 44.31)) // 실제 폰트로 변경 예정
-                    .tracking(-0.02)
-                    .lineSpacing(0.5)
-                    .foregroundStyle(Color.textPrimary)
+                    
 
                 VStack(spacing: 51) {
                     Rectangle() //실제 이미지로 변경 예정
@@ -42,10 +39,7 @@ struct LoginView: View {
             Spacer()
             
             Text(LoginStrings.termsNotice)
-                
-                .font(.custom("Nunito-ExtraBold", size: 14))
-                .tracking(-0.02)
-                .lineSpacing(1.45)
+                .pickpleTypography(.caption)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(Color.termsNoticeText)
 

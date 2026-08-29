@@ -66,18 +66,14 @@ struct PickpleTextFieldState: View {
             ZStack(alignment: .leading) {
                 if nickname.isEmpty {
                     Text(placeholder)
-                        .font(.custom("Nunito-ExtraBold", size: 16)) //실제 폰트로 변경
-                        .tracking(-0.02)
-                        .lineSpacing(1.5)
-                        .foregroundStyle(Color.gray)
+                        .pickpleTypography(.body01)
+                        .foregroundStyle(Color.neutral40)
                         .frame(width: 353, height: 56 ,alignment: .leading)
                         .padding(.leading, 12)
                 }
                 TextField("", text: $nickname)
-                    .font(.custom("Nunito-ExtraBold", size: 16)) //실제 폰트로 변경
-                    .tracking(-0.02)
-                    .lineSpacing(1.5)
-                    .foregroundStyle(Color.gray)
+                    .pickpleTypography(.body01)
+                    .foregroundStyle(Color.neutral100)
                     .frame(width: 353, height: 56, alignment: .leading)
                     .padding(.leading, 12)
                 
@@ -89,8 +85,10 @@ struct PickpleTextFieldState: View {
             
             HStack {
                 Text(type.caption)
-                    .padding(.leading, 20)
+                    .pickpleTypography(.caption)
                     .foregroundStyle(type.captionColor)
+                    .padding(.leading, 20)
+                    
                 Spacer()
             }
             

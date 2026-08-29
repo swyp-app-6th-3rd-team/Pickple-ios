@@ -62,7 +62,7 @@ struct LoginButton: View {
                     }
 
                 Text(provider.title)
-                    .fontWeight(.semibold)
+                    .pickpleTypography(.body01Bold)
                     .foregroundStyle(provider.foregroundColor)
             }
         }

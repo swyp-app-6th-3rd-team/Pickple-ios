@@ -19,17 +19,11 @@ struct ProfileView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(ProfileStrings.profileTitle)
-                        .font(.custom("Nunito-ExtraBold", size: 14))
-                        .tracking(-0.02)
-                        .lineSpacing(1.45)
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(Color.textPrimary)
+                        .pickpleTypography(.body01Bold)
+                        .foregroundStyle(Color.black)
                     
                     Text(ProfileStrings.profileGuideText)
-                        .font(.custom("Nunito-ExtraBold", size: 14))
-                        .tracking(-0.02)
-                        .lineSpacing(1.45)
-                        .multilineTextAlignment(.center)
+                        .pickpleTypography(.body01)
                         .foregroundStyle(Color.textSecondary)
                 }
                 .padding(.horizontal, 20)
