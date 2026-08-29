@@ -67,6 +67,7 @@ fastlane/test_output
 # 설정/키
 *.xcconfig
 !Config.example.xcconfig
+*.p8
 
 #Secrets & Config
 Secrets.xconfig
