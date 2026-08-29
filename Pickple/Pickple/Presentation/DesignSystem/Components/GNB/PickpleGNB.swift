@@ -26,6 +26,7 @@ struct PickpleGNBSlotView: View {
             Color.clear.frame(width: 24)
         case .text(let text):
             Text(text)
+                .pickpleTypography(.title01)
         case .button(let icon, let action):
             Button(action: action) {
                 icon
