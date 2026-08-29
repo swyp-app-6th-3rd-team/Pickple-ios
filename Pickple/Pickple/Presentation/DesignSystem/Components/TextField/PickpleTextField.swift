@@ -47,8 +47,8 @@ struct PickpleTextFieldAccessoryView: View {
             EmptyView()
         case .text(let text):
             Text(text)
-                .font(.custom("Nunito-ExtraBold", size: 16)) //실제 폰트로 변경
-                .foregroundStyle(Color.gray)
+                .pickpleTypography(.body02)
+                .foregroundStyle(Color.neutral40)
         case .image(let image):
             image
                 .resizable()
@@ -81,12 +81,11 @@ struct PickpleTextField: View {
                 }
                 TextField("", text: $text)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                    .foregroundStyle(Color.neutral100)
                 //실제 터치 영역 미변동 추후 확인 예정
                     
             }
-            .font(.custom("Nunito-ExtraBold", size: 16)) //실제 폰트로 변경
-            .tracking(-0.02)
-            .lineSpacing(1.5)
+            .pickpleTypography(.body01)
             .foregroundStyle(Color.neutral40)
 
             if type.showTrailingAccessory {
