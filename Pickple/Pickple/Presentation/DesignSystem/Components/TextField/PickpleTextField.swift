@@ -43,7 +43,7 @@ enum PickpleTextFieldStateType {
     case complete
     case error
     case success
-    case description
+    case select
 
     var caption: String {
         switch self {
@@ -52,7 +52,7 @@ enum PickpleTextFieldStateType {
         case .complete: return ""
         case .error: return "error"
         case .success: return "success"
-        case .description: return "description"
+        case .select: return "description"
         }
     }
 
@@ -64,7 +64,7 @@ enum PickpleTextFieldStateType {
         case .complete: return Color.blue10
         case .error: return Color.red60
         case .success: return Color.green60
-        case .description: return Color.black
+        case .select: return Color.black
         }
     }
 
@@ -75,7 +75,7 @@ enum PickpleTextFieldStateType {
         case .complete: return Color.clear
         case .error: return Color.red60
         case .success: return Color.green60
-        case .description: return Color.neutral30
+        case .select: return Color.clear
         }
     }
 }
@@ -170,7 +170,7 @@ struct PickpleTextField: View {
         // 상태별 (에러/성공/설명)
         PickpleTextField(text: .constant("error"), type: .leading, placeholder: "Text", state: .error)
         PickpleTextField(text: .constant("success"), type: .leading, placeholder: "Text", state: .success)
-        PickpleTextField(text: .constant(""), type: .leading, placeholder: "Text", state: .description)
+        PickpleTextField(text: .constant(""), type: .leading, placeholder: "Text", state: .select)
     }
     .padding()
 }
