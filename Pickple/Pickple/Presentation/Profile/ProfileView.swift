@@ -24,7 +24,7 @@ struct ProfileView: View {
                     
                     Text(ProfileStrings.profileGuideText)
                         .pickpleTypography(.body01)
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(Color.neutral60)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 60)
