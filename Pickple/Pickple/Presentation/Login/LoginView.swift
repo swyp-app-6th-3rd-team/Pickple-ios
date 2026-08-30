@@ -29,6 +29,7 @@ struct LoginView: View {
                         LoginButton(provider: .apple) { /*Apple 로그인 구현*/ }
                         LoginButton(provider: .guest) { /*Guest 로그인 구현*/ }
                     }
+                    .padding(.horizontal, 20)
                 }
             }
 
@@ -37,7 +38,7 @@ struct LoginView: View {
             Text(LoginStrings.termsNotice)
                 .pickpleTypography(.caption)
                 .multilineTextAlignment(.center)
-                .foregroundStyle(Color.termsNoticeText)
+                .foregroundStyle(Color.neutral30)
 
         }
     }
