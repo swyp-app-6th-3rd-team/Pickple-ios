@@ -19,7 +19,7 @@ struct PostView: View {
 
             Spacer()
 
-            
+
         }
     }
 
@@ -29,7 +29,7 @@ struct PostView: View {
                 .pickpleTypography(.heading02)
                 .padding(.top, 32)
 
-            
+
         }
         .padding(.horizontal, 20)
     }
@@ -45,7 +45,7 @@ struct postView2: View {
             return 3
         case .text:
             return 2
-            
+
         }
     }
 
@@ -59,14 +59,15 @@ struct postView2: View {
                         .pickpleTypography(.heading02)
             }
             .padding(.horizontal, 20)
-            
+
+
             VStack(alignment: .leading) {
                 (Text(PostViewStrings.postType) + Text(PostViewStrings.requiredMark)
                     .foregroundStyle(Color.red60))
                     .pickpleTypography(.body01)
-                    
+
                     .padding(.horizontal, 24)
-                
+
                 HStack(spacing: 8) {
                     Button(action: {postViewModel.selectedType = .forAgainst}) {
                         Text(PostViewStrings.forAgainstPickTitle)
@@ -82,11 +83,11 @@ struct postView2: View {
                         Text(PostViewStrings.textPickTitle)
                     }
                     .buttonStyle(.pickpleSelection(isSelected: postViewModel.isSelected(.text)))
-                    
+
                 }
                 .padding(.horizontal, 20)
             }
-            
+
             switch postViewModel.selectedType {
                 case .forAgainst:
                 VStack(alignment: .leading, spacing: 8) {
@@ -94,19 +95,43 @@ struct postView2: View {
                         .pickpleTypography(.body01)
                         .padding(.horizontal, 24)
 
-                    CustomDropdownView()
+                    PickpleDropdownView()
 
                 }
-                
+
             case .compare:
-                Text("B")
+                VStack(spacing: 20) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        (Text(PostViewStrings.category) + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
+                            .pickpleTypography(.body01)
+                            .padding(.horizontal, 24)
+
+                        PickpleDropdownView()
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        (Text(PostViewStrings.topic) + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
+                            .pickpleTypography(.body01)
+                            .padding(.horizontal, 24)
+
+
+                        PickpleTextField(
+                            text: $postViewModel.topic,
+                            type: .both,
+                            placeholder: ProfileStrings.nicknameText,
+                            trailingAccessory: .text("\(postViewModel.topic.count)/\(postViewModel.topicMaxLength)")
+                        )
+                        .padding(.horizontal, 20)
+                    }
+
+                }
             case .text:
                 Text("C")
             }
-            
-            
+
+
             Spacer()
-            
+
             Button(action: { currentIndex += 1 }) {
                 Text("확인")
             }
@@ -118,12 +143,12 @@ struct postView2: View {
     }
 }
 
-struct CustomDropdownView: View {
+struct PickpleDropdownView: View {
     @State private var isExpanded = false
     @State private var selectedValue = "카테고리를 선택하세요"
-    
+
     let options = ["패션/잡화", "전자제품", "화장품/뷰티", "생활용품", "기타"]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // 드롭다운 버튼 영역

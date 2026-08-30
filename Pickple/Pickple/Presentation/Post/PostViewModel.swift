@@ -16,7 +16,10 @@ enum VoteType: Equatable {
 
 class PostViewModel: ObservableObject {
     @Published var selectedType: VoteType = .forAgainst
+    @Published var topic: String = ""
 
+    let topicMaxLength = 30
+    
     func isSelected(_ type: VoteType) -> Bool {
         selectedType == type
     }

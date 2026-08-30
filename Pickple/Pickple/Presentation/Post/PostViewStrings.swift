@@ -14,4 +14,6 @@ enum PostViewStrings {
     static let postType = "글 유형"
     static let requiredMark = "*"
     static let category = "카테고리"
+    static let topic = "주제"
+    static let topicText = "주제를 입력해주세요"
 }
