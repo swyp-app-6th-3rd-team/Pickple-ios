@@ -68,13 +68,13 @@ struct PickpleTextFieldState: View {
                     Text(placeholder)
                         .pickpleTypography(.body01)
                         .foregroundStyle(Color.neutral40)
-                        .frame(width: 353, height: 56 ,alignment: .leading)
+                        .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
                         .padding(.leading, 12)
                 }
                 TextField("", text: $nickname)
                     .pickpleTypography(.body01)
                     .foregroundStyle(Color.neutral100)
-                    .frame(width: 353, height: 56, alignment: .leading)
+                    .frame(maxWidth: .infinity, minHeight: 56, alignment: .leading)
                     .padding(.leading, 12)
                 
             }

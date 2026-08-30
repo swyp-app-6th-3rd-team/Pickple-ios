@@ -26,10 +26,9 @@ struct PickpleButton: ButtonStyle {
         configuration.label
             .pickpleTypography(.body01)
             .foregroundStyle(foregroundColor)
-            .frame(width: 353, height: 56)
+            .frame(maxWidth: .infinity, minHeight: 56)
             .background(backgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: 8))
-            .opacity(configuration.isPressed ? 0.7 : 1)   // 눌렀을 때 반응
     }
 
     private var backgroundColor: Color {
