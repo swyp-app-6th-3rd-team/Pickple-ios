@@ -30,9 +30,9 @@ enum LoginProvider {
 
     var foregroundColor: Color {
         switch self {
-        case .kakao: return Color.textPrimary
-        case .apple: return Color.textOnDark
-        case .guest: return Color.textSecondary
+        case .kakao: return Color.black
+        case .apple: return Color.white
+        case .guest: return Color.neutral60
         }
     }
 
@@ -59,16 +59,6 @@ struct LoginButton: View {
     var body: some View {
         Button(action: action) {
             ZStack {
-                RoundedRectangle(cornerRadius: 16)
-                    .frame(width: 353, height: 56)
-                    .foregroundStyle(provider.backgroundColor)
-                    .overlay {
-                        if let borderColor = provider.borderColor {
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(borderColor, lineWidth: 1)
-                        }
-                    }
-
                 Text(provider.title)
                     .pickpleTypography(.title02)
                     .foregroundStyle(provider.foregroundColor)
@@ -76,7 +66,18 @@ struct LoginButton: View {
                 if let icon = provider.icon {
                     icon
                         .padding(.leading, 20)
-                        .frame(width: 353, alignment: .leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            // 높이는 실제 콘텐츠(텍스트/아이콘) 기준으로 정하고, 배경은 그 크기를 그대로 따라가게 한다.
+            // 배경 도형에 직접 frame을 걸면 Shape가 남는 공간을 다 채우려는 기본 동작 때문에 높이가 부풀 수 있다.
+            .frame(maxWidth: .infinity, minHeight: 56)
+            .background(provider.backgroundColor)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay {
+                if let borderColor = provider.borderColor {
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(borderColor, lineWidth: 1)
                 }
             }
         }
