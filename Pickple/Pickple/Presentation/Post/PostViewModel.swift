@@ -17,6 +17,7 @@ enum VoteType: Equatable {
 class PostViewModel: ObservableObject {
     @Published var selectedType: VoteType = .forAgainst
     @Published var topic: String = ""
+    @Published var selectedCategory: String = "카테고리를 선택하세요"
 
     let topicMaxLength = 30
     
