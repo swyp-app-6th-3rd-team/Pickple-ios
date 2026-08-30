@@ -41,7 +41,7 @@ struct ProfileView: View {
                     type: .both,
                     placeholder: ProfileStrings.nicknameText,
                     trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)"),
-                    state: profileViewModel.textFieldState(isFocused, profileViewModel.nickname)
+                    state: profileViewModel.textFieldState(isFocused)
                 )
             }
             
@@ -51,21 +51,22 @@ struct ProfileView: View {
                 
             }
             .padding(.horizontal, 20)
+            
+            .onChange(of: selectedItem) {
+                guard let selectedItem else { return }
+                profileViewModel.imageSelection = selectedItem
+                profileViewModel.loadTransferable(from: selectedItem)
+            }
+            
+            Spacer()
+            
+            Button(action: { }) {
+                Text("확인")
+            }
+            .padding(.horizontal, 20)
+            .buttonStyle(.pickple(profileViewModel.isNicknameValid() ? .enabled : .disabled))
+            .disabled(!profileViewModel.isNicknameValid())
         }
-        .onChange(of: selectedItem) {
-            guard let selectedItem else { return }
-            profileViewModel.imageSelection = selectedItem
-            profileViewModel.loadTransferable(from: selectedItem)
-        }
-        
-        Spacer()
-        
-        Button(action: { }) {
-            Text("확인")
-        }
-        .padding(.horizontal, 20)
-        .buttonStyle(.pickple(profileViewModel.isNicknameValid() ? .enabled : .disabled))
-        .disabled(!profileViewModel.isNicknameValid())
     }
     
 }

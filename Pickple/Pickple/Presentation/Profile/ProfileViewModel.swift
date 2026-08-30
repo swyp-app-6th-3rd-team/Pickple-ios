@@ -45,8 +45,8 @@ class ProfileViewModel: ObservableObject {
 
     }
     
-    func textFieldState(_ isFocused: Bool, _ nickname: String) -> PickpleTextFieldStateType{
-        if isFocused && nickname.isEmpty { return .select}
+    func textFieldState(_ isFocused: Bool) -> PickpleTextFieldStateType{
+        if isFocused && self.nickname.isEmpty { return .select}
         else if isFocused && isNicknameValid() { return .success}
         else if isFocused && !isNicknameValid() { return .error}
         else { return ._default}
