@@ -19,7 +19,7 @@ struct ProfileView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(ProfileStrings.profileTitle)
-                        .pickpleTypography(.body01Bold)
+                        .pickpleTypography(.title02)
                         .foregroundStyle(Color.black)
                     
                     Text(ProfileStrings.profileGuideText)
