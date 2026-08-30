@@ -38,9 +38,19 @@ class ProfileViewModel: ObservableObject {
         return String(filtered.prefix(nicknameMaxLength))
     }
 
-    var isNicknameValid: Bool {
+    func isNicknameValid() -> Bool {
         if nickname.isEmpty { return false }
         else { return true }
-        //닉네임 중복 체크 로직 추가 예정
+        // TODO: 백엔드와 연동해서 닉네임 중복 검사 로직 추가
+
     }
+    
+    func textFieldState(_ isFocused: Bool, _ nickname: String) -> PickpleTextFieldStateType{
+        if isFocused && nickname.isEmpty { return .select}
+        else if isFocused && isNicknameValid() { return .success}
+        else if isFocused && !isNicknameValid() { return .error}
+        else { return ._default}
+    }
+    
+
 }
