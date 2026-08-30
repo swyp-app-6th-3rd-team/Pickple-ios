@@ -9,7 +9,7 @@ enum PostViewStrings {
     static let selectTypeTitle = "어떤 픽으로 올릴까요?"
     static let forAgainstPickTitle = "찬반 PICK"
     static let abPickTitle = "A/B PICK"
-    static let textPickTitle = "텍스트 PICK"
+    static let textPickTitle = "일반 게시글"
     
     static let postType = "글 유형"
     static let requiredMark = "*"
