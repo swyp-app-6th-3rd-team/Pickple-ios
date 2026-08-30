@@ -93,7 +93,7 @@ struct PickpleTextField: View {
             }
         }
         .padding(.horizontal, 20)
-        .frame(width: 353, height: 56)
+        .frame(height: 56)
         .overlay {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color.navy10, lineWidth: 1)
