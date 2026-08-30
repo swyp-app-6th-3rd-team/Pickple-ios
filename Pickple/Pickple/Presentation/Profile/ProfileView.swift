@@ -10,10 +10,10 @@ import PhotosUI
 
 struct ProfileView: View {
     @StateObject var profileViewModel: ProfileViewModel = ProfileViewModel()
-
+    
     @State var selectedItem: PhotosPickerItem?
     @FocusState private var isFocused: Bool
-
+    
     var body: some View {
         VStack(spacing: 32) {
             //XMARK: - ProfileView Title
@@ -36,67 +36,41 @@ struct ProfileView: View {
             VStack(spacing: 40) {
                 PickpleProfile(selectedItem: $selectedItem, selectedImage: profileViewModel.selectedImage, type: .offCamera)
                 
-                Group {
-                    if isFocused && profileViewModel.isNicknameValid {
-                        PickpleTextField(
-                            text: $profileViewModel.nickname,
-                            type: .both,
-                            placeholder: ProfileStrings.nicknameText,
-                            trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)")
-                        )
-                        
-                    }
-                    else if isFocused && !profileViewModel.isNicknameValid {
-                        PickpleTextField(
-                            text: $profileViewModel.nickname,
-                            type: .both,
-                            placeholder: ProfileStrings.nicknameText,
-                            trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)")
-                        )
-                        
-                    }
-                    else {
-                        PickpleTextField(
-                            text: $profileViewModel.nickname,
-                            type: .both,
-                            placeholder: ProfileStrings.nicknameText,
-                            trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)")
-                        )
-                        
-                    }
-                }
-                
-                .focused($isFocused)
-                .onChange(of: profileViewModel.nickname) { _, newValue in
-                    profileViewModel.nickname = profileViewModel.filteredNickname(newValue)
-                }
-                // TODO: 백엔드와 연동해서 닉네임 중복 검사 로직 추가
-                .padding(.horizontal, 20)
-                
-                
+                PickpleTextField(
+                    text: $profileViewModel.nickname,
+                    type: .both,
+                    placeholder: ProfileStrings.nicknameText,
+                    trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)"),
+                    state: profileViewModel.textFieldState(isFocused, profileViewModel.nickname)
+                )
             }
-
-            Spacer()
-
-            Button(action: { }) {
-                Text("확인")
+            
+            .focused($isFocused)
+            .onChange(of: profileViewModel.nickname) { _, newValue in
+                profileViewModel.nickname = profileViewModel.filteredNickname(newValue)
+                
             }
             .padding(.horizontal, 20)
-            .buttonStyle(.pickple(profileViewModel.isNicknameValid ? .enabled : .disabled))
-            .disabled(!profileViewModel.isNicknameValid)
         }
         .onChange(of: selectedItem) {
             guard let selectedItem else { return }
             profileViewModel.imageSelection = selectedItem
             profileViewModel.loadTransferable(from: selectedItem)
         }
+        
+        Spacer()
+        
+        Button(action: { }) {
+            Text("확인")
+        }
+        .padding(.horizontal, 20)
+        .buttonStyle(.pickple(profileViewModel.isNicknameValid() ? .enabled : .disabled))
+        .disabled(!profileViewModel.isNicknameValid())
     }
-
     
 }
-
-
 
 #Preview {
     ProfileView()
 }
+
