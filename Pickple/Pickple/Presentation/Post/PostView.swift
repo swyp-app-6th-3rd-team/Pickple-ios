@@ -91,35 +91,16 @@ struct postView2: View {
             }
 
             // Spacer/확인 버튼은 이 Group과 같은 VStack(spacing: 40)의 직계 형제라서,
-            // .compare 케이스처럼 한 단계 더 안쪽에 걸린 zIndex는 여기까지 전파되지 않는다.
+            // 각 스텝 뷰 내부에 걸린 zIndex는 여기까지 전파되지 않는다.
             // 펼쳐졌을 때 이 지점까지 리스트가 넘칠 수 있으므로 여기서도 별도로 zIndex를 걸어준다.
             Group {
                 switch postViewModel.selectedType {
-                    case .forAgainst:
-                    floatingCategoryBlock()
-
+                case .forAgainst:
+                    ForAgainstStepOneView(postViewModel: postViewModel, isCategoryExpanded: $isCategoryExpanded, categoryOptions: categoryOptions)
                 case .compare:
-                    VStack(spacing: 20) {
-                        floatingCategoryBlock()
-
-                        VStack(alignment: .leading, spacing: 8) {
-                            (Text(PostViewStrings.topic) + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
-                                .pickpleTypography(.body01)
-                                .padding(.horizontal, 24)
-
-
-                            PickpleTextField(
-                                text: $postViewModel.topic,
-                                type: .both,
-                                placeholder: ProfileStrings.nicknameText,
-                                trailingAccessory: .text("\(postViewModel.topic.count)/\(postViewModel.topicMaxLength)")
-                            )
-                            .padding(.horizontal, 20)
-                        }
-
-                    }
+                    CompareStepOneView(postViewModel: postViewModel, isCategoryExpanded: $isCategoryExpanded, categoryOptions: categoryOptions)
                 case .text:
-                    floatingCategoryBlock()
+                    TextStepOneView(postViewModel: postViewModel, isCategoryExpanded: $isCategoryExpanded, categoryOptions: categoryOptions)
                 }
             }
             .zIndex(isCategoryExpanded ? 1 : 0)
@@ -135,24 +116,6 @@ struct postView2: View {
             .disabled(!postViewModel.isTypeSelected)
              */
         }
-    }
-
-    @ViewBuilder
-    private func categoryBlock(isExpanded: Binding<Bool>) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            (Text(PostViewStrings.category) + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
-                .pickpleTypography(.body01)
-                .padding(.horizontal, 24)
-
-            PickpleDropdownView(isExpanded: isExpanded, selectedValue: $postViewModel.selectedCategory, options: categoryOptions)
-        }
-    }
-
-    private func floatingCategoryBlock() -> some View {
-        categoryBlock(isExpanded: .constant(false))
-            .floatingOverSiblings {
-                categoryBlock(isExpanded: $isCategoryExpanded)
-            }
     }
 }
 
