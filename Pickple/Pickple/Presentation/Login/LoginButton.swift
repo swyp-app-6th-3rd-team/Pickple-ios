@@ -70,7 +70,7 @@ struct LoginButton: View {
                     }
 
                 Text(provider.title)
-                    .pickpleTypography(.body01Bold)
+                    .pickpleTypography(.title02)
                     .foregroundStyle(provider.foregroundColor)
 
                 if let icon = provider.icon {

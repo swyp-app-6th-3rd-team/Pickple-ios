@@ -22,7 +22,6 @@ enum PickpleTypography {
     case heading02
     case title01
     case title02
-    case body01Bold
     case body01
     case body02
     case label
@@ -31,7 +30,7 @@ enum PickpleTypography {
     var weight: PickpleFontWeight {
         switch self {
         case .heading01, .heading02, .title01: return .bold
-        case .title02, .body01Bold, .body02, .label: return .semibold
+        case .title02, .body02, .label: return .semibold
         case .body01: return .medium
         case .caption: return .regular
         }
@@ -41,7 +40,7 @@ enum PickpleTypography {
         switch self {
         case .heading01, .heading02: return 28
         case .title01: return 20
-        case .title02, .body01Bold: return 18
+        case .title02: return 18
         case .body01: return 16
         case .body02: return 14
         case .label: return 13
@@ -53,7 +52,7 @@ enum PickpleTypography {
         switch self {
         case .heading01, .heading02: return 1.35
         case .title01: return 1.40
-        case .title02, .body01Bold, .body02: return 1.45
+        case .title02, .body02: return 1.45
         case .body01, .caption: return 1.50
         case .label: return 1.40
         }
