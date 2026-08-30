@@ -45,6 +45,7 @@ struct ProfileView: View {
                     profileViewModel.nickname = profileViewModel.filteredNickname(newValue)
                 }
                 // TODO: 백엔드와 연동해서 닉네임 중복 검사 로직 추가
+                .padding(.horizontal, 20)
             }
 
             Spacer()
@@ -52,6 +53,7 @@ struct ProfileView: View {
             Button(action: { }) {
                 Text("확인")
             }
+            .padding(.horizontal, 20)
             .buttonStyle(.pickple(profileViewModel.isNicknameValid ? .enabled : .disabled))
             .disabled(!profileViewModel.isNicknameValid)
         }
