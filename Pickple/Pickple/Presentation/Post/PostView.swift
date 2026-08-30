@@ -56,7 +56,6 @@ struct postView2: View {
             VStack(alignment: .leading, spacing: 32) {
                 PickpleProgressBar(totalSteps: totalSteps, currentIndex: currentIndex)
 
-
                     Text(PostViewStrings.selectTypeTitle)
                         .pickpleTypography(.heading02)
             }
