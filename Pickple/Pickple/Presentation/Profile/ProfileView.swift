@@ -12,6 +12,7 @@ struct ProfileView: View {
     @StateObject var profileViewModel: ProfileViewModel = ProfileViewModel()
 
     @State var selectedItem: PhotosPickerItem?
+    @FocusState private var isFocused: Bool
 
     var body: some View {
         VStack(spacing: 32) {
@@ -34,18 +35,45 @@ struct ProfileView: View {
             
             VStack(spacing: 40) {
                 PickpleProfile(selectedItem: $selectedItem, selectedImage: profileViewModel.selectedImage, type: .offCamera)
-
-                PickpleTextField(
-                    text: $profileViewModel.nickname,
-                    type: .both,
-                    placeholder: ProfileStrings.nicknameText,
-                    trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)")
-                )
+                
+                Group {
+                    if isFocused && profileViewModel.isNicknameValid {
+                        PickpleTextField(
+                            text: $profileViewModel.nickname,
+                            type: .both,
+                            placeholder: ProfileStrings.nicknameText,
+                            trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)")
+                        )
+                        
+                    }
+                    else if isFocused && !profileViewModel.isNicknameValid {
+                        PickpleTextField(
+                            text: $profileViewModel.nickname,
+                            type: .both,
+                            placeholder: ProfileStrings.nicknameText,
+                            trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)")
+                        )
+                        
+                    }
+                    else {
+                        PickpleTextField(
+                            text: $profileViewModel.nickname,
+                            type: .both,
+                            placeholder: ProfileStrings.nicknameText,
+                            trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)")
+                        )
+                        
+                    }
+                }
+                
+                .focused($isFocused)
                 .onChange(of: profileViewModel.nickname) { _, newValue in
                     profileViewModel.nickname = profileViewModel.filteredNickname(newValue)
                 }
                 // TODO: 백엔드와 연동해서 닉네임 중복 검사 로직 추가
                 .padding(.horizontal, 20)
+                
+                
             }
 
             Spacer()
