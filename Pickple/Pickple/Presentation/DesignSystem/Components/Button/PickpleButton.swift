@@ -21,12 +21,13 @@ enum PickpleButtonStyle {
 
 struct PickpleButton: ButtonStyle {
     let style: PickpleButtonStyle
+    let height: CGFloat
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .pickpleTypography(.body01)
             .foregroundStyle(foregroundColor)
-            .frame(maxWidth: .infinity, minHeight: 56)
+            .frame(maxWidth: .infinity, minHeight: height)
             .background(backgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: 8))
     }
@@ -52,7 +53,7 @@ struct PickpleButton: ButtonStyle {
 
 // 다른 파일에서 .pickple(.primary) 형태로 쓰려면
 extension ButtonStyle where Self == PickpleButton {
-    static func pickple(_ style: PickpleButtonStyle) -> PickpleButton {
-        PickpleButton(style: style)
+    static func pickple(_ style: PickpleButtonStyle, _ height: CGFloat) -> PickpleButton {
+        PickpleButton(style: style, height: height)
     }
 }
