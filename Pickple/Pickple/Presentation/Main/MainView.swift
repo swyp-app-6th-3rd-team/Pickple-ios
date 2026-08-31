@@ -13,7 +13,7 @@ struct MainView: View {
             VStack {
                 ZStack {
                     PickpleGNB(
-                        leading: .text("P!ckple"),
+                        leading: .image(Image("PickpleTitle")),
                         center: .none,
                         trailing: .button(icon: Image("PickpleAlertOff"), action: {})
                     )
