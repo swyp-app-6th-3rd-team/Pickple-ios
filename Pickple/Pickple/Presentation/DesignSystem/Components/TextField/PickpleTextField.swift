@@ -61,9 +61,9 @@ enum PickpleTextFieldStateType {
         switch self {
         case ._default: return Color.navy10
         case .ing: return Color.black
-        case .complete: return Color.blue10
-        case .error: return Color.red60
-        case .success: return Color.green60
+        case .complete: return Color.navy10
+        case .error: return Color.black
+        case .success: return Color.black
         case .select: return Color.black
         }
     }
