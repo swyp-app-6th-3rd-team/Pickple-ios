@@ -52,5 +52,13 @@ class ProfileViewModel: ObservableObject {
         else { return ._default}
     }
     
+    func nicknameCaption(_ state: PickpleTextFieldStateType) -> String {
+        switch state {
+        case .error: return ProfileStrings.error
+        case .success: return ProfileStrings.success
+        default: return ""
+        }
+    }
+    
 
 }
