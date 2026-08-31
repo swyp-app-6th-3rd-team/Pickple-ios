@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-private struct CardView: View {
+struct CardView: View {
     let data: VoteCard
 
     var body: some View {
