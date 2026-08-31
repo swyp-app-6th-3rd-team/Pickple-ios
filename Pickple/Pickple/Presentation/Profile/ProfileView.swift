@@ -70,7 +70,7 @@ struct ProfileView: View {
                 Text("확인")
             }
             .padding(.horizontal, 20)
-            .buttonStyle(.pickple(profileViewModel.isNicknameValid() ? .enabled : .disabled))
+            .buttonStyle(.pickple(profileViewModel.isNicknameValid() ? .enabled : .disabled, 56))
             .disabled(!profileViewModel.isNicknameValid())
         }
     }
