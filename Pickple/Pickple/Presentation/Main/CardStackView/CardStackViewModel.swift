@@ -18,4 +18,9 @@ class CardStackViewModel: ObservableObject {
     func loadCards() async {
         voteCardData = await voteCardRepository.fetchCards()
     }
+
+    func removeTopCard() {
+        guard !voteCardData.isEmpty else { return }
+        voteCardData.removeFirst()
+    }
 }
