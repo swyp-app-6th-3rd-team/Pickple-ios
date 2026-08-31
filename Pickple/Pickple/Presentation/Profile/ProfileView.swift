@@ -9,10 +9,15 @@ import SwiftUI
 import PhotosUI
 
 struct ProfileView: View {
-    @StateObject var profileViewModel: ProfileViewModel = ProfileViewModel()
+    @StateObject var proFileViewModel: ProfileViewModel = ProfileViewModel()
     
     @State var selectedItem: PhotosPickerItem?
+    
     @FocusState private var isFocused: Bool
+    
+    private var state: PickpleTextFieldStateType {
+        proFileViewModel.textFieldState(isFocused)
+    }
     
     var body: some View {
         VStack(spacing: 32) {
@@ -34,28 +39,29 @@ struct ProfileView: View {
             }
             
             VStack(spacing: 40) {
-                PickpleProfile(selectedItem: $selectedItem, selectedImage: profileViewModel.selectedImage, type: .offCamera)
+                PickpleProfile(selectedItem: $selectedItem, selectedImage: proFileViewModel.selectedImage, type: .offCamera)
                 
                 PickpleTextField(
-                    text: $profileViewModel.nickname,
+                    text: $proFileViewModel.nickname,
                     type: .both,
                     placeholder: ProfileStrings.nicknameText,
-                    trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)"),
-                    state: profileViewModel.textFieldState(isFocused)
+                    trailingAccessory: .text("\(proFileViewModel.nickname.count)/\(proFileViewModel.nicknameMaxLength)"),
+                    caption: proFileViewModel.nicknameCaption(state),
+                    state: proFileViewModel.textFieldState(isFocused)
                 )
             }
             
             .focused($isFocused)
-            .onChange(of: profileViewModel.nickname) { _, newValue in
-                profileViewModel.nickname = profileViewModel.filteredNickname(newValue)
+            .onChange(of: proFileViewModel.nickname) { _, newValue in
+                proFileViewModel.nickname = proFileViewModel.filteredNickname(newValue)
                 
             }
             .padding(.horizontal, 20)
             
             .onChange(of: selectedItem) {
                 guard let selectedItem else { return }
-                profileViewModel.imageSelection = selectedItem
-                profileViewModel.loadTransferable(from: selectedItem)
+                proFileViewModel.imageSelection = selectedItem
+                proFileViewModel.loadTransferable(from: selectedItem)
             }
             
             Spacer()
@@ -64,8 +70,8 @@ struct ProfileView: View {
                 Text("확인")
             }
             .padding(.horizontal, 20)
-            .buttonStyle(.pickple(profileViewModel.isNicknameValid() ? .enabled : .disabled))
-            .disabled(!profileViewModel.isNicknameValid())
+            .buttonStyle(.pickple(proFileViewModel.isNicknameValid() ? .enabled : .disabled))
+            .disabled(!proFileViewModel.isNicknameValid())
         }
     }
     
