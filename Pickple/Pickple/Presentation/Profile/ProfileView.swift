@@ -12,7 +12,12 @@ struct ProfileView: View {
     @StateObject var profileViewModel: ProfileViewModel = ProfileViewModel()
     
     @State var selectedItem: PhotosPickerItem?
+    
     @FocusState private var isFocused: Bool
+    
+    private var state: PickpleTextFieldStateType {
+        profileViewModel.textFieldState(isFocused)
+    }
     
     var body: some View {
         VStack(spacing: 32) {
@@ -41,7 +46,8 @@ struct ProfileView: View {
                     type: .both,
                     placeholder: ProfileStrings.nicknameText,
                     trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)"),
-                    state: profileViewModel.textFieldState(isFocused)
+                    caption: profileViewModel.nicknameCaption(state),
+                    state: state
                 )
             }
             

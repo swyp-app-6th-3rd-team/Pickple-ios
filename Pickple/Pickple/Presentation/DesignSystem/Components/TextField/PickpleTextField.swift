@@ -45,6 +45,7 @@ enum PickpleTextFieldStateType {
     case success
     case select
 
+    /*
     var caption: String {
         switch self {
         case ._default: return ""
@@ -55,15 +56,16 @@ enum PickpleTextFieldStateType {
         case .select: return "description"
         }
     }
+     */
 
     // _default는 기존 PickpleTextField가 쓰던 navy10을 그대로 유지 (이미 실제 화면에 쓰이고 있어서 시각적 변경 방지)
     var borderColor: Color {
         switch self {
         case ._default: return Color.navy10
         case .ing: return Color.black
-        case .complete: return Color.blue10
-        case .error: return Color.red60
-        case .success: return Color.green60
+        case .complete: return Color.navy10
+        case .error: return Color.black
+        case .success: return Color.black
         case .select: return Color.black
         }
     }
@@ -110,7 +112,9 @@ struct PickpleTextField: View {
     let placeholder: String
     var leadingAccessory: PickpleTextFieldAccessory = .none
     var trailingAccessory: PickpleTextFieldAccessory = .none
+    var caption: String = ""
     var state: PickpleTextFieldStateType = ._default
+    
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -143,11 +147,10 @@ struct PickpleTextField: View {
                     .stroke(state.borderColor, lineWidth: 1)
             }
 
-            if !state.caption.isEmpty {
-                Text(state.caption)
-                    .pickpleTypography(.caption)
+            if !caption.isEmpty {
+                Text(caption)
                     .foregroundStyle(state.captionColor)
-                    .padding(.leading, 20)
+                    .padding(.horizontal, 4)
             }
         }
     }
@@ -168,8 +171,8 @@ struct PickpleTextField: View {
         PickpleTextField(text: .constant(""), type: .both, placeholder: "Text", trailingAccessory: .image(Image(systemName: "xmark.circle.fill")))
 
         // 상태별 (에러/성공/설명)
-        PickpleTextField(text: .constant("error"), type: .leading, placeholder: "Text", state: .error)
-        PickpleTextField(text: .constant("success"), type: .leading, placeholder: "Text", state: .success)
+        PickpleTextField(text: .constant("error"), type: .leading, placeholder: "Text", caption: "error", state: .error)
+        PickpleTextField(text: .constant("success"), type: .leading, placeholder: "Text", caption: "success", state: .success)
         PickpleTextField(text: .constant(""), type: .leading, placeholder: "Text", state: .select)
     }
     .padding()
