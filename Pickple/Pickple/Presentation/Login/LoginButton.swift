@@ -60,7 +60,7 @@ struct LoginButton: View {
         Button(action: action) {
             ZStack {
                 Text(provider.title)
-                    .pickpleTypography(.title02)
+                    .pickpleTypography(.body02)
                     .foregroundStyle(provider.foregroundColor)
 
                 if let icon = provider.icon {
