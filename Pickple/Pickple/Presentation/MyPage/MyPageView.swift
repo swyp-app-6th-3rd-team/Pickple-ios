@@ -8,11 +8,29 @@
 import SwiftUI
 
 struct MyPageView: View {
+    @StateObject var myPageViewModel: MyPageViewModel
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack {
+            Color.navy60.ignoresSafeArea()
+            
+            VStack {
+                MyPageProfileSectionView(myPageViewModel: myPageViewModel)
+                
+                MyPageStatusView(myPageViewModel: myPageViewModel)
+
+            }
+            .frame(maxWidth: .infinity)
+            
+            
+        }
+        .task {
+            await myPageViewModel.loadUserInfo()
+        }
     }
+    
 }
 
 #Preview {
-    MyPageView()
+    MyPageView(myPageViewModel: MyPageViewModel())
 }

@@ -58,7 +58,8 @@ struct MyPageStatsView: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .frame(width: 353)
+        .frame(width: 353) //Fiexd
+
     }
 }
 
