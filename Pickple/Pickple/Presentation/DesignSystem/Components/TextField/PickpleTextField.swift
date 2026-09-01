@@ -141,7 +141,7 @@ struct PickpleTextField: View {
                 }
             }
             .padding(.horizontal, 20)
-            .frame(height: 56)
+            .frame(maxWidth: .infinity, minHeight: 56, maxHeight: 56) //Fill Width & Fixed Height
             .overlay {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(state.borderColor, lineWidth: 1)
