@@ -6,6 +6,6 @@
 //
 
 protocol UserInfoRepository {
-    func fetchUserProfile() async -> UserInfo
+    func fetchUserInfo() async -> UserInfo
     //실제 API와 연동
 }
