@@ -22,9 +22,6 @@ struct MyPageView: View {
                 MyPageStatusView(myPageViewModel: myPageViewModel)
 
             }
-            .frame(maxWidth: .infinity)
-            
-            
         }
         .task {
             await myPageViewModel.loadUserInfo()

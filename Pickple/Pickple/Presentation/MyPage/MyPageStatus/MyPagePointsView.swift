@@ -108,7 +108,7 @@ struct MyPagePointsView: View {
                 )
                 .frame(maxWidth: .infinity)
         }
-        .frame(width: 353)
+        .frame(width: 353) //Fixed
     }
 }
 
