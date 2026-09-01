@@ -9,13 +9,13 @@ import SwiftUI
 
 struct MainTitleView: View {
     var body: some View {
-        ZStack {
-            PickpleGNB(
-                leading: .image(Image("PickpleTitle")),
-                center: .none,
-                trailing: .button(icon: Image("PickpleAlertOff"), action: {})
-            )
-        }
+        
+        PickpleGNB(
+            leading: .image(Image("PickpleTitle")),
+            center: .none,
+            trailing: .button(icon: Image("PickpleAlertOff"), action: {})
+        )
+        
         .frame(maxWidth: .infinity)
     }
 }
