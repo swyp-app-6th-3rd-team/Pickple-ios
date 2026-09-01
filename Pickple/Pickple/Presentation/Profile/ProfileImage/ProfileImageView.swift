@@ -14,7 +14,7 @@ struct ProfileImageView: View {
     
     var body: some View {
         VStack(spacing: 40) {
-            PickpleProfile(selectedItem: $selectedItem, selectedImage: profileViewModel.selectedImage, type: .offCamera)
+            PickpleProfile(selectedItem: $selectedItem, selectedImage: profileViewModel.selectedImage, type: .onCamera)
         }
         .onChange(of: selectedItem) {
             guard let selectedItem else { return }
