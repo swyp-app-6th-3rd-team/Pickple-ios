@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct MyPageProfileSectionView: View {
+    @ObservedObject var myPageViewModel: MyPageViewModel
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        MyPageProfileImageView(myPageViewModel: myPageViewModel)
+            .padding(.top, 30)
+            .padding(.bottom, 16)
+            .frame(maxWidth: .infinity)
     }
 }
 
 #Preview {
-    MyPageProfileSectionView()
+    MyPageProfileSectionView(myPageViewModel: MyPageViewModel())
 }
