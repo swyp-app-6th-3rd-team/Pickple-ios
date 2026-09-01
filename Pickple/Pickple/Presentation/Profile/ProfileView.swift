@@ -17,7 +17,6 @@ struct ProfileView: View {
             HStack {
                 //XMARK: - Title
                 ProfileTitleView()
-                    .frame(width: 225) //Fixed
                     .padding(.horizontal, 20)
                     .padding(.top, 56)
 
@@ -35,7 +34,7 @@ struct ProfileView: View {
 
             //XMARK: - Button
             ProfileButtonView(profileViewModel: profileViewModel)
-                .frame(width: 353, height: 56) //fixed
+                .padding(.horizontal, 20)
         }
 
     }
