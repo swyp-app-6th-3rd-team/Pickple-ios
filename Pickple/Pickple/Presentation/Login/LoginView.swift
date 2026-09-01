@@ -18,15 +18,13 @@ struct LoginView: View {
             VStack(spacing: 7) {
                 Image("PickpleLoginLogo")
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 200)
+                    .frame(width: 200, height: 45)
 
                 //XMARK: - OnBoardingImage
                 VStack(spacing: 0) {
                     Image("PickpleOnBoardingImage")
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxWidth: 350)
+                        .frame(width: 350, height: 350)
 
                     //MARK: - Login Buttons
                     VStack(spacing: 8) {
