@@ -27,6 +27,7 @@ struct ProfileTextFieldView: View {
                 state: state
             )
         }
+        .frame(maxWidth: .infinity) //반응형
         .focused($isFocused)
         .onChange(of: profileViewModel.nickname) { _, newValue in
             profileViewModel.nickname = profileViewModel.filteredNickname(newValue)
