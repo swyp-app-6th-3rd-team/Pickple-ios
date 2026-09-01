@@ -6,9 +6,9 @@
 //
 import Foundation
 
-struct MockUserInfoRepository: UserProfileRepository {
-    func fetchUserProfile() async -> UserProfile {
-        UserProfile(
+struct MockUserInfoRepository: UserInfoRepository {
+    func fetchUserInfo() async -> UserInfo {
+        UserInfo(
             id: UUID(),
             nickname: "픽플닉네임",
             profileImageName: "PickpleProfileSample",
