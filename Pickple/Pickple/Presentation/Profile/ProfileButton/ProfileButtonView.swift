@@ -14,7 +14,7 @@ struct ProfileButtonView: View {
         Button(action: { }) {
             Text("확인")
         }
-        .padding(.horizontal, 20)
+        .frame(maxWidth: .infinity) //반응형
         .buttonStyle(.pickple(profileViewModel.isNicknameValid() ? .enabled : .disabled, 56))
         .disabled(!profileViewModel.isNicknameValid())
     }
