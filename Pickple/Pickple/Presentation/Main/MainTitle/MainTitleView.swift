@@ -15,9 +15,6 @@ struct MainTitleView: View {
                 center: .none,
                 trailing: .button(icon: Image("PickpleAlertOff"), action: {})
             )
-
-            Image("PickpleTolltip")
-                .padding(.trailing, 2)
         }
         .frame(maxWidth: .infinity)
     }
