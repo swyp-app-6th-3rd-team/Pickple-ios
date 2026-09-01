@@ -80,7 +80,6 @@ struct MyPagePointsView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 14)
-                    .border(Color.black)
                     //XMARK: - ProgressBar
                     if let nextLevel = myPageViewModel.userInfo?.pointsToNextLevel,
                        let current = currentPoints {
