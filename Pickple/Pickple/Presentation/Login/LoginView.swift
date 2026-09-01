@@ -11,17 +11,22 @@ import SwiftUI
 
 struct LoginView: View {
     var body: some View {
-        VStack {
-
+        VStack(spacing: 40) {
             Spacer()
 
-            //MARK: - Title & Image
-            VStack(spacing: 31) {
+            //MARK: - Title
+            VStack(spacing: 7) {
                 Image("PickpleLoginLogo")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: 200)
 
-                VStack(spacing: 51) {
-                    Image("PickpleLoginIllustration")
-                        .frame(width: 269, height: 262)
+                //XMARK: - OnBoardingImage
+                VStack(spacing: 0) {
+                    Image("PickpleOnBoardingImage")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: 350)
 
                     //MARK: - Login Buttons
                     VStack(spacing: 8) {
@@ -32,9 +37,8 @@ struct LoginView: View {
                     .padding(.horizontal, 20)
                 }
             }
-
-            Spacer()
             
+            //XMARK: - Text
             Text(LoginStrings.termsNotice)
                 .pickpleTypography(.caption)
                 .multilineTextAlignment(.center)
