@@ -9,12 +9,8 @@
 import SwiftUI
 
 struct CommunityView: View {
-    @StateObject var communityViewModel: CommunityViewModel
+    @StateObject var communityViewModel = CommunityViewModel()
     @State private var showsLoginRequired = false
-
-    init(communityViewModel: CommunityViewModel = CommunityViewModel()) {
-        _communityViewModel = StateObject(wrappedValue: communityViewModel)
-    }
 
     var body: some View {
         ZStack {
