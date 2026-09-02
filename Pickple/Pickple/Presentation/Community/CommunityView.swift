@@ -16,91 +16,18 @@ struct CommunityView: View {
         ScrollViewReader { scrollProxy in
             ZStack {
                 VStack(spacing: 0) {
-                    PickpleGNB(
-                        leading: .text("커뮤니티"),
-                        center: .none,
-                        trailing: .button(icon: Image("PickpleSearch"), action: {})
-                    )
-
-                    Divider()
-
-                    CommunityCategoryChipRow(selectedCategory: $communityViewModel.selectedCategory)
-                        .padding(.horizontal, 20)
-                        .padding(.top, 12)
-                        .padding(.bottom, 8)
-
-                    HStack {
-                        PickpleSortButton(
-                            isExpanded: .constant(false),
-                            selectedValue: $communityViewModel.sortOption,
-                            options: CommunityViewModel.sortOptions
-                        )
-                        .floatingOverSiblings {
-                            PickpleSortButton(
-                                isExpanded: $communityViewModel.isSortExpanded,
-                                selectedValue: $communityViewModel.sortOption,
-                                options: CommunityViewModel.sortOptions
-                            )
-                        }
-
-                        Spacer()
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
-                    .zIndex(1)
-
-                    if communityViewModel.displayedPosts.isEmpty {
-                        CommunityEmptyView()
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    } else {
-                        ScrollView {
-                            LazyVStack(spacing: 20) {
-                                Color.clear
-                                    .frame(height: 0)
-                                    .id("communityTop")
-
-                                ForEach(communityViewModel.displayedPosts) { post in
-                                    CommunityPostCardView(post: post)
-
-                                    Divider()
-                                }
-                            }
-                            .padding(.horizontal, 20)
-                        }
-                    }
+                    CommunityHeaderView(communityViewModel: communityViewModel)
+                    CommunityPostListSection(communityViewModel: communityViewModel)
                 }
 
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        VStack(spacing: 8) {
-                            Button(action: {
-                                withAnimation {
-                                    scrollProxy.scrollTo("communityTop", anchor: .top)
-                                }
-                            }) {
-                                Image("PickpleArrowUp")
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                                    .foregroundStyle(Color.black)
-                                    .padding(16)
-                                    .background(Circle().foregroundStyle(Color.white))
-                            }
-
-                            Button(action: { showsLoginRequired = true }) {
-                                Image("PickpleWriting")
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                                    .foregroundStyle(Color.white)
-                                    .padding(16)
-                                    .background(Circle().foregroundStyle(Color.black))
-                            }
+                CommunityFloatingButtons(
+                    onScrollToTop: {
+                        withAnimation {
+                            scrollProxy.scrollTo("communityTop", anchor: .top)
                         }
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 20)
-                    }
-                }
+                    },
+                    onWrite: { showsLoginRequired = true }
+                )
 
                 if showsLoginRequired {
                     Color.black.opacity(0.4)
