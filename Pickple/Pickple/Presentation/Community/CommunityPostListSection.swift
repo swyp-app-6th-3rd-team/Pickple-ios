@@ -19,7 +19,7 @@ struct CommunityPostListSection: View {
                 LazyVStack(spacing: 20) {
                     Color.clear
                         .frame(height: 0)
-                        .id("communityTop")
+                        .id(CommunityViewModel.scrollTopAnchor)
 
                     ForEach(communityViewModel.displayedPosts) { post in
                         CommunityPostCardView(post: post)
