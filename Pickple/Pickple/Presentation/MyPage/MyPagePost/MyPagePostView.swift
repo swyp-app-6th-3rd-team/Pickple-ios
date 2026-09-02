@@ -25,8 +25,9 @@ struct MyPagePostView: View {
                         }
                     }
                 }
+                .padding(.horizontal, 20)
+
             }
-            .padding(.horizontal, 20)
             
         }
         .padding(.vertical, 16)
