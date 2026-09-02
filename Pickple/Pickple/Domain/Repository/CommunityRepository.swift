@@ -1,0 +1,11 @@
+//
+//  CommunityRepository.swift
+//  Pickple
+//
+//  Created by 박윤수 on 9/3/26.
+//
+
+protocol CommunityRepository {
+    //실제 API와 연동
+    func fetchPosts() async -> [PostSummary]
+}

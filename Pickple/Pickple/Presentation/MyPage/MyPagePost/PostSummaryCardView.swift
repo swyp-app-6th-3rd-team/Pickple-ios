@@ -112,6 +112,7 @@ struct PostSummaryCardView: View {
             type: .forAgainst,
             category: "전자제품",
             title: "무선 이어폰 살까 말까",
+            description: "요즘 유선 이어폰 선 꼬이는게 스트레스인데 무선으로 넘어갈까 고민이에요.",
             imageName: "McokMyPostPicture",
             authorNickname: "픽플닉네임",
             authorLevel: 1,
