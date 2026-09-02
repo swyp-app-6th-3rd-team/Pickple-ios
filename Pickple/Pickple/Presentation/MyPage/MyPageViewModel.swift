@@ -26,6 +26,6 @@ class MyPageViewModel: ObservableObject {
     }
     
     func loadMyPosts() async {
-            posts = await userPostRepository.fetchMyPosts()
-        }
+        posts = await userPostRepository.fetchMyPosts()
+    }
 }

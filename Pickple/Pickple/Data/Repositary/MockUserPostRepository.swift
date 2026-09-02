@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  MockUserPostRepository.swift
 //  Pickple
 //
 //  Created by 박윤수 on 9/2/26.
@@ -17,7 +17,7 @@ struct MockUserPostRepository: UserPostRepository {
                 imageName: "McokMyPostPicture",
                 voteCount: 12,
                 commentCount: 4,
-                createdAt: Date().addingTimeInterval(-60 * 5) // 5분 전
+                createdAt: Date().addingTimeInterval(-60 * 5)
             ),
             PostSummary(
                 id: UUID(),
@@ -27,7 +27,7 @@ struct MockUserPostRepository: UserPostRepository {
                 imageName: "McokMyPostPicture",
                 voteCount: 8,
                 commentCount: 2,
-                createdAt: Date().addingTimeInterval(-60 * 60 * 3) // 3시간 전
+                createdAt: Date().addingTimeInterval(-60 * 60 * 3)
             ),
             PostSummary(
                 id: UUID(),
@@ -37,7 +37,7 @@ struct MockUserPostRepository: UserPostRepository {
                 imageName: "McokMyPostPicture",
                 voteCount: 0,
                 commentCount: 1,
-                createdAt: Date().addingTimeInterval(-60 * 60 * 24) // 1일 전
+                createdAt: Date().addingTimeInterval(-60 * 60 * 24)
             ),
         ]
     }
