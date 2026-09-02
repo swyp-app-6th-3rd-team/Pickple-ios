@@ -24,7 +24,7 @@ struct PickpleGNBSlotView: View {
     var body: some View {
         switch content {
         case .none:
-            Color.clear.frame(width: 24)
+            Color.clear.frame(width: 24, height: 24)
         case .text(let text):
             Text(text)
         case .image(let image):
@@ -56,8 +56,7 @@ struct PickpleGNB: View {
                 PickpleGNBSlotView(content: trailing)
                     .padding(.trailing, 20)
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 56)
+            .frame(maxWidth: .infinity, minHeight: 56)
         }
     }
 }

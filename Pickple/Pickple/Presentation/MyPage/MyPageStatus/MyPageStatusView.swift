@@ -19,6 +19,7 @@ struct MyPageStatusView: View {
         }
         .padding(.vertical, 16)
         .padding(.horizontal, 20)
+        .frame(maxWidth: .infinity) //Fill
         .background(
             UnevenRoundedRectangle(
             topLeadingRadius: 24,
@@ -26,7 +27,7 @@ struct MyPageStatusView: View {
             )
             .foregroundStyle(Color.white)
         )
-        .frame(maxWidth: .infinity)
+        
     }
 }
 

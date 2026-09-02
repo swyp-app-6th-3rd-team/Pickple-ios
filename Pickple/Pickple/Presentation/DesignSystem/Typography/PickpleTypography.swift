@@ -38,7 +38,8 @@ enum PickpleTypography {
 
     var size: CGFloat {
         switch self {
-        case .heading01, .heading02: return 28
+        case .heading01: return 28
+        case .heading02: return 24
         case .title01: return 20
         case .title02: return 18
         case .body01: return 16

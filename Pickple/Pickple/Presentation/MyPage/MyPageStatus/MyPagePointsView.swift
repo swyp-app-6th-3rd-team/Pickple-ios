@@ -22,6 +22,7 @@ struct MyPagePointsView: View {
                 HStack {
                     HStack(spacing: 4) {
                         Image("PickplePoint")
+                            .resizable()
                             .frame(width: 20, height: 20)
                         
                         Text("현재 보유 포인트")
@@ -107,7 +108,7 @@ struct MyPagePointsView: View {
                 )
                 .frame(maxWidth: .infinity)
         }
-        .frame(width: 353)
+        .frame(width: 353) //Fixed
     }
 }
 

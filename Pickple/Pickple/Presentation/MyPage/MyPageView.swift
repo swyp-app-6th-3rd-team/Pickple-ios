@@ -15,14 +15,13 @@ struct MyPageView: View {
             Color.navy60.ignoresSafeArea()
             
             VStack {
-                MyPageProfileSectionView(myPageViewModel: myPageViewModel)
-                
+                MyPageProfileHeaderView(myPageViewModel: myPageViewModel)
+                    .padding(.top, 30)
+                    .padding(.bottom, 16)
+
                 MyPageStatusView(myPageViewModel: myPageViewModel)
 
             }
-            .frame(maxWidth: .infinity)
-            
-            
         }
         .task {
             await myPageViewModel.loadUserInfo()

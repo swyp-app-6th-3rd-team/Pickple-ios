@@ -44,8 +44,11 @@ struct PickpleProfile: View {
                         .frame(width: 160, height: 160)
                         .clipShape(Circle())
                 } else {
-                    Circle()
+                    Image("PickpleCharacter")
+                        .resizable()
+                        .scaledToFill()
                         .frame(width: 160, height: 160)
+                        .clipShape(Circle())
                         .foregroundStyle(Color.neutral20)
                 }
             }

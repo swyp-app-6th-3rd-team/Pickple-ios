@@ -11,17 +11,8 @@ struct MainView: View {
     var body: some View {
         VStack {
             VStack {
-                ZStack {
-                    PickpleGNB(
-                        leading: .image(Image("PickpleTitle")),
-                        center: .none,
-                        trailing: .button(icon: Image("PickpleAlertOff"), action: {})
-                    )
-                    
-                    Image("PickpleTolltip")
-                        .padding(.trailing, 2)
-                }
-                
+                MainTitleView()
+
                 PickpleTabBar(tabs: ["찬반", "AB"], selectedIndex: $selectedTab)
             }
             .background(Color.navy60)
