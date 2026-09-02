@@ -30,11 +30,11 @@ struct MyBadgeGridItem: View {
 #Preview {
     HStack {
         MyBadgeGridItem(
-            badge: MyBadge(id: UUID(), title: "첫 PICK", iconOnName: "PickpleBadgeFirstPickOn", iconOffName: "PickpleBadgeFirstPickOff", isUnlocked: true, unlockCondition: ""),
+            badge: MyBadge(id: UUID(), title: "투표 꿈나무", iconOnName: "PickpleBadgeFirstPickOn", iconOffName: "PickpleBadgeFirstPickOff", isUnlocked: true, isNewlyUnlocked: false, unlockCondition: ""),
             action: {}
         )
         MyBadgeGridItem(
-            badge: MyBadge(id: UUID(), title: "PICK 중독", iconOnName: "PickpleBadgeAddictOn", iconOffName: "PickpleBadgeAddictOff", isUnlocked: false, unlockCondition: ""),
+            badge: MyBadge(id: UUID(), title: "투표 중독자", iconOnName: "PickpleBadgeAddictOn", iconOffName: "PickpleBadgeAddictOff", isUnlocked: false, isNewlyUnlocked: false, unlockCondition: ""),
             action: {}
         )
     }

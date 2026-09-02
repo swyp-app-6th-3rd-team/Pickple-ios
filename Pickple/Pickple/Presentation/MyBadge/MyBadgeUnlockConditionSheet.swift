@@ -56,6 +56,7 @@ struct MyBadgeUnlockConditionSheet: View {
                     iconOnName: "PickpleBadgeFirstPickOn",
                     iconOffName: "PickpleBadgeFirstPickOff",
                     isUnlocked: false,
+                    isNewlyUnlocked: false,
                     unlockCondition: "이 뱃지를 해제하려면\n누적 투표 10회를 달성하세요."
                 ),
                 onConfirm: {}
