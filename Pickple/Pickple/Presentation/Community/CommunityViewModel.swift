@@ -17,6 +17,7 @@ class CommunityViewModel: ObservableObject {
 
     static let categories = ["전체", "패션/잡화", "전자제품", "생활용품", "뷰티"]
     static let sortOptions = ["최신순", "오래된 순"]
+    static let scrollTopAnchor = "communityTop"
 
     var displayedPosts: [PostSummary] {
         let filtered = selectedCategory == CommunityViewModel.categories[0]
