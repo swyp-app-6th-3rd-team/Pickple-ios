@@ -31,22 +31,36 @@ struct MyGradeView: View {
             )
 
             ScrollView {
-                VStack(spacing: 24) {
-                    VStack(spacing: 8) {
+                VStack(spacing: 0) {
+                    VStack(spacing: 12) {
                         Image("PickpleGradeCharacter\(myPageViewModel.userInfo?.level ?? 1)")
                             .resizable()
-                            .frame(width: 100, height: 100)
+                            .frame(width: 120, height: 120)
 
-                        if let voteCount = myPageViewModel.userInfo?.voteCount {
-                            Text("투표 \(voteCount) 회")
-                                .pickpleTypography(.body02)
-                                .foregroundStyle(Color.neutral50)
+                        HStack(spacing: 4) {
+                            if let voteCount = myPageViewModel.userInfo?.voteCount {
+                                Text("투표")
+                                    .pickpleTypography(.label)
+                                    .foregroundStyle(Color.neutral40)
+                                
+                                Text("\(voteCount)")
+                                    .pickpleTypography(.title02)
+                                    .foregroundStyle(Color.black)
+                                
+                                Text("회")
+                                    .pickpleTypography(.body02)
+                                    .foregroundStyle(Color.neutral40)
+                            }
                         }
+                        
+                        MyPagePointsView(myPageViewModel: myPageViewModel)
                     }
-                    .padding(.top, 20)
+                    .padding(.bottom, 16)
 
-                    MyPagePointsView(myPageViewModel: myPageViewModel)
-
+                    Rectangle()
+                        .frame(height: 4)
+                        .foregroundStyle(Color.neutral5)
+                    
                     VStack(spacing: 0) {
                         ForEach(1...5, id: \.self) { level in
                             MyGradeRow(level: level, description: gradeDescriptions[level] ?? "")
