@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SwiftUIView: View {
+struct MyPagePostView: View {
     @ObservedObject var myPageViewModel: MyPageViewModel
     
     var body: some View {
