@@ -8,11 +8,28 @@
 import SwiftUI
 
 struct MyActivityPostListView: View {
+    let posts: [PostSummary]
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        if posts.isEmpty {
+            VStack(spacing: 20) {
+                Spacer()
+                Text("아직 참여한 활동이 없어요")
+                Spacer()
+            }
+        } else {
+            ScrollView {
+                ForEach(posts) { post in
+                    Button(action: {}) {
+                        PostSummaryCardView(post: post)
+                    }
+                    Divider()
+                        .padding(.bottom, 20)
+                }
+                .padding(.horizontal, 20)
+            }
+        }
     }
 }
 
-#Preview {
-    MyActivityPostListView()
-}
+
