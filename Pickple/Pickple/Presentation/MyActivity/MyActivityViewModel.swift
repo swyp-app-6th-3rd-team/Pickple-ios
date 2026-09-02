@@ -13,7 +13,7 @@ class MyActivityViewModel: ObservableObject {
     @Published var commentedPosts: [PostSummary] = []   // 댓글
     @Published var writtenPosts: [PostSummary] = []     // 작성글
     
-    init(userPostRepository: UserPostRepository) {
+    init(userPostRepository: UserPostRepository = MockUserPostRepository()) {
         self.userPostRepository = userPostRepository
     }
 
