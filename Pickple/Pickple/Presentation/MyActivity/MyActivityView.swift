@@ -35,22 +35,20 @@ struct MyActivityView: View {
             .padding(.leading, 20)
             .padding(.vertical, 12)
             .zIndex(1)
-
+            
             switch selectedIndexTwo {
             case 0:
                 MyActivityPostListView(posts: myActivityViewModel.sorted(myActivityViewModel.votedPosts, by: selectedValue))
-            case 1:
-                MyActivityPostListView(posts: myActivityViewModel.sorted(myActivityViewModel.commentedPosts, by: selectedValue))
+                    .task { await myActivityViewModel.loadVotedPosts() }
+                
+            case 1: MyActivityPostListView(posts: myActivityViewModel.sorted(myActivityViewModel.commentedPosts, by: selectedValue))
+                    .task { await myActivityViewModel.loadCommentedPosts() }
             case 2:
                 MyActivityPostListView(posts: myActivityViewModel.sorted(myActivityViewModel.writtenPosts, by: selectedValue))
+                    .task { await myActivityViewModel.loadWrittenPosts() }
             default:
                 EmptyView()
             }
-        }
-        .task {
-            await myActivityViewModel.loadVotedPosts()
-            await myActivityViewModel.loadCommentedPosts()
-            await myActivityViewModel.loadWrittenPosts()
         }
     }
 }
