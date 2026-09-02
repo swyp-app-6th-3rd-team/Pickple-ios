@@ -27,6 +27,7 @@ struct MyPagePostView: View {
                             Button(action: {}) {
                                 PostSummaryCardView(post: post)
                             }
+                            .frame(width: 160, height: 238)
                         }
                     }
                 }
