@@ -8,11 +8,52 @@
 import SwiftUI
 
 struct MyActivityView: View {
+    @StateObject var myActivityViewModel: MyActivityViewModel
+    
+    @State private var isShown: Bool = false
+    @State private var selectedIndexTwo = 0
+    @State private var selectedValue = "최신순"
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            PickpleGNB(
+                leading: .button(icon: Image("PickpleArrowLeft"), action: {}),
+                center: .text("나의 활동"),
+                trailing: .none
+            )
+            
+            PickpleTabBar(tabs: ["투표", "댓글", "작성글"], selectedIndex: $selectedIndexTwo)
+                .padding(.horizontal, 20)
+            
+            HStack {
+                PickpleSortButton(isExpanded: .constant(false), selectedValue: $selectedValue, options: ["최신순", "오래된 순"])
+                    .floatingOverSiblings {
+                        PickpleSortButton(isExpanded: $isShown, selectedValue: $selectedValue, options: ["최신순", "오래된 순"])
+                    }
+                Spacer()
+            }
+            .padding(.leading, 20)
+            .padding(.vertical, 12)
+            
+            switch selectedIndexTwo {
+            case 0:
+                MyActivityPostListView(posts: myActivityViewModel.votedPosts)
+            case 1:
+                MyActivityPostListView(posts: myActivityViewModel.commentedPosts)
+            case 2:
+                MyActivityPostListView(posts: myActivityViewModel.writtenPosts)
+            default:
+                EmptyView()
+            }
+        }
+        .task {
+            await myActivityViewModel.loadVotedPosts()
+            await myActivityViewModel.loadCommentedPosts()
+            await myActivityViewModel.loadWrittenPosts()
+        }
     }
 }
 
 #Preview {
-    MyActivityView()
+    MyActivityView(myActivityViewModel: MyActivityViewModel(userPostRepository: MockUserPostRepository()))
 }
