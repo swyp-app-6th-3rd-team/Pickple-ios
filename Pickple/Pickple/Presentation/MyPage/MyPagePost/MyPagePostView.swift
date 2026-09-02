@@ -15,23 +15,25 @@ struct MyPagePostView: View {
             
             MyPagePostTitleView()
                 .padding(.horizontal, 20)
-
+            
             //MARK: - Post
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
-                    ForEach(myPageViewModel.posts) { post in
-                        Button(action: {}) {
-                            PostSummaryCardView(post: post)
+                    if myPageViewModel.posts.isEmpty {
+                        MyPagePostCardEmptyView()
+                    }
+                    else {
+                        ForEach(myPageViewModel.posts) { post in
+                            Button(action: {}) {
+                                PostSummaryCardView(post: post)
+                            }
                         }
                     }
                 }
                 .padding(.horizontal, 20)
-
             }
-            
         }
         .padding(.vertical, 16)
-        
         .background(Color.white)
     }
 }
