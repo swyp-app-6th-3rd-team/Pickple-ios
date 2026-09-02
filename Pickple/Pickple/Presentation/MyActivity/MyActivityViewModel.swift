@@ -13,11 +13,8 @@ class MyActivityViewModel: ObservableObject {
     @Published var commentedPosts: [PostSummary] = []   // 댓글
     @Published var writtenPosts: [PostSummary] = []     // 작성글
     
-    init(userPostRepository: UserPostRepository, votedPosts: [PostSummary], commentedPosts: [PostSummary], writtenPosts: [PostSummary]) {
+    init(userPostRepository: UserPostRepository) {
         self.userPostRepository = userPostRepository
-        self.votedPosts = votedPosts
-        self.commentedPosts = commentedPosts
-        self.writtenPosts = writtenPosts
     }
 
     func loadVotedPosts() async { votedPosts = await userPostRepository.fetchVotedPosts() }
