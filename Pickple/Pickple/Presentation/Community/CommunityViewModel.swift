@@ -5,6 +5,7 @@
 //  Created by 박윤수 on 9/3/26.
 //
 import Combine
+import Foundation
 
 class CommunityViewModel: ObservableObject {
     private var communityRepository: CommunityRepository
