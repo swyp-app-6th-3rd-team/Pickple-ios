@@ -28,11 +28,15 @@ struct MyPagePostView: View {
                                 PostSummaryCardView(post: post)
                             }
                             .frame(width: 160, height: 238)
+
                         }
                     }
                 }
                 .padding(.horizontal, 20)
             }
+        }
+        .task {
+            await myPageViewModel.loadMyPosts()
         }
         .padding(.vertical, 16)
         .background(Color.white)
