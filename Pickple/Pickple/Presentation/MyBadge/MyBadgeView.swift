@@ -12,6 +12,7 @@ import SwiftUI
 struct MyBadgeView: View {
     @StateObject var myBadgeViewModel: MyBadgeViewModel
     @State private var selectedBadge: MyBadge?
+    @State private var newlyUnlockedBadge: MyBadge?
 
     private var badgeRows: [[MyBadge]] {
         stride(from: 0, to: myBadgeViewModel.badges.count, by: 3).map {
@@ -63,10 +64,17 @@ struct MyBadgeView: View {
         }
         .task {
             await myBadgeViewModel.loadMyBadges()
+            newlyUnlockedBadge = myBadgeViewModel.badges.first { $0.isNewlyUnlocked }
         }
         .sheet(item: $selectedBadge) { badge in
             MyBadgeUnlockConditionSheet(badge: badge) {
                 selectedBadge = nil
+            }
+        }
+        .sheet(item: $newlyUnlockedBadge) { badge in
+            MyBadgeUnlockedCongratsModal(badge: badge) {
+                newlyUnlockedBadge = nil
+                //TODO: 확인 처리(서버에 확인 여부 반영 등) 연결 필요
             }
         }
     }
