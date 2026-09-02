@@ -21,7 +21,7 @@ struct MyActivityPostListView: View {
             ScrollView {
                 ForEach(posts) { post in
                     Button(action: {}) {
-                        PostSummaryCardView(post: post)
+                        PostSummaryCardView(post: post, showsAuthorNickname: true)
                     }
                     Divider()
                         .padding(.bottom, 20)

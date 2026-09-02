@@ -30,6 +30,7 @@ struct MyPageView: View {
                         
                         MyPagePostView(myPageViewModel: myPageViewModel)
                         
+                        
                         Divider()
                             .frame(height: 4)
                             .background(Color.neutral5)

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PostSummaryCardView: View {
     let post: PostSummary
+    var showsAuthorNickname: Bool = false
     
     var body: some View {
         //MARK: - Image
@@ -16,8 +17,7 @@ struct PostSummaryCardView: View {
             ZStack (alignment: .topLeading){
                 Image(post.imageName)
                     .resizable()
-                    .scaledToFill()
-                    .frame(maxWidth: .infinity) //Fixed
+                    .frame(maxWidth: .infinity)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 
                 //MARK: - Badge
@@ -27,7 +27,7 @@ struct PostSummaryCardView: View {
                     case .forAgainst: Image("PickpleAgainst").resizable().frame(width: 16, height: 16)
                     case .compare: Image("PickpleAB").resizable().frame(width: 16, height: 16)
                     }
-
+                    
                     Text(post.type.displayName)
                         .pickpleTypography(.label)
                         .foregroundStyle(Color.white)
@@ -80,12 +80,46 @@ struct PostSummaryCardView: View {
                 
                 Spacer()
                 
+                if showsAuthorNickname {
+                    HStack(spacing: 8){
+                        HStack(spacing: 2) {
+                            Text(post.authorNickname)
+                                .pickpleTypography(.caption)
+                                .foregroundStyle(Color.neutral40)
+                            
+                            Image("PickpleLevelBadge\(post.authorLevel)")
+                                .resizable()
+                                .frame(width: 14, height: 14)
+                        }
+                        Divider()
+                            .frame(height: 12)
+                    }
+                }
+                
                 Text(post.createdAt.relativeTimeDescription)
                     .pickpleTypography(.caption)
                     .foregroundStyle(Color.neutral40)
             }
-            
         }
         .frame(maxWidth: .infinity)
     }
+}
+
+#Preview {
+    PostSummaryCardView(
+        post: PostSummary(
+            id: UUID(),
+            type: .forAgainst,
+            category: "전자제품",
+            title: "무선 이어폰 살까 말까",
+            imageName: "McokMyPostPicture",
+            authorNickname: "픽플닉네임",
+            authorLevel: 1,
+            voteCount: 12,
+            commentCount: 4,
+            createdAt: Date().addingTimeInterval(-60 * 5)
+        )
+    )
+    .frame(width: 160, height: 253)
+    .padding()
 }
