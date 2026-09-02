@@ -19,12 +19,15 @@ struct MyPageView: View {
                     .padding(.top, 30)
                     .padding(.bottom, 16)
 
-                VStack(spacing: 4) {
+                VStack(spacing: 0) {
                     MyPageStatusView(myPageViewModel: myPageViewModel)
+
+                    Rectangle()
+                        .fill(Color.neutral5)
+                        .frame(height: 4)
 
                     MyPagePostView(myPageViewModel: myPageViewModel)
                 }
-                .background(Color.neutral5)
             }
         }
         .task {
