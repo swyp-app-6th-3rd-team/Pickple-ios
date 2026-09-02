@@ -14,17 +14,20 @@ struct MyPageView: View {
         ZStack {
             Color.navy60.ignoresSafeArea()
             
-            VStack {
+            VStack(spacing: 4) {
                 MyPageProfileHeaderView(myPageViewModel: myPageViewModel)
                     .padding(.top, 30)
                     .padding(.bottom, 16)
 
                 MyPageStatusView(myPageViewModel: myPageViewModel)
+                
+                MyPagePostView(myPageViewModel: myPageViewModel)
 
             }
         }
         .task {
             await myPageViewModel.loadUserInfo()
+            await myPageViewModel.loadMyPosts()
         }
     }
     
