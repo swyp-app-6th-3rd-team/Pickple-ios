@@ -17,7 +17,7 @@ struct PostSummaryCardView: View {
                 Image(post.imageName)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 160, height: 160) //Fixed
+                    .frame(maxWidth: .infinity) //Fixed
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 
                 //MARK: - Badge
@@ -86,6 +86,6 @@ struct PostSummaryCardView: View {
             }
             
         }
-        .frame(width: 160)
+        .frame(maxWidth: .infinity)
     }
 }
