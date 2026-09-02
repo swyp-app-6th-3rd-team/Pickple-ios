@@ -20,14 +20,37 @@ struct CommunityView: View {
                     CommunityPostListSection(communityViewModel: communityViewModel)
                 }
 
-                CommunityFloatingButtons(
-                    onScrollToTop: {
-                        withAnimation {
-                            scrollProxy.scrollTo("communityTop", anchor: .top)
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        VStack(spacing: 8) {
+                            Button(action: {
+                                withAnimation {
+                                    scrollProxy.scrollTo(CommunityViewModel.scrollTopAnchor, anchor: .top)
+                                }
+                            }) {
+                                Image("PickpleArrowUp")
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                                    .foregroundStyle(Color.black)
+                                    .padding(16)
+                                    .background(Circle().foregroundStyle(Color.white))
+                            }
+
+                            Button(action: { showsLoginRequired = true }) {
+                                Image("PickpleWriting")
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                                    .foregroundStyle(Color.white)
+                                    .padding(16)
+                                    .background(Circle().foregroundStyle(Color.black))
+                            }
                         }
-                    },
-                    onWrite: { showsLoginRequired = true }
-                )
+                        .padding(.trailing, 20)
+                        .padding(.bottom, 20)
+                    }
+                }
 
                 if showsLoginRequired {
                     Color.black.opacity(0.4)
