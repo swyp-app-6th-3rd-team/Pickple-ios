@@ -24,7 +24,7 @@ struct PickpleTabBar: View {
                     VStack(spacing: 8) {
                         Text(tabs[index])
                             .pickpleTypography(.title02)
-                            .foregroundStyle(index == selectedIndex ? Color.white : Color.neutral20)
+                            .foregroundStyle(index == selectedIndex ? Color.neutral100 : Color.neutral20)
 
                         Rectangle()
                             .fill(index == selectedIndex ? Color.yellow60 : Color.clear)

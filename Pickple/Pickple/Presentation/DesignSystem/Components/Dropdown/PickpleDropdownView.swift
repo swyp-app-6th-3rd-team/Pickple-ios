@@ -80,7 +80,7 @@ extension View {
         self
             .hidden()
             .allowsHitTesting(false)
-            .overlay(alignment: .top, content: content)
+            .overlay(alignment: .topLeading, content: content)
             .zIndex(zIndex)
     }
 }
