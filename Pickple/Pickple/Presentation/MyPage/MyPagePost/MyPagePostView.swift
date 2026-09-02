@@ -33,9 +33,6 @@ struct MyPagePostView: View {
         .padding(.vertical, 16)
         
         .background(Color.white)
-        .task {
-            await myPageViewModel.loadMyPosts()
-        }
     }
 }
 
