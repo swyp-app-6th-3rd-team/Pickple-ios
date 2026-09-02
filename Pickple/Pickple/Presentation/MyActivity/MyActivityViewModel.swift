@@ -20,4 +20,10 @@ class MyActivityViewModel: ObservableObject {
     func loadVotedPosts() async { votedPosts = await userPostRepository.fetchVotedPosts() }
     func loadCommentedPosts() async { commentedPosts = await userPostRepository.fetchCommentedPosts() }
     func loadWrittenPosts() async {writtenPosts = await userPostRepository.fetchWrittenPosts()}
+
+    func sorted(_ posts: [PostSummary], by option: String) -> [PostSummary] {
+        option == "최신순"
+            ? posts.sorted { $0.createdAt > $1.createdAt }
+            : posts.sorted { $0.createdAt < $1.createdAt }
+    }
 }
