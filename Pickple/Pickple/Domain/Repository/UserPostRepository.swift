@@ -6,6 +6,10 @@
 //
 
 protocol UserPostRepository {
-    func fetchMyPosts() async -> [PostSummary]
     //실제 API와 연동
+    func fetchMyPosts() async -> [PostSummary]
+    func fetchVotedPosts() async -> [PostSummary]
+    func fetchCommentedPosts() async -> [PostSummary]
+    func fetchWrittenPosts() async -> [PostSummary]
+    
 }
