@@ -5,6 +5,7 @@
 //  Created by 박윤수 on 9/2/26.
 //
 import Combine
+import Foundation
 
 class MyActivityViewModel: ObservableObject {
     private var userPostRepository: UserPostRepository
