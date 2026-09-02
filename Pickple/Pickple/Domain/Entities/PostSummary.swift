@@ -11,6 +11,7 @@ struct PostSummary: Identifiable {
     let type: VoteType
     let category: String
     let title: String
+    let imageName: String
     let voteCount: Int
     let commentCount: Int
     let createdAt: Date
