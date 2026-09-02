@@ -14,6 +14,16 @@ enum VoteType: Equatable {
     case text
 }
 
+extension VoteType {
+    var displayName: String {
+        switch self {
+        case .forAgainst: return PostViewStrings.forAgainstPickTitle
+        case .compare: return PostViewStrings.abPickTitle
+        case .text: return PostViewStrings.textPickTitle
+        }
+    }
+}
+
 class PostViewModel: ObservableObject {
     @Published var selectedType: VoteType = .forAgainst
     @Published var topic: String = ""
@@ -24,4 +34,6 @@ class PostViewModel: ObservableObject {
     func isSelected(_ type: VoteType) -> Bool {
         selectedType == type
     }
+    
+    
 }
