@@ -34,14 +34,15 @@ struct MyActivityView: View {
             }
             .padding(.leading, 20)
             .padding(.vertical, 12)
-            
+            .zIndex(1)
+
             switch selectedIndexTwo {
             case 0:
-                MyActivityPostListView(posts: myActivityViewModel.votedPosts)
+                MyActivityPostListView(posts: myActivityViewModel.sorted(myActivityViewModel.votedPosts, by: selectedValue))
             case 1:
-                MyActivityPostListView(posts: myActivityViewModel.commentedPosts)
+                MyActivityPostListView(posts: myActivityViewModel.sorted(myActivityViewModel.commentedPosts, by: selectedValue))
             case 2:
-                MyActivityPostListView(posts: myActivityViewModel.writtenPosts)
+                MyActivityPostListView(posts: myActivityViewModel.sorted(myActivityViewModel.writtenPosts, by: selectedValue))
             default:
                 EmptyView()
             }
