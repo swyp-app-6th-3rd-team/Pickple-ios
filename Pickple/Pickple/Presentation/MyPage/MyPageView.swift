@@ -12,22 +12,38 @@ struct MyPageView: View {
     
     var body: some View {
         ZStack {
-            Color.navy60.ignoresSafeArea()
-            
-            VStack(spacing: 4) {
-                MyPageProfileHeaderView(myPageViewModel: myPageViewModel)
-                    .padding(.top, 30)
-                    .padding(.bottom, 16)
-
-                VStack(spacing: 0) {
-                    MyPageStatusView(myPageViewModel: myPageViewModel)
-
-                    Rectangle()
-                        .fill(Color.neutral5)
-                        .frame(height: 4)
-
-                    MyPagePostView(myPageViewModel: myPageViewModel)
-                }
+            VStack(spacing: 0) {
+                Color.navy60
+                    .ignoresSafeArea()
+                Color.white
+                    .ignoresSafeArea()
+            }
+            ScrollView {
+                    VStack(spacing: 0) {
+                        MyPageProfileHeaderView(myPageViewModel: myPageViewModel)
+                        
+                        MyPageStatusView(myPageViewModel: myPageViewModel)
+                        
+                        Divider()
+                            .frame(height: 4)
+                            .background(Color.neutral5)
+                        
+                        MyPagePostView(myPageViewModel: myPageViewModel)
+                        
+                        Divider()
+                            .frame(height: 4)
+                            .background(Color.neutral5)
+                        
+                        MyPageInfoView()
+                        
+                        Divider()
+                            .frame(height: 4)
+                            .background(Color.neutral5)
+                        
+                        MyPageExtraView()
+                        
+                    }
+                
             }
         }
         .task {
@@ -35,7 +51,6 @@ struct MyPageView: View {
             await myPageViewModel.loadMyPosts()
         }
     }
-    
 }
 
 #Preview {
