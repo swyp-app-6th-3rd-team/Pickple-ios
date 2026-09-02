@@ -18,24 +18,25 @@ struct MyGradeRow: View {
                 .frame(width: 48, height: 48)
 
             VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 4) {
+                HStack(spacing: 2) {
                     Image("PickpleLevelBadge\(level)")
                         .resizable()
                         .frame(width: 16, height: 16)
 
                     Text("LV.\(level)")
-                        .pickpleTypography(.body01)
+                        .pickpleTypography(.label)
                         .foregroundStyle(Color.black)
                 }
 
                 Text(description)
-                    .pickpleTypography(.caption)
-                    .foregroundStyle(Color.neutral50)
+                    .pickpleTypography(.body02)
+                    .foregroundStyle(Color.neutral40)
             }
 
             Spacer()
         }
-        .padding(.vertical, 12)
+        .padding(.vertical, 16)
+        .padding(.horizontal, 12)
     }
 }
 
