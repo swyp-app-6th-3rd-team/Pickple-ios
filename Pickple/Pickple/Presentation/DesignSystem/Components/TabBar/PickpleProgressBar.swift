@@ -5,7 +5,7 @@
 //  Created by 박윤수 on 8/28/26.
 //
 //  TODO: 디자인 확정 후 변경 필요
-//  - 색상: Color.black/gray → Asset Catalog 컬러셋으로 교체
+//  - 색상: 게시글 작성 화면 디자인 기준 green50으로 교체함(정확한 톤 확정 필요)
 //
 
 import SwiftUI
@@ -18,7 +18,7 @@ struct PickpleProgressBar: View {
         HStack(spacing: 4) {
             ForEach(0..<totalSteps, id: \.self) { index in
                 Rectangle()
-                    .fill(index <= currentIndex ? Color.black : Color.neutral5)
+                    .fill(index <= currentIndex ? Color.green50 : Color.neutral5)
                     .frame(height: 4)
             }
         }
