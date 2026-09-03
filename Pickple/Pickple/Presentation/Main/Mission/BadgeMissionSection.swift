@@ -53,9 +53,6 @@ struct BadgeMissionSection: View {
 
             if isLoggedIn && isExpanded {
                 VStack(spacing: 12) {
-                    ForEach(missions) { mission in
-                        BadgeMissionProgressRow(mission: mission)
-                    }
 
                     if let streakMission = missions.first(where: { $0.title.contains("연속") }) {
                         BadgeMissionStreakTracker(current: streakMission.current, target: streakMission.target)
@@ -71,91 +68,6 @@ struct BadgeMissionSection: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.navy10, lineWidth: 1)
         }
-    }
-}
-
-private struct BadgeMissionProgressRow: View {
-    let mission: BadgeMissionProgress
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
-                Text(mission.title)
-                    .pickpleTypography(.body02)
-                    .foregroundStyle(Color.neutral80)
-
-                Spacer()
-
-                Text("\(mission.current)/\(mission.target)")
-                    .pickpleTypography(.body02)
-                    .foregroundStyle(Color.neutral30)
-            }
-
-            BadgeMissionProgressBar(current: mission.current, target: mission.target)
-        }
-    }
-}
-
-// 미션 진행률을 보여주는 얇은 막대 게이지.
-private struct BadgeMissionProgressBar: View {
-    let current: Int
-    let target: Int
-
-    private var ratio: CGFloat {
-        guard target > 0 else { return 0 }
-        return min(1, max(0, CGFloat(current) / CGFloat(target)))
-    }
-
-    var body: some View {
-        GeometryReader { proxy in
-            ZStack(alignment: .leading) {
-                Capsule()
-                    .fill(Color.neutral5)
-
-                Capsule()
-                    .fill(Color.blue60)
-                    .frame(width: proxy.size.width * ratio)
-            }
-        }
-        .frame(height: 8)
-    }
-}
-
-// "N일 연속" 미션 전용 요일별 진행 표시. 마지막 칸(보상 지급일)은 별 아이콘으로 표시한다.
-private struct BadgeMissionStreakTracker: View {
-    let current: Int
-    let target: Int
-
-    var body: some View {
-        VStack(spacing: 4) {
-            HStack(spacing: 4) {
-                ForEach(1...target, id: \.self) { day in
-                    dayView(day)
-                }
-            }
-
-            Text("\(current)일차")
-                .pickpleTypography(.caption)
-                .foregroundStyle(Color.blue60)
-        }
-    }
-
-    private func dayView(_ day: Int) -> some View {
-        let imageName: String
-        if day == target {
-            imageName = "Property 1=Last"
-        } else if day < current {
-            imageName = "Property 1=Check"
-        } else if day == current {
-            imageName = "Property 1=Today"
-        } else {
-            imageName = "Property 1=Disable"
-        }
-
-        return Image(imageName)
-            .resizable()
-            .frame(maxWidth: .infinity)
-            .aspectRatio(1, contentMode: .fit)
     }
 }
 
