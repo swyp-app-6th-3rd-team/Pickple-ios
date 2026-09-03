@@ -22,7 +22,7 @@ struct MockPickerRankingRepository: PickerRankingRepository {
             let level: Int = max(1, 5 - index / 6)
             let points: Int = max(50, 3000 - index * 95)
             rankings.append(
-                PickerRanking(id: UUID(), rank: index + 1, nickname: nickname, level: level, profileImageName: nil, points: points)
+                PickerRanking(id: UUID(), rank: index + 1, nickname: nickname, level: level, profileImageName: "PickpleProfileSample", points: points)
             )
         }
         return rankings

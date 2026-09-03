@@ -19,7 +19,7 @@ class MainRankingViewModel: ObservableObject {
     // TODO: 실제 로그인 상태 연동 필요 — 지금은 항상 로그인된 것으로 취급
     var isLoggedIn = true
     // TODO: 실제로는 로그인한 유저 본인의 랭킹 데이터로 대체 필요
-    let myRanking = PickerRanking(id: UUID(), rank: 24, nickname: "닉네임", level: 5, profileImageName: nil, points: 1000)
+    let myRanking = PickerRanking(id: UUID(), rank: 24, nickname: "닉네임", level: 5, profileImageName: "PickpleProfileSample", points: 1000)
 
     init(pickerRankingRepository: PickerRankingRepository = MockPickerRankingRepository()) {
         self.pickerRankingRepository = pickerRankingRepository
