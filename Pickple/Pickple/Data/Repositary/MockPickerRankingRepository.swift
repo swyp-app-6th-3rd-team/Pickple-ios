@@ -7,14 +7,24 @@
 import Foundation
 
 struct MockPickerRankingRepository: PickerRankingRepository {
-    private static let all: [PickerRanking] = (1...30).map { rank in
-        PickerRanking(
+    private static let nicknamePool = [
+        "픽플고인물", "라떼한잔", "구름위산책", "여름햇살", "냥냥펀치",
+        "산책러", "밤샘러", "커피중독", "오늘의픽", "조용한선택",
+        "미니멀리스트", "가성비헌터", "취향저격러", "고민끝판왕", "찬반요정",
+        "댓글요정", "투표머신", "얼리어답터", "직진러", "신중러",
+        "새벽감성", "주말picker", "출근길픽커", "야식파", "다이어터",
+        "홈카페러버", "캠핑덕후", "러닝크루", "북마크왕", "리뷰장인"
+    ]
+
+    private static let all: [PickerRanking] = nicknamePool.enumerated().map { index, nickname in
+        let rank = index + 1
+        return PickerRanking(
             id: UUID(),
             rank: rank,
-            nickname: "닉네임",
-            level: 5,
+            nickname: nickname,
+            level: max(1, 5 - index / 6),
             profileImageName: nil,
-            points: 1000
+            points: max(50, 3000 - index * 95)
         )
     }
 
