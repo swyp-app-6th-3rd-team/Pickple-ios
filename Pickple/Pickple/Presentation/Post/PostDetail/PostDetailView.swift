@@ -45,7 +45,7 @@ struct PostDetailView: View {
                         switch post.type {
                         case .text: Image("PickpleText").resizable().frame(width: 14, height: 14)
                         case .forAgainst: Image("PickpleAgainst").resizable().frame(width: 14, height: 14)
-                        case .compare: Image("PickpleAB").resizable().frame(width: 14, height: 14)
+                        case .ab: Image("PickpleAB").resizable().frame(width: 14, height: 14)
                         }
 
                         Text(post.type.displayName)
