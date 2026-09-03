@@ -18,9 +18,15 @@ struct BadgeMissionSection: View {
                 withAnimation(.spring()) { isExpanded.toggle() }
             } label: {
                 HStack(spacing: 8) {
-                    Image("PickpleMyBadge")
-                        .resizable()
-                        .frame(width: 48, height: 48)
+                    if let firstMissionBadge = missions.first?.badgeIconOffName {
+                        Image(firstMissionBadge)
+                            .resizable()
+                            .frame(width: 48, height: 48)
+                    } else {
+                        Image("PickpleMyBadge")
+                            .resizable()
+                            .frame(width: 48, height: 48)
+                    }
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text("뱃지 획득 미션")
@@ -68,9 +74,7 @@ private struct BadgeMissionProgressRow: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Image(mission.badgeIconOffName)
-                .resizable()
-                .frame(width: 24, height: 24)
+
 
             Text(mission.title)
                 .pickpleTypography(.body02)
