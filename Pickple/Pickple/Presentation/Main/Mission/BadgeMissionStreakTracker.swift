@@ -18,6 +18,9 @@ struct BadgeMissionStreakTracker: View {
                 dayView(day)
             }
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Capsule().fill(Color.neutral5))
     }
 
     private func dayView(_ day: Int) -> some View {
