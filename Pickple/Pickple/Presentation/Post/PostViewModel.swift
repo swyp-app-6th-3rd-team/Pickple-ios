@@ -152,3 +152,49 @@ class PostViewModel: ObservableObject {
         submitState = .succeeded
     }
 }
+
+extension PostViewModel {
+    // 게시글 상세의 "수정하기"에서 기존 내용을 채운 채로 작성 화면을 열기 위한 팩토리.
+    // TODO: 실제로는 서버가 내려주는 원본 데이터(원본 사진 포함)로 채워야 함 — 지금은 Mock 상세 데이터 기준
+    static func editing(_ post: PostDetail) -> PostViewModel {
+        let viewModel = PostViewModel()
+        viewModel.selectedType = post.type
+        viewModel.selectedCategory = post.category
+        viewModel.description = post.description
+
+        switch post.type {
+        case .text:
+            viewModel.title = post.title
+        case .forAgainst:
+            if let product = post.firstProduct {
+                viewModel.product = PostProductDraft(
+                    photos: post.images.compactMap { UIImage(named: $0) },
+                    name: product.name,
+                    price: String(product.price),
+                    url: product.purchaseURL
+                )
+            }
+        case .ab:
+            viewModel.topic = post.title
+            let firstImage = post.images.first.flatMap { UIImage(named: $0) }
+            if let first = post.firstProduct {
+                viewModel.productA = PostProductDraft(
+                    photos: firstImage.map { [$0] } ?? [],
+                    name: first.name,
+                    price: String(first.price),
+                    url: first.purchaseURL
+                )
+            }
+            if let second = post.secondProduct {
+                viewModel.productB = PostProductDraft(
+                    photos: firstImage.map { [$0] } ?? [],
+                    name: second.name,
+                    price: String(second.price),
+                    url: second.purchaseURL
+                )
+            }
+        }
+
+        return viewModel
+    }
+}
