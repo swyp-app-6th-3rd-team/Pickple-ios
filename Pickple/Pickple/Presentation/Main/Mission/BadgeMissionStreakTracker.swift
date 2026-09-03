@@ -23,10 +23,12 @@ struct BadgeMissionStreakTracker: View {
             HStack(spacing: 0) {
                 ForEach(1...target, id: \.self) { day in
                     dayCircle(day)
-                        .frame(maxWidth: .infinity)
+                    if day != target {
+                        Spacer(minLength: 0)
+                    }
                 }
             }
-            .padding(.vertical, 10)
+            .padding(.vertical, 4)
             .background(Capsule().fill(trackGradient))
 
             HStack(spacing: 0) {
@@ -34,7 +36,10 @@ struct BadgeMissionStreakTracker: View {
                     Text(day == current ? "\(current)일차" : "")
                         .pickpleTypography(.caption)
                         .foregroundStyle(Color.blue60)
-                        .frame(maxWidth: .infinity)
+                        .frame(width: 24)
+                    if day != target {
+                        Spacer(minLength: 0)
+                    }
                 }
             }
         }
