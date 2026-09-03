@@ -20,25 +20,14 @@ struct BadgeMissionStreakTracker: View {
 
     var body: some View {
         VStack(spacing: 4) {
-            ZStack {
-                GeometryReader { proxy in
-                    Capsule()
-                        .fill(trackGradient)
-                        .frame(height: 4)
-                        .frame(width: proxy.size.width - proxy.size.width / CGFloat(target))
-                        .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
-                }
-                .frame(height: 24)
-
-                HStack(spacing: 0) {
-                    ForEach(1...target, id: \.self) { day in
-                        dayCircle(day)
-                            .frame(maxWidth: .infinity)
-                    }
+            HStack(spacing: 0) {
+                ForEach(1...target, id: \.self) { day in
+                    dayCircle(day)
+                        .frame(maxWidth: .infinity)
                 }
             }
             .padding(.vertical, 10)
-            .background(Capsule().fill(Color.neutral5))
+            .background(Capsule().fill(trackGradient))
 
             HStack(spacing: 0) {
                 ForEach(1...target, id: \.self) { day in
@@ -80,7 +69,6 @@ struct BadgeMissionStreakTracker: View {
         return Image(imageName)
             .resizable()
             .frame(width: 24, height: 24)
-            .background(Circle().fill(Color.neutral5))
     }
 }
 
