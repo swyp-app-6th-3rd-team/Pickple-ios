@@ -16,17 +16,17 @@ struct MockPickerRankingRepository: PickerRankingRepository {
         "홈카페러버", "캠핑덕후", "러닝크루", "북마크왕", "리뷰장인"
     ]
 
-    private static let all: [PickerRanking] = nicknamePool.enumerated().map { index, nickname in
-        let rank = index + 1
-        return PickerRanking(
-            id: UUID(),
-            rank: rank,
-            nickname: nickname,
-            level: max(1, 5 - index / 6),
-            profileImageName: nil,
-            points: max(50, 3000 - index * 95)
-        )
-    }
+    private static let all: [PickerRanking] = {
+        var rankings: [PickerRanking] = []
+        for (index, nickname) in nicknamePool.enumerated() {
+            let level: Int = max(1, 5 - index / 6)
+            let points: Int = max(50, 3000 - index * 95)
+            rankings.append(
+                PickerRanking(id: UUID(), rank: index + 1, nickname: nickname, level: level, profileImageName: nil, points: points)
+            )
+        }
+        return rankings
+    }()
 
     func fetchTopRankings() async -> [PickerRanking] {
         Array(Self.all.prefix(5))
