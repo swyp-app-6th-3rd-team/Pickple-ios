@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
+//  TODO: 디자인 확정 후 변경 필요 — 요일별 진행 표시(BadgeMissionStreakTracker) 크기/간격은 임시값
 
 import SwiftUI
 
@@ -55,6 +56,10 @@ struct BadgeMissionSection: View {
                     ForEach(missions) { mission in
                         BadgeMissionProgressRow(mission: mission)
                     }
+
+                    if let streakMission = missions.first(where: { $0.title.contains("연속") }) {
+                        BadgeMissionStreakTracker(current: streakMission.current, target: streakMission.target)
+                    }
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 16)
@@ -78,13 +83,56 @@ private struct BadgeMissionProgressRow: View {
 
             Text(mission.title)
                 .pickpleTypography(.body02)
-                .foregroundStyle(Color.neutral70)
+                .foregroundStyle(Color.neutral80)
 
             Spacer()
 
             Text("\(mission.current)/\(mission.target)")
                 .pickpleTypography(.body02)
-                .foregroundStyle(Color.neutral40)
+                .foregroundStyle(Color.neutral30)
+        }
+    }
+}
+
+// "N일 연속" 미션 전용 요일별 진행 표시. 마지막 칸(보상 지급일)은 별 아이콘으로 표시한다.
+private struct BadgeMissionStreakTracker: View {
+    let current: Int
+    let target: Int
+
+    var body: some View {
+        VStack(spacing: 4) {
+            HStack(spacing: 4) {
+                ForEach(1...target, id: \.self) { day in
+                    dayView(day)
+                }
+            }
+
+            Text("\(current)일차")
+                .pickpleTypography(.caption)
+                .foregroundStyle(Color.blue60)
+        }
+    }
+
+    @ViewBuilder
+    private func dayView(_ day: Int) -> some View {
+        let isCompleted = day <= current
+        if day == target {
+            Image(systemName: isCompleted ? "star.fill" : "star")
+                .foregroundStyle(isCompleted ? Color.yellow60 : Color.neutral20)
+                .frame(maxWidth: .infinity)
+        } else {
+            Circle()
+                .strokeBorder(isCompleted ? Color.blue60 : Color.neutral20, lineWidth: 1.5)
+                .background(Circle().foregroundStyle(isCompleted ? Color.blue60 : Color.clear))
+                .overlay {
+                    if isCompleted {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(Color.white)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .aspectRatio(1, contentMode: .fit)
         }
     }
 }
