@@ -17,15 +17,15 @@ struct ProductInfoFieldBlock: View {
     let productNameMaxLength: Int
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: 20) {
             Text(stepTitle)
                 .pickpleTypography(.heading02)
-                .padding(.horizontal, 24)
+                .foregroundStyle(Color.neutral100)
 
             PhotoUploadFieldBlock(photos: $product.photos, maxCount: maxPhotoCount, hintText: photoHint)
 
             VStack(alignment: .leading, spacing: 8) {
-                (Text(PostViewStrings.productName) + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
+                (Text(PostViewStrings.productName) + Text(" ") + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
                     .pickpleTypography(.body01)
 
                 PickpleTextField(
@@ -40,7 +40,6 @@ struct ProductInfoFieldBlock: View {
                     }
                 }
             }
-            .padding(.horizontal, 24)
 
             VStack(alignment: .leading, spacing: 8) {
                 Text(PostViewStrings.price)
@@ -53,8 +52,12 @@ struct ProductInfoFieldBlock: View {
                     trailingAccessory: .text(PostViewStrings.priceUnit)
                 )
                 .keyboardType(.numberPad)
+                .onChange(of: product.price) { _, newValue in
+                    let digitsOnly = newValue.filter(\.isNumber)
+                    let capped = min(Int(digitsOnly) ?? 0, 999_999_999)
+                    product.price = digitsOnly.isEmpty ? "" : String(capped)
+                }
             }
-            .padding(.horizontal, 24)
 
             VStack(alignment: .leading, spacing: 8) {
                 Text(PostViewStrings.url)
@@ -66,8 +69,8 @@ struct ProductInfoFieldBlock: View {
                     placeholder: PostViewStrings.urlPlaceholder
                 )
             }
-            .padding(.horizontal, 24)
         }
+        .padding(20)
     }
 }
 

@@ -17,7 +17,6 @@ struct TextStepOneView: View {
         VStack(alignment: .leading, spacing: 20) {
             Text(PostViewStrings.textStepOneTitle)
                 .pickpleTypography(.heading02)
-                .padding(.horizontal, 24)
 
             CategoryFieldBlock(postViewModel: postViewModel, isExpanded: .constant(false), options: categoryOptions)
                 .floatingOverSiblings {
@@ -27,7 +26,6 @@ struct TextStepOneView: View {
             VStack(alignment: .leading, spacing: 8) {
                 (Text(PostViewStrings.title) + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
                     .pickpleTypography(.body01)
-                    .padding(.horizontal, 24)
 
                 PickpleTextField(
                     text: $postViewModel.title,
@@ -40,10 +38,10 @@ struct TextStepOneView: View {
                         postViewModel.title = String(newValue.prefix(postViewModel.titleMaxLength))
                     }
                 }
-                .padding(.horizontal, 20)
             }
 
             DescriptionFieldBlock(text: $postViewModel.description, maxLength: postViewModel.descriptionMaxLength)
         }
+        .padding(.horizontal, 20)
     }
 }
