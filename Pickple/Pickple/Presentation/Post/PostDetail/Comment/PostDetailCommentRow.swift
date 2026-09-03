@@ -16,8 +16,8 @@ struct PostDetailCommentRow: View {
     let onPickTapped: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack {
+        VStack(alignment: .leading, spacing: 12) {
+                //MARK: - Profile
                 HStack(spacing: 12) {
                 if let authorProfileImageName = comment.authorProfileImageName {
                     Image(authorProfileImageName)
@@ -31,8 +31,7 @@ struct PostDetailCommentRow: View {
                         .frame(width: 32, height: 32)
                         .foregroundStyle(Color.neutral20)
                 }
-                
-                HStack(spacing: 2) {
+                    HStack(spacing: 2) {
                     Text(comment.authorNickname)
                         .pickpleTypography(.body01)
                         .foregroundStyle(Color.neutral100)
@@ -41,39 +40,47 @@ struct PostDetailCommentRow: View {
                         .resizable()
                         .frame(width: 20, height: 20)
                 }
+                    
+                    Spacer()
+                    //MARK: - Menu
+                    Button(action: onMoreTapped) {
+                        Image("PickpleMenu")
+                            .foregroundStyle(Color.neutral30)
+                    }
             }
-
-                Spacer()
-
-                Button(action: onMoreTapped) {
-                    Image(systemName: "ellipsis")
-                        .foregroundStyle(Color.neutral40)
-                }
-            }
-
+            
+            //MARK: - Content
             Text(comment.content)
                 .pickpleTypography(.body01)
-                .foregroundStyle(Color.neutral70)
+                .foregroundStyle(Color.neutral80)
 
-            HStack(spacing: 8) {
+            HStack {
                 Button(action: onPickTapped) {
+                    
+                    //MARK: - OnePick
                     HStack(spacing: 4) {
-                        Image(systemName: "hand.thumbsup.fill")
+                        Image("PickpleOnePick")
+                            .resizable()
+                            .frame(width: 20, height: 20)
                         Text("원픽 \(comment.pickCount)")
                     }
-                    .pickpleTypography(.caption)
-                    .foregroundStyle(isPicked ? Color.red60 : Color.neutral40)
-                    .padding(.horizontal, 8)
+                    .pickpleTypography(.label)
+                    .foregroundStyle(isPicked ? Color.red60 : Color.neutral30)
+                    .padding(.horizontal, 10)
                     .padding(.vertical, 4)
                     .background(isPicked ? Color.red10 : Color.neutral5)
                     .clipShape(Capsule())
                 }
                 .disabled(!canPick)
-
+                
+                Spacer()
+                //XMARK: - Time
                 Text(comment.createdAt.relativeTimeDescription)
                     .pickpleTypography(.caption)
                     .foregroundStyle(Color.neutral40)
             }
+            
+            Divider()
         }
     }
 }
