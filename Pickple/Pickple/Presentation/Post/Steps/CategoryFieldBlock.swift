@@ -17,7 +17,6 @@ struct CategoryFieldBlock: View {
         VStack(alignment: .leading, spacing: 8) {
             (Text(PostViewStrings.category) + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
                 .pickpleTypography(.body01)
-                .padding(.horizontal, 24)
 
             PickpleDropdownView(isExpanded: $isExpanded, selectedValue: $postViewModel.selectedCategory, options: options)
         }

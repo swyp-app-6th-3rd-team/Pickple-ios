@@ -24,12 +24,11 @@ struct PickpleDropdownView: View {
                 HStack {
                     Text(selectedValue)
                         .foregroundStyle(Color.neutral40)
-                        .padding(.leading, 21)
                     Spacer()
-                    Image("PickpleArrowUp")
+                    Image("PickpleArrowDown")
                         .rotationEffect(.degrees(isExpanded ? 180 : 0))
-                        .padding(.trailing, 21)
                 }
+                .padding(.horizontal, 21)
                 .frame(maxWidth: .infinity, minHeight: 56)
             }
 
@@ -65,7 +64,6 @@ struct PickpleDropdownView: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color.navy10, lineWidth: 1)
         }
-        .padding(.horizontal, 20)
     }
 }
 

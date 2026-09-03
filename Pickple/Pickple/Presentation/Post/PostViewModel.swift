@@ -11,7 +11,7 @@ import UIKit
 
 enum VoteType: Equatable {
     case forAgainst
-    case compare
+    case ab
     case text
 }
 
@@ -19,7 +19,7 @@ extension VoteType {
     var displayName: String {
         switch self {
         case .forAgainst: return PostViewStrings.forAgainstPickTitle
-        case .compare: return PostViewStrings.abPickTitle
+        case .ab: return PostViewStrings.abPickTitle
         case .text: return PostViewStrings.textPickTitle
         }
     }
@@ -57,6 +57,7 @@ class PostViewModel: ObservableObject {
     @Published var productB = PostProductDraft()
 
     @Published var submitState: PostSubmitState = .idle
+    @Published var currentIndex = 0
 
     let topicMaxLength = 30
     let titleMaxLength = 30
@@ -66,7 +67,7 @@ class PostViewModel: ObservableObject {
     var totalSteps: Int {
         switch selectedType {
         case .forAgainst: return 2
-        case .compare: return 3
+        case .ab: return 3
         case .text: return 1
         }
     }
@@ -75,15 +76,27 @@ class PostViewModel: ObservableObject {
         selectedCategory != PostViewStrings.categoryPlaceholder
     }
 
+    var gnbTitle: String {
+        switch selectedType {
+        case .forAgainst: return PostViewStrings.forAgainstWriteTitle
+        case .ab: return PostViewStrings.abWriteTitle
+        case .text: return PostViewStrings.textWriteTitle
+        }
+    }
+
+    var isLastStep: Bool {
+        currentIndex >= totalSteps - 1
+    }
+
+    // 설명은 모든 유형에서 선택 입력이라 필수값 체크에 포함하지 않는다.
     var isStepOneValid: Bool {
-        let hasDescription = !description.trimmingCharacters(in: .whitespaces).isEmpty
         switch selectedType {
         case .forAgainst:
-            return isCategorySelected && hasDescription
-        case .compare:
-            return isCategorySelected && !topic.trimmingCharacters(in: .whitespaces).isEmpty && hasDescription
+            return isCategorySelected
+        case .ab:
+            return isCategorySelected && !topic.trimmingCharacters(in: .whitespaces).isEmpty
         case .text:
-            return isCategorySelected && !title.trimmingCharacters(in: .whitespaces).isEmpty && hasDescription
+            return isCategorySelected && !title.trimmingCharacters(in: .whitespaces).isEmpty
         }
     }
 
@@ -92,11 +105,15 @@ class PostViewModel: ObservableObject {
         switch selectedType {
         case .forAgainst:
             return isStepOneValid && product.isValid
-        case .compare:
+        case .ab:
             return isStepOneValid && productA.isValid && productB.isValid
         case .text:
             return isStepOneValid
         }
+    }
+
+    var isCurrentStepValid: Bool {
+        currentIndex == 0 ? isStepOneValid : canSubmit
     }
 
     // 작성 중인 내용이 하나라도 있으면 나가기 확인이 필요하다고 판단
@@ -115,6 +132,16 @@ class PostViewModel: ObservableObject {
 
     func isSelected(_ type: VoteType) -> Bool {
         selectedType == type
+    }
+
+    func moveToPreviousStep() {
+        guard currentIndex > 0 else { return }
+        currentIndex -= 1
+    }
+
+    func moveToNextStep() {
+        guard !isLastStep else { return }
+        currentIndex += 1
     }
 
     // TODO: 실제 게시글 등록 API 연동 필요 — 지금은 항상 성공하는 Mock

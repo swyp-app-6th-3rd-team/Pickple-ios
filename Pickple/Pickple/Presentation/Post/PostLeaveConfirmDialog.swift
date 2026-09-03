@@ -18,11 +18,11 @@ struct PostLeaveConfirmDialog: View {
             VStack(spacing: 8) {
                 Text(PostViewStrings.leaveConfirmTitle)
                     .pickpleTypography(.title01)
-                    .foregroundStyle(Color.black)
+                    .foregroundStyle(Color.neutral100)
 
                 Text(PostViewStrings.leaveConfirmDescription)
-                    .pickpleTypography(.body02)
-                    .foregroundStyle(Color.neutral40)
+                    .pickpleTypography(.body01)
+                    .foregroundStyle(Color.neutral70)
                     .multilineTextAlignment(.center)
             }
 
@@ -30,9 +30,9 @@ struct PostLeaveConfirmDialog: View {
                 Button(action: onCancel) {
                     Text(PostViewStrings.leaveConfirmCancel)
                         .pickpleTypography(.body01)
-                        .foregroundStyle(Color.black)
+                        .foregroundStyle(Color.neutral50)
                         .frame(maxWidth: .infinity, minHeight: 52)
-                        .background(Color.neutral10)
+                        .background(Color.neutral5)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
 
@@ -41,7 +41,7 @@ struct PostLeaveConfirmDialog: View {
                         .pickpleTypography(.body01)
                         .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity, minHeight: 52)
-                        .background(Color.black)
+                        .background(Color.neutral100)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
             }
@@ -49,7 +49,6 @@ struct PostLeaveConfirmDialog: View {
         .padding(24)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .padding(.horizontal, 40)
     }
 }
 

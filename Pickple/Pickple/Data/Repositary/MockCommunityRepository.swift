@@ -37,7 +37,7 @@ struct MockCommunityRepository: CommunityRepository {
             ),
             PostSummary(
                 id: UUID(),
-                type: .compare,
+                type: .ab,
                 category: "전자제품",
                 title: "무선 이어폰 이거 vs 저거",
                 description: "둘 다 후기가 갈려서 고민이에요. 통화 품질 위주로 보는데 뭐가 나을까요?",

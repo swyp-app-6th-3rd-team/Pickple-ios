@@ -19,11 +19,11 @@ struct PhotoUploadFieldBlock: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            (Text(PostViewStrings.photo) + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
+            (Text(PostViewStrings.photo) + Text(" ") + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
                 .pickpleTypography(.body01)
 
             Text(hintText)
-                .pickpleTypography(.caption)
+                .pickpleTypography(.body02)
                 .foregroundStyle(Color.neutral40)
 
             HStack(spacing: 8) {
@@ -32,7 +32,7 @@ struct PhotoUploadFieldBlock: View {
                         Image(uiImage: image)
                             .resizable()
                             .scaledToFill()
-                            .frame(width: 88, height: 88)
+                            .frame(width: 96, height: 96)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .clipped()
 
@@ -54,21 +54,21 @@ struct PhotoUploadFieldBlock: View {
                         matching: .images
                     ) {
                         VStack(spacing: 4) {
-                            Image(systemName: "photo")
+                            Image("PickplePhoto")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 24, height: 24)
-                                .foregroundStyle(Color.neutral30)
+                                .foregroundStyle(Color.neutral20)
 
                             Text("\(photos.count)/\(maxCount)")
                                 .pickpleTypography(.caption)
-                                .foregroundStyle(Color.neutral30)
+                                .foregroundStyle(Color.neutral20)
                         }
-                        .frame(width: 88, height: 88)
+                        .frame(width: 96, height: 96)
                         .overlay {
                             RoundedRectangle(cornerRadius: 8)
                                 .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [4]))
-                                .foregroundStyle(Color.navy10)
+                                .foregroundStyle(Color.neutral20)
                         }
                     }
                     .onChange(of: pickerItems) { _, newItems in
@@ -85,7 +85,6 @@ struct PhotoUploadFieldBlock: View {
                 }
             }
         }
-        .padding(.horizontal, 24)
     }
 }
 

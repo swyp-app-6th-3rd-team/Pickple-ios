@@ -17,7 +17,6 @@ struct ForAgainstStepOneView: View {
         VStack(alignment: .leading, spacing: 20) {
             Text(PostViewStrings.forAgainstStepOneTitle)
                 .pickpleTypography(.heading02)
-                .padding(.horizontal, 24)
 
             CategoryFieldBlock(postViewModel: postViewModel, isExpanded: .constant(false), options: categoryOptions)
                 .floatingOverSiblings {

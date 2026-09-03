@@ -24,7 +24,7 @@ struct MockUserPostRepository: UserPostRepository {
             ),
             PostSummary(
                 id: UUID(),
-                type: .compare,
+                type: .ab,
                 category: "패션/잡화",
                 title: "운동화 A vs B",
                 description: "둘 다 예쁜데 실착용했을 때 어떤 게 더 편할지 의견 부탁드려요.",
@@ -68,7 +68,7 @@ struct MockUserPostRepository: UserPostRepository {
             ),
             PostSummary(
                 id: UUID(),
-                type: .compare,
+                type: .ab,
                 category: "화장품/뷰티",
                 title: "선크림 A vs B",
                 description: "여름 다가오는데 백탁 없고 산뜻한 걸로 고르려니 둘 중 뭐가 나을지 모르겠어요.",
