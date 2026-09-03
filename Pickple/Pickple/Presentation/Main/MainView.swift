@@ -28,6 +28,7 @@ struct MainView: View {
                             unselectedColor: Color.neutral20 //TODO: 디자인 확정 후 변경 필요 — 임시값
                         )
                     }
+                    .safeAreaPadding(.top)
                     .background(Color.navy60)
                     .onChange(of: mainViewModel.selectedType) { _, newValue in
                         cardStackViewModel.filterCards(by: newValue)
