@@ -7,17 +7,43 @@
 
 import SwiftUI
 
-// 텍스트 게시글 1단계: 카테고리 선택. 2단계는 이후 이 파일에 추가된다.
-// 지금은 ForAgainstStepOneView와 내용이 같지만, 각 유형이 단계를 더 갖게 되면 갈라질 예정이라 미리 분리해둔다.
+// 일반 게시글: 카테고리 + 제목 + 설명. 진행 바 없이 한 화면에서 바로 게시한다.
 struct TextStepOneView: View {
     @ObservedObject var postViewModel: PostViewModel
     @Binding var isCategoryExpanded: Bool
     let categoryOptions: [String]
 
     var body: some View {
-        CategoryFieldBlock(postViewModel: postViewModel, isExpanded: .constant(false), options: categoryOptions)
-            .floatingOverSiblings {
-                CategoryFieldBlock(postViewModel: postViewModel, isExpanded: $isCategoryExpanded, options: categoryOptions)
+        VStack(alignment: .leading, spacing: 20) {
+            Text(PostViewStrings.textStepOneTitle)
+                .pickpleTypography(.heading02)
+                .padding(.horizontal, 24)
+
+            CategoryFieldBlock(postViewModel: postViewModel, isExpanded: .constant(false), options: categoryOptions)
+                .floatingOverSiblings {
+                    CategoryFieldBlock(postViewModel: postViewModel, isExpanded: $isCategoryExpanded, options: categoryOptions)
+                }
+
+            VStack(alignment: .leading, spacing: 8) {
+                (Text(PostViewStrings.title) + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
+                    .pickpleTypography(.body01)
+                    .padding(.horizontal, 24)
+
+                PickpleTextField(
+                    text: $postViewModel.title,
+                    type: .trailing,
+                    placeholder: PostViewStrings.titlePlaceholder,
+                    trailingAccessory: .text("\(postViewModel.title.count)/\(postViewModel.titleMaxLength)")
+                )
+                .onChange(of: postViewModel.title) { _, newValue in
+                    if newValue.count > postViewModel.titleMaxLength {
+                        postViewModel.title = String(newValue.prefix(postViewModel.titleMaxLength))
+                    }
+                }
+                .padding(.horizontal, 20)
             }
+
+            DescriptionFieldBlock(text: $postViewModel.description, maxLength: postViewModel.descriptionMaxLength)
+        }
     }
 }

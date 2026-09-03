@@ -14,7 +14,11 @@ struct CompareStepOneView: View {
     let categoryOptions: [String]
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(alignment: .leading, spacing: 20) {
+            Text(PostViewStrings.compareStepOneTitle)
+                .pickpleTypography(.heading02)
+                .padding(.horizontal, 24)
+
             CategoryFieldBlock(postViewModel: postViewModel, isExpanded: .constant(false), options: categoryOptions)
                 .floatingOverSiblings {
                     CategoryFieldBlock(postViewModel: postViewModel, isExpanded: $isCategoryExpanded, options: categoryOptions)
@@ -27,12 +31,19 @@ struct CompareStepOneView: View {
 
                 PickpleTextField(
                     text: $postViewModel.topic,
-                    type: .both,
-                    placeholder: ProfileStrings.nicknameText,
+                    type: .trailing,
+                    placeholder: PostViewStrings.topicText,
                     trailingAccessory: .text("\(postViewModel.topic.count)/\(postViewModel.topicMaxLength)")
                 )
+                .onChange(of: postViewModel.topic) { _, newValue in
+                    if newValue.count > postViewModel.topicMaxLength {
+                        postViewModel.topic = String(newValue.prefix(postViewModel.topicMaxLength))
+                    }
+                }
                 .padding(.horizontal, 20)
             }
+
+            DescriptionFieldBlock(text: $postViewModel.description, maxLength: postViewModel.descriptionMaxLength)
         }
     }
 }
