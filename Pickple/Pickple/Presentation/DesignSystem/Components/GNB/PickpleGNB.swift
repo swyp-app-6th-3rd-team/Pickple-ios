@@ -13,7 +13,7 @@ import SwiftUI
 
 enum PickpleGNBSlotContent {
     case none
-    case text(String, color: Color = .black)
+    case text(String)
     case image(Image)
     case button(icon: Image, action: () -> Void)
 }
@@ -25,10 +25,9 @@ struct PickpleGNBSlotView: View {
         switch content {
         case .none:
             Color.clear.frame(width: 24, height: 24)
-        case .text(let text, let color):
+        case .text(let text):
             Text(text)
                 .pickpleTypography(.title01)
-                .foregroundStyle(color)
         case .image(let image):
             image
         case .button(let icon, let action):
