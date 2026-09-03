@@ -24,10 +24,10 @@ struct MainView: View {
                             tabs: ["찬반", "AB"],
                             selectedIndex: mainViewModel.selectedTypeIndex,
                             selectedColor: .white,
-                            unselectedColor: .white.opacity(0.4) //TODO: 디자인 확정 후 변경 필요 — 임시값
+                            unselectedColor: Color.neutral20 //TODO: 디자인 확정 후 변경 필요 — 임시값
                         )
                     }
-                    .background(Color.navy60)
+                    .background(Color.navy60.ignoresSafeArea(edges: .top))
                     .onChange(of: mainViewModel.selectedType) { _, newValue in
                         cardStackViewModel.filterCards(by: newValue)
                     }
@@ -36,8 +36,6 @@ struct MainView: View {
                         CardStackView(cardStackViewModel: cardStackViewModel, onTapCard: { _ in
                             // TODO: 게시글 상세 연결 보류 — 작성/상세 화면 연결 작업과 한 번에 합류 예정
                         })
-                        .frame(height: 440)
-                        .padding(.top, 20)
 
                         BadgeMissionSection(
                             isLoggedIn: mainViewModel.isLoggedIn,
