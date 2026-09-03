@@ -10,6 +10,8 @@ struct Comment: Identifiable {
     let id: UUID
     let authorNickname: String
     let authorLevel: Int
+    let authorProfileImageName: String?
     let content: String
     let createdAt: Date
+    var pickCount: Int = 0
 }
