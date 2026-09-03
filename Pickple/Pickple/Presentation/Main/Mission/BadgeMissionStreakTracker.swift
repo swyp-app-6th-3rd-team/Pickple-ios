@@ -13,16 +13,10 @@ struct BadgeMissionStreakTracker: View {
     let target: Int
 
     var body: some View {
-        VStack(spacing: 4) {
-            HStack(spacing: 4) {
-                ForEach(1...target, id: \.self) { day in
-                    dayView(day)
-                }
+        HStack(spacing: 4) {
+            ForEach(1...target, id: \.self) { day in
+                dayView(day)
             }
-
-            Text("\(current)일차")
-                .pickpleTypography(.caption)
-                .foregroundStyle(Color.blue60)
         }
     }
 
@@ -38,10 +32,16 @@ struct BadgeMissionStreakTracker: View {
             imageName = "Property 1=Disable"
         }
 
-        return Image(imageName)
-            .resizable()
-            .frame(maxWidth: .infinity)
-            .aspectRatio(1, contentMode: .fit)
+        return VStack(spacing: 4) {
+            Image(imageName)
+                .resizable()
+                .frame(width: 24, height: 24)
+
+            Text(day == current ? "\(current)일차" : "")
+                .pickpleTypography(.caption)
+                .foregroundStyle(Color.blue60)
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 
