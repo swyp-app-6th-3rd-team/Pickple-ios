@@ -18,7 +18,7 @@ struct PickpleProgressBar: View {
         HStack(spacing: 4) {
             ForEach(0..<totalSteps, id: \.self) { index in
                 Rectangle()
-                    .fill(index <= currentIndex ? Color.green50 : Color.neutral5)
+                    .fill(index <= currentIndex ? Color.yellow60 : Color.neutral5)
                     .frame(height: 4)
             }
         }

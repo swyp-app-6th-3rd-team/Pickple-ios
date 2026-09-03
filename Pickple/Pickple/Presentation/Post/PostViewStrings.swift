@@ -6,27 +6,29 @@
 //
 
 enum PostViewStrings {
-    static let selectTypeTitle = "어떤 픽으로 올릴까요?"
     static let forAgainstPickTitle = "찬반"
     static let abPickTitle = "A/B"
     static let textPickTitle = "일반"
-    
-    static let postType = "글 유형"
+
     static let requiredMark = "*"
     static let category = "카테고리"
     static let categoryPlaceholder = "카테고리를 선택해주세요"
     static let topic = "주제"
     static let topicText = "주제를 입력해주세요"
 
+    // 글 유형 선택 바텀시트 행 타이틀
+    static let forAgainstPickRowTitle = "찬반 PICK"
+    static let abPickRowTitle = "A/B PICK"
+    static let textPickRowTitle = "일반 게시글"
+
     // 글 작성 화면 GNB 타이틀
-    static let typeSelectionTitle = "게시글 작성"
     static let forAgainstWriteTitle = "찬반 게시글 작성"
-    static let compareWriteTitle = "A/B 게시글 작성"
+    static let abWriteTitle = "A/B 게시글 작성"
     static let textWriteTitle = "일반 게시글 작성"
 
     // 1단계 공통
     static let forAgainstStepOneTitle = "무슨 고민이신가요?"
-    static let compareStepOneTitle = "무슨 고민이신가요?"
+    static let abStepOneTitle = "무슨 고민이신가요?"
     static let textStepOneTitle = "어떤 이야기를 나눠볼까요?"
 
     static let title = "제목"

@@ -13,52 +13,44 @@ struct PostWriteFlowView: View {
     @ObservedObject var postViewModel: PostViewModel
     @Environment(\.dismiss) private var dismiss
 
-    @State private var currentIndex = 0
     @State private var isCategoryExpanded = false
     @State private var showsLeaveConfirm = false
     @State private var showsFailureToast = false
-    @State private var navigatesToDetail = false
 
     private let categoryOptions = ["패션/잡화", "전자제품", "화장품/뷰티", "생활용품", "기타"]
-
-    private var gnbTitle: String {
-        switch postViewModel.selectedType {
-        case .forAgainst: return PostViewStrings.forAgainstWriteTitle
-        case .compare: return PostViewStrings.compareWriteTitle
-        case .text: return PostViewStrings.textWriteTitle
-        }
-    }
-
-    private var isLastStep: Bool {
-        currentIndex >= postViewModel.totalSteps - 1
-    }
-
-    private var isCurrentStepValid: Bool {
-        currentIndex == 0 ? postViewModel.isStepOneValid : postViewModel.canSubmit
-    }
 
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
                 PickpleGNB(
                     leading: .button(icon: Image("PickpleArrowLeft"), action: handleBack),
-                    center: .text(gnbTitle),
+                    center: .text(postViewModel.gnbTitle),
                     trailing: .none
                 )
 
                 if postViewModel.totalSteps > 1 {
-                    PickpleProgressBar(totalSteps: postViewModel.totalSteps, currentIndex: currentIndex)
+                    PickpleProgressBar(totalSteps: postViewModel.totalSteps, currentIndex: postViewModel.currentIndex)
                         .padding(.horizontal, 20)
-                        .padding(.top, 8)
+                        .padding(.vertical, 12)
                 }
 
                 ScrollView {
-                    stepContent
-                        .padding(.top, 32)
-                        .zIndex(isCategoryExpanded ? 1 : 0)
+                    PostWriteFlowStepContent(
+                        postViewModel: postViewModel,
+                        isCategoryExpanded: $isCategoryExpanded,
+                        categoryOptions: categoryOptions
+                    )
+                    .padding(.top, 32)
+                    .zIndex(isCategoryExpanded ? 1 : 0)
                 }
 
-                buttonRow
+                PostWriteFlowButtonRow(
+                    showsPrevious: postViewModel.currentIndex > 0,
+                    primaryTitle: postViewModel.isLastStep ? PostViewStrings.submit : PostViewStrings.next,
+                    isPrimaryEnabled: postViewModel.isCurrentStepValid,
+                    onPrevious: { postViewModel.moveToPreviousStep() },
+                    onPrimary: handlePrimaryAction
+                )
             }
 
             if showsLeaveConfirm {
@@ -70,60 +62,16 @@ struct PostWriteFlowView: View {
                     onCancel: { showsLeaveConfirm = false },
                     onLeave: { dismiss() }
                 )
+                .padding(.horizontal, 40)
             }
         }
         .pickpleToast(isPresented: $showsFailureToast, message: PostViewStrings.submitFailedToast)
         .navigationBarBackButtonHidden(true)
-        .navigationDestination(isPresented: $navigatesToDetail) {
-            // TODO: 방금 게시한 글을 바로 보여주려면 실제 등록된 게시글 정보 연동 필요 — 지금은 Mock 상세로 이동
-            PostDetailView(showsSuccessToastOnAppear: true)
-        }
-    }
-
-    @ViewBuilder
-    private var stepContent: some View {
-        switch postViewModel.selectedType {
-        case .forAgainst:
-            if currentIndex == 0 {
-                ForAgainstStepOneView(postViewModel: postViewModel, isCategoryExpanded: $isCategoryExpanded, categoryOptions: categoryOptions)
-            } else {
-                ForAgainstStepTwoView(postViewModel: postViewModel)
-            }
-        case .compare:
-            if currentIndex == 0 {
-                CompareStepOneView(postViewModel: postViewModel, isCategoryExpanded: $isCategoryExpanded, categoryOptions: categoryOptions)
-            } else if currentIndex == 1 {
-                CompareStepTwoView(postViewModel: postViewModel)
-            } else {
-                CompareStepThreeView(postViewModel: postViewModel)
-            }
-        case .text:
-            TextStepOneView(postViewModel: postViewModel, isCategoryExpanded: $isCategoryExpanded, categoryOptions: categoryOptions)
-        }
-    }
-
-    private var buttonRow: some View {
-        HStack(spacing: 8) {
-            if currentIndex > 0 {
-                Button(action: { currentIndex -= 1 }) {
-                    Text(PostViewStrings.previous)
-                }
-                .buttonStyle(.pickple(._default, 52))
-            }
-
-            Button(action: handlePrimaryAction) {
-                Text(isLastStep ? PostViewStrings.submit : PostViewStrings.next)
-            }
-            .buttonStyle(.pickple(isCurrentStepValid ? .enabled : .disabled, 52))
-            .disabled(!isCurrentStepValid)
-        }
-        .padding(.horizontal, 20)
-        .padding(.bottom, 20)
     }
 
     private func handleBack() {
-        if currentIndex > 0 {
-            currentIndex -= 1
+        if postViewModel.currentIndex > 0 {
+            postViewModel.moveToPreviousStep()
         } else if postViewModel.hasDraftContent {
             showsLeaveConfirm = true
         } else {
@@ -132,17 +80,17 @@ struct PostWriteFlowView: View {
     }
 
     private func handlePrimaryAction() {
-        if isLastStep {
+        if postViewModel.isLastStep {
             Task {
                 await postViewModel.submitPost()
                 if postViewModel.submitState == .succeeded {
-                    navigatesToDetail = true
+                    dismiss()
                 } else {
                     showsFailureToast = true
                 }
             }
         } else {
-            currentIndex += 1
+            postViewModel.moveToNextStep()
         }
     }
 }
@@ -150,5 +98,62 @@ struct PostWriteFlowView: View {
 #Preview {
     NavigationStack {
         PostWriteFlowView(postViewModel: PostViewModel())
+    }
+}
+
+// 유형/단계에 맞는 입력 화면을 고른다.
+private struct PostWriteFlowStepContent: View {
+    @ObservedObject var postViewModel: PostViewModel
+    @Binding var isCategoryExpanded: Bool
+    let categoryOptions: [String]
+
+    var body: some View {
+        switch postViewModel.selectedType {
+        case .forAgainst:
+            if postViewModel.currentIndex == 0 {
+                ForAgainstStepOneView(postViewModel: postViewModel, isCategoryExpanded: $isCategoryExpanded, categoryOptions: categoryOptions)
+                    .padding(.horizontal, 20)
+            } else {
+                ForAgainstStepTwoView(postViewModel: postViewModel)
+            }
+        case .ab:
+            if postViewModel.currentIndex == 0 {
+                ABStepOneView(postViewModel: postViewModel, isCategoryExpanded: $isCategoryExpanded, categoryOptions: categoryOptions)
+            } else if postViewModel.currentIndex == 1 {
+                ABStepTwoView(postViewModel: postViewModel)
+            } else {
+                ABStepThreeView(postViewModel: postViewModel)
+            }
+        case .text:
+            TextStepOneView(postViewModel: postViewModel, isCategoryExpanded: $isCategoryExpanded, categoryOptions: categoryOptions)
+        }
+    }
+}
+
+// 하단 이전/다음(또는 게시) 버튼 줄.
+private struct PostWriteFlowButtonRow: View {
+    let showsPrevious: Bool
+    let primaryTitle: String
+    let isPrimaryEnabled: Bool
+    let onPrevious: () -> Void
+    let onPrimary: () -> Void
+
+    var body: some View {
+        HStack(spacing: 8) {
+            if showsPrevious {
+                Button(action: onPrevious) {
+                    Text(PostViewStrings.previous)
+                }
+                .buttonStyle(.pickple(._default, 52))
+            }
+
+            Button(action: onPrimary) {
+                Text(primaryTitle)
+            }
+            .buttonStyle(.pickple(isPrimaryEnabled ? .enabled : .disabled, 52))
+            .disabled(!isPrimaryEnabled)
+        }
+        .padding(.horizontal, 20)
+        .padding(.bottom, 20)
     }
 }
