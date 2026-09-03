@@ -12,15 +12,27 @@ struct BadgeMissionStreakTracker: View {
     let current: Int
     let target: Int
 
+    // 원들의 가운데를 지나는 연결선이 완료 지점에서 파란색→회색으로 넘어가는 위치(0~1).
+    private var progressBoundary: CGFloat {
+        guard target > 0 else { return 0 }
+        return CGFloat(current) / CGFloat(target)
+    }
+
     var body: some View {
         VStack(spacing: 4) {
-            HStack(spacing: 0) {
-                ForEach(1...target, id: \.self) { day in
-                    dayCircle(day)
-                        .frame(maxWidth: .infinity)
+            ZStack {
+                GeometryReader { proxy in
+                    Capsule()
+                        .fill(trackGradient)
+                        .frame(height: 4)
+                        .frame(width: proxy.size.width - proxy.size.width / CGFloat(target))
+                        .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
+                }
 
-                    if day != target {
-                        connector(after: day)
+                HStack(spacing: 0) {
+                    ForEach(1...target, id: \.self) { day in
+                        dayCircle(day)
+                            .frame(maxWidth: .infinity)
                     }
                 }
             }
@@ -33,28 +45,23 @@ struct BadgeMissionStreakTracker: View {
                         .pickpleTypography(.caption)
                         .foregroundStyle(Color.blue60)
                         .frame(maxWidth: .infinity)
-
-                    if day != target {
-                        Color.clear.frame(width: 8)
-                    }
                 }
             }
         }
     }
 
-    // 완료된 날짜와 다음 날짜 사이를 잇는 선. 오늘(current)에서 다음 날로 넘어가는 구간만
-    // 파란색에서 회색으로 그라데이션을 줘서 "여기서부터 아직 안 했다"는 걸 표현한다.
-    private func connector(after day: Int) -> some View {
-        Group {
-            if day < current {
-                Color.blue60
-            } else if day == current {
-                LinearGradient(colors: [Color.blue60, Color.neutral20], startPoint: .leading, endPoint: .trailing)
-            } else {
-                Color.neutral20
-            }
-        }
-        .frame(width: 8, height: 2)
+    private var trackGradient: LinearGradient {
+        let blend: CGFloat = 0.03
+        return LinearGradient(
+            stops: [
+                .init(color: .blue60, location: 0),
+                .init(color: .blue60, location: max(0, progressBoundary - blend)),
+                .init(color: .neutral20, location: min(1, progressBoundary + blend)),
+                .init(color: .neutral20, location: 1)
+            ],
+            startPoint: .leading,
+            endPoint: .trailing
+        )
     }
 
     private func dayCircle(_ day: Int) -> some View {
@@ -72,6 +79,7 @@ struct BadgeMissionStreakTracker: View {
         return Image(imageName)
             .resizable()
             .frame(width: 24, height: 24)
+            .background(Circle().fill(Color.neutral5))
     }
 }
 
