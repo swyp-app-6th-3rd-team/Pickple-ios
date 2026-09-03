@@ -28,6 +28,7 @@ struct BadgeMissionStreakTracker: View {
                         .frame(width: proxy.size.width - proxy.size.width / CGFloat(target))
                         .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
                 }
+                .frame(height: 24)
 
                 HStack(spacing: 0) {
                     ForEach(1...target, id: \.self) { day in
