@@ -16,16 +16,6 @@ struct MainTitleView: View {
             Image("PickpleTitle")
                 .padding(.leading, 20)
 
-            Button(action: {}) {
-                Text("투표에 참여하고 포인트 받아가세요")
-                    .pickpleTypography(.caption)
-                    .foregroundStyle(Color.navy60)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(Color.yellow60)
-                    .clipShape(Capsule())
-            }
-
             Spacer(minLength: 0)
 
             Button(action: {}) {
