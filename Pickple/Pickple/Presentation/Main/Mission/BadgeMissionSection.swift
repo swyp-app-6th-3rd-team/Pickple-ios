@@ -140,27 +140,22 @@ private struct BadgeMissionStreakTracker: View {
         }
     }
 
-    @ViewBuilder
     private func dayView(_ day: Int) -> some View {
-        let isCompleted = day <= current
+        let imageName: String
         if day == target {
-            Image(systemName: isCompleted ? "star.fill" : "star")
-                .foregroundStyle(isCompleted ? Color.yellow60 : Color.neutral20)
-                .frame(maxWidth: .infinity)
+            imageName = "Property 1=Last"
+        } else if day < current {
+            imageName = "Property 1=Check"
+        } else if day == current {
+            imageName = "Property 1=Today"
         } else {
-            Circle()
-                .strokeBorder(isCompleted ? Color.blue60 : Color.neutral20, lineWidth: 1.5)
-                .background(Circle().foregroundStyle(isCompleted ? Color.blue60 : Color.clear))
-                .overlay {
-                    if isCompleted {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(Color.white)
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .aspectRatio(1, contentMode: .fit)
+            imageName = "Property 1=Disable"
         }
+
+        return Image(imageName)
+            .resizable()
+            .frame(maxWidth: .infinity)
+            .aspectRatio(1, contentMode: .fit)
     }
 }
 
