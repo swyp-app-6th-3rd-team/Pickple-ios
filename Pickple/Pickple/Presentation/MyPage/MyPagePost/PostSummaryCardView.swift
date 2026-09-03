@@ -116,6 +116,7 @@ struct PostSummaryCardView: View {
             imageName: "McokMyPostPicture",
             authorNickname: "픽플닉네임",
             authorLevel: 1,
+            authorProfileImageName: "PickpleProfileSample",
             voteCount: 12,
             commentCount: 4,
             createdAt: Date().addingTimeInterval(-60 * 5)

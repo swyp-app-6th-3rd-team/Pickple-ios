@@ -103,6 +103,7 @@ struct CommunityPostCardView: View {
             imageName: "McokMyPostPicture",
             authorNickname: "닉네임",
             authorLevel: 5,
+            authorProfileImageName: "PickpleProfileSample",
             voteCount: 3,
             commentCount: 1,
             createdAt: Date().addingTimeInterval(-60 * 5)

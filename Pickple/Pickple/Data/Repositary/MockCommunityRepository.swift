@@ -18,6 +18,7 @@ struct MockCommunityRepository: CommunityRepository {
                 imageName: "McokMyPostPicture",
                 authorNickname: "닉네임",
                 authorLevel: 5,
+                authorProfileImageName: "PickpleProfileSample",
                 voteCount: 3,
                 commentCount: 1,
                 createdAt: Date().addingTimeInterval(-60 * 5)
@@ -31,6 +32,7 @@ struct MockCommunityRepository: CommunityRepository {
                 imageName: "McokMyPostPicture",
                 authorNickname: "닉네임",
                 authorLevel: 5,
+                authorProfileImageName: "PickpleProfileSample",
                 voteCount: 3,
                 commentCount: 1,
                 createdAt: Date().addingTimeInterval(-60 * 8)
@@ -44,6 +46,7 @@ struct MockCommunityRepository: CommunityRepository {
                 imageName: "McokMyPostPicture",
                 authorNickname: "라떼한잔",
                 authorLevel: 3,
+                authorProfileImageName: "PickpleProfileSample",
                 voteCount: 12,
                 commentCount: 4,
                 createdAt: Date().addingTimeInterval(-60 * 60 * 3)
@@ -57,6 +60,7 @@ struct MockCommunityRepository: CommunityRepository {
                 imageName: "McokMyPostPicture",
                 authorNickname: "구름위산책",
                 authorLevel: 2,
+                authorProfileImageName: "PickpleProfileSample",
                 voteCount: 0,
                 commentCount: 1,
                 createdAt: Date().addingTimeInterval(-60 * 60 * 24)
@@ -70,6 +74,7 @@ struct MockCommunityRepository: CommunityRepository {
                 imageName: "McokMyPostPicture",
                 authorNickname: "여름햇살",
                 authorLevel: 4,
+                authorProfileImageName: "PickpleProfileSample",
                 voteCount: 15,
                 commentCount: 3,
                 createdAt: Date().addingTimeInterval(-60 * 60 * 6)
