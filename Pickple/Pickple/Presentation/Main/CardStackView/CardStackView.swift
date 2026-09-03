@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct CardStackView: View {
-    @StateObject var cardStackViewModel: CardStackViewModel
+    @ObservedObject var cardStackViewModel: CardStackViewModel
+    let onTapCard: (VoteCard) -> Void
     @State private var dragOffset: CGSize = .zero
 
     private let swipeThreshold: CGFloat = 120
@@ -18,7 +19,11 @@ struct CardStackView: View {
             // index가 배열 순서 = 쌓인 순서라, index 0이 맨 앞(터치 가능한) 카드.
             // zIndex는 뒤집어서 index가 작을수록 위로 그려지게 함.
             ForEach(Array(cardStackViewModel.voteCardData.enumerated()), id: \.element.id) { index, data in
-                CardView(data: data)
+                CardView(
+                    data: data,
+                    onVote: { side in cardStackViewModel.vote(cardID: data.id, side: side) },
+                    onTapBody: { onTapCard(data) }
+                )
                     .zIndex(Double(-index))
                     .rotationEffect(rotation(for: index))
                     .offset(index == 0 ? dragOffset : .zero)
@@ -29,9 +34,6 @@ struct CardStackView: View {
                     // (.gesture()에 조건부로 nil을 못 넘겨서 이렇게 우회).
                     .gesture(dragGesture(isTop: index == 0))
             }
-        }
-        .task {
-            await cardStackViewModel.loadCards()
         }
     }
 
@@ -71,5 +73,5 @@ struct CardStackView: View {
 
 
 #Preview {
-    CardStackView(cardStackViewModel: CardStackViewModel())
+    CardStackView(cardStackViewModel: CardStackViewModel(), onTapCard: { _ in })
 }
