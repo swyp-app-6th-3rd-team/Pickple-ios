@@ -4,7 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 요일별 진행 표시(BadgeMissionStreakTracker) 크기/간격은 임시값
+//  TODO: 디자인 확정 후 변경 필요 — 요일별 진행 표시/진행률 막대 색상·굵기는 임시값
 
 import SwiftUI
 
@@ -78,19 +78,46 @@ private struct BadgeMissionProgressRow: View {
     let mission: BadgeMissionProgress
 
     var body: some View {
-        HStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Text(mission.title)
+                    .pickpleTypography(.body02)
+                    .foregroundStyle(Color.neutral80)
 
+                Spacer()
 
-            Text(mission.title)
-                .pickpleTypography(.body02)
-                .foregroundStyle(Color.neutral80)
+                Text("\(mission.current)/\(mission.target)")
+                    .pickpleTypography(.body02)
+                    .foregroundStyle(Color.neutral30)
+            }
 
-            Spacer()
-
-            Text("\(mission.current)/\(mission.target)")
-                .pickpleTypography(.body02)
-                .foregroundStyle(Color.neutral30)
+            BadgeMissionProgressBar(current: mission.current, target: mission.target)
         }
+    }
+}
+
+// 미션 진행률을 보여주는 얇은 막대 게이지.
+private struct BadgeMissionProgressBar: View {
+    let current: Int
+    let target: Int
+
+    private var ratio: CGFloat {
+        guard target > 0 else { return 0 }
+        return min(1, max(0, CGFloat(current) / CGFloat(target)))
+    }
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color.neutral5)
+
+                Capsule()
+                    .fill(Color.blue60)
+                    .frame(width: proxy.size.width * ratio)
+            }
+        }
+        .frame(height: 8)
     }
 }
 
