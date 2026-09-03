@@ -91,6 +91,10 @@ private struct BadgeMissionProgressRow: View {
                 .pickpleTypography(.body02)
                 .foregroundStyle(Color.neutral30)
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color.neutral5)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
