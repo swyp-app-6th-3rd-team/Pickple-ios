@@ -20,7 +20,12 @@ struct MainView: View {
                 VStack(spacing: 0) {
                     VStack(spacing: 0) {
                         MainTitleView()
-                        PickpleTabBar(tabs: ["찬반", "AB"], selectedIndex: mainViewModel.selectedTypeIndex)
+                        PickpleTabBar(
+                            tabs: ["찬반", "AB"],
+                            selectedIndex: mainViewModel.selectedTypeIndex,
+                            selectedColor: .white,
+                            unselectedColor: .white.opacity(0.4) //TODO: 디자인 확정 후 변경 필요 — 임시값
+                        )
                     }
                     .background(Color.navy60)
                     .onChange(of: mainViewModel.selectedType) { _, newValue in
