@@ -8,16 +8,18 @@
 import SwiftUI
 
 struct MyPagePostTitleView: View {
+    var onTapMore: () -> Void = {}
+
     var body: some View {
         //XMARK: - Title
         HStack {
             Text("내가 올린 투표")
                 .pickpleTypography(.title01)
                 .foregroundStyle(Color.black)
-            
+
             Spacer()
-            
-            Button(action: {}) {
+
+            Button(action: onTapMore) {
                 HStack(spacing: 4) {
                     Text("전체 보기")
                     
