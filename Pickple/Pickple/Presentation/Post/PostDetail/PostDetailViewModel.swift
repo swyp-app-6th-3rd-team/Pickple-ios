@@ -31,11 +31,11 @@ class PostDetailViewModel: ObservableObject {
     static let secondVotePercentage = 30
 
     var firstLabel: String {
-        post?.type == .ab ? "상품A" : "사자"
+        post?.type == .ab ? PostDetailStrings.productAFallback : PostDetailStrings.voteSideFor
     }
 
     var secondLabel: String {
-        post?.type == .ab ? "상품B" : "말자"
+        post?.type == .ab ? PostDetailStrings.productBFallback : PostDetailStrings.voteSideAgainst
     }
 
     var displayedProduct: PostDetailProduct? {
@@ -55,8 +55,7 @@ class PostDetailViewModel: ObservableObject {
     }
 
     func isMyComment(_ comment: Comment) -> Bool {
-        // TODO: 실제 로그인 사용자 식별 필요 — 지금은 Mock 작성자 닉네임("나")으로만 판별
-        comment.authorNickname == "나"
+        comment.authorNickname == PostDetailStrings.mockCurrentUserNickname
     }
 
     var sortedComments: [Comment] {
@@ -104,7 +103,7 @@ class PostDetailViewModel: ObservableObject {
             self.editingCommentID = nil
         } else {
             comments.append(
-                Comment(id: UUID(), authorNickname: "나", authorLevel: 1, authorProfileImageName: "PickpleProfileSample", content: trimmed, createdAt: Date())
+                Comment(id: UUID(), authorNickname: PostDetailStrings.mockCurrentUserNickname, authorLevel: 1, authorProfileImageName: "PickpleProfileSample", content: trimmed, createdAt: Date())
             )
         }
         commentInput = ""

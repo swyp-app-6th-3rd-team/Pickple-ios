@@ -40,7 +40,7 @@ struct PostDetailView: View {
                 if postDetailViewModel.post?.type == .text {
                     PickpleGNB(
                         leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
-                        center: .text("게시글 상세"),
+                        center: .text(PostDetailStrings.navTitle),
                         trailing: .none
                     )
                 }
@@ -55,7 +55,7 @@ struct PostDetailView: View {
                                 if postDetailViewModel.isLoggedIn {
                                     postDetailViewModel.vote(side)
                                 } else {
-                                    loginRequiredDescription = "간편 로그인 후 더 많은 투표에\n참여해 보세요"
+                                    loginRequiredDescription = PostDetailStrings.voteRequiredDescription
                                 }
                             },
                             onPickTapped: { comment in
@@ -81,7 +81,7 @@ struct PostDetailView: View {
                     if postDetailViewModel.isLoggedIn {
                         postDetailViewModel.submitComment()
                     } else {
-                        loginRequiredDescription = "간편 로그인 후 댓글을\n작성할 수 있어요"
+                        loginRequiredDescription = PostDetailStrings.commentRequiredDescription
                     }
                 }
             }
@@ -93,7 +93,7 @@ struct PostDetailView: View {
                 VStack {
                     PickpleGNB(
                         leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
-                        center: isScrolledPastImage ? .text("게시글 상세") : .none,
+                        center: isScrolledPastImage ? .text(PostDetailStrings.navTitle) : .none,
                         trailing: .none,
                         tint: isScrolledPastImage ? .black : .white,
                         background: Color.white.opacity(isScrolledPastImage ? 1 : 0)
@@ -106,10 +106,10 @@ struct PostDetailView: View {
             if let loginRequiredDescription {
                 PickpleDialogOverlay {
                     PickpleConfirmDialog(
-                        title: "로그인이 필요해요",
+                        title: PostDetailStrings.voteRequiredTitle,
                         description: loginRequiredDescription,
-                        cancelTitle: "취소",
-                        confirmTitle: "로그인",
+                        cancelTitle: PostDetailStrings.cancel,
+                        confirmTitle: PostDetailStrings.login,
                         onCancel: { self.loginRequiredDescription = nil },
                         onConfirm: { self.loginRequiredDescription = nil }
                     )
@@ -121,7 +121,7 @@ struct PostDetailView: View {
                     PickpleConfirmDialog(
                         title: postActionConfirm.title,
                         description: postActionConfirm.description,
-                        cancelTitle: "취소",
+                        cancelTitle: PostDetailStrings.cancel,
                         confirmTitle: postActionConfirm.confirmTitle,
                         onCancel: { self.postActionConfirm = nil },
                         onConfirm: {
@@ -143,10 +143,10 @@ struct PostDetailView: View {
             if let comment = commentToPick {
                 PickpleDialogOverlay {
                     PickpleConfirmDialog(
-                        title: "해당 답변자를 픽할까요?",
-                        description: "한 번 픽하면 취소할 수 없어요",
-                        cancelTitle: "취소",
-                        confirmTitle: "픽하기",
+                        title: PostDetailStrings.pickConfirmTitle,
+                        description: PostDetailStrings.pickConfirmDescription,
+                        cancelTitle: PostDetailStrings.cancel,
+                        confirmTitle: PostDetailStrings.pickConfirmButton,
                         onCancel: { commentToPick = nil },
                         onConfirm: {
                             postDetailViewModel.pickComment(comment.id)

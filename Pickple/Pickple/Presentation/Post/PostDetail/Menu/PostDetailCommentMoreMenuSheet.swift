@@ -19,11 +19,11 @@ struct PostDetailCommentMoreMenuSheet: View {
     var body: some View {
         VStack(spacing: 0) {
             if isMine {
-                PostDetailMenuRow(icon: "PickpleModify", title: "수정하기", tint: Color.neutral100, action: onEdit)
-                PostDetailMenuRow(icon: "PickpleDelete", title: "삭제하기", tint: Color.red60, action: onDelete)
+                PostDetailMenuRow(icon: "PickpleModify", title: PostDetailStrings.menuEdit, tint: Color.neutral100, action: onEdit)
+                PostDetailMenuRow(icon: "PickpleDelete", title: PostDetailStrings.menuDelete, tint: Color.red60, action: onDelete)
             } else {
-                PostDetailMenuRow(icon: "PickpleAlert", title: "신고하기", tint: Color.red60, action: onReport)
-                PostDetailMenuRow(icon: "PickpleBlock", title: "차단하기", tint: Color.neutral100, action: onBlock)
+                PostDetailMenuRow(icon: "PickpleAlert", title: PostDetailStrings.menuReport, tint: Color.red60, action: onReport)
+                PostDetailMenuRow(icon: "PickpleBlock", title: PostDetailStrings.menuBlock, tint: Color.neutral100, action: onBlock)
             }
         }
         .padding(20)

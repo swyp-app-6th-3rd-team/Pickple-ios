@@ -35,11 +35,11 @@ struct PostDetailProductInfo: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            PostDetailProductInfoRow(label: "상품명", value: product.name)
-            PostDetailProductInfoRow(label: "가격", value: "\(product.price.formatted())원")
+            PostDetailProductInfoRow(label: PostDetailStrings.productNameLabel, value: product.name)
+            PostDetailProductInfoRow(label: PostDetailStrings.priceLabel, value: "\(product.price.formatted())원")
 
             HStack(spacing: 8) {
-                Text("구매처")
+                Text(PostDetailStrings.purchaseLinkLabel)
                     .pickpleTypography(.body02)
                     .foregroundStyle(Color.neutral30)
                     .frame(width: 36, alignment: .leading)

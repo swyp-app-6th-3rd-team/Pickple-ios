@@ -14,7 +14,7 @@ struct PostDetailCommentSectionHeader: View {
 
     var body: some View {
         HStack {
-            Text("댓글 \(count)")
+            Text(PostDetailStrings.commentCount(count))
                 .pickpleTypography(.body01)
                 .foregroundStyle(Color.neutral100)
 
