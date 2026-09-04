@@ -55,15 +55,12 @@ struct PostWriteFlowView: View {
             }
 
             if showsLeaveConfirm {
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-                    .onTapGesture { showsLeaveConfirm = false }
-
-                PostLeaveConfirmDialog(
-                    onCancel: { showsLeaveConfirm = false },
-                    onLeave: { dismiss() }
-                )
-                .padding(.horizontal, 40)
+                PickpleDialogOverlay(onTapDismiss: { showsLeaveConfirm = false }) {
+                    PostLeaveConfirmDialog(
+                        onCancel: { showsLeaveConfirm = false },
+                        onLeave: { dismiss() }
+                    )
+                }
             }
         }
         .pickpleToast(isPresented: $showsFailureToast, message: PostViewStrings.submitFailedToast)
@@ -103,62 +100,5 @@ struct PostWriteFlowView: View {
 #Preview {
     NavigationStack {
         PostWriteFlowView(postViewModel: PostViewModel())
-    }
-}
-
-// 유형/단계에 맞는 입력 화면을 고른다.
-private struct PostWriteFlowStepContent: View {
-    @ObservedObject var postViewModel: PostViewModel
-    @Binding var isCategoryExpanded: Bool
-    let categoryOptions: [String]
-
-    var body: some View {
-        switch postViewModel.selectedType {
-        case .forAgainst:
-            if postViewModel.currentIndex == 0 {
-                ForAgainstStepOneView(postViewModel: postViewModel, isCategoryExpanded: $isCategoryExpanded, categoryOptions: categoryOptions)
-                    .padding(.horizontal, 20)
-            } else {
-                ForAgainstStepTwoView(postViewModel: postViewModel)
-            }
-        case .ab:
-            if postViewModel.currentIndex == 0 {
-                ABStepOneView(postViewModel: postViewModel, isCategoryExpanded: $isCategoryExpanded, categoryOptions: categoryOptions)
-            } else if postViewModel.currentIndex == 1 {
-                ABStepTwoView(postViewModel: postViewModel)
-            } else {
-                ABStepThreeView(postViewModel: postViewModel)
-            }
-        case .text:
-            TextStepOneView(postViewModel: postViewModel, isCategoryExpanded: $isCategoryExpanded, categoryOptions: categoryOptions)
-        }
-    }
-}
-
-// 하단 이전/다음(또는 게시) 버튼 줄.
-private struct PostWriteFlowButtonRow: View {
-    let showsPrevious: Bool
-    let primaryTitle: String
-    let isPrimaryEnabled: Bool
-    let onPrevious: () -> Void
-    let onPrimary: () -> Void
-
-    var body: some View {
-        HStack(spacing: 8) {
-            if showsPrevious {
-                Button(action: onPrevious) {
-                    Text(PostViewStrings.previous)
-                }
-                .buttonStyle(.pickple(._default, 52))
-            }
-
-            Button(action: onPrimary) {
-                Text(primaryTitle)
-            }
-            .buttonStyle(.pickple(isPrimaryEnabled ? .enabled : .disabled, 52))
-            .disabled(!isPrimaryEnabled)
-        }
-        .padding(.horizontal, 20)
-        .padding(.bottom, 20)
     }
 }
