@@ -9,12 +9,6 @@ import Foundation
 import Combine
 import UIKit
 
-enum VoteType: Equatable {
-    case forAgainst
-    case ab
-    case text
-}
-
 extension VoteType {
     var displayName: String {
         switch self {
