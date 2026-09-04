@@ -8,6 +8,17 @@
 
 import SwiftUI
 
+// 캐러셀 아래쪽 끝의 y좌표(스크롤 좌표계 기준)를 전달하는 데 쓰는 PreferenceKey.
+private struct CarouselBottomKey: PreferenceKey {
+    static var defaultValue: CGFloat = .infinity
+    // 스크롤 콘텐츠의 다른 자식들도 전부 defaultValue(.infinity)를 암묵적으로 흘려보내므로,
+    // "마지막 값 우선"으로 합치면 캐러셀이 설정한 실제 값이 뒤에서 덮어써진다.
+    // .infinity를 min의 항등원으로 써서, 실제 값이 항상 이기도록 한다.
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = min(value, nextValue())
+    }
+}
+
 struct PostDetailView: View {
     var showsSuccessToastOnAppear: Bool = false
     
@@ -24,6 +35,10 @@ struct PostDetailView: View {
     @State private var navigatesToEdit = false
     @State private var editingPostViewModel = PostViewModel()
     @FocusState private var isCommentFieldFocused: Bool
+    @State private var carouselBottomY: CGFloat = .infinity
+
+    // 캐러셀 끝이 GNB 높이(56) 아래로 올라가면 이미지를 다 지나친 것으로 본다.
+    private var isScrolledPastImage: Bool { carouselBottomY < 56 }
     
     init(voteType: VoteType = .text, showsSuccessToastOnAppear: Bool = false) {
         self.showsSuccessToastOnAppear = showsSuccessToastOnAppear
@@ -65,6 +80,8 @@ struct PostDetailView: View {
                             isSortExpanded: $isSortExpanded
                         )
                     }
+                    .coordinateSpace(name: "postDetailScroll")
+                    .onPreferenceChange(CarouselBottomKey.self) { carouselBottomY = $0 }
                     // 캐러셀이 ScrollView 안에 있어서, 캐러셀만 ignoresSafeArea를 걸어도
                     // ScrollView 자체가 세이프에어리어 아래에서 시작해 위쪽이 비어 보인다.
                     // 찬반/A-B(GNB가 캐러셀 위에 떠 있는 타입)만 ScrollView 자체를 위로 확장한다.
@@ -80,20 +97,23 @@ struct PostDetailView: View {
                 }
             }
             
-            // 찬반/A-B는 GNB 바 없이 뒤로가기 버튼만 캐러셀 이미지 위에 떠 있어야 해서,
-            // 스크롤뷰와 같은 흐름(VStack)에 넣지 않고 ZStack으로 그 위에 겹쳐 그린다.
+            // 찬반/A-B는 캐러셀 이미지 위에 GNB가 떠 있다가, 스크롤로 이미지를 지나치면
+            // 배경이 채워지고 타이틀이 나타난다. 스크롤뷰와 같은 흐름(VStack)에 넣지 않고
+            // ZStack으로 그 위에 겹쳐 그린다.
             if postDetailViewModel.post?.type != .text {
                 VStack {
                     PickpleGNB(
                         leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
-                        center: .none,
-                        trailing: .none
+                        center: isScrolledPastImage ? .text("게시글 상세") : .none,
+                        trailing: .none,
+                        tint: isScrolledPastImage ? .black : .white,
+                        background: Color.white.opacity(isScrolledPastImage ? 1 : 0)
                     )
-                    .foregroundStyle(Color.white)
+                    .animation(.easeInOut(duration: 0.2), value: isScrolledPastImage)
                     Spacer()
                 }
             }
-            
+
             if let loginRequiredDescription {
                 PostDetailDialogOverlay {
                     PickpleConfirmDialog(
@@ -269,6 +289,17 @@ private struct PostDetailContent: View {
                     images: post.images,
                     participantCount: post.participantCount,
                     currentIndex: $postDetailViewModel.currentImageIndex
+                )
+                // 캐러셀 자체의 프레임 아래쪽 끝 y좌표를 부모(PostDetailView)로 흘려보낸다.
+                // 이 지점이 GNB 높이 아래로 올라가면 이미지를 다 지나쳤다는 뜻.
+                .background(
+                    GeometryReader { geo in
+                        Color.clear
+                            .preference(
+                                key: CarouselBottomKey.self,
+                                value: geo.frame(in: .named("postDetailScroll")).maxY
+                            )
+                    }
                 )
             }
             

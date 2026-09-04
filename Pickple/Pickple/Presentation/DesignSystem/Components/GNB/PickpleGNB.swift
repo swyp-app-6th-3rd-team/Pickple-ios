@@ -42,6 +42,10 @@ struct PickpleGNB: View {
     let leading: PickpleGNBSlotContent
     let center: PickpleGNBSlotContent
     let trailing: PickpleGNBSlotContent
+    // tint는 SF Symbol이나 .renderingMode(.template) 아이콘에만 적용된다.
+    // 원본 색이 박힌(.original) 커스텀 에셋은 색이 안 바뀐다.
+    var tint: Color = .black
+    var background: Color = .clear
 
     var body: some View {
         VStack {
@@ -58,6 +62,8 @@ struct PickpleGNB: View {
             }
             .frame(maxWidth: .infinity, minHeight: 56)
         }
+        .foregroundStyle(tint)
+        .background(background)
     }
 }
 
