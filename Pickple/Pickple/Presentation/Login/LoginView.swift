@@ -5,11 +5,10 @@
 //  Created by 박윤수 on 8/24/26.
 //
 
-//버튼 기능 추가해야함
-
 import SwiftUI
 
 struct LoginView: View {
+    let viewModel: LoginViewModel
     var onLoginSuccess: () -> Void = {}
 
     var body: some View {
@@ -35,8 +34,11 @@ struct LoginView: View {
                             onLoginSuccess()
                         }
                         LoginButton(provider: .apple) {
-                            // TODO: AuthenticationServices(Apple) 연동 필요 — 지금은 로그인 성공으로 간주
-                            onLoginSuccess()
+                            Task {
+                                if await viewModel.loginWithApple() {
+                                    onLoginSuccess()
+                                }
+                            }
                         }
                         LoginButton(provider: .guest) {
                             onLoginSuccess()
@@ -53,10 +55,25 @@ struct LoginView: View {
                 .foregroundStyle(Color.neutral30)
 
         }
+        .alert(LoginStrings.loginFailedTitle, isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { isPresented in if !isPresented { viewModel.errorMessage = nil } }
+        )) {
+            Button(LoginStrings.confirm, role: .cancel) {}
+        } message: {
+            Text(viewModel.errorMessage ?? "")
+        }
     }
 }
 
 
 #Preview {
-    LoginView()
+    let tokenStore = InMemoryTokenStore()
+    let apiClient = APIClient(baseURL: APIEnvironment.devBaseURL, tokenProvider: tokenStore)
+    let viewModel = LoginViewModel(
+        authRepository: RemoteAuthRepository(apiClient: apiClient),
+        tokenStore: tokenStore,
+        refreshTokenStore: KeychainRefreshTokenStore()
+    )
+    LoginView(viewModel: viewModel)
 }
