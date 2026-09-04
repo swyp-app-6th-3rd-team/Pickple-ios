@@ -12,20 +12,21 @@ struct TopPickerRankingSection: View {
     let onTapMore: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
+            //MARK: - Title
             HStack {
                 Text("TOP 피커 랭킹")
-                    .pickpleTypography(.title02)
-                    .foregroundStyle(Color.black)
+                    .pickpleTypography(.title01)
+                    .foregroundStyle(Color.neutral100)
 
                 Spacer()
 
                 Button(action: onTapMore) {
-                    HStack(spacing: 2) {
+                    HStack(spacing: 4) {
                         Text("더보기")
                         Image(systemName: "chevron.right")
                     }
-                    .pickpleTypography(.caption)
+                    .pickpleTypography(.body02)
                     .foregroundStyle(Color.neutral40)
                 }
             }
@@ -44,6 +45,7 @@ struct TopPickerRankingSection: View {
                 }
             }
         }
+        .background(Color.white)
     }
 }
 
