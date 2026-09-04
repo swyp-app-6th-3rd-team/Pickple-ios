@@ -66,8 +66,7 @@ class AppSessionViewModel {
         guard let refreshToken = refreshTokenStore.load() else { return }
         do {
             let tokens = try await authRepository.refreshAccessToken(refreshToken: refreshToken)
-            await tokenStore.update(tokens.accessToken)
-            try refreshTokenStore.save(tokens.refreshToken)
+            try await SessionTokenPersistence.save(tokens, tokenStore: tokenStore, refreshTokenStore: refreshTokenStore)
             await resolveProfileState()
         } catch {
             refreshTokenStore.clear()
@@ -91,8 +90,7 @@ class AppSessionViewModel {
 
     @MainActor
     private func clearLocalSession() async {
-        refreshTokenStore.clear()
-        await tokenStore.update(nil)
+        await SessionTokenPersistence.clear(tokenStore: tokenStore, refreshTokenStore: refreshTokenStore)
         isLoggedIn = false
         needsProfileSetup = false
     }
