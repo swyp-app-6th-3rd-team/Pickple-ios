@@ -10,8 +10,12 @@
 import SwiftUI
 
 struct MainRankingView: View {
-    @StateObject private var mainRankingViewModel = MainRankingViewModel()
+    @StateObject private var mainRankingViewModel: MainRankingViewModel
     @Environment(\.dismiss) private var dismiss
+
+    init(mainRankingViewModel: MainRankingViewModel = MainRankingViewModel()) {
+        _mainRankingViewModel = StateObject(wrappedValue: mainRankingViewModel)
+    }
 
     var body: some View {
         VStack(spacing: 0) {
