@@ -11,8 +11,9 @@ import SwiftUI
 struct MainView: View {
     @StateObject private var mainViewModel = MainViewModel()
     @StateObject private var cardStackViewModel = CardStackViewModel()
+    @Environment(MainRouter.self) private var mainRouter
     @State private var isMissionExpanded = false
-    @State private var navigatesToRanking = false
+    var onRequestCommunityTab: (() -> Void)? = nil
 
     var body: some View {
         ZStack {
@@ -39,31 +40,33 @@ struct MainView: View {
                         cardStackViewModel.filterCards(by: newValue)
                     }
 
-                    VStack(spacing: 24) {
-                        CardStackView(cardStackViewModel: cardStackViewModel, onTapCard: { _ in
-                            // TODO: 게시글 상세 연결 보류 — 작성/상세 화면 연결 작업과 한 번에 합류 예정
-                        })
-                        .padding(.top, 30)
-
-                        BadgeMissionSection(
-                            isLoggedIn: mainViewModel.isLoggedIn,
-                            missions: mainViewModel.missions,
-                            isExpanded: $isMissionExpanded
-                        )
+                    VStack(spacing: 50) {
+                        VStack(spacing: 30) {
+                            CardStackView(cardStackViewModel: cardStackViewModel, onTapCard: { card in
+                                mainRouter.push(.postDetail(card.type))
+                            })
+                            .padding(.top, 30)
+                            
+                            BadgeMissionSection(
+                                isLoggedIn: mainViewModel.isLoggedIn,
+                                missions: mainViewModel.missions,
+                                isExpanded: $isMissionExpanded
+                            )
+                        }
 
                         MainHotPostSection(
                             posts: mainViewModel.hotPosts,
-                            onTapPost: { _ in
-                                // TODO: 게시글 상세 연결 보류
+                            onTapPost: { post in
+                                mainRouter.push(.postDetail(post.type))
                             },
                             onTapMore: {
-                                // TODO: 커뮤니티 화면 연결 보류
+                                onRequestCommunityTab?()
                             }
                         )
 
                         TopPickerRankingSection(
                             rankings: mainViewModel.topRankings,
-                            onTapMore: { navigatesToRanking = true }
+                            onTapMore: { mainRouter.push(.ranking) }
                         )
                     }
                     .padding(.horizontal, 20)
@@ -87,9 +90,6 @@ struct MainView: View {
                 .padding(.horizontal, 40)
             }
         }
-        .navigationDestination(isPresented: $navigatesToRanking) {
-            MainRankingView()
-        }
         .task {
             await cardStackViewModel.loadCards()
             cardStackViewModel.filterCards(by: mainViewModel.selectedType)
@@ -102,4 +102,5 @@ struct MainView: View {
     NavigationStack {
         MainView()
     }
+    .environment(MainRouter())
 }

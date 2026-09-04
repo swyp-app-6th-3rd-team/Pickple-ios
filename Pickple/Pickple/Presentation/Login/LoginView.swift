@@ -10,6 +10,8 @@
 import SwiftUI
 
 struct LoginView: View {
+    var onLoginSuccess: () -> Void = {}
+
     var body: some View {
         VStack(spacing: 40) {
             Spacer()
@@ -28,9 +30,17 @@ struct LoginView: View {
 
                     //MARK: - Login Buttons
                     VStack(spacing: 8) {
-                        LoginButton(provider: .kakao) { /*Kakao 로그인 구현*/ }
-                        LoginButton(provider: .apple) { /*Apple 로그인 구현*/ }
-                        LoginButton(provider: .guest) { /*Guest 로그인 구현*/ }
+                        LoginButton(provider: .kakao) {
+                            // TODO: KakaoSDK 연동 필요 — 지금은 로그인 성공으로 간주
+                            onLoginSuccess()
+                        }
+                        LoginButton(provider: .apple) {
+                            // TODO: AuthenticationServices(Apple) 연동 필요 — 지금은 로그인 성공으로 간주
+                            onLoginSuccess()
+                        }
+                        LoginButton(provider: .guest) {
+                            onLoginSuccess()
+                        }
                     }
                     .padding(.horizontal, 20)
                 }

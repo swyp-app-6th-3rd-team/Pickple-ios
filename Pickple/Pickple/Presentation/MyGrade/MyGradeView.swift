@@ -21,11 +21,12 @@ private let gradeDescriptions: [Int: String] = [
 
 struct MyGradeView: View {
     @ObservedObject var myPageViewModel: MyPageViewModel
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 0) {
             PickpleGNB(
-                leading: .button(icon: Image("PickpleArrowLeft"), action: {}),
+                leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
                 center: .text("나의 등급"),
                 trailing: .none
             )
@@ -73,6 +74,7 @@ struct MyGradeView: View {
         .task {
             await myPageViewModel.loadUserInfo()
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 

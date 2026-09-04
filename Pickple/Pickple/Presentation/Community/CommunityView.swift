@@ -10,6 +10,7 @@ import SwiftUI
 
 struct CommunityView: View {
     @StateObject var communityViewModel: CommunityViewModel
+    @Environment(CommunityRouter.self) private var communityRouter
     @State private var showsLoginRequired = false
 
     var body: some View {
@@ -17,7 +18,10 @@ struct CommunityView: View {
             ZStack {
                 VStack(spacing: 0) {
                     CommunityHeaderView(communityViewModel: communityViewModel)
-                    CommunityPostListSection(communityViewModel: communityViewModel)
+                    CommunityPostListSection(
+                        communityViewModel: communityViewModel,
+                        onTapPost: { post in communityRouter.push(.postDetail(post.type)) }
+                    )
                 }
 
                 VStack {
@@ -75,4 +79,5 @@ struct CommunityView: View {
 
 #Preview {
     CommunityView(communityViewModel: CommunityViewModel())
+        .environment(CommunityRouter())
 }

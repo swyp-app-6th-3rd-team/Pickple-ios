@@ -9,10 +9,16 @@ import SwiftUI
 
 @main
 struct PickpleApp: App {
+    @State private var isLoggedIn = false
+    
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                LoginView()
+            if isLoggedIn {
+                PickpleBottomNav()
+            } else {
+                NavigationStack {
+                    LoginView(onLoginSuccess: { isLoggedIn = true })
+                }
             }
         }
     }
