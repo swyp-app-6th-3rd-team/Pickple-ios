@@ -4,7 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 요일별 진행 표시/진행률 막대 색상·굵기는 임시값
+//  TODO: 디자인 확정 후 변경 필요 — 요일별 진행 표시 색상·굵기는 임시값
 
 import SwiftUI
 
@@ -53,6 +53,9 @@ struct BadgeMissionSection: View {
 
             if isLoggedIn && isExpanded {
                 VStack(spacing: 12) {
+                    ForEach(missions) { mission in
+                        BadgeMissionProgressRow(mission: mission)
+                    }
 
                     if let streakMission = missions.first(where: { $0.title.contains("연속") }) {
                         BadgeMissionStreakTracker(current: streakMission.current, target: streakMission.target)
