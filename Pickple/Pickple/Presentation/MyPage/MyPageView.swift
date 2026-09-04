@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct MyPageView: View {
-    @StateObject var myPageViewModel: MyPageViewModel
-    
+    @ObservedObject var myPageViewModel: MyPageViewModel
+    @Environment(MyPageRouter.self) private var myPageRouter
+
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -28,20 +29,26 @@ struct MyPageView: View {
                             .frame(height: 4)
                             .background(Color.neutral5)
                         
-                        MyPagePostView(myPageViewModel: myPageViewModel)
-                        
-                        
+                        MyPagePostView(
+                            myPageViewModel: myPageViewModel,
+                            onTapPost: { post in myPageRouter.push(.postDetail(post.type)) },
+                            onTapMore: { myPageRouter.push(.activity) }
+                        )
+
                         Divider()
                             .frame(height: 4)
                             .background(Color.neutral5)
-                        
-                        MyPageInfoView()
-                        
+
+                        MyPageInfoView(
+                            onTapGrade: { myPageRouter.push(.grade) },
+                            onTapBadge: { myPageRouter.push(.badge) }
+                        )
+
                         Divider()
                             .frame(height: 4)
                             .background(Color.neutral5)
-                        
-                        MyPageExtraView()
+
+                        MyPageExtraView(onTapAccount: { myPageRouter.push(.account) })
                         
                     }
                 
@@ -56,4 +63,5 @@ struct MyPageView: View {
 
 #Preview {
     MyPageView(myPageViewModel: MyPageViewModel())
+        .environment(MyPageRouter())
 }
