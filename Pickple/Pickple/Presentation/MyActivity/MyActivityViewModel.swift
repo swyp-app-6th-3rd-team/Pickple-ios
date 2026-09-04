@@ -23,7 +23,7 @@ class MyActivityViewModel: ObservableObject {
     func loadWrittenPosts() async {writtenPosts = await userPostRepository.fetchWrittenPosts()}
 
     func sorted(_ posts: [PostSummary], by option: String) -> [PostSummary] {
-        option == "최신순"
+        option == MyActivityStrings.latestSortOption
             ? posts.sorted { $0.createdAt > $1.createdAt }
             : posts.sorted { $0.createdAt < $1.createdAt }
     }
