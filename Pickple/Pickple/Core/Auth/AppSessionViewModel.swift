@@ -14,19 +14,49 @@ import Foundation
 class AppSessionViewModel {
     private(set) var isLoggedIn = false
     private(set) var isRestoringSession = true
+    // 로그인은 됐지만 닉네임 등록 전(GET /users/me의 nickname == nil)이라 프로필 설정 화면을 보여줘야 하는 상태.
+    private(set) var needsProfileSetup = false
 
     private let authRepository: AuthRepository
+    private let profileRepository: ProfileRepository
     private let tokenStore: InMemoryTokenStore
     private let refreshTokenStore: RefreshTokenStoring
 
-    init(authRepository: AuthRepository, tokenStore: InMemoryTokenStore, refreshTokenStore: RefreshTokenStoring) {
+    init(
+        authRepository: AuthRepository,
+        profileRepository: ProfileRepository,
+        tokenStore: InMemoryTokenStore,
+        refreshTokenStore: RefreshTokenStoring
+    ) {
         self.authRepository = authRepository
+        self.profileRepository = profileRepository
         self.tokenStore = tokenStore
         self.refreshTokenStore = refreshTokenStore
     }
 
-    func markLoggedIn() {
+    // Apple 로그인 성공 직후 호출 — 닉네임 등록 여부에 따라 프로필 설정 화면으로 보낼지 정한다.
+    @MainActor
+    func handleLoginSuccess() async {
+        await resolveProfileState()
+    }
+
+    // 프로필 설정 화면에서 등록 완료했을 때 호출.
+    func handleProfileRegistered() {
+        needsProfileSetup = false
         isLoggedIn = true
+    }
+
+    @MainActor
+    private func resolveProfileState() async {
+        do {
+            let profile = try await profileRepository.fetchMyProfile()
+            needsProfileSetup = (profile.nickname == nil)
+            isLoggedIn = !needsProfileSetup
+        } catch {
+            // 프로필 조회 실패해도 로그인 자체는 성공했으니, 사용자를 막지 않고 일단 메인으로 보낸다.
+            needsProfileSetup = false
+            isLoggedIn = true
+        }
     }
 
     // 앱 시작 시 Keychain에 남아있는 refreshToken으로 accessToken을 재발급받아 자동 로그인한다.
@@ -38,7 +68,7 @@ class AppSessionViewModel {
             let tokens = try await authRepository.refreshAccessToken(refreshToken: refreshToken)
             await tokenStore.update(tokens.accessToken)
             try refreshTokenStore.save(tokens.refreshToken)
-            isLoggedIn = true
+            await resolveProfileState()
         } catch {
             refreshTokenStore.clear()
         }
@@ -52,6 +82,7 @@ class AppSessionViewModel {
         refreshTokenStore.clear()
         await tokenStore.update(nil)
         isLoggedIn = false
+        needsProfileSetup = false
     }
 
     // 실패하면(예: Apple 일시 장애 503) 로컬 상태는 그대로 두고 에러를 던진다 — 계정이 안 지워졌으니 재시도 가능해야 한다.
@@ -61,5 +92,6 @@ class AppSessionViewModel {
         refreshTokenStore.clear()
         await tokenStore.update(nil)
         isLoggedIn = false
+        needsProfileSetup = false
     }
 }
