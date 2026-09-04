@@ -13,8 +13,11 @@ import SwiftUI
 
 struct MyAccountView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.appLogout) private var appLogout
+    @Environment(\.appDeleteAccount) private var appDeleteAccount
     @State private var showsLogoutConfirm = false
     @State private var showsLeaveConfirm = false
+    @State private var deleteAccountErrorMessage: String?
 
     var body: some View {
         ZStack {
@@ -56,7 +59,7 @@ struct MyAccountView: View {
                     onCancel: { showsLogoutConfirm = false },
                     onConfirm: {
                         showsLogoutConfirm = false
-                        //TODO: 실제 로그아웃 처리 연결 필요
+                        Task { await appLogout() }
                     }
                 )
             }
@@ -74,12 +77,26 @@ struct MyAccountView: View {
                     onCancel: { showsLeaveConfirm = false },
                     onConfirm: {
                         showsLeaveConfirm = false
-                        //TODO: 실제 탈퇴 처리 연결 필요
+                        Task {
+                            do {
+                                try await appDeleteAccount()
+                            } catch {
+                                deleteAccountErrorMessage = error.localizedDescription
+                            }
+                        }
                     }
                 )
             }
         }
         .navigationBarBackButtonHidden(true)
+        .alert(MyAccountStrings.deleteAccountFailedTitle, isPresented: Binding(
+            get: { deleteAccountErrorMessage != nil },
+            set: { isPresented in if !isPresented { deleteAccountErrorMessage = nil } }
+        )) {
+            Button(MyAccountStrings.confirm, role: .cancel) {}
+        } message: {
+            Text(deleteAccountErrorMessage ?? "")
+        }
     }
 }
 
