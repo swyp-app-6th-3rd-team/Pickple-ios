@@ -52,6 +52,16 @@ final class MyPageRouter: Router<MyPageRoute> {}
   - **주의**: `PickpleConfirmDialog`/`PostLeaveConfirmDialog`처럼 자체 좌우 패딩이 없는 모달만 그대로 끼워 넣을 수 있다. `MyAccountConfirmDialog`/`CommunityLoginRequiredModal`은 컴포넌트 자체에 `.padding(.horizontal, 40)`이 이미 들어있어서, `PickpleDialogOverlay`에 넣으면 패딩이 두 번 겹친다 — 그래서 `MyAccountView`/`CommunityView`는 아직 예전 방식(`Color.black.opacity(0.4)` 직접 작성) 그대로 남아있다.
 - **확인 모달 4종류가 사실상 중복**(`PickpleConfirmDialog`, `MyAccountConfirmDialog`, `PostLeaveConfirmDialog`, `CommunityLoginRequiredModal`): 구조는 거의 동일하고 색상/폰트 크기만 미세하게 다르다. 하나로 합칠 수 있지만 "어느 스타일이 정답인지" 고르는 게 UI 판단이라 이번엔 손대지 않았다.
 
+## 문자열 상수 (`XxxStrings.swift`)
+
+CLAUDE.md는 "하드코딩된 문자열·색상 금지"를 명시한다. 색상은 UI 판단이 섞여서 이번엔 손대지 않았지만, 문자열은 화면마다 실제 `body`/로직에 박혀있던 걸 기능 폴더별 `XxxStrings.swift`(`enum`, `static let`/`static func`)로 뺐다 — 원래 있던 `PostViewStrings`/`GNBStrings`/`LoginStrings` 패턴을 전체로 확장한 것. `CommunityStrings`, `MainStrings`, `MyAccountStrings`, `MyActivityStrings`, `MyBadgeStrings`, `MyGradeStrings`, `MyPageStrings`, `PostDetailStrings`가 이번에 추가됐다.
+
+**뺀 것과 안 뺀 것 기준**:
+- 실제 `body`/함수 안에서 쓰이는 화면 표시 문자열 → 뺐다.
+- `#Preview` 블록 안의 샘플 데이터, `MockXxxRepository`/ViewModel의 Mock placeholder 값(예: `MainRankingViewModel.myRanking`의 "닉네임") → 안 뺐다. 실사용자에게 안 보이거나 실 API 연동 시 자연히 없어질 코드라 굳이 상수화할 이유가 적다.
+- 이미 `static let`으로 한 곳에 모여있던 것(`MyGradeView`의 `gradeDescriptions`, `CommunityViewModel`/`PostDetailViewModel`의 옵션 배열)은 굳이 옮기지 않고 그대로 뒀다 — 이미 "중복 없는 단일 출처"라는 목적은 달성한 상태였음.
+- `PostDetailConfirmAction`(delete/report/block별 title/description) 같이 "그 파일 자체가 문자열 매핑을 위해 존재하는" 경우도 그대로 뒀다 — Strings 파일로 옮기면 그냥 자리만 옮기는 꼴.
+
 ## Mock Repository
 
 `Data/Repository/MockXxxRepository.swift`들이 `Domain/Repository`의 프로토콜을 구현한다. 실제 API 붙기 전까지는 이 목업들이 데이터 소스 전부다. `PostSummary(...)` 같은 12개 필드짜리 리터럴이 파일마다 여러 번 반복 타이핑되어 있는데, 실 API 연동 시 자연히 없어질 코드라 지금 정리 우선순위는 낮게 잡았다.
