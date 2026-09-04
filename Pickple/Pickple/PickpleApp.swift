@@ -47,7 +47,9 @@ struct PickpleApp: App {
                         onCompleted: { sessionViewModel.handleProfileRegistered() }
                     )
                 } else if sessionViewModel.isLoggedIn {
-                    PickpleBottomNav()
+                    PickpleBottomNav(
+                        myPageViewModel: MyPageViewModel(userPostRepository: RemoteUserPostRepository(apiClient: apiClient))
+                    )
                         .environment(\.appLogout, sessionViewModel.logout)
                         .environment(\.appDeleteAccount, sessionViewModel.deleteAccount)
                         .environment(\.apiClient, apiClient)
