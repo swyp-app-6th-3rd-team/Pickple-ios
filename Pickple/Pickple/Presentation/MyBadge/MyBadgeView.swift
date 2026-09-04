@@ -25,7 +25,7 @@ struct MyBadgeView: View {
         VStack(spacing: 0) {
             PickpleGNB(
                 leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
-                center: .text("나의 뱃지"),
+                center: .text(MyBadgeStrings.title),
                 trailing: .none
             )
             Rectangle()
@@ -34,11 +34,11 @@ struct MyBadgeView: View {
 
                 VStack(spacing: 24) {
                     VStack(spacing: 4) {
-                        Text("뱃지 수집 현황")
+                        Text(MyBadgeStrings.collectionStatus)
                             .pickpleTypography(.title01)
                             .foregroundStyle(Color.black)
 
-                        Text("총 \(myBadgeViewModel.unlockedCount)개 모았어요")
+                        Text(MyBadgeStrings.collectedCount(myBadgeViewModel.unlockedCount))
                             .pickpleTypography(.body01)
                             .foregroundStyle(Color.neutral40)
                     }

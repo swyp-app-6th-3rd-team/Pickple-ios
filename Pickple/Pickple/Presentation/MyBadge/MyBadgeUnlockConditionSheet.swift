@@ -31,7 +31,7 @@ struct MyBadgeUnlockConditionSheet: View {
             }
             
             Button(action: onConfirm) {
-                Text("확인")
+                Text(MyBadgeStrings.confirm)
                     .pickpleTypography(.body01)
                     .foregroundStyle(Color.white)
                     .frame(maxWidth: .infinity, minHeight: 52)

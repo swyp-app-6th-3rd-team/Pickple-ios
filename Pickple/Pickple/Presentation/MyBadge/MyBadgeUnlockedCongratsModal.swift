@@ -16,7 +16,7 @@ struct MyBadgeUnlockedCongratsModal: View {
     var body: some View {
         VStack(spacing: 16) {
             VStack(spacing: 12) {
-                Text("새로운 뱃지가 해제됐어요!")
+                Text(MyBadgeStrings.newlyUnlockedTitle)
                     .pickpleTypography(.title01)
                     .foregroundStyle(Color.neutral100)
 
@@ -30,7 +30,7 @@ struct MyBadgeUnlockedCongratsModal: View {
             }
 
             Button(action: onConfirm) {
-                Text("확인")
+                Text(MyBadgeStrings.confirm)
                     .pickpleTypography(.body01)
                     .foregroundStyle(Color.white)
                     .frame(maxWidth: .infinity, minHeight: 52)
