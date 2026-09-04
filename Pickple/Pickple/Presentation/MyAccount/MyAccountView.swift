@@ -12,6 +12,7 @@
 import SwiftUI
 
 struct MyAccountView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var showsLogoutConfirm = false
     @State private var showsLeaveConfirm = false
 
@@ -19,7 +20,7 @@ struct MyAccountView: View {
         ZStack {
             VStack(spacing: 0) {
                 PickpleGNB(
-                    leading: .button(icon: Image("PickpleArrowLeft"), action: {}),
+                    leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
                     center: .text("계정관리"),
                     trailing: .none
                 )
@@ -78,6 +79,7 @@ struct MyAccountView: View {
                 )
             }
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
