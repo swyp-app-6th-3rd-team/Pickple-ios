@@ -9,15 +9,16 @@ import SwiftUI
 
 struct MyActivityView: View {
     @StateObject var myActivityViewModel: MyActivityViewModel
-    
+    @Environment(\.dismiss) private var dismiss
+
     @State private var isShown: Bool = false
     @State private var selectedIndexTwo = 0
     @State private var selectedValue = "최신순"
-    
+
     var body: some View {
         VStack {
             PickpleGNB(
-                leading: .button(icon: Image("PickpleArrowLeft"), action: {}),
+                leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
                 center: .text("나의 활동"),
                 trailing: .none
             )
@@ -50,6 +51,7 @@ struct MyActivityView: View {
                 EmptyView()
             }
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
