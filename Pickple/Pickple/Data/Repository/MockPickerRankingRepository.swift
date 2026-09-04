@@ -28,11 +28,16 @@ struct MockPickerRankingRepository: PickerRankingRepository {
         return rankings
     }()
 
-    func fetchTopRankings() async -> [PickerRanking] {
+    func fetchTopRankings() async throws -> [PickerRanking] {
         Array(Self.all.prefix(5))
     }
 
-    func fetchRankings(cursor: Int) async -> [PickerRanking] {
-        Array(Self.all.dropFirst(cursor).prefix(10))
+    // 실제 서버 cursor는 불투명 문자열이지만, Mock에서는 다음 조각 시작 오프셋을 문자열로 그대로 쓴다.
+    func fetchRankings(cursor: String?) async throws -> RankingPage {
+        let offset = cursor.flatMap(Int.init) ?? 0
+        let page = Array(Self.all.dropFirst(offset).prefix(10))
+        let nextOffset = offset + page.count
+        let nextCursor = nextOffset < Self.all.count ? String(nextOffset) : nil
+        return RankingPage(items: page, nextCursor: nextCursor)
     }
 }
