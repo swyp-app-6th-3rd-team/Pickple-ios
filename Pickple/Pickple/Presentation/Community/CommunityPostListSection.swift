@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CommunityPostListSection: View {
     @ObservedObject var communityViewModel: CommunityViewModel
+    var onTapPost: (PostSummary) -> Void = { _ in }
 
     var body: some View {
         if communityViewModel.displayedPosts.isEmpty {
@@ -23,6 +24,7 @@ struct CommunityPostListSection: View {
 
                     ForEach(communityViewModel.displayedPosts) { post in
                         CommunityPostCardView(post: post)
+                            .onTapGesture { onTapPost(post) }
 
                         Divider()
                     }
