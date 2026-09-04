@@ -13,7 +13,7 @@ struct MyPageStatsView: View {
     var body: some View {
         HStack(spacing: 0) {
             VStack {
-                Text("투표")
+                Text(MyPageStrings.voteCount)
                     .pickpleTypography(.label)
                     .foregroundStyle(Color.navy40)
                 
@@ -30,7 +30,7 @@ struct MyPageStatsView: View {
                 .frame(height: 30)
             
             VStack {
-                Text("댓글")
+                Text(MyPageStrings.commentCount)
                     .pickpleTypography(.label)
                     .foregroundStyle(Color.navy40)
                 
@@ -46,7 +46,7 @@ struct MyPageStatsView: View {
                 .frame(height: 30)
             
             VStack {
-                Text("게시글")
+                Text(MyPageStrings.postCount)
                     .pickpleTypography(.label)
                     .foregroundStyle(Color.navy40)
                 

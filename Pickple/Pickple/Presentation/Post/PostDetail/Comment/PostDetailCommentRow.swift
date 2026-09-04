@@ -62,7 +62,7 @@ struct PostDetailCommentRow: View {
                         Image("PickpleOnePick")
                             .resizable()
                             .frame(width: 20, height: 20)
-                        Text("원픽 \(comment.pickCount)")
+                        Text(PostDetailStrings.pickCount(comment.pickCount))
                     }
                     .pickpleTypography(.label)
                     .foregroundStyle(isPicked ? Color.red60 : Color.neutral30)

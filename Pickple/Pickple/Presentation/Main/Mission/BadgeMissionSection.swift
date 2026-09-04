@@ -30,11 +30,11 @@ struct BadgeMissionSection: View {
                     }
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("뱃지 획득 미션")
+                        Text(MainStrings.badgeMissionTitle)
                             .pickpleTypography(.body01)
                             .foregroundStyle(Color.neutral100)
 
-                        Text(isLoggedIn ? "뱃지 획득을 위해 미션을 완료해보세요" : "로그인하고 뱃지를 획득해보세요")
+                        Text(isLoggedIn ? MainStrings.badgeMissionSubtitleLoggedIn : MainStrings.badgeMissionSubtitleGuest)
                             .pickpleTypography(.caption)
                             .foregroundStyle(Color.blue60)
                     }
@@ -57,7 +57,7 @@ struct BadgeMissionSection: View {
                         BadgeMissionProgressRow(mission: mission)
                     }
 
-                    if let streakMission = missions.first(where: { $0.title.contains("연속") }) {
+                    if let streakMission = missions.first(where: { $0.title.contains(MainStrings.streakKeyword) }) {
                         BadgeMissionStreakTracker(current: streakMission.current, target: streakMission.target)
                     }
                 }

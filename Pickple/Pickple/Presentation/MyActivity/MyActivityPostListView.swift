@@ -14,7 +14,7 @@ struct MyActivityPostListView: View {
         if posts.isEmpty {
             VStack(spacing: 20) {
                 Spacer()
-                Text("아직 참여한 활동이 없어요")
+                Text(MyActivityStrings.emptyMessage)
                 Spacer()
             }
         } else {

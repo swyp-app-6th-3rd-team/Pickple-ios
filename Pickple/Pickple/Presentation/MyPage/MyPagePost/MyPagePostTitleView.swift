@@ -13,7 +13,7 @@ struct MyPagePostTitleView: View {
     var body: some View {
         //XMARK: - Title
         HStack {
-            Text("내가 올린 투표")
+            Text(MyPageStrings.myPostsTitle)
                 .pickpleTypography(.title01)
                 .foregroundStyle(Color.black)
 
@@ -21,7 +21,7 @@ struct MyPagePostTitleView: View {
 
             Button(action: onTapMore) {
                 HStack(spacing: 4) {
-                    Text("전체 보기")
+                    Text(MyPageStrings.viewAll)
                     
                     Image("PickpleArrowRight")
                         .resizable()

@@ -25,7 +25,7 @@ struct MyPagePostCardEmptyView: View {
                             .frame(width: 24, height: 24)
                             .foregroundStyle(Color.neutral30)
                     }
-                    Text("새 투표 올리기")
+                    Text(MyPageStrings.addNewPost)
                         .pickpleTypography(.body02)
                         .foregroundStyle(Color.neutral40)
                 }

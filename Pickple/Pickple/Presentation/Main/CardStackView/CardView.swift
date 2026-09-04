@@ -14,11 +14,11 @@ struct CardView: View {
     let onTapBody: () -> Void
 
     private var firstLabel: String {
-        data.type == .forAgainst ? "사자" : "A"
+        data.type == .forAgainst ? MainStrings.voteSideFor : "A"
     }
 
     private var secondLabel: String {
-        data.type == .forAgainst ? "말자" : "B"
+        data.type == .forAgainst ? MainStrings.voteSideAgainst : "B"
     }
 
     var body: some View {
@@ -58,7 +58,7 @@ struct CardView: View {
                     style: .continuous
                 )
                 .foregroundStyle(Color.white)
-                .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 0)
+                .shadow(color: Color.neutral100.opacity(0.08), radius: 12)
 
                 VStack(alignment: .leading, spacing: 12) {
                     VStack(alignment: .leading, spacing: 2) {

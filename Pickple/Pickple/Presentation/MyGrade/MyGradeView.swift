@@ -27,7 +27,7 @@ struct MyGradeView: View {
         VStack(spacing: 0) {
             PickpleGNB(
                 leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
-                center: .text("나의 등급"),
+                center: .text(MyGradeStrings.title),
                 trailing: .none
             )
 
@@ -40,15 +40,15 @@ struct MyGradeView: View {
 
                         HStack(spacing: 4) {
                             if let voteCount = myPageViewModel.userInfo?.voteCount {
-                                Text("투표")
+                                Text(MyGradeStrings.voteCountPrefix)
                                     .pickpleTypography(.label)
                                     .foregroundStyle(Color.neutral40)
-                                
+
                                 Text("\(voteCount)")
                                     .pickpleTypography(.title02)
                                     .foregroundStyle(Color.black)
-                                
-                                Text("회")
+
+                                Text(MyGradeStrings.voteCountSuffix)
                                     .pickpleTypography(.body02)
                                     .foregroundStyle(Color.neutral40)
                             }

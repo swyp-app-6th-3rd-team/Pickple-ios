@@ -11,7 +11,7 @@ struct PostDetailCommentEmptyView: View {
     var body: some View {
         VStack {
             Spacer(minLength: 80)
-            Text("아직 작성된 댓글이 없어요")
+            Text(PostDetailStrings.commentEmptyMessage)
                 .pickpleTypography(.body01)
                 .foregroundStyle(Color.neutral40)
             Spacer(minLength: 80)

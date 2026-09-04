@@ -13,7 +13,7 @@ struct CommunityHeaderView: View {
     var body: some View {
         VStack(spacing: 0) {
             PickpleGNB(
-                leading: .text("커뮤니티"),
+                leading: .text(CommunityStrings.title),
                 center: .none,
                 trailing: .button(icon: Image("PickpleSearch"), action: {})
             )

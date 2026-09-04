@@ -13,23 +13,23 @@ struct MyActivityView: View {
 
     @State private var isShown: Bool = false
     @State private var selectedIndexTwo = 0
-    @State private var selectedValue = "최신순"
+    @State private var selectedValue = MyActivityStrings.latestSortOption
 
     var body: some View {
         VStack {
             PickpleGNB(
                 leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
-                center: .text("나의 활동"),
+                center: .text(MyActivityStrings.title),
                 trailing: .none
             )
-            
-            PickpleTabBar(tabs: ["투표", "댓글", "작성글"], selectedIndex: $selectedIndexTwo)
+
+            PickpleTabBar(tabs: MyActivityStrings.tabs, selectedIndex: $selectedIndexTwo)
                 .padding(.horizontal, 20)
-            
+
             HStack {
-                PickpleSortButton(isExpanded: .constant(false), selectedValue: $selectedValue, options: ["최신순", "오래된 순"])
+                PickpleSortButton(isExpanded: .constant(false), selectedValue: $selectedValue, options: MyActivityStrings.sortOptions)
                     .floatingOverSiblings {
-                        PickpleSortButton(isExpanded: $isShown, selectedValue: $selectedValue, options: ["최신순", "오래된 순"])
+                        PickpleSortButton(isExpanded: $isShown, selectedValue: $selectedValue, options: MyActivityStrings.sortOptions)
                     }
                 Spacer()
             }

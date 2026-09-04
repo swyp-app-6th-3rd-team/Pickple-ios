@@ -14,7 +14,7 @@ struct PostDetailCommentInputBar: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            TextField("댓글 입력...", text: $text)
+            TextField(PostDetailStrings.commentPlaceholder, text: $text)
                 .focused(isFocused)
                 .pickpleTypography(.body02)
                 .padding(.horizontal, 16)
@@ -23,7 +23,7 @@ struct PostDetailCommentInputBar: View {
                 .clipShape(Capsule())
 
             Button(action: onSubmit) {
-                Text("등록")
+                Text(PostDetailStrings.commentSubmit)
                     .pickpleTypography(.body02)
                     .foregroundStyle(Color.white)
                     .padding(.horizontal, 16)
