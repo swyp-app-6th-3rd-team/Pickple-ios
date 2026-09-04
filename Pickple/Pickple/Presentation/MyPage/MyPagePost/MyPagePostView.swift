@@ -9,13 +9,15 @@ import SwiftUI
 
 struct MyPagePostView: View {
     @ObservedObject var myPageViewModel: MyPageViewModel
-    
+    var onTapPost: (PostSummary) -> Void = { _ in }
+    var onTapMore: () -> Void = {}
+
     var body: some View {
         VStack(spacing: 12){
-            
-            MyPagePostTitleView()
+
+            MyPagePostTitleView(onTapMore: onTapMore)
                 .padding(.horizontal, 20)
-            
+
             //MARK: - Post
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
@@ -24,7 +26,7 @@ struct MyPagePostView: View {
                     }
                     else {
                         ForEach(myPageViewModel.posts) { post in
-                            Button(action: {}) {
+                            Button(action: { onTapPost(post) }) {
                                 PostSummaryCardView(post: post)
                             }
                             .frame(width: 160, height: 238)
