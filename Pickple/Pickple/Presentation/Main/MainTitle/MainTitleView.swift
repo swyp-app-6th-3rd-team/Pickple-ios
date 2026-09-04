@@ -4,22 +4,37 @@
 //
 //  Created by 박윤수 on 9/1/26.
 //
+//  TODO: 디자인 확정 후 변경 필요 — 배너 텍스트/탭 동작은 임시값(연결 로직 미정)
 
 import SwiftUI
 
 struct MainTitleView: View {
+    var hasUnreadNotification: Bool = true
+
     var body: some View {
-        
-        PickpleGNB(
-            leading: .image(Image("PickpleTitle")),
-            center: .none,
-            trailing: .button(icon: Image("PickpleAlertOff"), action: {})
-        )
-        
-        .frame(maxWidth: .infinity)
+        HStack(spacing: 8) {
+            Image("PickpleTitle")
+                .padding(.leading, 20)
+
+            Spacer(minLength: 0)
+
+            Button(action: {}) {
+                ZStack(alignment: .topTrailing) {
+                    Image("PickpleAlertOff")
+
+                    if hasUnreadNotification {
+                        Circle()
+                            .fill(Color.red60)
+                            .frame(width: 8, height: 8)
+                    }
+                }
+            }
+            .padding(.trailing, 20)
+        }
+        .frame(maxWidth: .infinity, minHeight: 56)
     }
 }
 
 #Preview {
-    MainView()
+    MainTitleView()
 }
