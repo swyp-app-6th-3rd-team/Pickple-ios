@@ -12,5 +12,9 @@ struct MockProfileRepository: ProfileRepository {
         UserProfile(userId: 0, nickname: nil, profileImageUrl: nil)
     }
 
+    func checkNicknameAvailability(_ nickname: String) async throws -> NicknameAvailability {
+        NicknameAvailability(isAvailable: true, message: "사용 가능한 닉네임")
+    }
+
     func registerProfile(nickname: String) async throws {}
 }
