@@ -10,4 +10,6 @@ enum LoginStrings {
     static let appleLogin = "Apple로 로그인"
     static let guestLogin = "게스트로 둘러보기"
     static let termsNotice = "가입을 진행하시면 서비스 이용 약관 및\n 개인정보처리방침에 동의하시는 것으로 간주됩니다."
+    static let loginFailedTitle = "로그인 실패"
+    static let confirm = "확인"
 }
