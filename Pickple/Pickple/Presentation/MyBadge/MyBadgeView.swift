@@ -11,6 +11,7 @@ import SwiftUI
 
 struct MyBadgeView: View {
     @StateObject var myBadgeViewModel: MyBadgeViewModel
+    @Environment(\.dismiss) private var dismiss
     @State private var selectedBadge: MyBadge?
     @State private var newlyUnlockedBadge: MyBadge?
 
@@ -23,7 +24,7 @@ struct MyBadgeView: View {
     var body: some View {
         VStack(spacing: 0) {
             PickpleGNB(
-                leading: .button(icon: Image("PickpleArrowLeft"), action: {}),
+                leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
                 center: .text("나의 뱃지"),
                 trailing: .none
             )
@@ -77,6 +78,7 @@ struct MyBadgeView: View {
                 //TODO: 확인 처리(서버에 확인 여부 반영 등) 연결 필요
             }
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
