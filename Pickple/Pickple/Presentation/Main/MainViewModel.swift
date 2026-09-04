@@ -8,12 +8,10 @@ import Combine
 import Foundation
 import SwiftUI
 
-@MainActor
 class MainViewModel: ObservableObject {
-    // nonisolated init에서 대입만 하고 이후로는 재대입 없이 읽기만 하므로 nonisolated(unsafe)+let로 둔다.
-    nonisolated(unsafe) private let badgeMissionRepository: BadgeMissionRepository
-    nonisolated(unsafe) private let communityRepository: CommunityRepository
-    nonisolated(unsafe) private let pickerRankingRepository: PickerRankingRepository
+    private let badgeMissionRepository: BadgeMissionRepository
+    private let communityRepository: CommunityRepository
+    private let pickerRankingRepository: PickerRankingRepository
 
     @Published var selectedType: VoteType = .forAgainst
     @Published var missions: [BadgeMissionProgress] = []
@@ -30,10 +28,7 @@ class MainViewModel: ObservableObject {
         )
     }
 
-    // 프로퍼티 대입만 하고 MainActor가 필요한 작업은 없어서 nonisolated로 뺀다.
-    // 이래야 MainView처럼 아직 화면 계층에 안 붙은(=MainActor 컨텍스트가 보장 안 되는) 곳의
-    // 기본 파라미터 값 등에서도 이 초기화를 호출할 수 있다.
-    nonisolated init(
+    init(
         badgeMissionRepository: BadgeMissionRepository = MockBadgeMissionRepository(),
         communityRepository: CommunityRepository = MockCommunityRepository(),
         pickerRankingRepository: PickerRankingRepository = MockPickerRankingRepository()
@@ -43,6 +38,10 @@ class MainViewModel: ObservableObject {
         self.pickerRankingRepository = pickerRankingRepository
     }
 
+    // @Published 값을 갱신하는 메서드라 여기에만 MainActor를 명시한다(CLAUDE.md 규칙) —
+    // 클래스 전체를 MainActor로 격리하면 init까지 격리돼서 MainView의 기본 파라미터 값
+    // 평가 시점(MainActor 컨텍스트가 보장 안 됨)과 충돌한다.
+    @MainActor
     func loadHomeData() async {
         // 홈 화면 한 섹션 실패로 전체를 막지 않기 위해 실패하면 빈 배열로 둔다.
         async let missionsResult = try? badgeMissionRepository.fetchInProgressMissions()
