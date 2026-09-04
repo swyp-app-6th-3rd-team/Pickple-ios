@@ -15,7 +15,6 @@ struct MainView: View {
     @State private var isMissionExpanded = false
     var onRequestCommunityTab: (() -> Void)? = nil
 
-    @MainActor
     init(mainViewModel: MainViewModel = MainViewModel(), onRequestCommunityTab: (() -> Void)? = nil) {
         _mainViewModel = StateObject(wrappedValue: mainViewModel)
         self.onRequestCommunityTab = onRequestCommunityTab

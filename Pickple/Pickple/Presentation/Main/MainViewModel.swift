@@ -29,7 +29,10 @@ class MainViewModel: ObservableObject {
         )
     }
 
-    init(
+    // 프로퍼티 대입만 하고 MainActor가 필요한 작업은 없어서 nonisolated로 뺀다.
+    // 이래야 MainView처럼 아직 화면 계층에 안 붙은(=MainActor 컨텍스트가 보장 안 되는) 곳의
+    // 기본 파라미터 값 등에서도 이 초기화를 호출할 수 있다.
+    nonisolated init(
         badgeMissionRepository: BadgeMissionRepository = MockBadgeMissionRepository(),
         communityRepository: CommunityRepository = MockCommunityRepository(),
         pickerRankingRepository: PickerRankingRepository = MockPickerRankingRepository()
