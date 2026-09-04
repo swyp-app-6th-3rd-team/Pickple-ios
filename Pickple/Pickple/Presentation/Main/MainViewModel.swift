@@ -10,9 +10,10 @@ import SwiftUI
 
 @MainActor
 class MainViewModel: ObservableObject {
-    private var badgeMissionRepository: BadgeMissionRepository
-    private var communityRepository: CommunityRepository
-    private var pickerRankingRepository: PickerRankingRepository
+    // nonisolated init에서 대입만 하고 이후로는 재대입 없이 읽기만 하므로 nonisolated(unsafe)+let로 둔다.
+    nonisolated(unsafe) private let badgeMissionRepository: BadgeMissionRepository
+    nonisolated(unsafe) private let communityRepository: CommunityRepository
+    nonisolated(unsafe) private let pickerRankingRepository: PickerRankingRepository
 
     @Published var selectedType: VoteType = .forAgainst
     @Published var missions: [BadgeMissionProgress] = []
