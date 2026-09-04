@@ -30,7 +30,10 @@ struct PickpleBottomNav: View {
         TabView(selection: $selectedTab) {
             NavigationStack(path: $mainRouter.path) {
                 MainView(
-                    mainViewModel: MainViewModel(badgeMissionRepository: RemoteBadgeMissionRepository(apiClient: apiClient)),
+                    mainViewModel: MainViewModel(
+                        badgeMissionRepository: RemoteBadgeMissionRepository(apiClient: apiClient),
+                        pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient)
+                    ),
                     onRequestCommunityTab: { selectedTab = 1 }
                 )
                     .navigationDestination(for: MainRoute.self) { route in
@@ -38,7 +41,7 @@ struct PickpleBottomNav: View {
                         case .postDetail(let type):
                             PostDetailView(voteType: type)
                         case .ranking:
-                            MainRankingView()
+                            MainRankingView(mainRankingViewModel: MainRankingViewModel(pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient)))
                         }
                     }
             }
