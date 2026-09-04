@@ -12,12 +12,6 @@ struct BadgeMissionStreakTracker: View {
     let current: Int
     let target: Int
 
-    // 원들의 가운데를 지나는 연결선이 완료 지점에서 파란색→회색으로 넘어가는 위치(0~1).
-    private var progressBoundary: CGFloat {
-        guard target > 0 else { return 0 }
-        return CGFloat(current) / CGFloat(target)
-    }
-
     var body: some View {
         VStack(spacing: 4) {
             HStack(spacing: 0) {
@@ -28,7 +22,6 @@ struct BadgeMissionStreakTracker: View {
                     }
                 }
             }
-            .padding(.vertical, 4)
             .background(Capsule().fill(trackGradient))
 
             HStack(spacing: 0) {
@@ -36,23 +29,33 @@ struct BadgeMissionStreakTracker: View {
                     Text(day == current ? "\(current)일차" : "")
                         .pickpleTypography(.caption)
                         .foregroundStyle(Color.blue60)
-                        .frame(width: 24)
                     if day != target {
-                        Spacer(minLength: 0)
+                        Spacer()
                     }
                 }
             }
         }
     }
 
+    // 완료 구간(파랑) → 오늘 구간(그라데이션) → 이후 구간(트랙 배경) 순으로 이어지는 연결선.
+    // TODO: 트랙 배경(F6F8FA)과 오늘 구간 그라데이션 색(0xACD3FF, 0xD7E9FF)이 에셋에 없어 하드코딩/근접값으로 대체함. 정확한 컬러셋 추가되면 교체.
     private var trackGradient: LinearGradient {
-        let blend: CGFloat = 0.03
+        guard target > 1 else {
+            return LinearGradient(colors: [.neutral5], startPoint: .leading, endPoint: .trailing)
+        }
+
+        let segmentWidth = 1 / CGFloat(target - 1)
+        let todayStart = CGFloat(current - 2) * segmentWidth
+        let todayEnd = min(1, CGFloat(current - 1) * segmentWidth)
+
         return LinearGradient(
             stops: [
                 .init(color: .blue60, location: 0),
-                .init(color: .blue60, location: max(0, progressBoundary - blend)),
-                .init(color: .neutral20, location: min(1, progressBoundary + blend)),
-                .init(color: .neutral20, location: 1)
+                .init(color: .blue60, location: todayStart),
+                .init(color: Color(red: 0xAC / 255, green: 0xD3 / 255, blue: 0xFF / 255), location: todayStart),
+                .init(color: Color(red: 0xD7 / 255, green: 0xE9 / 255, blue: 0xFF / 255).opacity(0), location: todayEnd),
+                .init(color: .neutral5, location: todayEnd),
+                .init(color: .neutral5, location: 1)
             ],
             startPoint: .leading,
             endPoint: .trailing
