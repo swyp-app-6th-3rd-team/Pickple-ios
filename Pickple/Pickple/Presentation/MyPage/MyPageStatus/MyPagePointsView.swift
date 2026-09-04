@@ -25,7 +25,7 @@ struct MyPagePointsView: View {
                             .resizable()
                             .frame(width: 20, height: 20)
                         
-                        Text("현재 보유 포인트")
+                        Text(MyPageStrings.currentPoints)
                             .pickpleTypography(.body02)
                             .foregroundStyle(Color.white)
                     }
@@ -69,7 +69,7 @@ struct MyPagePointsView: View {
                     //XMARK: - NextLevel
                         if let nextLevel = myPageViewModel.userInfo?.pointsToNextLevel {
                             HStack(spacing: 3) {
-                                Text("다음 레벨까지")
+                                Text(MyPageStrings.nextLevel)
                                     .pickpleTypography(.label)
                                 
                                 Text("\(nextLevel)P")
