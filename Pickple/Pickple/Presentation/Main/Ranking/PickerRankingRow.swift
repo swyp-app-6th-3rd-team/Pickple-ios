@@ -21,46 +21,46 @@ struct PickerRankingRow: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 6) {
             if let medalImageName {
                 Image(medalImageName)
                     .resizable()
-                    .frame(width: 24, height: 24)
+                    .frame(width: 28, height: 28)
             } else {
                 Text("\(ranking.rank)")
-                    .pickpleTypography(.body01)
-                    .foregroundStyle(Color.neutral40)
-                    .frame(width: 24)
+                    .pickpleTypography(.title02)
+                    .foregroundStyle(Color.neutral40) //임시
+                    .frame(width: 28, height: 28)
             }
 
             if let profileImageName = ranking.profileImageName {
                 Image(profileImageName)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 40, height: 40)
+                    .frame(width: 48, height: 48)
                     .clipShape(Circle())
             } else {
                 Image(systemName: "person.circle.fill")
                     .resizable()
-                    .frame(width: 40, height: 40)
+                    .frame(width: 48, height: 48)
                     .foregroundStyle(Color.neutral20)
             }
 
             HStack(spacing: 4) {
                 Text(ranking.nickname)
                     .pickpleTypography(.body01)
-                    .foregroundStyle(Color.black)
+                    .foregroundStyle(Color.neutral100)
 
                 Image("PickpleLevelBadge\(ranking.level)")
                     .resizable()
-                    .frame(width: 16, height: 16)
+                    .frame(width: 20, height: 20)
             }
 
             Spacer()
 
             Text("\(ranking.points)P")
                 .pickpleTypography(.body01)
-                .foregroundStyle(Color.black)
+                .foregroundStyle(Color.neutral100)
         }
     }
 }
