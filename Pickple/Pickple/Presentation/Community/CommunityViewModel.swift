@@ -15,7 +15,7 @@ class CommunityViewModel: ObservableObject {
     @Published var sortOption: String = CommunityViewModel.sortOptions[0]
     @Published var isSortExpanded: Bool = false
 
-    static let categories = ["전체", "패션/잡화", "전자제품", "생활용품", "뷰티"]
+    static let categories = ["전체", "패션/잡화", "전자제품", "생활용품", "뷰티", "기타"]
     static let sortOptions = ["최신순", "오래된 순"]
     static let scrollTopAnchor = "communityTop"
 

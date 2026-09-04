@@ -4,170 +4,203 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 여백/폰트 크기, 아바타·더보기 아이콘은 임시값(전용 에셋 없음)
+//  TODO: 디자인 확정 후 변경 필요 — 여백/폰트 크기는 임시값
 
 import SwiftUI
 
 struct PostDetailView: View {
-    let post: PostSummary
-    // 방금 게시에 성공하고 넘어온 경우 진입 시 성공 토스트를 한 번 보여준다.
     var showsSuccessToastOnAppear: Bool = false
-
-    @StateObject private var postDetailViewModel = PostDetailViewModel()
+    
+    @StateObject private var postDetailViewModel: PostDetailViewModel
+    @Environment(\.dismiss) private var dismiss
+    
     @State private var isSortExpanded = false
     @State private var showsSuccessToast = false
-
-    private static let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy.MM.dd"
-        return formatter
-    }()
-
-    init(
-        post: PostSummary = PostDetailView.defaultMockPost,
-        showsSuccessToastOnAppear: Bool = false
-    ) {
-        self.post = post
+    @State private var showsMoreMenu = false
+    @State private var postActionConfirm: PostDetailConfirmAction?
+    @State private var loginRequiredDescription: String?
+    @State private var commentToPick: Comment?
+    @State private var commentMoreMenuTarget: Comment?
+    @State private var navigatesToEdit = false
+    @State private var editingPostViewModel = PostViewModel()
+    @FocusState private var isCommentFieldFocused: Bool
+    
+    init(voteType: VoteType = .text, showsSuccessToastOnAppear: Bool = false) {
         self.showsSuccessToastOnAppear = showsSuccessToastOnAppear
+        _postDetailViewModel = StateObject(wrappedValue: PostDetailViewModel(voteType: voteType))
     }
-
+    
     var body: some View {
-        VStack(spacing: 0) {
-            PickpleGNB(
-                leading: .button(icon: Image("PickpleArrowLeft"), action: {}),
-                center: .text("게시글 상세"),
-                trailing: .button(icon: Image(systemName: "ellipsis"), action: {})
-            )
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    HStack(spacing: 4) {
-                        switch post.type {
-                        case .text: Image("PickpleText").resizable().frame(width: 14, height: 14)
-                        case .forAgainst: Image("PickpleAgainst").resizable().frame(width: 14, height: 14)
-                        case .ab: Image("PickpleAB").resizable().frame(width: 14, height: 14)
-                        }
-
-                        Text(post.type.displayName)
-                            .pickpleTypography(.caption)
-                            .foregroundStyle(Color.green80)
-                    }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(Capsule().foregroundStyle(Color.green20))
-
-                    Text(post.title)
-                        .pickpleTypography(.title01)
-                        .foregroundStyle(Color.black)
-
-                    HStack(spacing: 8) {
-                        Image(systemName: "person.circle.fill")
-                            .resizable()
-                            .frame(width: 28, height: 28)
-                            .foregroundStyle(Color.neutral20)
-
-                        Text(post.authorNickname)
-                            .pickpleTypography(.body02)
-                            .foregroundStyle(Color.black)
-
-                        Image("PickpleLevelBadge\(post.authorLevel)")
-                            .resizable()
-                            .frame(width: 16, height: 16)
-
-                        Text("\(Self.dateFormatter.string(from: post.createdAt)) · \(post.createdAt.relativeTimeDescription)")
-                            .pickpleTypography(.caption)
-                            .foregroundStyle(Color.neutral40)
-                    }
-
-                    Text(post.description)
-                        .pickpleTypography(.body01)
-                        .foregroundStyle(Color.neutral70)
-
-                    Divider()
-
-                    HStack {
-                        Text("댓글 \(postDetailViewModel.comments.count)")
-                            .pickpleTypography(.body01)
-                            .foregroundStyle(Color.black)
-
-                        Spacer()
-
-                        PickpleSortButton(
-                            isExpanded: .constant(false),
-                            selectedValue: $postDetailViewModel.sortOption,
-                            options: PostDetailViewModel.sortOptions
-                        )
-                        .floatingOverSiblings {
-                            PickpleSortButton(
-                                isExpanded: $isSortExpanded,
-                                selectedValue: $postDetailViewModel.sortOption,
-                                options: PostDetailViewModel.sortOptions
-                            )
-                        }
-                    }
-                    .zIndex(1)
-
-                    if postDetailViewModel.comments.isEmpty {
-                        VStack {
-                            Spacer(minLength: 80)
-                            Text("아직 작성된 댓글이 없어요")
-                                .pickpleTypography(.body01)
-                                .foregroundStyle(Color.neutral40)
-                            Spacer(minLength: 80)
-                        }
-                        .frame(maxWidth: .infinity)
-                    } else {
-                        VStack(alignment: .leading, spacing: 16) {
-                            ForEach(postDetailViewModel.sortedComments) { comment in
-                                VStack(alignment: .leading, spacing: 4) {
-                                    HStack(spacing: 6) {
-                                        Text(comment.authorNickname)
-                                            .pickpleTypography(.body02)
-                                            .foregroundStyle(Color.black)
-
-                                        Image("PickpleLevelBadge\(comment.authorLevel)")
-                                            .resizable()
-                                            .frame(width: 14, height: 14)
-
-                                        Text(comment.createdAt.relativeTimeDescription)
-                                            .pickpleTypography(.caption)
-                                            .foregroundStyle(Color.neutral40)
-                                    }
-
-                                    Text(comment.content)
-                                        .pickpleTypography(.body01)
-                                        .foregroundStyle(Color.neutral70)
+        ZStack {
+            VStack(spacing: 0) {
+                if postDetailViewModel.post?.type == .text {
+                    PickpleGNB(
+                        leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
+                        center: .text("게시글 상세"),
+                        trailing: .none
+                    )
+                }
+                
+                if let post = postDetailViewModel.post {
+                    ScrollView {
+                        PostDetailContent(
+                            post: post,
+                            postDetailViewModel: postDetailViewModel,
+                            onMoreTapped: { showsMoreMenu = true },
+                            onVote: { side in
+                                if postDetailViewModel.isLoggedIn {
+                                    postDetailViewModel.vote(side)
+                                } else {
+                                    loginRequiredDescription = "간편 로그인 후 더 많은 투표에\n참여해 보세요"
                                 }
-                            }
-                        }
+                            },
+                            onPickTapped: { comment in
+                                if postDetailViewModel.canPickAnyComment {
+                                    commentToPick = comment
+                                }
+                            },
+                            onCommentMoreTapped: { comment in
+                                commentMoreMenuTarget = comment
+                            },
+                            isSortExpanded: $isSortExpanded
+                        )
+                    }
+                    // 캐러셀이 ScrollView 안에 있어서, 캐러셀만 ignoresSafeArea를 걸어도
+                    // ScrollView 자체가 세이프에어리어 아래에서 시작해 위쪽이 비어 보인다.
+                    // 찬반/A-B(GNB가 캐러셀 위에 떠 있는 타입)만 ScrollView 자체를 위로 확장한다.
+                    .ignoresSafeArea(edges: post.type == .text ? [] : .top)
+                }
+                
+                PostDetailCommentInputBar(text: $postDetailViewModel.commentInput, isFocused: $isCommentFieldFocused) {
+                    if postDetailViewModel.isLoggedIn {
+                        postDetailViewModel.submitComment()
+                    } else {
+                        loginRequiredDescription = "간편 로그인 후 댓글을\n작성할 수 있어요"
                     }
                 }
-                .padding(20)
             }
-
-            HStack(spacing: 8) {
-                TextField("댓글 입력...", text: $postDetailViewModel.commentInput)
-                    .pickpleTypography(.body02)
-                    .padding(.horizontal, 16)
-                    .frame(height: 44)
-                    .background(Color.neutral5)
-                    .clipShape(Capsule())
-
-                Button(action: { postDetailViewModel.submitComment() }) {
-                    Text("등록")
-                        .pickpleTypography(.body02)
-                        .foregroundStyle(Color.white)
-                        .padding(.horizontal, 16)
-                        .frame(height: 44)
-                        .background(Color.black)
-                        .clipShape(Capsule())
+            
+            // 찬반/A-B는 GNB 바 없이 뒤로가기 버튼만 캐러셀 이미지 위에 떠 있어야 해서,
+            // 스크롤뷰와 같은 흐름(VStack)에 넣지 않고 ZStack으로 그 위에 겹쳐 그린다.
+            if postDetailViewModel.post?.type != .text {
+                VStack {
+                    PickpleGNB(
+                        leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
+                        center: .none,
+                        trailing: .none
+                    )
+                    .foregroundStyle(Color.white)
+                    Spacer()
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 12)
+            
+            if let loginRequiredDescription {
+                PostDetailDialogOverlay {
+                    PickpleConfirmDialog(
+                        title: "로그인이 필요해요",
+                        description: loginRequiredDescription,
+                        cancelTitle: "취소",
+                        confirmTitle: "로그인",
+                        onCancel: { self.loginRequiredDescription = nil },
+                        onConfirm: { self.loginRequiredDescription = nil }
+                    )
+                }
+            }
+            
+            if let postActionConfirm {
+                PostDetailDialogOverlay {
+                    PickpleConfirmDialog(
+                        title: postActionConfirm.title,
+                        description: postActionConfirm.description,
+                        cancelTitle: "취소",
+                        confirmTitle: postActionConfirm.confirmTitle,
+                        onCancel: { self.postActionConfirm = nil },
+                        onConfirm: {
+                            switch postActionConfirm {
+                            case .delete:
+                                //TODO: 실제 게시글 삭제 API 연동 필요
+                                dismiss()
+                            case .report:
+                                break //TODO: 실제 신고 API 연동 필요
+                            case .block:
+                                break //TODO: 기능명세서상 차단은 확인 모달만 있고 실제 동작은 정의되어 있지 않음
+                            }
+                            self.postActionConfirm = nil
+                        }
+                    )
+                }
+            }
+            
+            if let comment = commentToPick {
+                PostDetailDialogOverlay {
+                    PickpleConfirmDialog(
+                        title: "해당 답변자를 픽할까요?",
+                        description: "한 번 픽하면 취소할 수 없어요",
+                        cancelTitle: "취소",
+                        confirmTitle: "픽하기",
+                        onCancel: { commentToPick = nil },
+                        onConfirm: {
+                            postDetailViewModel.pickComment(comment.id)
+                            commentToPick = nil
+                        }
+                    )
+                }
+            }
+        }
+        .sheet(isPresented: $showsMoreMenu) {
+            PostDetailMoreMenuSheet(
+                isMine: postDetailViewModel.post?.isMine ?? true,
+                onEdit: {
+                    showsMoreMenu = false
+                    if let post = postDetailViewModel.post {
+                        editingPostViewModel = .editing(post)
+                        navigatesToEdit = true
+                    }
+                },
+                onDelete: {
+                    showsMoreMenu = false
+                    postActionConfirm = .delete
+                },
+                onReport: {
+                    showsMoreMenu = false
+                    postActionConfirm = .report
+                },
+                onBlock: {
+                    showsMoreMenu = false
+                    postActionConfirm = .block
+                },
+                onClose: { showsMoreMenu = false }
+            )
+        }
+        .sheet(item: $commentMoreMenuTarget) { comment in
+            PostDetailCommentMoreMenuSheet(
+                isMine: postDetailViewModel.isMyComment(comment),
+                onEdit: {
+                    commentMoreMenuTarget = nil
+                    postDetailViewModel.startEditingComment(comment)
+                    isCommentFieldFocused = true
+                },
+                onDelete: {
+                    commentMoreMenuTarget = nil
+                    postDetailViewModel.deleteComment(comment.id)
+                },
+                onReport: {
+                    commentMoreMenuTarget = nil
+                    //TODO: 실제 댓글 신고 API 연동 필요
+                },
+                onBlock: {
+                    commentMoreMenuTarget = nil
+                    //TODO: 실제 댓글 작성자 차단 API 연동 필요
+                }
+            )
+        }
+        .navigationDestination(isPresented: $navigatesToEdit) {
+            PostWriteFlowView(postViewModel: editingPostViewModel)
         }
         .pickpleToast(isPresented: $showsSuccessToast, message: PostViewStrings.submitSucceededToast)
+        .navigationBarBackButtonHidden(true)
         .task {
+            await postDetailViewModel.loadPostDetail()
             await postDetailViewModel.loadComments()
             if showsSuccessToastOnAppear {
                 showsSuccessToast = true
@@ -176,26 +209,107 @@ struct PostDetailView: View {
     }
 }
 
-extension PostDetailView {
-    // 글 작성 플로우 완료 직후 실제 등록된 게시글 정보 없이 넘어오는 경우를 위한 임시 데이터.
-    // TODO: 실제로는 방금 등록한 게시글의 서버 응답으로 대체 필요
-    static let defaultMockPost = PostSummary(
-        id: UUID(),
-        type: .text,
-        category: "패션/잡화",
-        title: "나이키 에어포스 흰색으로 살까?",
-        description: "데일리로 신을건데 나이키 에어포스 흰색 어때? 흰색 때타고 별로이려나? 검은색은 이미 있어서 이번에 흰 색도 사보려는데 어떻게 생각해?",
-        imageName: "McokMyPostPicture",
-        authorNickname: "닉네임",
-        authorLevel: 5,
-        voteCount: 0,
-        commentCount: 0,
-        createdAt: Date()
-    )
+// 게시글 더보기 메뉴에서 트리거되는 확인 모달 3종(삭제/신고/차단).
+private enum PostDetailConfirmAction {
+    case delete
+    case report
+    case block
+
+    var title: String {
+        switch self {
+        case .delete: "게시글을 삭제할까요?"
+        case .report: "게시글을 신고할까요?"
+        case .block: "게시자를 차단할까요?"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .delete: "게시글을 삭제하면 다시는\n볼 수 없어요"
+        case .report: "이유없이 신고 시 활동이\n제한될 수 있어요"
+        case .block: "차단하면 이 게시자의 모든 게시물을\n다시는 볼 수 없어요"
+        }
+    }
+
+    var confirmTitle: String {
+        switch self {
+        case .delete: "삭제"
+        case .report: "신고"
+        case .block: "차단"
+        }
+    }
+}
+
+// 화면 전체를 덮는 반투명 배경 위에 중앙 모달을 띄운다.
+private struct PostDetailDialogOverlay<Content: View>: View {
+    @ViewBuilder let content: Content
+    
+    var body: some View {
+        Color.black.opacity(0.4)
+            .ignoresSafeArea()
+        content
+            .padding(.horizontal, 40)
+    }
+}
+
+// 캐러셀/헤더/본문/투표/댓글까지 스크롤되는 본문 전체.
+private struct PostDetailContent: View {
+    let post: PostDetail
+    @ObservedObject var postDetailViewModel: PostDetailViewModel
+    let onMoreTapped: () -> Void
+    let onVote: (PostDetailVoteSide) -> Void
+    let onPickTapped: (Comment) -> Void
+    let onCommentMoreTapped: (Comment) -> Void
+    @Binding var isSortExpanded: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            if post.type != .text {
+                PostDetailImageCarousel(
+                    images: post.images,
+                    participantCount: post.participantCount,
+                    currentIndex: $postDetailViewModel.currentImageIndex
+                )
+            }
+            
+            VStack(spacing: 16) {
+                PostDetailHeaderSection(post: post, onMoreTapped: onMoreTapped)
+
+                PostDetailProductVoteSection(post: post, postDetailViewModel: postDetailViewModel, onVote: onVote)
+
+                Rectangle()
+                    .frame(height: 8)
+                    .foregroundStyle(Color.neutral5)
+                
+                PostDetailCommentSectionHeader(
+                    count: postDetailViewModel.comments.count,
+                    sortOption: $postDetailViewModel.sortOption,
+                    isSortExpanded: $isSortExpanded
+                )
+                
+                if postDetailViewModel.comments.isEmpty {
+                    PostDetailCommentEmptyView()
+                } else {
+                    VStack(alignment: .leading, spacing: 16) {
+                        ForEach(postDetailViewModel.sortedComments) { comment in
+                            PostDetailCommentRow(
+                                comment: comment,
+                                isPicked: postDetailViewModel.isPicked(comment.id),
+                                canPick: postDetailViewModel.canPickAnyComment,
+                                onMoreTapped: { onCommentMoreTapped(comment) },
+                                onPickTapped: { onPickTapped(comment) }
+                            )
+                        }
+                    }
+                }
+            }
+            .padding(20)
+        }
+    }
 }
 
 #Preview {
     NavigationStack {
-        PostDetailView(showsSuccessToastOnAppear: true)
+        PostDetailView(voteType: .ab, showsSuccessToastOnAppear: false)
     }
 }

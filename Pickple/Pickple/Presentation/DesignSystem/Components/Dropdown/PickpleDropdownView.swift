@@ -72,13 +72,14 @@ extension View {
     /// 실제로 보여줄(펼쳐지면 더 커질 수 있는) 콘텐츠는 그 위에 overlay로 겹쳐서 그린다.
     /// 펼쳐졌을 때 형제 뷰를 밀어내지 않으면서, zIndex로 그 위에 표시되게 한다.
     func floatingOverSiblings<Content: View>(
+        alignment: Alignment = .topLeading,
         zIndex: Double = 1,
         @ViewBuilder content: @escaping () -> Content
     ) -> some View {
         self
             .hidden()
             .allowsHitTesting(false)
-            .overlay(alignment: .topLeading, content: content)
+            .overlay(alignment: alignment, content: content)
             .zIndex(zIndex)
     }
 }

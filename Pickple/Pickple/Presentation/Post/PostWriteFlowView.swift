@@ -16,6 +16,7 @@ struct PostWriteFlowView: View {
     @State private var isCategoryExpanded = false
     @State private var showsLeaveConfirm = false
     @State private var showsFailureToast = false
+    @State private var navigatesToDetail = false
 
     private let categoryOptions = ["패션/잡화", "전자제품", "화장품/뷰티", "생활용품", "기타"]
 
@@ -67,6 +68,10 @@ struct PostWriteFlowView: View {
         }
         .pickpleToast(isPresented: $showsFailureToast, message: PostViewStrings.submitFailedToast)
         .navigationBarBackButtonHidden(true)
+        .navigationDestination(isPresented: $navigatesToDetail) {
+            // TODO: 방금 게시한 글을 바로 보여주려면 실제 등록된 게시글 정보 연동 필요 — 지금은 유형에 맞는 Mock 상세로 이동
+            PostDetailView(voteType: postViewModel.selectedType, showsSuccessToastOnAppear: true)
+        }
     }
 
     private func handleBack() {
@@ -84,7 +89,7 @@ struct PostWriteFlowView: View {
             Task {
                 await postViewModel.submitPost()
                 if postViewModel.submitState == .succeeded {
-                    dismiss()
+                    navigatesToDetail = true
                 } else {
                     showsFailureToast = true
                 }

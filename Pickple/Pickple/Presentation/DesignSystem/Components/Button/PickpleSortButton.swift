@@ -11,11 +11,12 @@ import SwiftUI
 struct PickpleSortButton: View {
     @Binding var isExpanded: Bool
     @Binding var selectedValue: String
-    
+
     let options: [String]
+    var alignment: HorizontalAlignment = .leading
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: alignment, spacing: 4) {
             Button(action: {
                 withAnimation(.spring()) {
                     isExpanded.toggle()

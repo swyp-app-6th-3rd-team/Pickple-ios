@@ -18,6 +18,7 @@ struct MockUserPostRepository: UserPostRepository {
                 imageName: "McokMyPostPicture",
                 authorNickname: "픽플닉네임",
                 authorLevel: 1,
+                authorProfileImageName: "PickpleProfileSample",
                 voteCount: 12,
                 commentCount: 4,
                 createdAt: Date().addingTimeInterval(-60 * 5)
@@ -31,6 +32,7 @@ struct MockUserPostRepository: UserPostRepository {
                 imageName: "McokMyPostPicture",
                 authorNickname: "픽플닉네임",
                 authorLevel: 1,
+                authorProfileImageName: "PickpleProfileSample",
                 voteCount: 8,
                 commentCount: 2,
                 createdAt: Date().addingTimeInterval(-60 * 60 * 3)
@@ -44,6 +46,7 @@ struct MockUserPostRepository: UserPostRepository {
                 imageName: "McokMyPostPicture",
                 authorNickname: "픽플닉네임",
                 authorLevel: 1,
+                authorProfileImageName: "PickpleProfileSample",
                 voteCount: 0,
                 commentCount: 1,
                 createdAt: Date().addingTimeInterval(-60 * 60 * 24)
@@ -62,6 +65,7 @@ struct MockUserPostRepository: UserPostRepository {
                 imageName: "McokMyPostPicture",
                 authorNickname: "라떼한잔",
                 authorLevel: 3,
+                authorProfileImageName: "PickpleProfileSample",
                 voteCount: 24,
                 commentCount: 9,
                 createdAt: Date().addingTimeInterval(-60 * 30)
@@ -75,6 +79,7 @@ struct MockUserPostRepository: UserPostRepository {
                 imageName: "McokMyPostPicture",
                 authorNickname: "여름햇살",
                 authorLevel: 5,
+                authorProfileImageName: "PickpleProfileSample",
                 voteCount: 15,
                 commentCount: 3,
                 createdAt: Date().addingTimeInterval(-60 * 60 * 6)
@@ -93,6 +98,7 @@ struct MockUserPostRepository: UserPostRepository {
                 imageName: "McokMyPostPicture",
                 authorNickname: "구름위산책",
                 authorLevel: 2,
+                authorProfileImageName: "PickpleProfileSample",
                 voteCount: 3,
                 commentCount: 18,
                 createdAt: Date().addingTimeInterval(-60 * 60 * 2)
@@ -106,6 +112,7 @@ struct MockUserPostRepository: UserPostRepository {
                 imageName: "McokMyPostPicture",
                 authorNickname: "냥냥펀치",
                 authorLevel: 4,
+                authorProfileImageName: "PickpleProfileSample",
                 voteCount: 7,
                 commentCount: 5,
                 createdAt: Date().addingTimeInterval(-60 * 60 * 30)
