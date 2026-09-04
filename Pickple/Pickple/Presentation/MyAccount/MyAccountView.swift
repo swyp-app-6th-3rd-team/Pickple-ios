@@ -21,7 +21,7 @@ struct MyAccountView: View {
             VStack(spacing: 0) {
                 PickpleGNB(
                     leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
-                    center: .text("계정관리"),
+                    center: .text(MyAccountStrings.title),
                     trailing: .none
                 )
 
@@ -30,11 +30,11 @@ struct MyAccountView: View {
                     .foregroundStyle(Color.neutral5)
 
                 VStack(spacing: 0) {
-                    MyPageInfoRow(iconName: "PickpleLogout", title: "로그아웃") {
+                    MyPageInfoRow(iconName: "PickpleLogout", title: MyAccountStrings.logout) {
                         showsLogoutConfirm = true
                     }
 
-                    MyPageInfoRow(iconName: "PickpleLeave", title: "계정탈퇴") {
+                    MyPageInfoRow(iconName: "PickpleLeave", title: MyAccountStrings.leave) {
                         showsLeaveConfirm = true
                     }
                 }
@@ -50,9 +50,9 @@ struct MyAccountView: View {
                     .onTapGesture { showsLogoutConfirm = false }
 
                 MyAccountConfirmDialog(
-                    title: "로그아웃 할까요?",
-                    cancelTitle: "취소",
-                    confirmTitle: "로그아웃",
+                    title: MyAccountStrings.logoutConfirmTitle,
+                    cancelTitle: MyAccountStrings.cancel,
+                    confirmTitle: MyAccountStrings.logout,
                     onCancel: { showsLogoutConfirm = false },
                     onConfirm: {
                         showsLogoutConfirm = false
@@ -67,10 +67,10 @@ struct MyAccountView: View {
                     .onTapGesture { showsLeaveConfirm = false }
 
                 MyAccountConfirmDialog(
-                    title: "정말 탈퇴하시나요?",
-                    description: "탈퇴하시면 지금까지의 모든 데이터가\n날라가고 다시는 볼 수 없어요",
-                    cancelTitle: "취소",
-                    confirmTitle: "나가기",
+                    title: MyAccountStrings.leaveConfirmTitle,
+                    description: MyAccountStrings.leaveConfirmDescription,
+                    cancelTitle: MyAccountStrings.cancel,
+                    confirmTitle: MyAccountStrings.leaveConfirmButton,
                     onCancel: { showsLeaveConfirm = false },
                     onConfirm: {
                         showsLeaveConfirm = false
