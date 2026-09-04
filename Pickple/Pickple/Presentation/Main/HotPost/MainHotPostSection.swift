@@ -15,7 +15,7 @@ struct MainHotPostSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("지금 핫한 투표")
+                Text(MainStrings.hotPostSectionTitle)
                     .pickpleTypography(.title02)
                     .foregroundStyle(Color.black)
 
@@ -23,7 +23,7 @@ struct MainHotPostSection: View {
 
                 Button(action: onTapMore) {
                     HStack(spacing: 2) {
-                        Text("더보기")
+                        Text(MainStrings.more)
                         Image(systemName: "chevron.right")
                     }
                     .pickpleTypography(.caption)
@@ -32,7 +32,7 @@ struct MainHotPostSection: View {
             }
 
             if posts.isEmpty {
-                Text("아직 인기 있는 투표 게시글이 없어요")
+                Text(MainStrings.hotPostEmptyMessage)
                     .pickpleTypography(.body02)
                     .foregroundStyle(Color.neutral40)
                     .frame(maxWidth: .infinity)

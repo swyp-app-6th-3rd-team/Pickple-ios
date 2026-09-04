@@ -30,7 +30,7 @@ struct MainView: View {
                         MainTitleView()
 
                         PickpleTabBar(
-                            tabs: ["찬반", "AB"],
+                            tabs: MainStrings.voteTypeTabs,
                             selectedIndex: mainViewModel.selectedTypeIndex,
                             selectedColor: .white,
                             unselectedColor: Color.neutral20
@@ -78,10 +78,10 @@ struct MainView: View {
             if cardStackViewModel.showsLoginRequired {
                 PickpleDialogOverlay {
                     PickpleConfirmDialog(
-                        title: "로그인이 필요해요",
-                        description: "간편 로그인 후 더 많은 투표에\n참여해 보세요",
-                        cancelTitle: "취소",
-                        confirmTitle: "로그인",
+                        title: MainStrings.loginRequiredTitle,
+                        description: MainStrings.loginRequiredDescription,
+                        cancelTitle: MainStrings.cancel,
+                        confirmTitle: MainStrings.login,
                         onCancel: { cardStackViewModel.showsLoginRequired = false },
                         onConfirm: { cardStackViewModel.showsLoginRequired = false }
                     )

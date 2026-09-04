@@ -15,7 +15,7 @@ struct TopPickerRankingSection: View {
         VStack(alignment: .leading, spacing: 8) {
             //MARK: - Title
             HStack {
-                Text("TOP 피커 랭킹")
+                Text(MainStrings.topRankingSectionTitle)
                     .pickpleTypography(.title01)
                     .foregroundStyle(Color.neutral100)
 
@@ -23,7 +23,7 @@ struct TopPickerRankingSection: View {
 
                 Button(action: onTapMore) {
                     HStack(spacing: 4) {
-                        Text("더보기")
+                        Text(MainStrings.more)
                         Image(systemName: "chevron.right")
                     }
                     .pickpleTypography(.body02)
@@ -32,7 +32,7 @@ struct TopPickerRankingSection: View {
             }
 
             if rankings.isEmpty {
-                Text("아직 TOP 피커가 존재하지 않아요")
+                Text(MainStrings.rankingEmptyMessage)
                     .pickpleTypography(.body02)
                     .foregroundStyle(Color.neutral40)
                     .frame(maxWidth: .infinity)

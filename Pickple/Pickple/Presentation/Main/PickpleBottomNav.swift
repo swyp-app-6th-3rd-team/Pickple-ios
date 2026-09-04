@@ -41,7 +41,7 @@ struct PickpleBottomNav: View {
             .environment(mainRouter)
             .tabItem {
                 Label {
-                    Text("홈")
+                    Text(MainStrings.tabHome)
                 } icon: {
                     Image("PickpleHome")
                         .renderingMode(selectedTab == 0 ? .template : .original)
@@ -61,7 +61,7 @@ struct PickpleBottomNav: View {
             .environment(communityRouter)
             .tabItem {
                 Label {
-                    Text("커뮤니티")
+                    Text(MainStrings.tabCommunity)
                 } icon: {
                     Image("PickpleMessage")
                         .renderingMode(selectedTab == 1 ? .template : .original)
@@ -89,7 +89,7 @@ struct PickpleBottomNav: View {
             .environment(myPageRouter)
             .tabItem {
                 Label {
-                    Text("마이")
+                    Text(MainStrings.tabMyPage)
                 } icon: {
                     Image("PickpleUser")
                         .renderingMode(selectedTab == 2 ? .template : .original)

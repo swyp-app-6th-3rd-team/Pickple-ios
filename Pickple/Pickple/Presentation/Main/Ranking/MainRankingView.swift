@@ -17,13 +17,13 @@ struct MainRankingView: View {
         VStack(spacing: 0) {
             PickpleGNB(
                 leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
-                center: .text("전체 랭킹"),
+                center: .text(MainStrings.rankingTitle),
                 trailing: .none
             )
 
             if mainRankingViewModel.rankings.isEmpty {
                 Spacer()
-                Text("아직 TOP 피커가 존재하지 않아요")
+                Text(MainStrings.rankingEmptyMessage)
                     .pickpleTypography(.body01)
                     .foregroundStyle(Color.neutral40)
                 Spacer()
