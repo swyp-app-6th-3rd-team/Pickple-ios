@@ -20,6 +20,6 @@ class MyBadgeViewModel: ObservableObject {
     }
 
     func loadMyBadges() async {
-        badges = await myBadgeRepository.fetchMyBadges()
+        badges = (try? await myBadgeRepository.fetchMyBadges()) ?? []
     }
 }

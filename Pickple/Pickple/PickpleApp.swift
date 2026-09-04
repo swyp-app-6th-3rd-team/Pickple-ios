@@ -12,6 +12,7 @@ struct PickpleApp: App {
     @State private var sessionViewModel: AppSessionViewModel
     private let loginViewModel: LoginViewModel
     private let profileRepository: ProfileRepository
+    private let apiClient: APIClientProtocol
 
     init() {
         let tokenStore = InMemoryTokenStore()
@@ -20,6 +21,7 @@ struct PickpleApp: App {
         let profileRepository = RemoteProfileRepository(apiClient: apiClient)
         let refreshTokenStore = KeychainRefreshTokenStore()
 
+        self.apiClient = apiClient
         self.profileRepository = profileRepository
         _sessionViewModel = State(initialValue: AppSessionViewModel(
             authRepository: authRepository,
@@ -48,6 +50,7 @@ struct PickpleApp: App {
                     PickpleBottomNav()
                         .environment(\.appLogout, sessionViewModel.logout)
                         .environment(\.appDeleteAccount, sessionViewModel.deleteAccount)
+                        .environment(\.apiClient, apiClient)
                 } else {
                     NavigationStack {
                         LoginView(viewModel: loginViewModel, onLoginSuccess: {

@@ -6,6 +6,5 @@
 //
 
 protocol MyBadgeRepository {
-    func fetchMyBadges() async -> [MyBadge]
-    //실제 API와 연동
+    func fetchMyBadges() async throws -> [MyBadge]
 }
