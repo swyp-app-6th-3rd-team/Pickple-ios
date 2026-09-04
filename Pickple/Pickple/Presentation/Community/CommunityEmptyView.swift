@@ -15,7 +15,7 @@ struct CommunityEmptyView: View {
                 .frame(width: 60, height: 60)
                 .foregroundStyle(Color.neutral20)
 
-            Text("아직 작성된 게시글이 없어요")
+            Text(CommunityStrings.emptyMessage)
                 .pickpleTypography(.body01)
                 .foregroundStyle(Color.neutral40)
         }

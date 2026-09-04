@@ -15,11 +15,11 @@ struct CommunityLoginRequiredModal: View {
     var body: some View {
         VStack(spacing: 20) {
             VStack(spacing: 8) {
-                Text("로그인이 필요해요")
+                Text(CommunityStrings.loginRequiredTitle)
                     .pickpleTypography(.title01)
                     .foregroundStyle(Color.black)
 
-                Text("간편 로그인 후 게시글을\n작성할 수 있어요")
+                Text(CommunityStrings.loginRequiredDescription)
                     .pickpleTypography(.body02)
                     .foregroundStyle(Color.neutral40)
                     .multilineTextAlignment(.center)
@@ -27,7 +27,7 @@ struct CommunityLoginRequiredModal: View {
 
             HStack(spacing: 8) {
                 Button(action: onCancel) {
-                    Text("취소")
+                    Text(CommunityStrings.cancel)
                         .pickpleTypography(.body01)
                         .foregroundStyle(Color.black)
                         .frame(maxWidth: .infinity, minHeight: 52)
@@ -36,7 +36,7 @@ struct CommunityLoginRequiredModal: View {
                 }
 
                 Button(action: onConfirm) {
-                    Text("로그인")
+                    Text(CommunityStrings.login)
                         .pickpleTypography(.body01)
                         .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity, minHeight: 52)
