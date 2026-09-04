@@ -11,11 +11,11 @@ struct ProfileTitleView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(ProfileStrings.profileTitle)
+                Text(ProfileSetupStrings.profileTitle)
                     .pickpleTypography(.heading02)
                     .foregroundStyle(Color.black)
                 
-                Text(ProfileStrings.profileGuideText)
+                Text(ProfileSetupStrings.profileGuideText)
                     .pickpleTypography(.body01)
                     .foregroundStyle(Color.neutral60)
             }
