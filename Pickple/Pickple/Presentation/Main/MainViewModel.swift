@@ -40,11 +40,12 @@ class MainViewModel: ObservableObject {
     }
 
     func loadHomeData() async {
-        async let missionsResult = badgeMissionRepository.fetchInProgressMissions()
+        // 홈 화면 한 섹션 실패로 전체를 막지 않기 위해 실패하면 빈 배열로 둔다.
+        async let missionsResult = try? badgeMissionRepository.fetchInProgressMissions()
         async let postsResult = communityRepository.fetchPosts()
         async let rankingsResult = pickerRankingRepository.fetchTopRankings()
 
-        missions = await missionsResult
+        missions = await missionsResult ?? []
         let posts = await postsResult
         hotPosts = Array(
             posts
