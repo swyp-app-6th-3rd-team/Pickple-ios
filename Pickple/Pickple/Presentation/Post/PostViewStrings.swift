@@ -13,6 +13,7 @@ enum PostViewStrings {
     static let requiredMark = "*"
     static let category = "카테고리"
     static let categoryPlaceholder = "카테고리를 선택해주세요"
+    static let categoryOptions = ["패션/잡화", "전자제품", "화장품/뷰티", "생활용품", "기타"]
     static let topic = "주제"
     static let topicText = "주제를 입력해주세요"
 

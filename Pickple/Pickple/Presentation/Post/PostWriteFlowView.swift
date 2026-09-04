@@ -18,7 +18,7 @@ struct PostWriteFlowView: View {
     @State private var showsFailureToast = false
     @State private var navigatesToDetail = false
 
-    private let categoryOptions = ["패션/잡화", "전자제품", "화장품/뷰티", "생활용품", "기타"]
+    private let categoryOptions = PostViewStrings.categoryOptions
 
     var body: some View {
         ZStack {
