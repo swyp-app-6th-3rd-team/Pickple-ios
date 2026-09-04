@@ -9,11 +9,16 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject private var mainViewModel = MainViewModel()
+    @StateObject private var mainViewModel: MainViewModel
     @StateObject private var cardStackViewModel = CardStackViewModel()
     @Environment(MainRouter.self) private var mainRouter
     @State private var isMissionExpanded = false
     var onRequestCommunityTab: (() -> Void)? = nil
+
+    init(mainViewModel: MainViewModel = MainViewModel(), onRequestCommunityTab: (() -> Void)? = nil) {
+        _mainViewModel = StateObject(wrappedValue: mainViewModel)
+        self.onRequestCommunityTab = onRequestCommunityTab
+    }
 
     var body: some View {
         ZStack {
