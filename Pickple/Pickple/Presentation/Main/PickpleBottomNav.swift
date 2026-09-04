@@ -19,6 +19,7 @@
 import SwiftUI
 
 struct PickpleBottomNav: View {
+    @Environment(\.apiClient) private var apiClient
     @State private var selectedTab = 0
     @State private var mainRouter = MainRouter()
     @State private var communityRouter = CommunityRouter()
@@ -28,7 +29,10 @@ struct PickpleBottomNav: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             NavigationStack(path: $mainRouter.path) {
-                MainView(onRequestCommunityTab: { selectedTab = 1 })
+                MainView(
+                    mainViewModel: MainViewModel(badgeMissionRepository: RemoteBadgeMissionRepository(apiClient: apiClient)),
+                    onRequestCommunityTab: { selectedTab = 1 }
+                )
                     .navigationDestination(for: MainRoute.self) { route in
                         switch route {
                         case .postDetail(let type):
@@ -76,7 +80,7 @@ struct PickpleBottomNav: View {
                         case .grade:
                             MyGradeView(myPageViewModel: myPageViewModel)
                         case .badge:
-                            MyBadgeView(myBadgeViewModel: MyBadgeViewModel())
+                            MyBadgeView(myBadgeViewModel: MyBadgeViewModel(myBadgeRepository: RemoteMyBadgeRepository(apiClient: apiClient)))
                         case .account:
                             MyAccountView()
                         case .activity:
