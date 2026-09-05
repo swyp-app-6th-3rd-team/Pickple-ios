@@ -16,7 +16,7 @@ struct AppleLoginRequestDTO: Encodable {
 
 struct KakaoLoginRequestDTO: Encodable {
     let identityToken: String?
-    let rawNonce: String
+    let nonce: String
 }
 
 struct MobileRefreshRequestDTO: Encodable {
@@ -46,7 +46,7 @@ struct RemoteAuthRepository: AuthRepository {
     func loginWithKakao(identityToken: String?, rawNonce: String) async throws -> AuthTokens {
             let body = try JSONEncoder().encode(KakaoLoginRequestDTO(
                 identityToken: identityToken,
-                rawNonce: rawNonce,
+                nonce: rawNonce
             ))
             let endpoint = APIEndpoint(method: .post, path: "/auth/kakao", body: body, requiresAuth: false)
             let dto: AuthTokensDTO = try await apiClient.request(endpoint)
