@@ -64,14 +64,14 @@ struct PickpleApp: App {
                     NavigationStack {
                         LoginView(viewModel: loginViewModel, onLoginSuccess: {
                             Task { await sessionViewModel.handleLoginSuccess() }
-                        }).onOpenURL(perform: { url in
-                            if (AuthApi.isKakaoTalkLoginUrl(url)) {
-                                AuthController.handleOpenUrl(url: url)
-                            }
                         })
                     }
                 }
-            }
+            }.onOpenURL(perform: { url in
+                if (AuthApi.isKakaoTalkLoginUrl(url)) {
+                    AuthController.handleOpenUrl(url: url)
+                }
+            })
             .task {
                 await sessionViewModel.restoreSession()
             }
