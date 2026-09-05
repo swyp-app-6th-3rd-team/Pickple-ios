@@ -23,7 +23,10 @@ struct PickpleApp: App {
         let profileRepository = RemoteProfileRepository(apiClient: apiClient)
         let refreshTokenStore = KeychainRefreshTokenStore()
         
-        KakaoSDK.initSDK(appKey: "NATIVE_APP_KEY")
+        guard let kakaoNativeAppKey = Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] as? String else {
+            fatalError("Info.plist에 KAKAO_NATIVE_APP_KEY가 없습니다")
+        }
+        KakaoSDK.initSDK(appKey: kakaoNativeAppKey)
 
         self.apiClient = apiClient
         self.profileRepository = profileRepository
@@ -69,7 +72,7 @@ struct PickpleApp: App {
                 }
             }.onOpenURL(perform: { url in
                 if (AuthApi.isKakaoTalkLoginUrl(url)) {
-                    AuthController.handleOpenUrl(url: url)
+                    _ = AuthController.handleOpenUrl(url: url)
                 }
             })
             .task {
