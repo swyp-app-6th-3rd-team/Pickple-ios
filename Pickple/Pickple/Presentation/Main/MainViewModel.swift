@@ -28,6 +28,14 @@ class MainViewModel: ObservableObject {
         )
     }
 
+    // MainToggleButton(찬반/AB)용 — selectedTypeIndex와 같은 값을 Bool로 노출한다.
+    var isABSelected: Binding<Bool> {
+        Binding(
+            get: { self.selectedType == .ab },
+            set: { self.selectedType = $0 ? .ab : .forAgainst }
+        )
+    }
+
     init(
         badgeMissionRepository: BadgeMissionRepository = MockBadgeMissionRepository(),
         communityRepository: CommunityRepository = MockCommunityRepository(),
