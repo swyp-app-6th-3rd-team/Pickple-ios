@@ -13,9 +13,13 @@ struct MyPageProfileHeaderView: View {
     var body: some View {
         Button(action: {}) {
             VStack(spacing: 12) {
-                Circle()
-                    .frame(width: 84, height: 84)
-                    .foregroundStyle(Color.white)
+                AsyncImage(url: myPageViewModel.userInfo?.profileImageUrl) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    Image("PickpleCharacter").resizable().scaledToFill()
+                }
+                .frame(width: 84, height: 84)
+                .clipShape(Circle())
                 
                 HStack(spacing: 4) {
                     
