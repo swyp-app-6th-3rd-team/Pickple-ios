@@ -14,7 +14,7 @@ enum MyPageRoute: Hashable {
     case badge
     case account
     case activity
-    case postDetail(VoteType)
+    case postDetail(postId: Int, type: VoteType)
 }
 
 final class MyPageRouter: Router<MyPageRoute> {}

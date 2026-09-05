@@ -10,7 +10,7 @@
 import SwiftUI
 
 enum MainRoute: Hashable {
-    case postDetail(VoteType)
+    case postDetail(postId: Int, type: VoteType)
     case ranking
 }
 

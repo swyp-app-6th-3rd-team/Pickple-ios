@@ -19,8 +19,8 @@ class PostDetailViewModel: ObservableObject {
     @Published var selectedProductTab: PostDetailVoteSide = .first
     @Published var votedSide: PostDetailVoteSide?
     // 한 게시글에 원픽은 하나만 가능하고 취소할 수 없다.
-    @Published var pickedCommentID: UUID?
-    @Published var editingCommentID: UUID?
+    @Published var pickedCommentID: Int?
+    @Published var editingCommentID: Int?
 
     // TODO: 실제 로그인 상태 연동 필요 — 지금은 항상 로그인된 것으로 취급(Mock)
     @Published var isLoggedIn = true
@@ -55,7 +55,7 @@ class PostDetailViewModel: ObservableObject {
     }
 
     func isMyComment(_ comment: Comment) -> Bool {
-        comment.authorNickname == PostDetailStrings.mockCurrentUserNickname
+        comment.mine
     }
 
     var sortedComments: [Comment] {
@@ -76,32 +76,26 @@ class PostDetailViewModel: ObservableObject {
     }
 
     func loadComments() async {
-        comments = await commentRepository.fetchComments()
+        comments = (try? await commentRepository.fetchComments()) ?? []
     }
 
-    // TODO: 실제 댓글 등록/수정 API 연동 필요 — 지금은 로컬 목록에만 반영
-    func submitComment() {
+    func submitComment() async {
         let trimmed = commentInput.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
-        if let editingCommentID, let index = comments.firstIndex(where: { $0.id == editingCommentID }) {
-            let original = comments[index]
-            comments[index] = Comment(
-                id: original.id,
-                authorNickname: original.authorNickname,
-                authorLevel: original.authorLevel,
-                authorProfileImageName: original.authorProfileImageName,
-                content: trimmed,
-                createdAt: original.createdAt,
-                pickCount: original.pickCount
-            )
-            self.editingCommentID = nil
-        } else {
-            comments.append(
-                Comment(id: UUID(), authorNickname: PostDetailStrings.mockCurrentUserNickname, authorLevel: 1, authorProfileImageName: "PickpleProfileSample", content: trimmed, createdAt: Date())
-            )
+        do {
+            if let editingCommentID {
+                try await commentRepository.editComment(id: editingCommentID, content: trimmed)
+                self.editingCommentID = nil
+            } else {
+                try await commentRepository.postComment(content: trimmed)
+            }
+            // 작성/수정 응답에 작성자·mine 같은 필드가 없어서, 성공하면 목록을 다시 받아 반영한다.
+            await loadComments()
+            commentInput = ""
+        } catch {
+            // TODO: 실패 시 사용자 안내(토스트 등) 필요 — 지금은 입력값을 유지만 한다.
         }
-        commentInput = ""
     }
 
     func startEditingComment(_ comment: Comment) {
@@ -114,8 +108,8 @@ class PostDetailViewModel: ObservableObject {
         commentInput = ""
     }
 
-    // TODO: 실제 댓글 삭제 API 연동 필요 — 지금은 로컬 목록에서만 제거
-    func deleteComment(_ commentID: UUID) {
+    func deleteComment(_ commentID: Int) async {
+        guard (try? await commentRepository.deleteComment(id: commentID)) != nil else { return }
         comments.removeAll { $0.id == commentID }
         if editingCommentID == commentID {
             cancelEditingComment()
@@ -128,15 +122,14 @@ class PostDetailViewModel: ObservableObject {
         votedSide = side
     }
 
-    // TODO: 실제 포인트 지급 API 연동 필요 — 댓글 작성자 +10P, 원픽한 나(글 작성자) +5P.
-    // 지금은 원픽 횟수·선택 상태만 로컬로 반영
-    func pickComment(_ commentID: UUID) {
+    func pickComment(_ commentID: Int) async {
         guard canPickAnyComment, let index = comments.firstIndex(where: { $0.id == commentID }) else { return }
+        guard (try? await commentRepository.pickComment(id: commentID)) != nil else { return }
         comments[index].pickCount += 1
         pickedCommentID = commentID
     }
 
-    func isPicked(_ commentID: UUID) -> Bool {
+    func isPicked(_ commentID: Int) -> Bool {
         pickedCommentID == commentID
     }
 }

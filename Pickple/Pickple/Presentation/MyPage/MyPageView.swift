@@ -31,7 +31,7 @@ struct MyPageView: View {
                         
                         MyPagePostView(
                             myPageViewModel: myPageViewModel,
-                            onTapPost: { post in myPageRouter.push(.postDetail(post.type)) },
+                            onTapPost: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) },
                             onTapMore: { myPageRouter.push(.activity) }
                         )
 

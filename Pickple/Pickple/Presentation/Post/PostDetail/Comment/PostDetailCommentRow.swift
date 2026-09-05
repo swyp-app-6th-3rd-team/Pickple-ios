@@ -19,12 +19,16 @@ struct PostDetailCommentRow: View {
         VStack(alignment: .leading, spacing: 12) {
                 //MARK: - Profile
                 HStack(spacing: 12) {
-                if let authorProfileImageName = comment.authorProfileImageName {
-                    Image(authorProfileImageName)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 32, height: 32)
-                        .clipShape(Circle())
+                if let authorProfileImageUrl = comment.authorProfileImageUrl {
+                    AsyncImage(url: authorProfileImageUrl) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .foregroundStyle(Color.neutral20)
+                    }
+                    .frame(width: 32, height: 32)
+                    .clipShape(Circle())
                 } else {
                     Image(systemName: "person.circle.fill")
                         .resizable()
@@ -87,7 +91,7 @@ struct PostDetailCommentRow: View {
 
 #Preview {
     PostDetailCommentRow(
-        comment: Comment(id: UUID(), authorNickname: "픽플고인물", authorLevel: 5, authorProfileImageName: "PickpleProfileSample", content: "이거 너무 좋아요", createdAt: Date(), pickCount: 3),
+        comment: Comment(id: 1, authorNickname: "픽플고인물", authorLevel: 5, authorProfileImageUrl: nil, content: "이거 너무 좋아요", createdAt: Date(), pickCount: 3, mine: false),
         isPicked: false,
         canPick: true,
         onMoreTapped: {},

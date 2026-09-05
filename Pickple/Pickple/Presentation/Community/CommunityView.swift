@@ -20,7 +20,7 @@ struct CommunityView: View {
                     CommunityHeaderView(communityViewModel: communityViewModel)
                     CommunityPostListSection(
                         communityViewModel: communityViewModel,
-                        onTapPost: { post in communityRouter.push(.postDetail(post.type)) }
+                        onTapPost: { post in communityRouter.push(.postDetail(postId: post.id, type: post.type)) }
                     )
                 }
 

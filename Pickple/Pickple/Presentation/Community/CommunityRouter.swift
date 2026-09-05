@@ -10,7 +10,7 @@
 import SwiftUI
 
 enum CommunityRoute: Hashable {
-    case postDetail(VoteType)
+    case postDetail(postId: Int, type: VoteType)
 }
 
 final class CommunityRouter: Router<CommunityRoute> {}

@@ -29,9 +29,13 @@ struct PostDetailView: View {
     // 캐러셀 끝이 GNB 높이(56) 아래로 올라가면 이미지를 다 지나친 것으로 본다.
     private var isScrolledPastImage: Bool { carouselBottomY < 56 }
     
-    init(voteType: VoteType = .text, showsSuccessToastOnAppear: Bool = false) {
+    init(
+        voteType: VoteType = .text,
+        commentRepository: CommentRepository = MockCommentRepository(),
+        showsSuccessToastOnAppear: Bool = false
+    ) {
         self.showsSuccessToastOnAppear = showsSuccessToastOnAppear
-        _postDetailViewModel = StateObject(wrappedValue: PostDetailViewModel(voteType: voteType))
+        _postDetailViewModel = StateObject(wrappedValue: PostDetailViewModel(voteType: voteType, commentRepository: commentRepository))
     }
     
     var body: some View {
@@ -79,7 +83,7 @@ struct PostDetailView: View {
                 
                 PostDetailCommentInputBar(text: $postDetailViewModel.commentInput, isFocused: $isCommentFieldFocused) {
                     if postDetailViewModel.isLoggedIn {
-                        postDetailViewModel.submitComment()
+                        Task { await postDetailViewModel.submitComment() }
                     } else {
                         loginRequiredDescription = PostDetailStrings.commentRequiredDescription
                     }
@@ -149,7 +153,7 @@ struct PostDetailView: View {
                         confirmTitle: PostDetailStrings.pickConfirmButton,
                         onCancel: { commentToPick = nil },
                         onConfirm: {
-                            postDetailViewModel.pickComment(comment.id)
+                            Task { await postDetailViewModel.pickComment(comment.id) }
                             commentToPick = nil
                         }
                     )
@@ -191,7 +195,7 @@ struct PostDetailView: View {
                 },
                 onDelete: {
                     commentMoreMenuTarget = nil
-                    postDetailViewModel.deleteComment(comment.id)
+                    Task { await postDetailViewModel.deleteComment(comment.id) }
                 },
                 onReport: {
                     commentMoreMenuTarget = nil
