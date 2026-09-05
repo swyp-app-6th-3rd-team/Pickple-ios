@@ -24,7 +24,11 @@ struct PickpleBottomNav: View {
     @State private var mainRouter = MainRouter()
     @State private var communityRouter = CommunityRouter()
     @State private var myPageRouter = MyPageRouter()
-    @StateObject private var myPageViewModel = MyPageViewModel()
+    @StateObject private var myPageViewModel: MyPageViewModel
+
+    init(myPageViewModel: MyPageViewModel = MyPageViewModel()) {
+        _myPageViewModel = StateObject(wrappedValue: myPageViewModel)
+    }
 
     var body: some View {
         TabView(selection: $selectedTab) {
