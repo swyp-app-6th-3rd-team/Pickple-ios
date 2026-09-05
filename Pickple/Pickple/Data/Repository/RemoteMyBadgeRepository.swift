@@ -28,11 +28,12 @@ struct RemoteMyBadgeRepository: MyBadgeRepository {
         let endpoint = APIEndpoint(method: .get, path: "/users/me/badges", requiresAuth: true)
         let dto: BadgeCollectionDTO = try await apiClient.request(endpoint)
         return dto.badges.map {
-            MyBadge(
+            let iconFamily = BadgeIconFamily.forCode($0.code)
+            return MyBadge(
                 id: UUID(),
                 title: $0.name,
-                iconOnName: Self.iconOnName(forBadgeCode: $0.code),
-                iconOffName: RemoteBadgeMissionRepository.badgeIconOffName(forMissionCode: $0.code),
+                iconOnName: iconFamily.onIconName,
+                iconOffName: iconFamily.offIconName,
                 isUnlocked: $0.acquired,
                 // 서버가 "방금 해금됨" 여부를 따로 안 줘서, 지금은 항상 false로 둔다.
                 // 축하 모달을 계속 쓰려면 서버에 플래그 추가를 요청하거나 클라이언트가 마지막 확인 시점을
@@ -40,21 +41,6 @@ struct RemoteMyBadgeRepository: MyBadgeRepository {
                 isNewlyUnlocked: false,
                 unlockCondition: "이 뱃지를 해제하려면\n\($0.description) 달성하세요."
             )
-        }
-    }
-
-    // 뱃지 코드 → 해금 상태 아이콘. Off 아이콘과 같은 code 규칙 추정을 그대로 쓴다.
-    static func iconOnName(forBadgeCode code: String) -> String {
-        switch code {
-        case "TOTAL_VOTE_10": return "PickpleBadgeFirstPickOn"
-        case "TOTAL_VOTE_100": return "PickpleBadgeSproutOn"
-        case "TOTAL_VOTE_500": return "PickpleBadgeProOn"
-        case "TOTAL_VOTE_1000": return "PickpleBadgeMasterOn"
-        case "DAILY_VOTE_20": return "PickpleBadgeHunterOn"
-        case "DAILY_VOTE_30": return "PickpleBadgeRampageOn"
-        case "STREAK_7": return "PickpleBadgeAttendanceOn"
-        case "STREAK_30": return "PickpleBadgeAddictOn"
-        default: return "PickpleBadgeFirstPickOn" // 확인 안 된 code — 임시 기본값
         }
     }
 }

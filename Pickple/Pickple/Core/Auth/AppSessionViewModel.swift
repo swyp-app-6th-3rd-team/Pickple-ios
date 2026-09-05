@@ -66,8 +66,7 @@ class AppSessionViewModel {
         guard let refreshToken = refreshTokenStore.load() else { return }
         do {
             let tokens = try await authRepository.refreshAccessToken(refreshToken: refreshToken)
-            await tokenStore.update(tokens.accessToken)
-            try refreshTokenStore.save(tokens.refreshToken)
+            try await SessionTokenPersistence.save(tokens, tokenStore: tokenStore, refreshTokenStore: refreshTokenStore)
             await resolveProfileState()
         } catch {
             refreshTokenStore.clear()
@@ -79,18 +78,19 @@ class AppSessionViewModel {
         // accessToken을 지우기 전에 먼저 호출해야 Bearer 헤더가 실린다.
         // 서버 호출이 실패해도(네트워크 등) 로컬 로그아웃은 그대로 진행한다.
         try? await authRepository.logout()
-        refreshTokenStore.clear()
-        await tokenStore.update(nil)
-        isLoggedIn = false
-        needsProfileSetup = false
+        await clearLocalSession()
     }
 
     // 실패하면(예: Apple 일시 장애 503) 로컬 상태는 그대로 두고 에러를 던진다 — 계정이 안 지워졌으니 재시도 가능해야 한다.
     @MainActor
     func deleteAccount() async throws {
         try await authRepository.deleteAccount()
-        refreshTokenStore.clear()
-        await tokenStore.update(nil)
+        await clearLocalSession()
+    }
+
+    @MainActor
+    private func clearLocalSession() async {
+        await SessionTokenPersistence.clear(tokenStore: tokenStore, refreshTokenStore: refreshTokenStore)
         isLoggedIn = false
         needsProfileSetup = false
     }
