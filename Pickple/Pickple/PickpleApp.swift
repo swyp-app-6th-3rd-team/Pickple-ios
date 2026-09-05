@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import KakaoSDKAuth
+import KakaoSDKCommon
 
 @main
 struct PickpleApp: App {
@@ -20,6 +22,8 @@ struct PickpleApp: App {
         let authRepository = RemoteAuthRepository(apiClient: apiClient)
         let profileRepository = RemoteProfileRepository(apiClient: apiClient)
         let refreshTokenStore = KeychainRefreshTokenStore()
+        
+        KakaoSDK.initSDK(appKey: "NATIVE_APP_KEY")
 
         self.apiClient = apiClient
         self.profileRepository = profileRepository
@@ -60,6 +64,10 @@ struct PickpleApp: App {
                     NavigationStack {
                         LoginView(viewModel: loginViewModel, onLoginSuccess: {
                             Task { await sessionViewModel.handleLoginSuccess() }
+                        }).onOpenURL(perform: { url in
+                            if (AuthApi.isKakaoTalkLoginUrl(url)) {
+                                AuthController.handleOpenUrl(url: url)
+                            }
                         })
                     }
                 }
