@@ -15,10 +15,13 @@ struct PostSummaryCardView: View {
         //MARK: - Image
         VStack(spacing: 8) {
             ZStack (alignment: .topLeading){
-                Image(post.imageName)
-                    .resizable()
-                    .frame(maxWidth: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                AsyncImage(url: post.thumbnailUrl) { image in
+                    image.resizable()
+                } placeholder: {
+                    Image("McokMyPostPicture").resizable()
+                }
+                .frame(maxWidth: .infinity)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
                 
                 //MARK: - Badge
                 HStack {
@@ -108,15 +111,15 @@ struct PostSummaryCardView: View {
 #Preview {
     PostSummaryCardView(
         post: PostSummary(
-            id: UUID(),
+            id: 1,
             type: .forAgainst,
             category: "전자제품",
             title: "무선 이어폰 살까 말까",
             description: "요즘 유선 이어폰 선 꼬이는게 스트레스인데 무선으로 넘어갈까 고민이에요.",
-            imageName: "McokMyPostPicture",
+            thumbnailUrl: nil,
             authorNickname: "픽플닉네임",
             authorLevel: 1,
-            authorProfileImageName: "PickpleProfileSample",
+            authorProfileImageUrl: nil,
             voteCount: 12,
             commentCount: 4,
             createdAt: Date().addingTimeInterval(-60 * 5)

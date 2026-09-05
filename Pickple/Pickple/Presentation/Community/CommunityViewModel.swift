@@ -32,6 +32,6 @@ class CommunityViewModel: ObservableObject {
     }
 
     func loadPosts() async {
-        posts = await communityRepository.fetchPosts()
+        posts = (try? await communityRepository.fetchPosts()) ?? []
     }
 }

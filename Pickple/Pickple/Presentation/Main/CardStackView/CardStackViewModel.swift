@@ -29,7 +29,7 @@ class CardStackViewModel: ObservableObject {
     }
 
     func loadCards() async {
-        allCards = await voteCardRepository.fetchCards()
+        allCards = (try? await voteCardRepository.fetchCards()) ?? []
     }
 
     // 홈 화면 상단 찬반/AB 탭 전환 시, 해당 유형의 카드만 다시 스와이프 스택으로 채운다.
@@ -37,7 +37,7 @@ class CardStackViewModel: ObservableObject {
         voteCardData = allCards.filter { $0.type == type }
     }
 
-    func vote(cardID: UUID, side: VoteCardSide) {
+    func vote(cardID: Int, side: VoteCardSide) {
         guard let index = voteCardData.firstIndex(where: { $0.id == cardID }), !voteCardData[index].isVoted else { return }
 
         if !isLoggedIn {

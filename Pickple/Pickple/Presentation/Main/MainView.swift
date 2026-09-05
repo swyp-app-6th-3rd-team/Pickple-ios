@@ -10,13 +10,18 @@ import SwiftUI
 
 struct MainView: View {
     @StateObject private var mainViewModel: MainViewModel
-    @StateObject private var cardStackViewModel = CardStackViewModel()
+    @StateObject private var cardStackViewModel: CardStackViewModel
     @Environment(MainRouter.self) private var mainRouter
     @State private var isMissionExpanded = false
     var onRequestCommunityTab: (() -> Void)? = nil
 
-    init(mainViewModel: MainViewModel = MainViewModel(), onRequestCommunityTab: (() -> Void)? = nil) {
+    init(
+        mainViewModel: MainViewModel = MainViewModel(),
+        cardStackViewModel: CardStackViewModel = CardStackViewModel(),
+        onRequestCommunityTab: (() -> Void)? = nil
+    ) {
         _mainViewModel = StateObject(wrappedValue: mainViewModel)
+        _cardStackViewModel = StateObject(wrappedValue: cardStackViewModel)
         self.onRequestCommunityTab = onRequestCommunityTab
     }
 

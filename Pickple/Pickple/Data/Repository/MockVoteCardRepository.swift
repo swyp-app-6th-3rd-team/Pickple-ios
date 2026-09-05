@@ -4,7 +4,6 @@
 //
 //  Created by 박윤수 on 8/31/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 목업 사진이 MockAgainstPicture 한 장뿐이라 전부 재사용함
 import Foundation
 
 struct MockVoteCardRepository: VoteCardRepository {
@@ -25,14 +24,15 @@ struct MockVoteCardRepository: VoteCardRepository {
             ("러닝화", "쿠셔닝 좋다는데 가격이 부담돼요", 415),
             ("커피 머신", "매일 카페 갈 바엔 살까 고민이에요", 668),
             ("선크림", "백탁 걱정되는데 자외선 차단은 확실하대요", 990),
-        ].map { name, concern, count in
-            VoteCard(
-                id: UUID(),
+        ].enumerated().map { index, item in
+            let (name, concern, count) = item
+            return VoteCard(
+                id: index,
                 type: .forAgainst,
                 productName: name,
                 concernText: concern,
-                imageName: "MockAgainstPicture",
-                secondImageName: nil,
+                imageUrl: nil,
+                secondImageUrl: nil,
                 participantCount: count,
                 firstPercentage: nil,
                 secondPercentage: nil
@@ -53,14 +53,15 @@ struct MockVoteCardRepository: VoteCardRepository {
             ("백팩 A vs B", "수납 공간 차이가 궁금해요", 63),
             ("전자책 리더기 A vs B", "화면 크기 고민이에요", 137),
             ("무선 청소기 A vs B", "흡입력이랑 무게 둘 다 궁금해요", 275),
-        ].map { name, concern, count in
-            VoteCard(
-                id: UUID(),
+        ].enumerated().map { index, item in
+            let (name, concern, count) = item
+            return VoteCard(
+                id: 1000 + index,
                 type: .ab,
                 productName: name,
                 concernText: concern,
-                imageName: "MockAgainstPicture",
-                secondImageName: "MockAgainstPicture",
+                imageUrl: nil,
+                secondImageUrl: nil,
                 participantCount: count,
                 firstPercentage: nil,
                 secondPercentage: nil

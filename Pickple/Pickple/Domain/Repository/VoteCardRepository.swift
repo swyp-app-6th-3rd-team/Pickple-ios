@@ -6,6 +6,5 @@
 //
 
 protocol VoteCardRepository {
-    func fetchCards() async -> [VoteCard]
-    // 실제 API와 연동
+    func fetchCards() async throws -> [VoteCard]
 }

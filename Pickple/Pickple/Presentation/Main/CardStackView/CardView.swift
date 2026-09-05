@@ -24,14 +24,17 @@ struct CardView: View {
     var body: some View {
         VStack(spacing: 0) {
             ZStack(alignment: .topLeading) {
-                Image(data.imageName)
-                    .resizable()
-                    .clipShape(UnevenRoundedRectangle(
-                        topLeadingRadius: 16,
-                        topTrailingRadius: 16,
-                        style: .continuous
-                    ))
-                    .frame(width: 333, height: 296)
+                AsyncImage(url: data.imageUrl) { image in
+                    image.resizable()
+                } placeholder: {
+                    Image("MockAgainstPicture").resizable()
+                }
+                .clipShape(UnevenRoundedRectangle(
+                    topLeadingRadius: 16,
+                    topTrailingRadius: 16,
+                    style: .continuous
+                ))
+                .frame(width: 333, height: 296)
 
                 HStack(spacing: 4) {
                     Image("PickpleFire")
@@ -140,12 +143,12 @@ private struct VoteCardGaugeBar: View {
 #Preview {
     CardView(
         data: VoteCard(
-            id: UUID(),
+            id: 1,
             type: .forAgainst,
             productName: "무선 이어폰",
             concernText: "이거 살까 말까 고민이에요",
-            imageName: "MockAgainstPicture",
-            secondImageName: nil,
+            imageUrl: nil,
+            secondImageUrl: nil,
             participantCount: 1234,
             firstPercentage: nil,
             secondPercentage: nil

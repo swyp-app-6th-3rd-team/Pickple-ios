@@ -45,29 +45,21 @@ struct RemoteUserPostRepository: UserPostRepository {
 
     private static func toDomain(_ dto: ActivityItemDTO) -> PostSummary {
         PostSummary(
-            id: UUID(),
-            type: voteType(for: dto.type),
+            id: dto.id,
+            type: VoteType(serverType: dto.type),
             category: categoryLabel(for: dto.category),
             title: dto.title,
             description: dto.description ?? "",
-            imageName: dto.thumbnailUrl ?? "",
+            thumbnailUrl: dto.thumbnailUrl.flatMap(URL.init(string:)),
             // "내가 올린 글" 목록이라 서버가 작성자 정보를 따로 안 준다(본인이 자명해서) —
             // 실제 내 닉네임/레벨로 채우려면 별도로 내 프로필을 조회해서 합쳐야 한다. 이번 범위 밖.
             authorNickname: "나",
             authorLevel: 1,
-            authorProfileImageName: nil,
+            authorProfileImageUrl: nil,
             voteCount: dto.voteCount ?? 0,
             commentCount: dto.commentCount,
             createdAt: dto.createdAt
         )
-    }
-
-    private static func voteType(for rawType: String) -> VoteType {
-        switch rawType {
-        case "AGREE": return .forAgainst
-        case "A_B": return .ab
-        default: return .text
-        }
     }
 
     private static func categoryLabel(for rawCategory: String) -> String {
