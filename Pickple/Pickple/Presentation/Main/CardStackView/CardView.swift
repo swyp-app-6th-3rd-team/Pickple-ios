@@ -12,99 +12,82 @@ struct CardView: View {
     let data: VoteCard
     let onVote: (VoteCardSide) -> Void
     let onTapBody: () -> Void
-
+    
     private var firstLabel: String {
         data.type == .forAgainst ? MainStrings.voteSideFor : "A"
     }
-
+    
     private var secondLabel: String {
         data.type == .forAgainst ? MainStrings.voteSideAgainst : "B"
     }
-
+    
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 22) {
             ZStack(alignment: .topLeading) {
-                AsyncImage(url: data.imageUrl) { image in
-                    image.resizable()
-                } placeholder: {
-                    Image("MockAgainstPicture").resizable()
-                }
-                .clipShape(UnevenRoundedRectangle(
-                    topLeadingRadius: 16,
-                    topTrailingRadius: 16,
-                    style: .continuous
-                ))
-                .frame(width: 333, height: 296)
-
-                HStack(spacing: 4) {
-                    Image("PickpleFire")
-                        .resizable()
-                        .frame(width: 16, height: 16)
-
-                    Text("\(data.participantCount)명 투표중")
-                        .pickpleTypography(.body02)
-                        .foregroundStyle(Color.white)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Color.black.opacity(0.4))
-                .clipShape(Capsule())
-                .padding(12)
-            }
-            .contentShape(Rectangle())
-            .onTapGesture(perform: onTapBody)
-
-            ZStack {
-                UnevenRoundedRectangle(
-                    bottomLeadingRadius: 16,
-                    bottomTrailingRadius: 16,
-                    style: .continuous
-                )
-                .foregroundStyle(Color.white)
-                .shadow(color: Color.neutral100.opacity(0.08), radius: 12)
-
-                VStack(alignment: .leading, spacing: 12) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(data.productName)
-                            .pickpleTypography(.title02)
-                            .foregroundStyle(Color.neutral100)
-
-                        Text(data.concernText)
-                            .pickpleTypography(.body02)
-                            .foregroundStyle(Color.neutral40)
+                    AsyncImage(url: data.imageUrl) { image in
+                        image.resizable()
+                    } placeholder: {
+                        Image("MockAgainstPicture").resizable()
                     }
-                    .padding(.horizontal, 20)
-                    .contentShape(Rectangle())
-                    .onTapGesture(perform: onTapBody)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    
+                VStack(alignment: .leading) {
+                    HStack(spacing: 4) {
+                        Image("PickpleFire")
+                            .resizable()
+                            .frame(width: 16, height: 16)
+                        
+                        Text("\(data.participantCount)명 투표중")
+                            .pickpleTypography(.body02)
+                            .foregroundStyle(Color.white)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.black.opacity(0.4))
+                    .clipShape(Capsule())
+                    .padding(12)
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(data.productName)
+                                .pickpleTypography(.title02)
+                                .foregroundStyle(Color.white)
 
-                    if data.isVoted {
-                        VoteCardGaugeBar(
-                            firstLabel: firstLabel,
-                            secondLabel: secondLabel,
-                            firstPercentage: data.firstPercentage ?? 0,
-                            secondPercentage: data.secondPercentage ?? 0
-                        )
-                        .padding(.horizontal, 20)
-                    } else {
-                        HStack(spacing: 8) {
-                            Button(action: { onVote(.first) }) {
-                                Text(firstLabel)
-                            }
-                            .buttonStyle(.pickple(._default, 48))
-
-                            Button(action: { onVote(.second) }) {
-                                Text(secondLabel)
-                            }
-                            .buttonStyle(.pickple(._default, 48))
+                            Text(data.concernText)
+                                .pickpleTypography(.body02)
+                                .foregroundStyle(Color.neutral10)
                         }
                         .padding(.horizontal, 20)
+                        .padding(.bottom, 22)
+                        .contentShape(Rectangle())
+                        .onTapGesture(perform: onTapBody)
+                        
+                        if data.isVoted {
+                            VoteCardGaugeBar(
+                                firstLabel: firstLabel,
+                                secondLabel: secondLabel,
+                                firstPercentage: data.firstPercentage ?? 0,
+                                secondPercentage: data.secondPercentage ?? 0
+                            )
+                            .padding(.horizontal, 20)
+                        } else {
+                            
+                        }
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                }
+            .frame(width: 333, height: 455)
+
+                .contentShape(Rectangle())
+                .onTapGesture(perform: onTapBody)
             }
-            .frame(width: 333, height: 144)
         }
     }
-}
+
 
 // 투표 완료 후 두 항목의 비율을 하나의 막대로 채워서 보여준다.
 private struct VoteCardGaugeBar: View {
