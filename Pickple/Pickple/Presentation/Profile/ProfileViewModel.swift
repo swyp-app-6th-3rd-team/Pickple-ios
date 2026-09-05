@@ -45,11 +45,10 @@ class ProfileViewModel: ObservableObject {
         return String(filtered.prefix(nicknameMaxLength))
     }
 
+    // 형식(비어있는지)만 로컬로 확인한다. 중복 여부는 비동기 서버 확인이 필요해서
+    // submitProfile()에서 checkNicknameAvailability(_:)로 따로 처리한다.
     func isNicknameValid() -> Bool {
-        if nickname.isEmpty { return false }
-        else { return true }
-        // TODO: 백엔드와 연동해서 닉네임 중복 검사 로직 추가
-
+        !nickname.isEmpty
     }
     
     func textFieldState(_ isFocused: Bool) -> PickpleTextFieldStateType{
@@ -73,6 +72,11 @@ class ProfileViewModel: ObservableObject {
         isSubmitting = true
         defer { isSubmitting = false }
         do {
+            let availability = try await profileRepository.checkNicknameAvailability(nickname)
+            guard availability.isAvailable else {
+                errorMessage = availability.message
+                return false
+            }
             try await profileRepository.registerProfile(nickname: nickname)
             return true
         } catch {
