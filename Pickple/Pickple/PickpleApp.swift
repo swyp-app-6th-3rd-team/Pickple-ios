@@ -42,8 +42,8 @@ struct PickpleApp: App {
                 if sessionViewModel.isRestoringSession {
                     Color.clear
                 } else if sessionViewModel.needsProfileSetup {
-                    ProfileView(
-                        profileViewModel: ProfileViewModel(profileRepository: profileRepository),
+                    ProfileSetupView(
+                        profileViewModel: ProfileSetupViewModel(profileRepository: profileRepository),
                         onCompleted: { sessionViewModel.handleProfileRegistered() }
                     )
                 } else if sessionViewModel.isLoggedIn {

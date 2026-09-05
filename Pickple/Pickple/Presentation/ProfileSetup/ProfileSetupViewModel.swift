@@ -1,5 +1,5 @@
 //
-//  ProfileViewModel.swift
+//  ProfileSetupViewModel.swift
 //  Pickple
 //
 //  Created by 박윤수 on 8/26/26.
@@ -8,7 +8,7 @@ import SwiftUI
 import PhotosUI
 import Combine
 
-class ProfileViewModel: ObservableObject {
+class ProfileSetupViewModel: ObservableObject {
     @Published var imageSelection: PhotosPickerItem?
     @Published var selectedImage: Image?
     @Published var nickname: String = ""
@@ -60,8 +60,8 @@ class ProfileViewModel: ObservableObject {
     
     func nicknameCaption(_ state: PickpleTextFieldStateType) -> String {
         switch state {
-        case .error: return ProfileStrings.error
-        case .success: return ProfileStrings.success
+        case .error: return ProfileSetupStrings.error
+        case .success: return ProfileSetupStrings.success
         default: return ""
         }
     }

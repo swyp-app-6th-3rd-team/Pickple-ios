@@ -9,7 +9,7 @@ import SwiftUI
 import PhotosUI
 
 struct ProfileImageView: View {
-    @ObservedObject var profileViewModel: ProfileViewModel
+    @ObservedObject var profileViewModel: ProfileSetupViewModel
     @State var selectedItem: PhotosPickerItem?
     
     var body: some View {
@@ -25,5 +25,5 @@ struct ProfileImageView: View {
 }
 
 #Preview {
-    ProfileImageView(profileViewModel: ProfileViewModel())
+    ProfileImageView(profileViewModel: ProfileSetupViewModel())
 }

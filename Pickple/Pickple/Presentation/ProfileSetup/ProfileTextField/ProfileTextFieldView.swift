@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ProfileTextFieldView: View {
-    @ObservedObject var profileViewModel: ProfileViewModel
+    @ObservedObject var profileViewModel: ProfileSetupViewModel
     
     @FocusState private var isFocused: Bool
     
@@ -21,7 +21,7 @@ struct ProfileTextFieldView: View {
             PickpleTextField(
                 text: $profileViewModel.nickname,
                 type: .both,
-                placeholder: ProfileStrings.nicknameText,
+                placeholder: ProfileSetupStrings.nicknameText,
                 trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)"),
                 caption: profileViewModel.nicknameCaption(state),
                 state: state
@@ -37,5 +37,5 @@ struct ProfileTextFieldView: View {
 }
 
 #Preview {
-    ProfileTextFieldView(profileViewModel: ProfileViewModel())
+    ProfileTextFieldView(profileViewModel: ProfileSetupViewModel())
 }

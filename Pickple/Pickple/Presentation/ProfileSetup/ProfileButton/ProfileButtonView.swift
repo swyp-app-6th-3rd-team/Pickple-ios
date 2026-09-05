@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ProfileButtonView: View {
-    @ObservedObject var profileViewModel: ProfileViewModel
+    @ObservedObject var profileViewModel: ProfileSetupViewModel
     var onCompleted: () -> Void = {}
 
     var body: some View {
@@ -19,7 +19,7 @@ struct ProfileButtonView: View {
                 }
             }
         }) {
-            Text(ProfileStrings.confirmButton)
+            Text(ProfileSetupStrings.confirmButton)
         }
         .frame(maxWidth: .infinity) //반응형
         .buttonStyle(.pickple(profileViewModel.isNicknameValid() ? .enabled : .disabled, 56))
@@ -28,5 +28,5 @@ struct ProfileButtonView: View {
 }
 
 #Preview {
-    ProfileButtonView(profileViewModel: ProfileViewModel())
+    ProfileButtonView(profileViewModel: ProfileSetupViewModel())
 }
