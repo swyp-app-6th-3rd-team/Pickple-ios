@@ -13,24 +13,23 @@ struct MainTitleView: View {
     var hasUnreadNotification: Bool = true
 
     var body: some View {
-        HStack(spacing: 8) {
-            Image("PickpleTitle")
-                .padding(.leading, 20)
-            
-            Spacer()
-            
-            MainToggleButton(isOn: $isOn, onTitle: "AB", offTitle: "찬반")
-
-            Spacer()
-            
-            Button(action: {}) {
-                ZStack(alignment: .topTrailing) {
-                    Image("PickpleAlertOff")
-                        .foregroundStyle(Color.neutral100)
-
+        ZStack(alignment: .center) {
+            HStack(spacing: 8) {
+                Image("PickpleTitle")
+                
+                Spacer()
+                
+                Button(action: {}) {
+                    ZStack(alignment: .topTrailing) {
+                        Image("PickpleAlertOff")
+                            .foregroundStyle(Color.neutral100)
+                        
+                    }
                 }
+                
+                
             }
-            .padding(.trailing, 20)
+            MainToggleButton(isOn: $isOn, onTitle: "AB", offTitle: "찬반")
         }
         .frame(maxWidth: .infinity, minHeight: 56)
     }
