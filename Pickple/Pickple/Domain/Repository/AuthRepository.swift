@@ -7,6 +7,7 @@
 
 protocol AuthRepository {
     func loginWithApple(authorizationCode: String, identityToken: String, rawNonce: String, name: String?) async throws -> AuthTokens
+    func loginWithKakao(identityToken: String?, rawNonce: String) async throws -> AuthTokens
     func refreshAccessToken(refreshToken: String) async throws -> AuthTokens
     func logout() async throws
     func deleteAccount() async throws
