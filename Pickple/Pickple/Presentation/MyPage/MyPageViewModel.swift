@@ -22,7 +22,7 @@ class MyPageViewModel: ObservableObject {
     }
     
     func loadUserInfo() async {
-        userInfo = await userInfoRepository.fetchUserInfo()
+        userInfo = try? await userInfoRepository.fetchUserInfo()
     }
     
     func loadMyPosts() async {
