@@ -48,7 +48,10 @@ struct PickpleApp: App {
                     )
                 } else if sessionViewModel.isLoggedIn {
                     PickpleBottomNav(
-                        myPageViewModel: MyPageViewModel(userPostRepository: RemoteUserPostRepository(apiClient: apiClient))
+                        myPageViewModel: MyPageViewModel(
+                            userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
+                            userPostRepository: RemoteUserPostRepository(apiClient: apiClient)
+                        )
                     )
                         .environment(\.appLogout, sessionViewModel.logout)
                         .environment(\.appDeleteAccount, sessionViewModel.deleteAccount)

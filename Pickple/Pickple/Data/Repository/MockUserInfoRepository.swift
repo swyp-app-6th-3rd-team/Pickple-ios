@@ -11,7 +11,7 @@ struct MockUserInfoRepository: UserInfoRepository {
         UserInfo(
             id: UUID(),
             nickname: "픽플닉네임",
-            profileImageName: "PickpleProfileSample",
+            profileImageUrl: nil,
             voteCount: 3,
             commentCount: 34,
             postCount: 1,
