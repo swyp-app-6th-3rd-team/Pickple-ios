@@ -48,7 +48,7 @@ struct RemoteAuthRepository: AuthRepository {
                 identityToken: identityToken,
                 rawNonce: rawNonce,
             ))
-            let endpoint = APIEndpoint(method: .post, path: "/auth/kako", body: body, requiresAuth: false)
+            let endpoint = APIEndpoint(method: .post, path: "/auth/kakao", body: body, requiresAuth: false)
             let dto: AuthTokensDTO = try await apiClient.request(endpoint)
             return AuthTokens(accessToken: dto.accessToken, refreshToken: dto.refreshToken)
     }
