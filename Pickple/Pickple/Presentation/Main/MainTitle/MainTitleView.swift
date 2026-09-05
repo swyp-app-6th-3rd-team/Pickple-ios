@@ -9,32 +9,33 @@
 import SwiftUI
 
 struct MainTitleView: View {
+    @Binding var isOn: Bool
     var hasUnreadNotification: Bool = true
 
     var body: some View {
-        HStack(spacing: 8) {
-            Image("PickpleTitle")
-                .padding(.leading, 20)
-
-            Spacer(minLength: 0)
-
-            Button(action: {}) {
-                ZStack(alignment: .topTrailing) {
-                    Image("PickpleAlertOff")
-
-                    if hasUnreadNotification {
-                        Circle()
-                            .fill(Color.red60)
-                            .frame(width: 8, height: 8)
+        ZStack(alignment: .center) {
+            HStack(spacing: 8) {
+                Image("PickpleTitle")
+                
+                Spacer()
+                
+                Button(action: {}) {
+                    ZStack(alignment: .topTrailing) {
+                        Image("PickpleAlertOff")
+                            .foregroundStyle(Color.neutral100)
+                        
                     }
                 }
+                
+                
             }
-            .padding(.trailing, 20)
+            MainToggleButton(isOn: $isOn, onTitle: "AB", offTitle: "찬반")
         }
         .frame(maxWidth: .infinity, minHeight: 56)
     }
 }
 
 #Preview {
-    MainTitleView()
+    @Previewable @State var isOn = false
+    MainTitleView(isOn: $isOn)
 }
