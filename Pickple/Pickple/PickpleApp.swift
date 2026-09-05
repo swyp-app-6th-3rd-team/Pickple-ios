@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import KakaoSDKAuth
+import KakaoSDKCommon
 
 @main
 struct PickpleApp: App {
@@ -20,6 +22,11 @@ struct PickpleApp: App {
         let authRepository = RemoteAuthRepository(apiClient: apiClient)
         let profileRepository = RemoteProfileRepository(apiClient: apiClient)
         let refreshTokenStore = KeychainRefreshTokenStore()
+        
+        guard let kakaoNativeAppKey = Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] as? String else {
+            fatalError("Info.plist에 KAKAO_NATIVE_APP_KEY가 없습니다")
+        }
+        KakaoSDK.initSDK(appKey: kakaoNativeAppKey)
 
         self.apiClient = apiClient
         self.profileRepository = profileRepository
@@ -63,7 +70,9 @@ struct PickpleApp: App {
                         })
                     }
                 }
-            }
+            }.onOpenURL(perform: { url in
+                    _ = AuthController.handleOpenUrl(url: url)
+            })
             .task {
                 await sessionViewModel.restoreSession()
             }

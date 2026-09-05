@@ -14,6 +14,11 @@ struct AppleLoginRequestDTO: Encodable {
     let name: String?
 }
 
+struct KakaoLoginRequestDTO: Encodable {
+    let identityToken: String?
+    let nonce: String
+}
+
 struct MobileRefreshRequestDTO: Encodable {
     let refreshToken: String
 }
@@ -36,6 +41,16 @@ struct RemoteAuthRepository: AuthRepository {
         let endpoint = APIEndpoint(method: .post, path: "/auth/apple", body: body, requiresAuth: false)
         let dto: AuthTokensDTO = try await apiClient.request(endpoint)
         return AuthTokens(accessToken: dto.accessToken, refreshToken: dto.refreshToken)
+    }
+    
+    func loginWithKakao(identityToken: String?, rawNonce: String) async throws -> AuthTokens {
+            let body = try JSONEncoder().encode(KakaoLoginRequestDTO(
+                identityToken: identityToken,
+                nonce: rawNonce
+            ))
+            let endpoint = APIEndpoint(method: .post, path: "/auth/kakao", body: body, requiresAuth: false)
+            let dto: AuthTokensDTO = try await apiClient.request(endpoint)
+            return AuthTokens(accessToken: dto.accessToken, refreshToken: dto.refreshToken)
     }
 
     func refreshAccessToken(refreshToken: String) async throws -> AuthTokens {

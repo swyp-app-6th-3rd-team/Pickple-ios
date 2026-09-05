@@ -5,7 +5,7 @@
 - OAS(Scalar, 인터랙티브 문서): https://dev-api.pickple.app/scalar
 - 원본(LLM용 마크다운): https://dev-api.pickple.app/llms.md
 - 버전: v1
-- 마지막 확인: 2026-09-04
+- 마지막 확인: 2026-09-06
 
 ## 공통 규약
 
@@ -170,7 +170,16 @@ iOS가 받은 authorization code와 identity token을 서버에서 다시 검증
 
 응답 200 — OK: `accessToken`, `refreshToken`(회전됨, Keychain에 보관)
 
-> Kakao 로그인 엔드포인트는 이 문서에 없음 — 확인 필요.
+### POST /auth/kakao — Kakao 네이티브 로그인
+iOS Kakao SDK가 받은 OIDC ID token과 로그인 요청에 사용한 원문 nonce를 서버에서 검증한 뒤 서비스 JWT와 프로필 등록 완료 여부를 반환한다.
+
+요청 본문:
+- `identityToken` 문자열 필수 — Kakao SDK가 발급한 OIDC ID token
+- `nonce` 문자열 필수 — 로그인마다 새로 만들고 Kakao SDK 요청에도 사용한 원문 nonce. Apple의 `rawNonce`와 달리 해시하지 않은 원문을 그대로 보낸다
+
+응답 200 — OK:
+- `accessToken`, `refreshToken`(회전됨, Keychain에 보관)
+- `profileCompleted` 불리언 선택 — 서비스 프로필 등록 완료 여부. false면 프로필 등록이 필요하다 (현재 클라이언트는 이 필드 대신 로그인 성공 후 `GET /users/me`를 다시 호출해서 판단함 — 추후 최적화 여지)
 
 ### GET /auth/me — 내 정보
 인증 필요.
@@ -182,7 +191,7 @@ iOS가 받은 authorization code와 identity token을 서버에서 다시 검증
 - `role` 문자열 선택 — ROLE_USER | ROLE_ADMIN
 
 ### DELETE /auth/me — 회원 탈퇴
-Apple 사용자는 저장된 provider refresh token으로 Apple 연결을 해제한 뒤 계정을 비활성화한다. Apple 일시 장애 시 로컬 상태를 변경하지 않고 503을 반환하므로 재시도할 수 있다. 저장된 provider token이 없으면 로컬 탈퇴를 완료하고 수동 연결 해제가 필요한 성공 코드를 반환한다.
+Apple 사용자는 저장된 provider refresh token으로 Apple 연결을 해제한 뒤 계정을 비활성화한다. Apple 일시 장애 시 로컬 상태를 변경하지 않고 503을 반환하므로 재시도할 수 있다. 저장된 provider token이 없으면 로컬 탈퇴를 완료하고 수동 연결 해제가 필요한 성공 코드를 반환한다. Kakao 사용자는 서버가 Kakao 연결을 먼저 해제한 뒤 로컬 탈퇴를 확정한다.
 응답 200 — OK: any
 
 ---
@@ -300,5 +309,4 @@ LV.1~LV.5의 승급 필요 조건을 낮은 등급부터 돌려준다.
 ## 아직 이 문서에 없는 것 (구현 전 백엔드 팀에 확인 필요)
 
 - 게시글 상세 단일 조회, 게시글 작성/수정/삭제
-- Kakao 로그인 엔드포인트
 - 신고/차단 관련 엔드포인트

@@ -30,8 +30,11 @@ struct LoginView: View {
                     //MARK: - Login Buttons
                     VStack(spacing: 8) {
                         LoginButton(provider: .kakao) {
-                            // TODO: KakaoSDK 연동 필요 — 지금은 로그인 성공으로 간주
-                            onLoginSuccess()
+                            Task {
+                                if await viewModel.loginWithKakao() {
+                                    onLoginSuccess()
+                                }
+                            }
                         }
                         LoginButton(provider: .apple) {
                             Task {
