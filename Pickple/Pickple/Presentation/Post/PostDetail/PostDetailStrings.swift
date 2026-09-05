@@ -41,7 +41,4 @@ enum PostDetailStrings {
     static let productBFallback = "상품B"
     static let voteSideFor = "사자"
     static let voteSideAgainst = "말자"
-
-    // TODO: 실제 로그인 사용자 식별 필요 — 지금은 이 닉네임으로 "내 댓글"을 판별하는 Mock
-    static let mockCurrentUserNickname = "나"
 }

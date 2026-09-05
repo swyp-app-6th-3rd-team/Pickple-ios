@@ -53,7 +53,7 @@ struct MainView: View {
                     VStack(spacing: 50) {
                         VStack(spacing: 30) {
                             CardStackView(cardStackViewModel: cardStackViewModel, onTapCard: { card in
-                                mainRouter.push(.postDetail(card.type))
+                                mainRouter.push(.postDetail(postId: card.id, type: card.type))
                             })
                             .padding(.top, 30)
                             
@@ -67,7 +67,7 @@ struct MainView: View {
                         MainHotPostSection(
                             posts: mainViewModel.hotPosts,
                             onTapPost: { post in
-                                mainRouter.push(.postDetail(post.type))
+                                mainRouter.push(.postDetail(postId: post.id, type: post.type))
                             },
                             onTapMore: {
                                 onRequestCommunityTab?()

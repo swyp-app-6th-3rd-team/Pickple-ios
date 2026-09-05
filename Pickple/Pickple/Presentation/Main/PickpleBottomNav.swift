@@ -44,8 +44,8 @@ struct PickpleBottomNav: View {
                 )
                     .navigationDestination(for: MainRoute.self) { route in
                         switch route {
-                        case .postDetail(let type):
-                            PostDetailView(voteType: type)
+                        case .postDetail(let postId, let type):
+                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId))
                         case .ranking:
                             MainRankingView(mainRankingViewModel: MainRankingViewModel(pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient)))
                         }
@@ -66,8 +66,8 @@ struct PickpleBottomNav: View {
                 CommunityView(communityViewModel: CommunityViewModel(communityRepository: RemoteCommunityRepository(apiClient: apiClient)))
                     .navigationDestination(for: CommunityRoute.self) { route in
                         switch route {
-                        case .postDetail(let type):
-                            PostDetailView(voteType: type)
+                        case .postDetail(let postId, let type):
+                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId))
                         }
                     }
             }
@@ -94,8 +94,8 @@ struct PickpleBottomNav: View {
                             MyAccountView()
                         case .activity:
                             MyActivityView(myActivityViewModel: MyActivityViewModel())
-                        case .postDetail(let type):
-                            PostDetailView(voteType: type)
+                        case .postDetail(let postId, let type):
+                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId))
                         }
                     }
             }
