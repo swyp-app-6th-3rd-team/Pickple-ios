@@ -13,7 +13,7 @@ class MainRankingViewModel: ObservableObject {
     @Published var rankings: [PickerRanking] = []
     @Published var isLoadingMore = false
 
-    private var isLastPage = false
+    private var nextCursor: String?
 
     // TODO: 실제 로그인 상태 연동 필요 — 지금은 항상 로그인된 것으로 취급
     var isLoggedIn = true
@@ -29,18 +29,19 @@ class MainRankingViewModel: ObservableObject {
     // 기본값 평가 시점(MainActor 컨텍스트가 보장 안 됨)과 충돌한다.
     @MainActor
     func loadInitial() async {
-        rankings = await pickerRankingRepository.fetchRankings(cursor: 0)
-        isLastPage = rankings.count < 10
+        guard let page = try? await pickerRankingRepository.fetchRankings(cursor: nil) else { return }
+        rankings = page.items
+        nextCursor = page.nextCursor
     }
 
     // 스크롤이 목록 하단 근접(마지막 항목 노출)했을 때 다음 페이지를 이어붙인다.
     @MainActor
     func loadMoreIfNeeded(currentItem: PickerRanking) async {
-        guard currentItem.id == rankings.last?.id, !isLoadingMore, !isLastPage else { return }
+        guard currentItem.id == rankings.last?.id, !isLoadingMore, nextCursor != nil else { return }
         isLoadingMore = true
-        let next = await pickerRankingRepository.fetchRankings(cursor: rankings.count)
-        if next.isEmpty { isLastPage = true }
-        rankings.append(contentsOf: next)
-        isLoadingMore = false
+        defer { isLoadingMore = false }
+        guard let page = try? await pickerRankingRepository.fetchRankings(cursor: nextCursor) else { return }
+        rankings.append(contentsOf: page.items)
+        nextCursor = page.nextCursor
     }
 }
