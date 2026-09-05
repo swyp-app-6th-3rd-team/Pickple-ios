@@ -6,6 +6,7 @@
 //
 import Foundation
 import AuthenticationServices
+import KakaoSDKCommon
 
 @Observable
 class LoginViewModel {
@@ -58,10 +59,13 @@ class LoginViewModel {
             let result = try await kakaoCoordinator.login()
             let tokens = try await authRepository.loginWithKakao(
                 identityToken: result.identityToken,
-                rawNonce: result.rawNonce,
+                rawNonce: result.rawNonce
             )
             try await SessionTokenPersistence.save(tokens, tokenStore: tokenStore, refreshTokenStore: refreshTokenStore)
             return true
+        } catch SdkError.ClientFailed(reason: .Cancelled, errorMessage: _) {
+            // 사용자가 카카오 로그인 화면을 직접 취소한 경우 — 에러가 아니라 정상적인 중단이라 alert을 띄우지 않는다.
+            return false
         } catch {
             errorMessage = error.localizedDescription
             return false
