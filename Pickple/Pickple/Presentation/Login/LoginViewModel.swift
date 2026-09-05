@@ -9,7 +9,8 @@ import AuthenticationServices
 
 @Observable
 class LoginViewModel {
-    private let coordinator = AppleLoginCoordinator()
+    private let appleCoordinator = AppleLoginCoordinator()
+    private let kakaoCoordinator = KakaoLoginCoordinator()
     private let authRepository: AuthRepository
     private let tokenStore: InMemoryTokenStore
     private let refreshTokenStore: RefreshTokenStoring
@@ -31,7 +32,7 @@ class LoginViewModel {
         isLoading = true
         defer { isLoading = false }
         do {
-            let result = try await coordinator.login()
+            let result = try await appleCoordinator.login()
             let tokens = try await authRepository.loginWithApple(
                 authorizationCode: result.authorizationCode,
                 identityToken: result.identityToken,
@@ -54,12 +55,10 @@ class LoginViewModel {
         isLoading = true
         defer { isLoading = false }
         do {
-            let result = try await coordinator.login()
-            let tokens = try await authRepository.loginWithApple(
-                authorizationCode: result.authorizationCode,
+            let result = try await kakaoCoordinator.login()
+            let tokens = try await authRepository.loginWithKakao(
                 identityToken: result.identityToken,
                 rawNonce: result.rawNonce,
-                name: result.fullName.map { PersonNameComponentsFormatter().string(from: $0) }
             )
             try await SessionTokenPersistence.save(tokens, tokenStore: tokenStore, refreshTokenStore: refreshTokenStore)
             return true
