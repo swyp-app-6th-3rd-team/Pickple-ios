@@ -59,12 +59,7 @@ class PostDetailViewModel: ObservableObject {
     }
 
     var sortedComments: [Comment] {
-        switch sortOption {
-        case PostDetailViewModel.sortOptions[1]:
-            return comments.sorted { $0.createdAt < $1.createdAt }
-        default:
-            return comments.sorted { $0.createdAt > $1.createdAt }
-        }
+        return PostSortOrder.sorted(comments, ascending: sortOption == PostDetailViewModel.sortOptions[1]) { $0.createdAt }
     }
 
     init(

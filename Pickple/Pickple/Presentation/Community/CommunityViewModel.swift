@@ -24,12 +24,7 @@ class CommunityViewModel: ObservableObject {
             ? posts
             : posts.filter { $0.category == selectedCategory }
 
-        switch sortOption {
-        case CommunityViewModel.sortOptions[1]:
-            return filtered.sorted { $0.createdAt < $1.createdAt }
-        default:
-            return filtered.sorted { $0.createdAt > $1.createdAt }
-        }
+        return PostSortOrder.sorted(filtered, ascending: sortOption == CommunityViewModel.sortOptions[1]) { $0.createdAt }
     }
 
     init(communityRepository: CommunityRepository = MockCommunityRepository()) {
