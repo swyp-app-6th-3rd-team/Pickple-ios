@@ -14,13 +14,15 @@ struct CommunityPostCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ZStack(alignment: .topLeading) {
-                Image(post.imageName)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: 160)
-                    .frame(maxWidth: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .clipped()
+                AsyncImage(url: post.thumbnailUrl) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    Image("McokMyPostPicture").resizable().scaledToFill()
+                }
+                .frame(height: 160)
+                .frame(maxWidth: .infinity)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipped()
 
                 HStack(spacing: 4) {
                     switch post.type {
@@ -95,15 +97,15 @@ struct CommunityPostCardView: View {
 #Preview {
     CommunityPostCardView(
         post: PostSummary(
-            id: UUID(),
+            id: 1,
             type: .forAgainst,
             category: "패션/잡화",
             title: "나이키 에어포스 흰색으로 살까?",
             description: "데일리로 신을건데 나이키 에어포스 흰색 어때? 흰색 때타고 별로이려나? 검은색은 이미 있어서 이번엔 흰 색도 사보려는데 어떻게 생각해?",
-            imageName: "McokMyPostPicture",
+            thumbnailUrl: nil,
             authorNickname: "닉네임",
             authorLevel: 5,
-            authorProfileImageName: "PickpleProfileSample",
+            authorProfileImageUrl: nil,
             voteCount: 3,
             commentCount: 1,
             createdAt: Date().addingTimeInterval(-60 * 5)

@@ -6,6 +6,7 @@
 //
 
 protocol CommunityRepository {
-    //실제 API와 연동
-    func fetchPosts() async -> [PostSummary]
+    func fetchPosts() async throws -> [PostSummary]
+    // 홈 화면 "인기 게시글" 섹션 전용 (GET /posts/popular)
+    func fetchPopularPosts() async throws -> [PostSummary]
 }

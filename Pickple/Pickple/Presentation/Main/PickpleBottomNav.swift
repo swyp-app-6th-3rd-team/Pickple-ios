@@ -36,8 +36,10 @@ struct PickpleBottomNav: View {
                 MainView(
                     mainViewModel: MainViewModel(
                         badgeMissionRepository: RemoteBadgeMissionRepository(apiClient: apiClient),
+                        communityRepository: RemoteCommunityRepository(apiClient: apiClient),
                         pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient)
                     ),
+                    cardStackViewModel: CardStackViewModel(voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient)),
                     onRequestCommunityTab: { selectedTab = 1 }
                 )
                     .navigationDestination(for: MainRoute.self) { route in
@@ -61,7 +63,7 @@ struct PickpleBottomNav: View {
             .tag(0)
 
             NavigationStack(path: $communityRouter.path) {
-                CommunityView(communityViewModel: CommunityViewModel())
+                CommunityView(communityViewModel: CommunityViewModel(communityRepository: RemoteCommunityRepository(apiClient: apiClient)))
                     .navigationDestination(for: CommunityRoute.self) { route in
                         switch route {
                         case .postDetail(let type):
