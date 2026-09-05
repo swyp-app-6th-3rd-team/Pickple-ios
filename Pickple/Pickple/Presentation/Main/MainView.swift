@@ -28,8 +28,6 @@ struct MainView: View {
     var body: some View {
         ZStack {
             VStack {
-                Color.navy60
-                    .ignoresSafeArea()
                 Color.white
                     .ignoresSafeArea()
             }
@@ -37,14 +35,7 @@ struct MainView: View {
             ScrollView {
                 VStack(spacing: 0) {
                     VStack(spacing: 0) {
-                        MainTitleView()
-
-                        PickpleTabBar(
-                            tabs: MainStrings.voteTypeTabs,
-                            selectedIndex: mainViewModel.selectedTypeIndex,
-                            selectedColor: .white,
-                            unselectedColor: Color.neutral20
-                        )
+                        MainTitleView(isOn: mainViewModel.isABSelected)
                     }
                     .onChange(of: mainViewModel.selectedType) { _, newValue in
                         cardStackViewModel.filterCards(by: newValue)
