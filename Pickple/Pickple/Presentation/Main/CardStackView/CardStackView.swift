@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CardStackView: View {
-    @ObservedObject var cardStackViewModel: CardStackViewModel
+    let cardStackViewModel: CardStackViewModel
     let onTapCard: (VoteCard) -> Void
     @State private var dragOffset: CGSize = .zero
 

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MyPagePostView: View {
-    @ObservedObject var myPageViewModel: MyPageViewModel
+    let myPageViewModel: MyPageViewModel
     var onTapPost: (PostSummary) -> Void = { _ in }
     var onTapMore: () -> Void = {}
 

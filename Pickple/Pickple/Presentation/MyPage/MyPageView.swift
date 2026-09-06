@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MyPageView: View {
-    @ObservedObject var myPageViewModel: MyPageViewModel
+    let myPageViewModel: MyPageViewModel
     @Environment(MyPageRouter.self) private var myPageRouter
 
     var body: some View {

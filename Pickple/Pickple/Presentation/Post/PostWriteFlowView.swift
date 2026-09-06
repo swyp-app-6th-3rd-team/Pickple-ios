@@ -10,7 +10,7 @@ import SwiftUI
 
 // 글 유형이 정해진 뒤의 단계별 작성 화면(찬반 2단계 / A-B 3단계 / 일반 1단계).
 struct PostWriteFlowView: View {
-    @ObservedObject var postViewModel: PostViewModel
+    let postViewModel: PostViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var isCategoryExpanded = false

@@ -9,8 +9,8 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject private var mainViewModel: MainViewModel
-    @StateObject private var cardStackViewModel: CardStackViewModel
+    @State private var mainViewModel: MainViewModel
+    @State private var cardStackViewModel: CardStackViewModel
     @Environment(MainRouter.self) private var mainRouter
     @State private var isMissionExpanded = false
     var onRequestCommunityTab: (() -> Void)? = nil
@@ -20,8 +20,8 @@ struct MainView: View {
         cardStackViewModel: CardStackViewModel = CardStackViewModel(),
         onRequestCommunityTab: (() -> Void)? = nil
     ) {
-        _mainViewModel = StateObject(wrappedValue: mainViewModel)
-        _cardStackViewModel = StateObject(wrappedValue: cardStackViewModel)
+        _mainViewModel = State(initialValue: mainViewModel)
+        _cardStackViewModel = State(initialValue: cardStackViewModel)
         self.onRequestCommunityTab = onRequestCommunityTab
     }
 

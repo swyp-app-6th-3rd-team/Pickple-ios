@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CommunityPostListSection: View {
-    @ObservedObject var communityViewModel: CommunityViewModel
+    let communityViewModel: CommunityViewModel
     var onTapPost: (PostSummary) -> Void = { _ in }
 
     var body: some View {

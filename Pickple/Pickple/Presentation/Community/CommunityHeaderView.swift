@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CommunityHeaderView: View {
-    @ObservedObject var communityViewModel: CommunityViewModel
+    @Bindable var communityViewModel: CommunityViewModel
 
     var body: some View {
         VStack(spacing: 0) {

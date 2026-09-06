@@ -9,7 +9,7 @@ import SwiftUI
 
 // A/B 픽 1단계: 카테고리 선택 + 비교 주제 입력. 2단계/3단계는 이후 이 파일에 추가된다.
 struct ABStepOneView: View {
-    @ObservedObject var postViewModel: PostViewModel
+    @Bindable var postViewModel: PostViewModel
     @Binding var isCategoryExpanded: Bool
     let categoryOptions: [String]
 

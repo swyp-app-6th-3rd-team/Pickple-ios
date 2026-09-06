@@ -4,7 +4,6 @@
 //
 //  Created by 박윤수 on 8/31/26.
 //
-import Combine
 import Foundation
 
 enum VoteCardSide {
@@ -12,13 +11,14 @@ enum VoteCardSide {
     case second
 }
 
-class CardStackViewModel: ObservableObject {
+@Observable
+class CardStackViewModel {
     private var voteCardRepository: VoteCardRepository
     private var allCards: [VoteCard] = []
 
-    @Published var voteCardData: [VoteCard] = []
-    @Published var guestVoteCount = 0
-    @Published var showsLoginRequired = false
+    var voteCardData: [VoteCard] = []
+    var guestVoteCount = 0
+    var showsLoginRequired = false
 
     // TODO: 실제 로그인 상태 연동 필요 — 지금은 항상 로그인된 것으로 취급해서 게스트 제한 로직은 타지 않음
     var isLoggedIn = true

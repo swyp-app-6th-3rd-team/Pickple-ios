@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Combine
 import UIKit
 
 extension VoteType {
@@ -37,21 +36,22 @@ enum PostSubmitState: Equatable {
     case failed
 }
 
-class PostViewModel: ObservableObject {
-    @Published var selectedType: VoteType = .forAgainst
-    @Published var topic: String = ""
-    @Published var title: String = ""
-    @Published var description: String = ""
-    @Published var selectedCategory: String = PostViewStrings.categoryPlaceholder
+@Observable
+class PostViewModel {
+    var selectedType: VoteType = .forAgainst
+    var topic: String = ""
+    var title: String = ""
+    var description: String = ""
+    var selectedCategory: String = PostViewStrings.categoryPlaceholder
 
     // 찬반 픽 상품 정보
-    @Published var product = PostProductDraft()
+    var product = PostProductDraft()
     // 비교 픽 상품 정보 (A/B)
-    @Published var productA = PostProductDraft()
-    @Published var productB = PostProductDraft()
+    var productA = PostProductDraft()
+    var productB = PostProductDraft()
 
-    @Published var submitState: PostSubmitState = .idle
-    @Published var currentIndex = 0
+    var submitState: PostSubmitState = .idle
+    var currentIndex = 0
 
     let topicMaxLength = 30
     let titleMaxLength = 30

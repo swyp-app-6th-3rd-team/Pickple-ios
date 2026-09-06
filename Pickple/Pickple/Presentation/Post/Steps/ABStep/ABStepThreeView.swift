@@ -9,7 +9,7 @@ import SwiftUI
 
 // A/B 픽 3단계: 상품B 정보 입력(사진 1장 필수, 상품명, 가격, URL).
 struct ABStepThreeView: View {
-    @ObservedObject var postViewModel: PostViewModel
+    @Bindable var postViewModel: PostViewModel
 
     var body: some View {
         ProductInfoFieldBlock(

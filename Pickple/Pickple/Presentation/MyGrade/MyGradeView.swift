@@ -20,7 +20,7 @@ private let gradeDescriptions: [Int: String] = [
 ]
 
 struct MyGradeView: View {
-    @ObservedObject var myPageViewModel: MyPageViewModel
+    let myPageViewModel: MyPageViewModel
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {

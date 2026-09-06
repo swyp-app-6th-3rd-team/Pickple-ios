@@ -4,19 +4,19 @@
 //
 //  Created by 박윤수 on 8/31/26.
 //
-import Combine
 import Foundation
 import SwiftUI
 
-class MainViewModel: ObservableObject {
+@Observable
+class MainViewModel {
     private let badgeMissionRepository: BadgeMissionRepository
     private let communityRepository: CommunityRepository
     private let pickerRankingRepository: PickerRankingRepository
 
-    @Published var selectedType: VoteType = .forAgainst
-    @Published var missions: [BadgeMissionProgress] = []
-    @Published var hotPosts: [PostSummary] = []
-    @Published var topRankings: [PickerRanking] = []
+    var selectedType: VoteType = .forAgainst
+    var missions: [BadgeMissionProgress] = []
+    var hotPosts: [PostSummary] = []
+    var topRankings: [PickerRanking] = []
 
     // TODO: 실제 로그인 상태 연동 필요 — 지금은 항상 로그인된 것으로 취급
     var isLoggedIn = true
@@ -46,7 +46,7 @@ class MainViewModel: ObservableObject {
         self.pickerRankingRepository = pickerRankingRepository
     }
 
-    // @Published 값을 갱신하는 메서드라 여기에만 MainActor를 명시한다(CLAUDE.md 규칙) —
+    // @Observable 프로퍼티를 갱신하는 메서드라 여기에만 MainActor를 명시한다(CLAUDE.md 규칙) —
     // 클래스 전체를 MainActor로 격리하면 init까지 격리돼서 MainView의 기본 파라미터 값
     // 평가 시점(MainActor 컨텍스트가 보장 안 됨)과 충돌한다.
     @MainActor

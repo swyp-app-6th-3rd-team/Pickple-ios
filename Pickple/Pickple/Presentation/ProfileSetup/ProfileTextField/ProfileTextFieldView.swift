@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ProfileTextFieldView: View {
-    @ObservedObject var profileViewModel: ProfileSetupViewModel
+    @Bindable var profileViewModel: ProfileSetupViewModel
     
     @FocusState private var isFocused: Bool
     

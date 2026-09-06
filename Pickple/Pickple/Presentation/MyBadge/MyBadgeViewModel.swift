@@ -4,12 +4,13 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-import Combine
+import Foundation
 
-class MyBadgeViewModel: ObservableObject {
+@Observable
+class MyBadgeViewModel {
     private var myBadgeRepository: MyBadgeRepository
 
-    @Published var badges: [MyBadge] = []
+    var badges: [MyBadge] = []
 
     var unlockedCount: Int {
         badges.filter { $0.isUnlocked }.count

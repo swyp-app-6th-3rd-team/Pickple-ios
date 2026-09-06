@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ProfileButtonView: View {
-    @ObservedObject var profileViewModel: ProfileSetupViewModel
+    let profileViewModel: ProfileSetupViewModel
     var onCompleted: () -> Void = {}
 
     var body: some View {

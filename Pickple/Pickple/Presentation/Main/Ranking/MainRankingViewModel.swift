@@ -4,14 +4,14 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-import Combine
 import Foundation
 
-class MainRankingViewModel: ObservableObject {
+@Observable
+class MainRankingViewModel {
     private let pickerRankingRepository: PickerRankingRepository
 
-    @Published var rankings: [PickerRanking] = []
-    @Published var isLoadingMore = false
+    var rankings: [PickerRanking] = []
+    var isLoadingMore = false
 
     private var nextCursor: String?
 
@@ -24,7 +24,7 @@ class MainRankingViewModel: ObservableObject {
         self.pickerRankingRepository = pickerRankingRepository
     }
 
-    // @Published 값을 갱신하는 메서드라 여기에만 MainActor를 명시한다(CLAUDE.md 규칙) —
+    // @Observable 프로퍼티를 갱신하는 메서드라 여기에만 MainActor를 명시한다(CLAUDE.md 규칙) —
     // 클래스 전체를 MainActor로 격리하면 init까지 격리돼서 MainRankingView의 프로퍼티
     // 기본값 평가 시점(MainActor 컨텍스트가 보장 안 됨)과 충돌한다.
     @MainActor

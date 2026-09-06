@@ -4,15 +4,15 @@
 //
 //  Created by 박윤수 on 9/2/26.
 //
-import Combine
 import Foundation
 
-class MyActivityViewModel: ObservableObject {
+@Observable
+class MyActivityViewModel {
     private var userPostRepository: UserPostRepository
 
-    @Published var votedPosts: [PostSummary] = []      // 투표
-    @Published var commentedPosts: [PostSummary] = []   // 댓글
-    @Published var writtenPosts: [PostSummary] = []     // 작성글
+    var votedPosts: [PostSummary] = []      // 투표
+    var commentedPosts: [PostSummary] = []   // 댓글
+    var writtenPosts: [PostSummary] = []     // 작성글
     
     init(userPostRepository: UserPostRepository = MockUserPostRepository()) {
         self.userPostRepository = userPostRepository

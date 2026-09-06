@@ -4,26 +4,26 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-import Combine
 import Foundation
 
-class PostDetailViewModel: ObservableObject {
+@Observable
+class PostDetailViewModel {
     private let postDetailRepository: PostDetailRepository
     private let commentRepository: CommentRepository
 
-    @Published var post: PostDetail?
-    @Published var comments: [Comment] = []
-    @Published var commentInput: String = ""
-    @Published var sortOption: String = PostDetailViewModel.sortOptions[0]
-    @Published var currentImageIndex = 0
-    @Published var selectedProductTab: PostDetailVoteSide = .first
-    @Published var votedSide: PostDetailVoteSide?
+    var post: PostDetail?
+    var comments: [Comment] = []
+    var commentInput: String = ""
+    var sortOption: String = PostDetailViewModel.sortOptions[0]
+    var currentImageIndex = 0
+    var selectedProductTab: PostDetailVoteSide = .first
+    var votedSide: PostDetailVoteSide?
     // 한 게시글에 원픽은 하나만 가능하고 취소할 수 없다.
-    @Published var pickedCommentID: Int?
-    @Published var editingCommentID: Int?
+    var pickedCommentID: Int?
+    var editingCommentID: Int?
 
     // TODO: 실제 로그인 상태 연동 필요 — 지금은 항상 로그인된 것으로 취급(Mock)
-    @Published var isLoggedIn = true
+    var isLoggedIn = true
 
     static let sortOptions = ["최신순", "오래된 순"]
     // TODO: 실제 투표 결과 API 연동 필요 — 지금은 고정된 Mock 비율

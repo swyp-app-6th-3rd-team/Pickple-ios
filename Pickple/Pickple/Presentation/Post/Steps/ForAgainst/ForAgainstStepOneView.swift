@@ -9,7 +9,7 @@ import SwiftUI
 
 // 찬반 픽 1단계: 카테고리 선택 + 설명 입력.
 struct ForAgainstStepOneView: View {
-    @ObservedObject var postViewModel: PostViewModel
+    @Bindable var postViewModel: PostViewModel
     @Binding var isCategoryExpanded: Bool
     let categoryOptions: [String]
 

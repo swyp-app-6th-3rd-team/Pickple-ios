@@ -9,7 +9,7 @@ import SwiftUI
 import PhotosUI
 
 struct ProfileSetupView: View {
-    @StateObject var profileViewModel: ProfileSetupViewModel = ProfileSetupViewModel()
+    @State var profileViewModel: ProfileSetupViewModel = ProfileSetupViewModel()
     var onCompleted: () -> Void = {}
 
     var body: some View {

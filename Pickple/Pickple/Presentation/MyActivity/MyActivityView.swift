@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MyActivityView: View {
-    @StateObject var myActivityViewModel: MyActivityViewModel
+    @State var myActivityViewModel: MyActivityViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var isShown: Bool = false

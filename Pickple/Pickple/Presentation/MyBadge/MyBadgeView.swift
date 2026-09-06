@@ -10,7 +10,7 @@
 import SwiftUI
 
 struct MyBadgeView: View {
-    @StateObject var myBadgeViewModel: MyBadgeViewModel
+    @State var myBadgeViewModel: MyBadgeViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var selectedBadge: MyBadge?
     @State private var newlyUnlockedBadge: MyBadge?

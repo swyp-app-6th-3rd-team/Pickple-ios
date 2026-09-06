@@ -10,7 +10,7 @@ import SwiftUI
 
 struct PostDetailContent: View {
     let post: PostDetail
-    @ObservedObject var postDetailViewModel: PostDetailViewModel
+    @Bindable var postDetailViewModel: PostDetailViewModel
     let onMoreTapped: () -> Void
     let onVote: (PostDetailVoteSide) -> Void
     let onPickTapped: (Comment) -> Void
