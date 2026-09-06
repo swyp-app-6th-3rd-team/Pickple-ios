@@ -9,7 +9,7 @@ import SwiftUI
 
 // 일반 게시글: 카테고리 + 제목 + 설명. 진행 바 없이 한 화면에서 바로 게시한다.
 struct TextStepOneView: View {
-    @ObservedObject var postViewModel: PostViewModel
+    @Bindable var postViewModel: PostViewModel
     @Binding var isCategoryExpanded: Bool
     let categoryOptions: [String]
 

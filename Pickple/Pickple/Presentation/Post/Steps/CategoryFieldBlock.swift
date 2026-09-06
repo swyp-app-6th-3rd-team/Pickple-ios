@@ -9,7 +9,7 @@ import SwiftUI
 
 // 글 유형(찬반/비교/텍스트) 1단계에서 공통으로 쓰는 카테고리 라벨 + 드롭다운 묶음.
 struct CategoryFieldBlock: View {
-    @ObservedObject var postViewModel: PostViewModel
+    @Bindable var postViewModel: PostViewModel
     @Binding var isExpanded: Bool
     let options: [String]
 

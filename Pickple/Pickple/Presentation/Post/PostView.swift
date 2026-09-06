@@ -10,7 +10,7 @@ import SwiftUI
 // 게시글 작성 플로우 진입점. 진입하자마자 글 유형 선택 바텀시트가 뜨고,
 // 유형을 고르면 해당 단계별 작성 화면(PostWriteFlowView)으로 넘어간다.
 struct PostView: View {
-    @StateObject private var postViewModel = PostViewModel()
+    @State private var postViewModel = PostViewModel()
     @Environment(\.dismiss) private var dismiss
 
     @State private var showsTypeSelectionSheet = true

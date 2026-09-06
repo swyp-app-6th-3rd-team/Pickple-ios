@@ -9,7 +9,7 @@ import SwiftUI
 
 // 찬반 픽 2단계: 상품 정보 입력(사진 1~3장, 상품명, 가격, URL).
 struct ForAgainstStepTwoView: View {
-    @ObservedObject var postViewModel: PostViewModel
+    @Bindable var postViewModel: PostViewModel
 
     var body: some View {
         ProductInfoFieldBlock(

@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct PostWriteFlowStepContent: View {
-    @ObservedObject var postViewModel: PostViewModel
+    let postViewModel: PostViewModel
     @Binding var isCategoryExpanded: Bool
     let categoryOptions: [String]
 
