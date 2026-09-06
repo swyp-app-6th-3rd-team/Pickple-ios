@@ -6,14 +6,14 @@
 //
 import SwiftUI
 import PhotosUI
-import Combine
 
-class ProfileSetupViewModel: ObservableObject {
-    @Published var imageSelection: PhotosPickerItem?
-    @Published var selectedImage: Image?
-    @Published var nickname: String = ""
-    @Published var isSubmitting = false
-    @Published var errorMessage: String?
+@Observable
+class ProfileSetupViewModel {
+    var imageSelection: PhotosPickerItem?
+    var selectedImage: Image?
+    var nickname: String = ""
+    var isSubmitting = false
+    var errorMessage: String?
 
     let nicknameMaxLength = 5
     private let profileRepository: ProfileRepository
