@@ -14,7 +14,9 @@ struct CommunityView: View {
     @Environment(\.isLoggedIn) private var isLoggedIn
     @Environment(\.appRequestLogin) private var appRequestLogin
     @State private var showsLoginRequired = false
-    @State private var showsPostWriteFlow = false
+    @State private var showsTypeSelection = false
+    @State private var writeFlowType: VoteType?
+    @State private var composePostViewModel = PostViewModel()
 
     var body: some View {
         ScrollViewReader { scrollProxy in
@@ -47,7 +49,8 @@ struct CommunityView: View {
 
                             Button(action: {
                                 if isLoggedIn {
-                                    showsPostWriteFlow = true
+                                    composePostViewModel = PostViewModel()
+                                    showsTypeSelection = true
                                 } else {
                                     showsLoginRequired = true
                                 }
@@ -82,8 +85,18 @@ struct CommunityView: View {
             .task {
                 await communityViewModel.loadPosts()
             }
-            .fullScreenCover(isPresented: $showsPostWriteFlow) {
-                PostView()
+            .sheet(isPresented: $showsTypeSelection) {
+                PostTypeSelectionSheet { type in
+                    composePostViewModel.selectedType = type
+                    showsTypeSelection = false
+                    writeFlowType = type
+                }
+                .padding(.horizontal, 20)
+            }
+            .fullScreenCover(item: $writeFlowType) { _ in
+                NavigationStack {
+                    PostWriteFlowView(postViewModel: composePostViewModel)
+                }
             }
         }
     }
