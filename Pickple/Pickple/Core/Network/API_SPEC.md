@@ -128,7 +128,7 @@
 multipart `images`를 S3에 저장하고 부착에 쓸 `itemContainerId`를 반환한다.
 
 파라미터:
-- `attachType` (query) 문자열 필수 — 이미지 용도
+- `attachType` (query) 문자열 필수 — 이미지 용도. `PRODUCT` | `COMMENT` (PROFILE 값 없음 — 프로필 이미지 업로드 용도는 아직 스펙에 없다)
 
 요청 본문:
 - `images` 배열 필수 — 문자열(binary) 배열
@@ -270,7 +270,7 @@ LV.1~LV.5의 승급 필요 조건을 낮은 등급부터 돌려준다.
 카테고리 필터와 정렬(최신순·인기순), 커서 기반 무한 스크롤. 게시글이 없으면 빈 배열이다.
 
 파라미터:
-- `category` (query) 문자열 선택 — 없으면 전체
+- `category` (query) 문자열 선택 — 없으면 전체. `FASHION` | `ELECTRONICS` | `BEAUTY` | `LIVING` | `ETC`
 - `sort` (query) 문자열 선택 — LATEST(기본) | POPULAR
 - `cursor` (query) 문자열 선택
 - `size` (query) 정수(int32) 선택 — 기본 10
@@ -279,7 +279,7 @@ LV.1~LV.5의 승급 필요 조건을 낮은 등급부터 돌려준다.
 - `content` 배열 선택
   - `id` 정수(int64) 선택
   - `type` 문자열 선택 — GENERAL | AGREE | A_B (현재 앱의 `VoteType`은 `.text`/`.forAgainst`/`.ab` — 매핑 필요)
-  - `category` 문자열 선택
+  - `category` 문자열 선택 — 위 5종 enum 코드가 그대로 온다. 화면 표시용 한글 라벨이 아니므로 클라이언트에서 변환해야 한다
   - `title` 문자열 선택 — 찬반=상품명, A/B=주제, 일반=제목
   - `description` 문자열 선택
   - `commentCount` 정수(int64) 선택
@@ -293,7 +293,53 @@ LV.1~LV.5의 승급 필요 조건을 낮은 등급부터 돌려준다.
 - `hasNext` 불리언 선택
 
 > 게시글 상세(GET /posts/{postId}) 단일 조회 엔드포인트는 이 문서에 없음 — 확인 필요.
-> 게시글 작성(POST /posts) 엔드포인트도 이 문서에 없음 — 확인 필요.
+> 게시글 수정(PATCH)·삭제(DELETE) 엔드포인트도 이 문서에 없음 — 확인 필요.
+
+### POST /posts — 게시글 작성
+업로드 API(POST /images)가 반환한 `itemContainerId`를 상품에 연결하고, 유형별 상품·사진·선택지 규칙을 검증한다.
+
+요청 본문:
+- `type` 문자열 필수 — `AGREE` | `A_B` | `GENERAL`
+- `category` 문자열 필수 — `FASHION` | `ELECTRONICS` | `BEAUTY` | `LIVING` | `ETC` (전체를 뜻하는 ALL은 조회 필터 전용, 작성 값 아님)
+- `title` 문자열 선택 — 30자 이내. A/B 주제 또는 일반 제목. 찬반은 첫 상품명으로 서버가 자동 결정
+- `description` 문자열 선택 — 300자 이내
+- `products` 배열 선택 — 최대 2개
+  - `itemContainerId` 정수(int64) 필수 — POST /images 응답값
+  - `name` 문자열 필수 — 30자 이내
+  - `price` 정수(int64) 선택 — 0~999999999
+  - `linkUrl` 문자열 선택 — 길이 제한 없음. 서버는 문자열로만 저장하고 접속하지 않는다
+
+응답 201 — Created: `postId` 정수(int64) 선택
+
+---
+
+## Activity — 내 활동(투표·댓글·게시글) 조회
+
+### GET /users/me/posts/recent — 최근 7일 투표 게시글
+인증 필요. 최근 7일 내 투표한 게시글을 최신순 최대 10개 반환한다. 응답 필드는 GET /posts의 `content` 항목과 동일 셋(`id`/`type`/`category`/`title`/`description`/`commentCount`/`voteCount`/`thumbnailUrl`/`createdAt`) + `authorId`/`authorNickname`/`authorRanking` 없음.
+
+### GET /users/me/activities — 내 활동 목록 조회
+인증 필요. 활동 유형 필터와 정렬, 커서 기반 무한 스크롤. 세 유형 모두 결과는 게시글 카드다 — 내가 투표한 글, 댓글 단 글, 올린 글. 활동이 없으면 빈 배열.
+
+파라미터:
+- `type` (query) 문자열 선택 — `VOTE`(기본) | `COMMENT` | `POST`. 모르는 값은 기본값으로 되돌린다
+- `sort` (query) 문자열 선택 — `LATEST`(기본) | `OLDEST` | `POPULAR`. 모르는 값은 기본값으로 되돌린다
+- `cursor` (query) 문자열 선택
+- `size` (query) 정수(int32) 선택 — 기본 10
+
+응답 200 — OK:
+- `content` 배열 — GET /posts의 `content` 항목 필드 + `activityAt` 문자열(date-time) 선택(내가 이 게시글에 활동한 시각. 내가 올린 글이면 작성 시각과 같다). `authorId`/`authorNickname`/`authorRanking`은 없음(항상 본인 글이라 생략)
+- `nextCursor` 문자열 선택
+- `hasNext` 불리언 선택
+
+> `UserPostRepository.fetchVotedPosts/fetchCommentedPosts/fetchWrittenPosts`가 아직 Mock인데, 이 엔드포인트로 실연동 가능해졌다(2026-09-06 OAS 확인). `type=VOTE`/`COMMENT`/`POST`로 각각 호출하면 된다.
+
+### GET /users/me/activities/summary — 내 활동 갯수 요약
+인증 필요. 투표·댓글·작성 게시글 수를 한 번에 준다. 투표·댓글은 게시글 기준 참여 건수라 재투표하거나 한 글에 여러 댓글을 달아도 늘지 않는다(R-22·R-25).
+
+응답 200 — OK: `voteCount`, `commentCount`, `postCount` (모두 정수 int64, 선택)
+
+> `RemoteUserInfoRepository`가 이미 연동 완료.
 
 ---
 
@@ -308,5 +354,6 @@ LV.1~LV.5의 승급 필요 조건을 낮은 등급부터 돌려준다.
 
 ## 아직 이 문서에 없는 것 (구현 전 백엔드 팀에 확인 필요)
 
-- 게시글 상세 단일 조회, 게시글 작성/수정/삭제
+- 게시글 상세 단일 조회(GET /posts/{postId}), 게시글 수정/삭제(작성은 확정됨 — 위 POST /posts 참고)
+- 프로필 이미지 업로드용 attachType(POST /images는 PRODUCT/COMMENT만 있음)
 - 신고/차단 관련 엔드포인트
