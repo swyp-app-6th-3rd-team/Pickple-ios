@@ -11,7 +11,10 @@ import SwiftUI
 struct CommunityView: View {
     @State var communityViewModel: CommunityViewModel
     @Environment(CommunityRouter.self) private var communityRouter
+    @Environment(\.isLoggedIn) private var isLoggedIn
+    @Environment(\.appRequestLogin) private var appRequestLogin
     @State private var showsLoginRequired = false
+    @State private var showsPostWriteFlow = false
 
     var body: some View {
         ScrollViewReader { scrollProxy in
@@ -42,7 +45,13 @@ struct CommunityView: View {
                                     .background(Circle().foregroundStyle(Color.white))
                             }
 
-                            Button(action: { showsLoginRequired = true }) {
+                            Button(action: {
+                                if isLoggedIn {
+                                    showsPostWriteFlow = true
+                                } else {
+                                    showsLoginRequired = true
+                                }
+                            }) {
                                 Image("PickpleWriting")
                                     .resizable()
                                     .frame(width: 24, height: 24)
@@ -65,13 +74,16 @@ struct CommunityView: View {
                         onCancel: { showsLoginRequired = false },
                         onConfirm: {
                             showsLoginRequired = false
-                            //TODO: 로그인 플로우 연결 필요
+                            appRequestLogin()
                         }
                     )
                 }
             }
             .task {
                 await communityViewModel.loadPosts()
+            }
+            .fullScreenCover(isPresented: $showsPostWriteFlow) {
+                PostView()
             }
         }
     }

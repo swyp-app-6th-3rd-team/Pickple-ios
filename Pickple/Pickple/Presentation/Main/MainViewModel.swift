@@ -18,8 +18,7 @@ class MainViewModel {
     var hotPosts: [PostSummary] = []
     var topRankings: [PickerRanking] = []
 
-    // TODO: 실제 로그인 상태 연동 필요 — 지금은 항상 로그인된 것으로 취급
-    var isLoggedIn = true
+    private(set) var isLoggedIn: Bool
 
     var selectedTypeIndex: Binding<Int> {
         Binding(
@@ -39,11 +38,13 @@ class MainViewModel {
     init(
         badgeMissionRepository: BadgeMissionRepository = MockBadgeMissionRepository(),
         communityRepository: CommunityRepository = MockCommunityRepository(),
-        pickerRankingRepository: PickerRankingRepository = MockPickerRankingRepository()
+        pickerRankingRepository: PickerRankingRepository = MockPickerRankingRepository(),
+        isLoggedIn: Bool = true
     ) {
         self.badgeMissionRepository = badgeMissionRepository
         self.communityRepository = communityRepository
         self.pickerRankingRepository = pickerRankingRepository
+        self.isLoggedIn = isLoggedIn
     }
 
     // @Observable 프로퍼티를 갱신하는 메서드라 여기에만 MainActor를 명시한다(CLAUDE.md 규칙) —

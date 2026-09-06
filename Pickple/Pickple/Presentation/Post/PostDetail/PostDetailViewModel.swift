@@ -22,8 +22,7 @@ class PostDetailViewModel {
     var pickedCommentID: Int?
     var editingCommentID: Int?
 
-    // TODO: 실제 로그인 상태 연동 필요 — 지금은 항상 로그인된 것으로 취급(Mock)
-    var isLoggedIn = true
+    var isLoggedIn: Bool
 
     static let sortOptions = ["최신순", "오래된 순"]
     // TODO: 실제 투표 결과 API 연동 필요 — 지금은 고정된 Mock 비율
@@ -65,10 +64,12 @@ class PostDetailViewModel {
     init(
         voteType: VoteType,
         postDetailRepository: PostDetailRepository? = nil,
-        commentRepository: CommentRepository = MockCommentRepository()
+        commentRepository: CommentRepository = MockCommentRepository(),
+        isLoggedIn: Bool = true
     ) {
         self.postDetailRepository = postDetailRepository ?? MockPostDetailRepository(type: voteType)
         self.commentRepository = commentRepository
+        self.isLoggedIn = isLoggedIn
     }
 
     func loadPostDetail() async {

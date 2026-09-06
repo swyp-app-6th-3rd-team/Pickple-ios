@@ -20,12 +20,12 @@ class CardStackViewModel {
     var guestVoteCount = 0
     var showsLoginRequired = false
 
-    // TODO: 실제 로그인 상태 연동 필요 — 지금은 항상 로그인된 것으로 취급해서 게스트 제한 로직은 타지 않음
-    var isLoggedIn = true
+    private(set) var isLoggedIn: Bool
     static let guestVoteLimit = 3
 
-    init(voteCardRepository: VoteCardRepository = MockVoteCardRepository()) {
+    init(voteCardRepository: VoteCardRepository = MockVoteCardRepository(), isLoggedIn: Bool = true) {
         self.voteCardRepository = voteCardRepository
+        self.isLoggedIn = isLoggedIn
     }
 
     func loadCards() async {

@@ -12,6 +12,7 @@ struct MainView: View {
     @State private var mainViewModel: MainViewModel
     @State private var cardStackViewModel: CardStackViewModel
     @Environment(MainRouter.self) private var mainRouter
+    @Environment(\.appRequestLogin) private var appRequestLogin
     @State private var isMissionExpanded = false
     var onRequestCommunityTab: (() -> Void)? = nil
 
@@ -87,7 +88,10 @@ struct MainView: View {
                         cancelTitle: MainStrings.cancel,
                         confirmTitle: MainStrings.login,
                         onCancel: { cardStackViewModel.showsLoginRequired = false },
-                        onConfirm: { cardStackViewModel.showsLoginRequired = false }
+                        onConfirm: {
+                            cardStackViewModel.showsLoginRequired = false
+                            appRequestLogin()
+                        }
                     )
                 }
             }

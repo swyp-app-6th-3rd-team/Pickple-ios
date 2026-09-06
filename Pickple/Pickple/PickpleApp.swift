@@ -48,26 +48,35 @@ struct PickpleApp: App {
             Group {
                 if sessionViewModel.isRestoringSession {
                     Color.clear
-                } else if sessionViewModel.needsProfileSetup {
-                    ProfileSetupView(
-                        profileViewModel: ProfileSetupViewModel(profileRepository: profileRepository),
-                        onCompleted: { sessionViewModel.handleProfileRegistered() }
-                    )
-                } else if sessionViewModel.isLoggedIn {
-                    PickpleBottomNav(
-                        myPageViewModel: MyPageViewModel(
-                            userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
-                            userPostRepository: RemoteUserPostRepository(apiClient: apiClient)
-                        )
-                    )
-                        .environment(\.appLogout, sessionViewModel.logout)
-                        .environment(\.appDeleteAccount, sessionViewModel.deleteAccount)
-                        .environment(\.apiClient, apiClient)
                 } else {
-                    NavigationStack {
-                        LoginView(viewModel: loginViewModel, onLoginSuccess: {
-                            Task { await sessionViewModel.handleLoginSuccess() }
-                        })
+                    switch sessionViewModel.sessionState {
+                    case .needsProfileSetup:
+                        ProfileSetupView(
+                            profileViewModel: ProfileSetupViewModel(profileRepository: profileRepository),
+                            onCompleted: { sessionViewModel.handleProfileRegistered() }
+                        )
+                    case .loggedIn, .guest:
+                        PickpleBottomNav(
+                            myPageViewModel: MyPageViewModel(
+                                userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
+                                userPostRepository: RemoteUserPostRepository(apiClient: apiClient)
+                            )
+                        )
+                            .environment(\.appLogout, sessionViewModel.logout)
+                            .environment(\.appDeleteAccount, sessionViewModel.deleteAccount)
+                            .environment(\.apiClient, apiClient)
+                            .environment(\.isLoggedIn, sessionViewModel.sessionState == .loggedIn)
+                            .environment(\.appRequestLogin, sessionViewModel.requestLogin)
+                    case .loggedOut:
+                        NavigationStack {
+                            LoginView(
+                                viewModel: loginViewModel,
+                                onLoginSuccess: {
+                                    Task { await sessionViewModel.handleLoginSuccess() }
+                                },
+                                onGuestContinue: { sessionViewModel.continueAsGuest() }
+                            )
+                        }
                     }
                 }
             }.onOpenURL(perform: { url in
