@@ -10,11 +10,11 @@
 import SwiftUI
 
 struct MainRankingView: View {
-    @StateObject private var mainRankingViewModel: MainRankingViewModel
+    @State private var mainRankingViewModel: MainRankingViewModel
     @Environment(\.dismiss) private var dismiss
 
     init(mainRankingViewModel: MainRankingViewModel = MainRankingViewModel()) {
-        _mainRankingViewModel = StateObject(wrappedValue: mainRankingViewModel)
+        _mainRankingViewModel = State(initialValue: mainRankingViewModel)
     }
 
     var body: some View {
