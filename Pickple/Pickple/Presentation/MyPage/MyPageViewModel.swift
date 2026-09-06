@@ -4,14 +4,15 @@
 //
 //  Created by 박윤수 on 9/1/26.
 //
-import Combine
+import Foundation
 
-class MyPageViewModel: ObservableObject {
+@Observable
+class MyPageViewModel {
     private var userInfoRepository: UserInfoRepository
     private var userPostRepository: UserPostRepository
-    
-    @Published var userInfo: UserInfo?
-    @Published var posts: [PostSummary] = []
+
+    var userInfo: UserInfo?
+    var posts: [PostSummary] = []
     
     init(
         userInfoRepository: UserInfoRepository = MockUserInfoRepository(),

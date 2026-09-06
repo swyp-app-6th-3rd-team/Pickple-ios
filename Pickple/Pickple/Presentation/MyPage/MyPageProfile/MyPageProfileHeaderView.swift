@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MyPageProfileHeaderView: View {
-    @ObservedObject var myPageViewModel: MyPageViewModel
+    let myPageViewModel: MyPageViewModel
 
     var body: some View {
         Button(action: {}) {

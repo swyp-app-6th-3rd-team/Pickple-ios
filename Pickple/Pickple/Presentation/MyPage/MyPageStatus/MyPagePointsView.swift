@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MyPagePointsView: View {
-    @ObservedObject var myPageViewModel: MyPageViewModel
+    let myPageViewModel: MyPageViewModel
     
     private var currentPoints: Int? {
         myPageViewModel.userInfo?.points
