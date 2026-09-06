@@ -59,6 +59,8 @@ struct ProfileSetupView: View {
                 onCompleted()
             })
                 .interactiveDismissDisabled()
+                .presentationDragIndicator(.visible)
+                .presentationDetents([.height(517)])
         }
     }
 }
