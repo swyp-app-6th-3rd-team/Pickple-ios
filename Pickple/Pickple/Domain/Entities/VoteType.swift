@@ -9,7 +9,7 @@
 
 import Foundation
 
-enum VoteType: Equatable {
+enum VoteType: Equatable, Identifiable {
     case forAgainst
     case ab
     case text
@@ -22,4 +22,7 @@ enum VoteType: Equatable {
         default: self = .text
         }
     }
+
+    // .sheet(item:)/.fullScreenCover(item:) 등 Identifiable이 필요한 곳에서 값 자체를 식별자로 쓴다.
+    var id: Self { self }
 }
