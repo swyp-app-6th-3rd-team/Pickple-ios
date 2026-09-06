@@ -20,6 +20,7 @@ import SwiftUI
 
 struct PickpleBottomNav: View {
     @Environment(\.apiClient) private var apiClient
+    @Environment(\.isLoggedIn) private var isLoggedIn
     @State private var selectedTab = 0
     @State private var mainRouter = MainRouter()
     @State private var communityRouter = CommunityRouter()
@@ -37,9 +38,10 @@ struct PickpleBottomNav: View {
                     mainViewModel: MainViewModel(
                         badgeMissionRepository: RemoteBadgeMissionRepository(apiClient: apiClient),
                         communityRepository: RemoteCommunityRepository(apiClient: apiClient),
-                        pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient)
+                        pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient),
+                        isLoggedIn: isLoggedIn
                     ),
-                    cardStackViewModel: CardStackViewModel(voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient)),
+                    cardStackViewModel: CardStackViewModel(voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient), isLoggedIn: isLoggedIn),
                     onRequestCommunityTab: { selectedTab = 1 }
                 )
                     .navigationDestination(for: MainRoute.self) { route in
@@ -47,7 +49,7 @@ struct PickpleBottomNav: View {
                         case .postDetail(let postId, let type):
                             PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId))
                         case .ranking:
-                            MainRankingView(mainRankingViewModel: MainRankingViewModel(pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient)))
+                            MainRankingView(mainRankingViewModel: MainRankingViewModel(pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient), isLoggedIn: isLoggedIn))
                         }
                     }
             }

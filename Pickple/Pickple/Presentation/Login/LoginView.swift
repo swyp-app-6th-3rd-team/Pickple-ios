@@ -10,6 +10,7 @@ import SwiftUI
 struct LoginView: View {
     let viewModel: LoginViewModel
     var onLoginSuccess: () -> Void = {}
+    var onGuestContinue: () -> Void = {}
 
     var body: some View {
         VStack(spacing: 40) {
@@ -44,7 +45,7 @@ struct LoginView: View {
                             }
                         }
                         LoginButton(provider: .guest) {
-                            onLoginSuccess()
+                            onGuestContinue()
                         }
                     }
                     .padding(.horizontal, 20)

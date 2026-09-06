@@ -7,15 +7,23 @@
 
 import Foundation
 
-// 앱 전체의 로그인 세션 상태(로그인 여부, 세션 복원 진행 중 여부)와
-// 그 상태를 바꾸는 동작(자동 로그인 복원/로그아웃/탈퇴)을 소유한다.
+// 앱 전체의 세션 상태. 게스트(둘러보기)와 완전 로그인은 둘 다 PickpleBottomNav를 보여주지만
+// 실제 인증 여부가 다르므로 Bool 하나로 합치지 않고 별도 케이스로 분리한다.
+enum SessionState: Equatable {
+    case loggedOut
+    case guest
+    // 로그인은 됐지만 닉네임 등록 전(GET /users/me의 nickname == nil)이라 프로필 설정 화면을 보여줘야 하는 상태.
+    case needsProfileSetup
+    case loggedIn
+}
+
+// 앱 전체의 로그인 세션 상태(SessionState, 세션 복원 진행 중 여부)와
+// 그 상태를 바꾸는 동작(자동 로그인 복원/게스트 진입/로그아웃/탈퇴)을 소유한다.
 // PickpleApp은 이 뷰모델을 만들어서 화면 분기와 Environment 주입만 담당한다.
 @Observable
 class AppSessionViewModel {
-    private(set) var isLoggedIn = false
+    private(set) var sessionState: SessionState = .loggedOut
     private(set) var isRestoringSession = true
-    // 로그인은 됐지만 닉네임 등록 전(GET /users/me의 nickname == nil)이라 프로필 설정 화면을 보여줘야 하는 상태.
-    private(set) var needsProfileSetup = false
 
     private let authRepository: AuthRepository
     private let profileRepository: ProfileRepository
@@ -34,7 +42,18 @@ class AppSessionViewModel {
         self.refreshTokenStore = refreshTokenStore
     }
 
-    // Apple 로그인 성공 직후 호출 — 닉네임 등록 여부에 따라 프로필 설정 화면으로 보낼지 정한다.
+    // 로그인 없이 앱을 둘러보는 상태로 전환한다. PickpleBottomNav는 그대로 보여주되,
+    // 실제로는 인증되지 않았다는 걸 하위 화면들이 Environment(\.isLoggedIn)로 구분한다.
+    func continueAsGuest() {
+        sessionState = .guest
+    }
+
+    // 로그인 유도 모달 등에서 "로그인" 확정 시 호출 — 게스트/미로그인 상태를 벗어나 로그인 화면으로 되돌린다.
+    func requestLogin() {
+        sessionState = .loggedOut
+    }
+
+    // Apple/Kakao 로그인 성공 직후 호출 — 닉네임 등록 여부에 따라 프로필 설정 화면으로 보낼지 정한다.
     @MainActor
     func handleLoginSuccess() async {
         await resolveProfileState()
@@ -42,20 +61,17 @@ class AppSessionViewModel {
 
     // 프로필 설정 화면에서 등록 완료했을 때 호출.
     func handleProfileRegistered() {
-        needsProfileSetup = false
-        isLoggedIn = true
+        sessionState = .loggedIn
     }
 
     @MainActor
     private func resolveProfileState() async {
         do {
             let profile = try await profileRepository.fetchMyProfile()
-            needsProfileSetup = (profile.nickname == nil)
-            isLoggedIn = !needsProfileSetup
+            sessionState = (profile.nickname == nil) ? .needsProfileSetup : .loggedIn
         } catch {
             // 프로필 조회 실패해도 로그인 자체는 성공했으니, 사용자를 막지 않고 일단 메인으로 보낸다.
-            needsProfileSetup = false
-            isLoggedIn = true
+            sessionState = .loggedIn
         }
     }
 
@@ -91,7 +107,6 @@ class AppSessionViewModel {
     @MainActor
     private func clearLocalSession() async {
         await SessionTokenPersistence.clear(tokenStore: tokenStore, refreshTokenStore: refreshTokenStore)
-        isLoggedIn = false
-        needsProfileSetup = false
+        sessionState = .loggedOut
     }
 }

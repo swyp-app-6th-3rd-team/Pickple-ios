@@ -13,6 +13,8 @@ struct PostDetailView: View {
     
     @State private var postDetailViewModel: PostDetailViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.isLoggedIn) private var isLoggedIn
+    @Environment(\.appRequestLogin) private var appRequestLogin
     
     @State private var isSortExpanded = false
     @State private var showsSuccessToast = false
@@ -115,7 +117,10 @@ struct PostDetailView: View {
                         cancelTitle: PostDetailStrings.cancel,
                         confirmTitle: PostDetailStrings.login,
                         onCancel: { self.loginRequiredDescription = nil },
-                        onConfirm: { self.loginRequiredDescription = nil }
+                        onConfirm: {
+                            self.loginRequiredDescription = nil
+                            appRequestLogin()
+                        }
                     )
                 }
             }
@@ -213,6 +218,7 @@ struct PostDetailView: View {
         .pickpleToast(isPresented: $showsSuccessToast, message: PostViewStrings.submitSucceededToast)
         .navigationBarBackButtonHidden(true)
         .task {
+            postDetailViewModel.isLoggedIn = isLoggedIn
             await postDetailViewModel.loadPostDetail()
             await postDetailViewModel.loadComments()
             if showsSuccessToastOnAppear {
