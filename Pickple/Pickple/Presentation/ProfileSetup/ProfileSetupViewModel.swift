@@ -5,12 +5,13 @@
 //  Created by 박윤수 on 8/26/26.
 //
 import SwiftUI
-import PhotosUI
+import UIKit
 
 @Observable
 class ProfileSetupViewModel {
-    var imageSelection: PhotosPickerItem?
     var selectedImage: Image?
+    // 실제 업로드(POST /images)를 붙일 때 raw 이미지가 필요해서 표시용 Image와 별도로 들고 있는다.
+    var selectedUIImage: UIImage?
     var nickname: String = ""
     var isSubmitting = false
     var errorMessage: String?
@@ -22,24 +23,11 @@ class ProfileSetupViewModel {
         self.profileRepository = profileRepository
     }
 
-    //Progerss라는 진행상황 반환값을 일단 안쓰기에 표기
-    @discardableResult
-    func loadTransferable(from imageSelection: PhotosPickerItem) -> Progress {
-        return imageSelection.loadTransferable(type: Image.self) { result in
-            DispatchQueue.main.async {
-                guard imageSelection == self.imageSelection else { return }
-                switch result {
-                case .success(let image?):
-                    self.selectedImage = image
-                case .success(nil):
-                    self.selectedImage = nil
-                case .failure(let error):
-                    print(error.localizedDescription)
-                }
-            }
-        }
+    func setSelectedImage(_ image: UIImage) {
+        selectedUIImage = image
+        selectedImage = Image(uiImage: image)
     }
-    
+
     func filteredNickname(_ input: String) -> String {
         let filtered = input.filter { $0.isLetter || $0.isNumber }
         return String(filtered.prefix(nicknameMaxLength))

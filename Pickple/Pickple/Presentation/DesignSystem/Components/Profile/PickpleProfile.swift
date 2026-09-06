@@ -5,16 +5,16 @@
 //  Created by 박윤수 on 8/27/26.
 //
 import SwiftUI
-import PhotosUI
+import UIKit
 
-// 일단은 onCamera/offCamera 둘 다 탭하면 PhotosPicker가 열려서 사진을 수정할 수 있고,
+// 일단은 onCamera/offCamera 둘 다 탭하면 사진 피커(CustomPhotoPickerView)가 열려서 사진을 수정할 수 있고,
 // 카메라 배지 노출 여부만 다르다. 읽기 전용(다른 유저 프로필 등) 용도는 아직 없음.
 // TODO: 실사용처가 정해지면 재검토 (읽기 전용 필요해지면 그때 분기 다시 추가)
 
 enum PickpleProfileType {
     case onCamera
     case offCamera
-    
+
     var isCamera: Bool {
         switch self {
         case .onCamera: return true
@@ -24,14 +24,18 @@ enum PickpleProfileType {
 }
 
 struct PickpleProfile: View {
-    @Binding var selectedItem: PhotosPickerItem?
-    
     let selectedImage: Image?
     let type: PickpleProfileType
-    
+    let onSelect: (UIImage) -> Void
+
+    @State private var showsPicker = false
+
     var body: some View {
-        PhotosPicker(selection: $selectedItem) {
+        Button(action: { showsPicker = true }) {
             profileCircle
+        }
+        .sheet(isPresented: $showsPicker) {
+            CustomPhotoPickerView(onSelect: onSelect)
         }
     }
 
@@ -79,17 +83,15 @@ struct PickpleProfile: View {
 }
 
 #Preview {
-    @Previewable @State var selectedItem: PhotosPickerItem?
-
     VStack(spacing: 20) {
         // 사진 없음 + 카메라 배지
-        PickpleProfile(selectedItem: $selectedItem, selectedImage: nil, type: .onCamera)
+        PickpleProfile(selectedImage: nil, type: .onCamera, onSelect: { _ in })
 
         // 사진 있음 + 카메라 배지
-        PickpleProfile(selectedItem: $selectedItem, selectedImage: Image(systemName: "person.fill"), type: .onCamera)
+        PickpleProfile(selectedImage: Image(systemName: "person.fill"), type: .onCamera, onSelect: { _ in })
 
         // 사진 없음 + 배지 없음
-        PickpleProfile(selectedItem: $selectedItem, selectedImage: nil, type: .offCamera)
+        PickpleProfile(selectedImage: nil, type: .offCamera, onSelect: { _ in })
     }
 }
 
