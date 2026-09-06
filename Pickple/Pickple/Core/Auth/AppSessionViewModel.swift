@@ -14,6 +14,8 @@ enum SessionState: Equatable {
     case guest
     // 로그인은 됐지만 닉네임 등록 전(GET /users/me의 nickname == nil)이라 프로필 설정 화면을 보여줘야 하는 상태.
     case needsProfileSetup
+    // 프로필 등록 직후, 신규 가입자에 한해 약관 동의 화면을 보여줘야 하는 상태(기존 로그인 유저는 거치지 않음).
+    case needsTermsAgreement
     case loggedIn
 }
 
@@ -59,8 +61,13 @@ class AppSessionViewModel {
         await resolveProfileState()
     }
 
-    // 프로필 설정 화면에서 등록 완료했을 때 호출.
+    // 프로필 설정 화면에서 등록 완료했을 때 호출 — 신규 가입자라 약관 동의 화면을 거쳐야 한다.
     func handleProfileRegistered() {
+        sessionState = .needsTermsAgreement
+    }
+
+    // 약관 동의 화면에서 동의 완료했을 때 호출.
+    func handleTermsAgreed() {
         sessionState = .loggedIn
     }
 
