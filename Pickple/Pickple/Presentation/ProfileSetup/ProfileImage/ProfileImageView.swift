@@ -6,20 +6,15 @@
 //
 
 import SwiftUI
-import PhotosUI
 
 struct ProfileImageView: View {
     let profileViewModel: ProfileSetupViewModel
-    @State var selectedItem: PhotosPickerItem?
-    
+
     var body: some View {
         VStack(spacing: 40) {
-            PickpleProfile(selectedItem: $selectedItem, selectedImage: profileViewModel.selectedImage, type: .onCamera)
-        }
-        .onChange(of: selectedItem) {
-            guard let selectedItem else { return }
-            profileViewModel.imageSelection = selectedItem
-            profileViewModel.loadTransferable(from: selectedItem)
+            PickpleProfile(selectedImage: profileViewModel.selectedImage, type: .onCamera) { image in
+                profileViewModel.setSelectedImage(image)
+            }
         }
     }
 }
