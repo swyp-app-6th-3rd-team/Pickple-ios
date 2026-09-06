@@ -36,6 +36,14 @@ struct PostView: View {
             }
             .padding(.horizontal, 20)
         }
+        // PostWriteFlowView에서 뒤로가기로 나오면(= 작성 포기) navigatesToWriteFlow가 다시 false가 되는데,
+        // 유형 선택 시트를 다시 띄우지 않고 작성 플로우 전체를 닫는다. 안 그러면 NavigationStack의
+        // 루트인 빈 Color.clear만 남아 화면이 막다른 상태가 된다.
+        .onChange(of: navigatesToWriteFlow) { _, newValue in
+            if !newValue {
+                dismiss()
+            }
+        }
     }
 }
 
