@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct CommunityView: View {
-    @StateObject var communityViewModel: CommunityViewModel
+    @State var communityViewModel: CommunityViewModel
     @Environment(CommunityRouter.self) private var communityRouter
     @State private var showsLoginRequired = false
 
