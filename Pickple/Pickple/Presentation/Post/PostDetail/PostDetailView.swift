@@ -11,7 +11,7 @@ import SwiftUI
 struct PostDetailView: View {
     var showsSuccessToastOnAppear: Bool = false
     
-    @StateObject private var postDetailViewModel: PostDetailViewModel
+    @State private var postDetailViewModel: PostDetailViewModel
     @Environment(\.dismiss) private var dismiss
     
     @State private var isSortExpanded = false
@@ -35,7 +35,7 @@ struct PostDetailView: View {
         showsSuccessToastOnAppear: Bool = false
     ) {
         self.showsSuccessToastOnAppear = showsSuccessToastOnAppear
-        _postDetailViewModel = StateObject(wrappedValue: PostDetailViewModel(voteType: voteType, commentRepository: commentRepository))
+        _postDetailViewModel = State(initialValue: PostDetailViewModel(voteType: voteType, commentRepository: commentRepository))
     }
     
     var body: some View {

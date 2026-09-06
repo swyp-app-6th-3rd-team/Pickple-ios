@@ -11,7 +11,7 @@ import SwiftUI
 // 일반 게시글에서는 상품 정보가 없어서 비어 보인다(호출부에서 firstProduct 존재 여부로 감싸는 걸 권장).
 struct PostDetailProductVoteSection: View {
     let post: PostDetail
-    @ObservedObject var postDetailViewModel: PostDetailViewModel
+    @Bindable var postDetailViewModel: PostDetailViewModel
     let onVote: (PostDetailVoteSide) -> Void
 
     var body: some View {
