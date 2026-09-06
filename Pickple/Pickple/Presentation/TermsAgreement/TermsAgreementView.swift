@@ -116,6 +116,7 @@ struct TermsAgreementView: View {
             .disabled(!isRequiredAgreed)
         }
         .padding(.horizontal, 20)
+        .padding(.top, 45)
     }
 }
 
