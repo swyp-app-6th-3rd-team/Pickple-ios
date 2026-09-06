@@ -55,8 +55,6 @@ struct PickpleApp: App {
                             profileViewModel: ProfileSetupViewModel(profileRepository: profileRepository),
                             onCompleted: { sessionViewModel.handleProfileRegistered() }
                         )
-                    case .needsTermsAgreement:
-                        TermsAgreementView(onCompleted: { sessionViewModel.handleTermsAgreed() })
                     case .loggedIn, .guest:
                         PickpleBottomNav(
                             myPageViewModel: MyPageViewModel(
