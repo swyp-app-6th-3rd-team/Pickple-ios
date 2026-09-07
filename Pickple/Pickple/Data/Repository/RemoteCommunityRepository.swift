@@ -49,7 +49,7 @@ struct RemoteCommunityRepository: CommunityRepository {
         PostSummary(
             id: dto.id,
             type: VoteType(serverType: dto.type),
-            category: dto.category,
+            category: PostCategoryLabel.label(for: dto.category),
             title: dto.title,
             description: dto.description ?? "",
             thumbnailUrl: dto.thumbnailUrl.flatMap(URL.init(string:)),
