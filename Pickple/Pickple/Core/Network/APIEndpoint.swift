@@ -20,5 +20,15 @@ struct APIEndpoint: Sendable {
     let path: String
     var queryItems: [URLQueryItem] = []
     var body: Data? = nil
+    // multipart/form-data 업로드(POST /images)에서만 쓴다. body와는 배타적 — 둘 다 있으면 multipartFiles가 우선한다.
+    var multipartFiles: [MultipartFile]? = nil
     var requiresAuth: Bool = false
+}
+
+// multipart/form-data 파트 하나(이미지 파일 하나).
+struct MultipartFile: Sendable {
+    let fieldName: String
+    let filename: String
+    let mimeType: String
+    let data: Data
 }

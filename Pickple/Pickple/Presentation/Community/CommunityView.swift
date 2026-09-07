@@ -13,6 +13,7 @@ struct CommunityView: View {
     @Environment(CommunityRouter.self) private var communityRouter
     @Environment(\.isLoggedIn) private var isLoggedIn
     @Environment(\.appRequestLogin) private var appRequestLogin
+    @Environment(\.apiClient) private var apiClient
     @State private var showsLoginRequired = false
     @State private var showsTypeSelection = false
     @State private var writeFlowType: VoteType?
@@ -49,7 +50,7 @@ struct CommunityView: View {
 
                             Button(action: {
                                 if isLoggedIn {
-                                    composePostViewModel = PostViewModel()
+                                    composePostViewModel = PostViewModel(postWriteRepository: RemotePostWriteRepository(apiClient: apiClient))
                                     showsTypeSelection = true
                                 } else {
                                     showsLoginRequired = true
