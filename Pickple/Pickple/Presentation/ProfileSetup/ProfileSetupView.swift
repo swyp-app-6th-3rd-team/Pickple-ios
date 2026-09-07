@@ -37,11 +37,16 @@ struct ProfileSetupView: View {
             Spacer()
             
             //XMARK: - Button
-            ProfileButtonView(profileViewModel: profileViewModel, onCompleted: { if isLoggedIn {
-                onCompleted()
-            } else {
-                showsTermsAgreement = true
-            }
+            ProfileButtonView(profileViewModel: profileViewModel, onCompleted: {
+                if isLoggedIn {
+                    Task {
+                        if await profileViewModel.submitProfile() {
+                            onCompleted()
+                        }
+                    }
+                } else {
+                    showsTermsAgreement = true
+                }
             })
             .padding(.horizontal, 20)
         }
@@ -54,7 +59,7 @@ struct ProfileSetupView: View {
             Text(profileViewModel.errorMessage ?? "")
         }
         .sheet(isPresented: $showsTermsAgreement)  {
-            TermsAgreementView(onCompleted: {
+            TermsAgreementView(profileViewModel: profileViewModel, onCompleted: {
                 showsTermsAgreement = false
                 onCompleted()
             })

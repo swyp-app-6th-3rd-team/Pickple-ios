@@ -31,5 +31,5 @@ struct PickpleToggle: ToggleStyle {
 }
 
 #Preview {
-    TermsAgreementView()
+    TermsAgreementView(profileViewModel: ProfileSetupViewModel())
 }
