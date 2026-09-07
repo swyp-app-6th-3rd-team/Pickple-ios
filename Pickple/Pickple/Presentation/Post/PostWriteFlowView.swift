@@ -8,7 +8,8 @@
 
 import SwiftUI
 
-// 글 유형이 정해진 뒤의 단계별 작성 화면(찬반 2단계 / A-B 3단계 / 일반 1단계).
+// 글 유형이 정해진 뒤의 작성 화면. 유형별 입력을 전부 한 화면에 모아서 보여주고,
+// 상단 게이지가 필수 항목 채움 정도를 보여준다.
 struct PostWriteFlowView: View {
     let postViewModel: PostViewModel
     @Environment(\.dismiss) private var dismiss
@@ -29,10 +30,13 @@ struct PostWriteFlowView: View {
                     trailing: .none
                 )
 
-                if postViewModel.totalSteps > 1 {
-                    PickpleProgressBar(totalSteps: postViewModel.totalSteps, currentIndex: postViewModel.currentIndex)
+                // 일반 게시글은 필드가 3개뿐이고 전부 기본으로 보이므로, 순차 공개도 게이지도 필요 없다.
+                if postViewModel.selectedType != .text {
+                    ProgressView(value: Double(postViewModel.requiredFieldsFilledCount), total: Double(postViewModel.requiredFieldsTotalCount))
+                        .progressViewStyle(LinearProgressViewStyle(tint: Color.yellow60))
                         .padding(.horizontal, 20)
                         .padding(.vertical, 12)
+                        .animation(.easeInOut, value: postViewModel.requiredFieldsFilledCount)
                 }
 
                 ScrollView {
@@ -46,11 +50,9 @@ struct PostWriteFlowView: View {
                 }
 
                 PostWriteFlowButtonRow(
-                    showsPrevious: postViewModel.currentIndex > 0,
-                    primaryTitle: postViewModel.isLastStep ? PostViewStrings.submit : PostViewStrings.next,
-                    isPrimaryEnabled: postViewModel.isCurrentStepValid,
-                    onPrevious: { postViewModel.moveToPreviousStep() },
-                    onPrimary: handlePrimaryAction
+                    title: PostViewStrings.submit,
+                    isEnabled: postViewModel.canSubmit,
+                    onSubmit: handleSubmit
                 )
             }
 
@@ -72,33 +74,48 @@ struct PostWriteFlowView: View {
     }
 
     private func handleBack() {
-        if postViewModel.currentIndex > 0 {
-            postViewModel.moveToPreviousStep()
-        } else if postViewModel.hasDraftContent {
+        if postViewModel.hasDraftContent {
             showsLeaveConfirm = true
         } else {
             dismiss()
         }
     }
 
-    private func handlePrimaryAction() {
-        if postViewModel.isLastStep {
-            Task {
-                await postViewModel.submitPost()
-                if postViewModel.submitState == .succeeded {
-                    navigatesToDetail = true
-                } else {
-                    showsFailureToast = true
-                }
+    private func handleSubmit() {
+        Task {
+            await postViewModel.submitPost()
+            if postViewModel.submitState == .succeeded {
+                navigatesToDetail = true
+            } else {
+                showsFailureToast = true
             }
-        } else {
-            postViewModel.moveToNextStep()
         }
     }
 }
 
-#Preview {
-    NavigationStack {
-        PostWriteFlowView(postViewModel: PostViewModel())
+#Preview("찬반") {
+    let viewModel = PostViewModel()
+    viewModel.selectedType = .forAgainst
+
+    return NavigationStack {
+        PostWriteFlowView(postViewModel: viewModel)
+    }
+}
+
+#Preview("A/B") {
+    let viewModel = PostViewModel()
+    viewModel.selectedType = .ab
+
+    return NavigationStack {
+        PostWriteFlowView(postViewModel: viewModel)
+    }
+}
+
+#Preview("일반") {
+    let viewModel = PostViewModel()
+    viewModel.selectedType = .text
+
+    return NavigationStack {
+        PostWriteFlowView(postViewModel: viewModel)
     }
 }
