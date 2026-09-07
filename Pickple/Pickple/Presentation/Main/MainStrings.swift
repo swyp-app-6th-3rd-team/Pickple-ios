@@ -34,4 +34,6 @@ enum MainStrings {
     static let rankingTitle = "전체 랭킹"
     static let topRankingSectionTitle = "TOP 피커 랭킹"
     static let rankingEmptyMessage = "아직 TOP 피커가 존재하지 않아요"
+    static let rankingGuestNickname = "게스트"
+    static let rankingLoginButton = "로그인하기"
 }
