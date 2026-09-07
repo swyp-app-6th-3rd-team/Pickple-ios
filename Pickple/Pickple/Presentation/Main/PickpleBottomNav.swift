@@ -54,14 +54,7 @@ struct PickpleBottomNav: View {
                     }
             }
             .environment(mainRouter)
-            .tabItem {
-                Label {
-                    Text(MainStrings.tabHome)
-                } icon: {
-                    Image("PickpleHome")
-                        .renderingMode(selectedTab == 0 ? .template : .original)
-                }
-            }
+            .tabItem { tabLabel(title: MainStrings.tabHome, icon: "PickpleHome", tag: 0) }
             .tag(0)
 
             NavigationStack(path: $communityRouter.path) {
@@ -76,14 +69,7 @@ struct PickpleBottomNav: View {
                     }
             }
             .environment(communityRouter)
-            .tabItem {
-                Label {
-                    Text(MainStrings.tabCommunity)
-                } icon: {
-                    Image("PickpleMessage")
-                        .renderingMode(selectedTab == 1 ? .template : .original)
-                }
-            }
+            .tabItem { tabLabel(title: MainStrings.tabCommunity, icon: "PickpleMessage", tag: 1) }
             .tag(1)
 
             NavigationStack(path: $myPageRouter.path) {
@@ -104,17 +90,20 @@ struct PickpleBottomNav: View {
                     }
             }
             .environment(myPageRouter)
-            .tabItem {
-                Label {
-                    Text(MainStrings.tabMyPage)
-                } icon: {
-                    Image("PickpleUser")
-                        .renderingMode(selectedTab == 2 ? .template : .original)
-                }
-            }
+            .tabItem { tabLabel(title: MainStrings.tabMyPage, icon: "PickpleUser", tag: 2) }
             .tag(2)
         }
         .tint(Color.navy60)
+    }
+
+    // 탭 3개가 제목/아이콘만 다르고 나머지(선택 시 renderingMode 전환)는 동일해서 뽑았다.
+    private func tabLabel(title: String, icon: String, tag: Int) -> some View {
+        Label {
+            Text(title)
+        } icon: {
+            Image(icon)
+                .renderingMode(selectedTab == tag ? .template : .original)
+        }
     }
 }
 
