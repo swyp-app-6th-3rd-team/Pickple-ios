@@ -64,9 +64,15 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
 
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
-        request.httpBody = endpoint.body
-        if endpoint.body != nil {
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if let files = endpoint.multipartFiles, !files.isEmpty {
+            let boundary = "Boundary-\(UUID().uuidString)"
+            request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+            request.httpBody = Self.multipartBody(files: files, boundary: boundary)
+        } else {
+            request.httpBody = endpoint.body
+            if endpoint.body != nil {
+                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            }
         }
         if endpoint.requiresAuth {
             guard let token = await tokenProvider.accessToken() else {
@@ -98,5 +104,18 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
         }
 
         return (data, httpResponse)
+    }
+
+    private static func multipartBody(files: [MultipartFile], boundary: String) -> Data {
+        var body = Data()
+        for file in files {
+            body.append("--\(boundary)\r\n".data(using: .utf8)!)
+            body.append("Content-Disposition: form-data; name=\"\(file.fieldName)\"; filename=\"\(file.filename)\"\r\n".data(using: .utf8)!)
+            body.append("Content-Type: \(file.mimeType)\r\n\r\n".data(using: .utf8)!)
+            body.append(file.data)
+            body.append("\r\n".data(using: .utf8)!)
+        }
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        return body
     }
 }
