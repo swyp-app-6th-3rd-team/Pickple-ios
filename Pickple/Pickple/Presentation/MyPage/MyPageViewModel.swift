@@ -22,10 +22,12 @@ class MyPageViewModel {
         self.userPostRepository = userPostRepository
     }
     
+    @MainActor
     func loadUserInfo() async {
         userInfo = try? await userInfoRepository.fetchUserInfo()
     }
-    
+
+    @MainActor
     func loadMyPosts() async {
         posts = (try? await userPostRepository.fetchMyPosts()) ?? []
     }
