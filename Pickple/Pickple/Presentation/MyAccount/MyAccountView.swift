@@ -48,44 +48,40 @@ struct MyAccountView: View {
             }
 
             if showsLogoutConfirm {
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-                    .onTapGesture { showsLogoutConfirm = false }
-
-                MyAccountConfirmDialog(
-                    title: MyAccountStrings.logoutConfirmTitle,
-                    cancelTitle: MyAccountStrings.cancel,
-                    confirmTitle: MyAccountStrings.logout,
-                    onCancel: { showsLogoutConfirm = false },
-                    onConfirm: {
-                        showsLogoutConfirm = false
-                        Task { await appLogout() }
-                    }
-                )
+                PickpleDialogOverlay(onTapDismiss: { showsLogoutConfirm = false }) {
+                    PickpleConfirmDialog(
+                        title: MyAccountStrings.logoutConfirmTitle,
+                        cancelTitle: MyAccountStrings.cancel,
+                        confirmTitle: MyAccountStrings.logout,
+                        onCancel: { showsLogoutConfirm = false },
+                        onConfirm: {
+                            showsLogoutConfirm = false
+                            Task { await appLogout() }
+                        }
+                    )
+                }
             }
 
             if showsLeaveConfirm {
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-                    .onTapGesture { showsLeaveConfirm = false }
-
-                MyAccountConfirmDialog(
-                    title: MyAccountStrings.leaveConfirmTitle,
-                    description: MyAccountStrings.leaveConfirmDescription,
-                    cancelTitle: MyAccountStrings.cancel,
-                    confirmTitle: MyAccountStrings.leaveConfirmButton,
-                    onCancel: { showsLeaveConfirm = false },
-                    onConfirm: {
-                        showsLeaveConfirm = false
-                        Task {
-                            do {
-                                try await appDeleteAccount()
-                            } catch {
-                                deleteAccountErrorMessage = error.localizedDescription
+                PickpleDialogOverlay(onTapDismiss: { showsLeaveConfirm = false }) {
+                    PickpleConfirmDialog(
+                        title: MyAccountStrings.leaveConfirmTitle,
+                        description: MyAccountStrings.leaveConfirmDescription,
+                        cancelTitle: MyAccountStrings.cancel,
+                        confirmTitle: MyAccountStrings.leaveConfirmButton,
+                        onCancel: { showsLeaveConfirm = false },
+                        onConfirm: {
+                            showsLeaveConfirm = false
+                            Task {
+                                do {
+                                    try await appDeleteAccount()
+                                } catch {
+                                    deleteAccountErrorMessage = error.localizedDescription
+                                }
                             }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
         .navigationBarBackButtonHidden(true)
