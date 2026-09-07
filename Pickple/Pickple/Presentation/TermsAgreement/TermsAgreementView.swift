@@ -35,23 +35,23 @@ struct TermsAgreementView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Pickple에 처음 오셨군요!")
+            Text(TermsAgreementStrings.welcomeTitle)
                 .pickpleTypography(.title01)
                 .foregroundStyle(Color.neutral100)
-            
+
             VStack(alignment: .leading, spacing: 40) {
-                Text("아래의 약관에 동의하시면\n서비스를 이용하실 수 있어요")
+                Text(TermsAgreementStrings.welcomeDescription)
                     .pickpleTypography(.body01)
                     .foregroundStyle(Color.neutral60)
-                
+
                 VStack(alignment: .leading, spacing: 20) {
                     HStack(spacing: 8) {
                         Toggle(isOn: allOn) {}
                             .padding(.leading, 11)
-                        Text("전체 동의")
+                        Text(TermsAgreementStrings.agreeAll)
                             .pickpleTypography(.body01)
                             .foregroundStyle(Color.navy60)
-                        
+
                         Spacer()
                     }
                     .toggleStyle(PickpleToggleALL())
@@ -60,56 +60,20 @@ struct TermsAgreementView: View {
                         RoundedRectangle(cornerRadius: 8)
                             .foregroundStyle(Color.neutral5)
                     )
-                    
-                    
+
+
                     VStack(spacing: 16) {
-                        HStack(spacing: 8) {
-                            Toggle(isOn: $personalDataOn){}
-                            
-                            Text("[필수] 개인정보 수집 및 이용 동의")
-                            
-                            Spacer()
-                            
-                            Button(action: {}) {
-                                Text("보기")
-                                    .underline()
-                                    .foregroundStyle(Color.neutral40)
-                                    
-                            }
-                        }
-                        .toggleStyle(PickpleToggle())
-                        
-                        HStack(spacing: 8) {
-                            Toggle(isOn: $serviceTermsOn){}
-                            
-                            Text("[필수] PickPle 서비스 이용약관 동의")
-                            
-                            Spacer()
-                            
-                            Button(action: {}) {
-                                Text("보기")
-                                    .underline()
-                                    .foregroundStyle(Color.neutral40)
-                            }
-                        }
-                        .toggleStyle(PickpleToggle())
-                        
-                        HStack(spacing: 8) {
-                            Toggle(isOn: $pushNotificationOn){}
-                            
-                            Text("[선택] 앱 내 광고 및 정보성 수신 동의")
-                            
-                            Spacer()
-                        }
-                        .toggleStyle(PickpleToggle())
+                        TermsToggleRow(isOn: $personalDataOn, title: TermsAgreementStrings.personalDataTitle)
+                        TermsToggleRow(isOn: $serviceTermsOn, title: TermsAgreementStrings.serviceTermsTitle)
+                        TermsToggleRow(isOn: $pushNotificationOn, title: TermsAgreementStrings.pushNotificationTitle, showsViewButton: false)
                     }
                     .pickpleTypography(.body02)
                     .foregroundStyle(Color.neutral80)
                 }
             }
-            
+
             Spacer()
-            
+
             Button(action: {
                 Task {
                     if await profileViewModel.submitProfile() {
@@ -117,7 +81,7 @@ struct TermsAgreementView: View {
                     }
                 }
             }) {
-                Text("시작하기")
+                Text(TermsAgreementStrings.startButton)
             }
             .frame(maxWidth: .infinity)
             .buttonStyle(.pickple(isRequiredAgreed ? .enabled : .disabled, 56))
