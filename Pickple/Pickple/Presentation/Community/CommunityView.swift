@@ -69,17 +69,19 @@ struct CommunityView: View {
                 }
 
                 if showsLoginRequired {
-                    Color.black.opacity(0.4)
-                        .ignoresSafeArea()
-                        .onTapGesture { showsLoginRequired = false }
-
-                    CommunityLoginRequiredModal(
-                        onCancel: { showsLoginRequired = false },
-                        onConfirm: {
-                            showsLoginRequired = false
-                            appRequestLogin()
-                        }
-                    )
+                    PickpleDialogOverlay(onTapDismiss: { showsLoginRequired = false }) {
+                        PickpleConfirmDialog(
+                            title: CommunityStrings.loginRequiredTitle,
+                            description: CommunityStrings.loginRequiredDescription,
+                            cancelTitle: CommunityStrings.cancel,
+                            confirmTitle: CommunityStrings.login,
+                            onCancel: { showsLoginRequired = false },
+                            onConfirm: {
+                                showsLoginRequired = false
+                                appRequestLogin()
+                            }
+                        )
+                    }
                 }
             }
             .task {
