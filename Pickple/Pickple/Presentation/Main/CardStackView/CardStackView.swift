@@ -21,7 +21,7 @@ struct CardStackView: View {
             ForEach(Array(cardStackViewModel.voteCardData.enumerated()), id: \.element.id) { index, data in
                 CardView(
                     data: data,
-                    onVote: { side in cardStackViewModel.vote(cardID: data.id, side: side) },
+                    onVote: { side in Task { await cardStackViewModel.vote(cardID: data.id, side: side) } },
                     onTapBody: { onTapCard(data) }
                 )
                     .zIndex(Double(-index))

@@ -7,8 +7,14 @@
 import Foundation
 
 struct MockVoteCardRepository: VoteCardRepository {
-    func fetchCards() async -> [VoteCard] {
-        forAgainstCards + abCards
+    func fetchCards(type: VoteType) async -> [VoteCard] {
+        type == .forAgainst ? forAgainstCards : abCards
+    }
+
+    // 실제 API처럼 선택한 쪽이 우세하도록 임의 비율을 만들어 돌려준다.
+    func castVote(postId: Int, optionId: Int) async -> (firstPercentage: Int, secondPercentage: Int) {
+        let first = Int.random(in: 55...80)
+        return (first, 100 - first)
     }
 
     private var forAgainstCards: [VoteCard] {
@@ -34,6 +40,8 @@ struct MockVoteCardRepository: VoteCardRepository {
                 imageUrl: nil,
                 secondImageUrl: nil,
                 participantCount: count,
+                firstOptionId: index * 2,
+                secondOptionId: index * 2 + 1,
                 firstPercentage: nil,
                 secondPercentage: nil
             )
@@ -63,6 +71,8 @@ struct MockVoteCardRepository: VoteCardRepository {
                 imageUrl: nil,
                 secondImageUrl: nil,
                 participantCount: count,
+                firstOptionId: 2000 + index * 2,
+                secondOptionId: 2000 + index * 2 + 1,
                 firstPercentage: nil,
                 secondPercentage: nil
             )
