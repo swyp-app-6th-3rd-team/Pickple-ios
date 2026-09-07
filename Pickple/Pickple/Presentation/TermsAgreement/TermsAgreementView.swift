@@ -14,6 +14,8 @@ struct TermsAgreementView: View {
     @State var serviceTermsOn: Bool = false
     @State var pushNotificationOn: Bool = false
     
+    let profileViewModel: ProfileSetupViewModel
+    
     private var isRequiredAgreed: Bool {
         personalDataOn && serviceTermsOn
     }
@@ -108,7 +110,13 @@ struct TermsAgreementView: View {
             
             Spacer()
             
-            Button(action: { onCompleted() }) {
+            Button(action: {
+                Task {
+                    if await profileViewModel.submitProfile() {
+                        onCompleted()
+                    }
+                }
+            }) {
                 Text("시작하기")
             }
             .frame(maxWidth: .infinity)
@@ -121,5 +129,5 @@ struct TermsAgreementView: View {
 }
 
 #Preview {
-    TermsAgreementView()
+    TermsAgreementView(profileViewModel: ProfileSetupViewModel())
 }
