@@ -51,9 +51,11 @@ enum PostViewStrings {
     static let url = "URL"
     static let urlPlaceholder = "상품 URL을 붙여넣어주세요"
 
+    // A/B 비교 시 두 상품 필드를 나란히 보여줄 때 붙이는 짧은 접두어
+    static let abOptionALabel = "A"
+    static let abOptionBLabel = "B"
+
     // 버튼
-    static let previous = "이전"
-    static let next = "다음"
     static let submit = "게시"
 
     // 나가기 확인 모달
