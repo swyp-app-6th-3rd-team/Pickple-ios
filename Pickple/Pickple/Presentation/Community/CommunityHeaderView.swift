@@ -9,13 +9,14 @@ import SwiftUI
 
 struct CommunityHeaderView: View {
     @Bindable var communityViewModel: CommunityViewModel
+    @Environment(CommunityRouter.self) private var communityRouter
 
     var body: some View {
         VStack(spacing: 0) {
             PickpleGNB(
                 leading: .text(CommunityStrings.title),
                 center: .none,
-                trailing: .button(icon: Image("PickpleSearch"), action: {})
+                trailing: .button(icon: Image("PickpleSearch"), action: { communityRouter.push(.search) })
             )
 
             Divider()
@@ -50,4 +51,5 @@ struct CommunityHeaderView: View {
 
 #Preview {
     CommunityHeaderView(communityViewModel: CommunityViewModel())
+        .environment(CommunityRouter())
 }
