@@ -19,8 +19,28 @@ struct ActivityItemDTO: Decodable {
     let createdAt: Date
 }
 
-// GET /users/me/posts/recent만 있고 투표/댓글/작성 글을 각각 조회하는 API는 아직 없어서,
-// fetchVotedPosts/fetchCommentedPosts/fetchWrittenPosts는 MockUserPostRepository에 위임한다.
+// GET /users/me/activities(type=VOTE|COMMENT|POST) 응답. GET /posts의 content 항목 필드 +
+// activityAt(내가 이 게시글에 활동한 시각) — 커서 페이징 지원하지만, 지금 UserPostRepository
+// 프로토콜은 커서를 안 받아서 첫 페이지만 가져온다.
+private struct ActivityListItemDTO: Decodable {
+    let id: Int
+    let type: String
+    let category: String
+    let title: String
+    let description: String?
+    let commentCount: Int
+    let voteCount: Int?
+    let thumbnailUrl: String?
+    let createdAt: Date
+    let activityAt: Date?
+}
+
+private struct ActivityListResponseDTO: Decodable {
+    let content: [ActivityListItemDTO]
+    let nextCursor: String?
+    let hasNext: Bool
+}
+
 struct RemoteUserPostRepository: UserPostRepository {
     let apiClient: APIClientProtocol
     private let fallback = MockUserPostRepository()
@@ -32,15 +52,29 @@ struct RemoteUserPostRepository: UserPostRepository {
     }
 
     func fetchVotedPosts() async -> [PostSummary] {
-        await fallback.fetchVotedPosts()
+        await fetchActivities(type: "VOTE")
     }
 
+    // GET /users/me/activities(type=COMMENT)는 "게시글 카드"만 주고 내가 쓴 댓글의 실제 내용은
+    // 안 내려줘서(2026-09-06 OAS 확인), MyCommentActivity(댓글 내용 + 참조 게시글)를 채울 방법이
+    // 없다. 백엔드가 댓글 내용을 포함해서 내려주기 전까진 Mock 유지.
     func fetchCommentedPosts() async -> [MyCommentActivity] {
         await fallback.fetchCommentedPosts()
     }
 
     func fetchWrittenPosts() async -> [PostSummary] {
-        await fallback.fetchWrittenPosts()
+        await fetchActivities(type: "POST")
+    }
+
+    private func fetchActivities(type: String) async -> [PostSummary] {
+        let endpoint = APIEndpoint(
+            method: .get,
+            path: "/users/me/activities",
+            queryItems: [URLQueryItem(name: "type", value: type)],
+            requiresAuth: true
+        )
+        guard let response: ActivityListResponseDTO = try? await apiClient.request(endpoint) else { return [] }
+        return response.content.map(Self.toDomain)
     }
 
     private static func toDomain(_ dto: ActivityItemDTO) -> PostSummary {
@@ -59,6 +93,23 @@ struct RemoteUserPostRepository: UserPostRepository {
             voteCount: dto.voteCount ?? 0,
             commentCount: dto.commentCount,
             createdAt: dto.createdAt
+        )
+    }
+
+    private static func toDomain(_ dto: ActivityListItemDTO) -> PostSummary {
+        PostSummary(
+            id: dto.id,
+            type: VoteType(serverType: dto.type),
+            category: PostCategoryLabel.label(for: dto.category),
+            title: dto.title,
+            description: dto.description ?? "",
+            thumbnailUrl: dto.thumbnailUrl.flatMap(URL.init(string:)),
+            authorNickname: "나",
+            authorLevel: 1,
+            authorProfileImageUrl: nil,
+            voteCount: dto.voteCount ?? 0,
+            commentCount: dto.commentCount,
+            createdAt: dto.activityAt ?? dto.createdAt
         )
     }
 }

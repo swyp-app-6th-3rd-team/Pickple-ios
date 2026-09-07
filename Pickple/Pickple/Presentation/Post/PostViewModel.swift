@@ -30,6 +30,10 @@ struct PostProductDraft {
     var isValid: Bool {
         hasPhoto && hasName
     }
+
+    var writeDraft: PostWriteProductDraft {
+        PostWriteProductDraft(photos: photos, name: name, price: Int(price), linkUrl: url.isEmpty ? nil : url)
+    }
 }
 
 enum PostSubmitState: Equatable {
@@ -41,6 +45,8 @@ enum PostSubmitState: Equatable {
 
 @Observable
 class PostViewModel {
+    private let postWriteRepository: PostWriteRepository
+
     var selectedType: VoteType = .forAgainst
     var topic: String = ""
     var title: String = ""
@@ -142,12 +148,42 @@ class PostViewModel {
         selectedType == type
     }
 
-    // TODO: 실제 게시글 등록 API 연동 필요 — 지금은 항상 성공하는 Mock
+    // 찬반은 서버가 첫 상품명으로 title을 자동 결정하므로 보내지 않는다.
+    private var submittedTitle: String? {
+        switch selectedType {
+        case .forAgainst: return nil
+        case .ab: return topic
+        case .text: return title
+        }
+    }
+
+    private var submittedProducts: [PostWriteProductDraft] {
+        switch selectedType {
+        case .forAgainst: return [product.writeDraft]
+        case .ab: return [productA.writeDraft, productB.writeDraft]
+        case .text: return []
+        }
+    }
+
+    init(postWriteRepository: PostWriteRepository = MockPostWriteRepository()) {
+        self.postWriteRepository = postWriteRepository
+    }
+
     @MainActor
     func submitPost() async {
         submitState = .submitting
-        try? await Task.sleep(nanoseconds: 500_000_000)
-        submitState = .succeeded
+        do {
+            _ = try await postWriteRepository.createPost(
+                type: selectedType,
+                category: selectedCategory,
+                title: submittedTitle,
+                description: description.isEmpty ? nil : description,
+                products: submittedProducts
+            )
+            submitState = .succeeded
+        } catch {
+            submitState = .failed
+        }
     }
 }
 

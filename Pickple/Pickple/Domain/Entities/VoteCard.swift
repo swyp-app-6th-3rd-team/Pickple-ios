@@ -16,6 +16,10 @@ struct VoteCard: Identifiable {
     // 상세조회 API가 생기기 전까지는 항상 nil이다.
     let secondImageUrl: URL?
     let participantCount: Int
+    // 투표 참여(POST /posts/{postId}/votes)에 필요한 선택지 id. GET /posts/random의
+    // options[]에서 옴 — 게시글 상세조회 API가 없어서 이 랜덤 피드로만 구할 수 있다.
+    let firstOptionId: Int?
+    let secondOptionId: Int?
     // 투표 전엔 nil로 블라인드 처리(투표 UI), 투표 후엔 값이 채워지며 결과 게이지로 전환.
     var firstPercentage: Int?
     var secondPercentage: Int?

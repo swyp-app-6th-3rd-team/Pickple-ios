@@ -295,6 +295,24 @@ LV.1~LV.5의 승급 필요 조건을 낮은 등급부터 돌려준다.
 > 게시글 상세(GET /posts/{postId}) 단일 조회 엔드포인트는 이 문서에 없음 — 확인 필요.
 > 게시글 수정(PATCH)·삭제(DELETE) 엔드포인트도 이 문서에 없음 — 확인 필요.
 
+### GET /posts/random — 랜덤 투표 카드 (신규 확인, 2026-09-07)
+찬반/AB 픽만 대상(GENERAL 제외)인 시드 기반 임의 순서 카드 목록. 로그인 사용자가 이미 투표한 카드에만 선택 결과(`selectedOptionId`, 옵션별 `voteCount`/`percentage`)가 포함된다 — 투표 전 통계 블라인드 규칙(CLAUDE.md)이 서버에서부터 지켜짐.
+
+파라미터:
+- `type` (query) 문자열 필수 — `AGREE` | `A_B`
+- `cursor` (query) 문자열 선택 — 이전 응답의 nextCursor. 없으면 새 임의 순서의 첫 조각
+
+응답 200 — OK:
+- `content` 배열 선택
+  - `id`, `type`(AGREE\|A_B), `title`, `description` 선택
+  - `voterCount` 정수(int64) 선택
+  - `selectedOptionId` 정수(int64) 선택 — 이미 투표한 경우만
+  - `products` 배열 선택 — `productId`, `name`, `displayOrder`, `imageUrl`(상품별 사진, GET /posts와 달리 AB 두 번째 상품 사진도 옴)
+  - `options` 배열 선택 — `optionId`, `label`, `productId`, `displayOrder`, `voteCount`(투표한 카드만), `percentage`(투표한 카드만)
+- `nextCursor`, `hasNext`
+
+> ⚠️ 이 엔드포인트가 `VoteCardRepository.fetchCards()`(현재 GET /posts를 client-side 필터링해서 씀)를 대체해야 할 것으로 보임 — (1) 진짜 랜덤 순서를 준다(GET /posts는 최신/인기순), (2) `type` 하나만 요청 가능해서 GENERAL 필터링이 서버에서 이미 됨, (3) AB 두 번째 상품 사진이 항상 nil이던 문제 해결, (4) **`options[].optionId`를 여기서 얻을 수 있어서, "투표 참여 불가"의 원인이던 optionId 조달 문제가 이걸로 해소될 가능성이 큼** — `POST /posts/{postId}/votes` 실연동을 다시 검토할 것.
+
 ### POST /posts — 게시글 작성
 업로드 API(POST /images)가 반환한 `itemContainerId`를 상품에 연결하고, 유형별 상품·사진·선택지 규칙을 검증한다.
 

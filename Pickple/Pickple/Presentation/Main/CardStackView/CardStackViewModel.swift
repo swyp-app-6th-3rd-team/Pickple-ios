@@ -28,8 +28,12 @@ class CardStackViewModel {
         self.isLoggedIn = isLoggedIn
     }
 
+    // GET /posts/random은 type을 하나만 받아서, 찬반/AB를 각각 불러 합친다 —
+    // 이후 탭 전환(filterCards)은 새 네트워크 호출 없이 이 합쳐둔 목록을 그냥 필터링만 한다.
     func loadCards() async {
-        allCards = (try? await voteCardRepository.fetchCards()) ?? []
+        async let forAgainst = try? voteCardRepository.fetchCards(type: .forAgainst)
+        async let ab = try? voteCardRepository.fetchCards(type: .ab)
+        allCards = (await forAgainst ?? []) + (await ab ?? [])
     }
 
     // 홈 화면 상단 찬반/AB 탭 전환 시, 해당 유형의 카드만 다시 스와이프 스택으로 채운다.
@@ -37,7 +41,8 @@ class CardStackViewModel {
         voteCardData = allCards.filter { $0.type == type }
     }
 
-    func vote(cardID: Int, side: VoteCardSide) {
+    @MainActor
+    func vote(cardID: Int, side: VoteCardSide) async {
         guard let index = voteCardData.firstIndex(where: { $0.id == cardID }), !voteCardData[index].isVoted else { return }
 
         if !isLoggedIn {
@@ -46,12 +51,19 @@ class CardStackViewModel {
                 return
             }
             guestVoteCount += 1
+            // 게스트는 토큰이 없어서 서버에 실제로 투표할 방법이 없다 — 로컬에서만 결과를 흉내낸다.
+            let firstPercentage = side == .first ? Int.random(in: 55...80) : Int.random(in: 20...45)
+            voteCardData[index].firstPercentage = firstPercentage
+            voteCardData[index].secondPercentage = 100 - firstPercentage
+            return
         }
 
-        // TODO: 실제 투표 API 연동 필요 — 지금은 로컬에서 선택한 쪽이 우세하도록 임의 비율로 채움
-        let firstPercentage = side == .first ? Int.random(in: 55...80) : Int.random(in: 20...45)
-        voteCardData[index].firstPercentage = firstPercentage
-        voteCardData[index].secondPercentage = 100 - firstPercentage
+        let card = voteCardData[index]
+        guard let optionId = side == .first ? card.firstOptionId : card.secondOptionId else { return }
+
+        guard let result = try? await voteCardRepository.castVote(postId: cardID, optionId: optionId) else { return }
+        voteCardData[index].firstPercentage = result.firstPercentage
+        voteCardData[index].secondPercentage = result.secondPercentage
     }
 
     func removeTopCard() {
