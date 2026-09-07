@@ -70,6 +70,8 @@ struct PickpleBottomNav: View {
                         switch route {
                         case .postDetail(let postId, let type):
                             PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId))
+                        case .search:
+                            CommunitySearchView(communitySearchViewModel: CommunitySearchViewModel(communityRepository: RemoteCommunityRepository(apiClient: apiClient)))
                         }
                     }
             }
