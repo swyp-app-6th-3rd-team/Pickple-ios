@@ -23,21 +23,8 @@ struct MainHotPostCardView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .clipped()
 
-                HStack(spacing: 4) {
-                    switch post.type {
-                    case .text: Image("PickpleText").resizable().frame(width: 14, height: 14)
-                    case .forAgainst: Image("PickpleAgainst").resizable().frame(width: 14, height: 14)
-                    case .ab: Image("PickpleAB").resizable().frame(width: 14, height: 14)
-                    }
-
-                    Text(post.type.displayName)
-                        .pickpleTypography(.caption)
-                        .foregroundStyle(Color.white)
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Capsule().foregroundStyle(Color.black))
-                .padding(8)
+                PostTypeBadge(type: post.type, iconSize: 14, typography: .caption, horizontalPadding: 8)
+                    .padding(8)
             }
 
             Text(post.category)
@@ -50,19 +37,7 @@ struct MainHotPostCardView: View {
                 .lineLimit(1)
 
             HStack(spacing: 8) {
-                HStack(spacing: 2) {
-                    Image("PickpleVote")
-                        .resizable()
-                        .frame(width: 12, height: 12)
-                    Text("\(post.voteCount)")
-                }
-
-                HStack(spacing: 2) {
-                    Image("PickpleComment")
-                        .resizable()
-                        .frame(width: 12, height: 12)
-                    Text("\(post.commentCount)")
-                }
+                PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount, iconSize: 12, iconTextSpacing: 2, groupSpacing: 8)
 
                 Text(post.createdAt.relativeTimeDescription)
             }

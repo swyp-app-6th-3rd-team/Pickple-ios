@@ -25,4 +25,13 @@ enum VoteType: Equatable, Identifiable {
 
     // .sheet(item:)/.fullScreenCover(item:) 등 Identifiable이 필요한 곳에서 값 자체를 식별자로 쓴다.
     var id: Self { self }
+
+    // 게시글 작성(POST /posts) 요청에 보낼 서버 type 값. init(serverType:)의 역방향.
+    var serverTypeValue: String {
+        switch self {
+        case .forAgainst: return "AGREE"
+        case .ab: return "A_B"
+        case .text: return "GENERAL"
+        }
+    }
 }

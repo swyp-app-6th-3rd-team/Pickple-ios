@@ -20,6 +20,7 @@ class MyBadgeViewModel {
         self.myBadgeRepository = myBadgeRepository
     }
 
+    @MainActor
     func loadMyBadges() async {
         badges = (try? await myBadgeRepository.fetchMyBadges()) ?? []
     }

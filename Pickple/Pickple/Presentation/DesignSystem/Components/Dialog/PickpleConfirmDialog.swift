@@ -11,7 +11,7 @@ import SwiftUI
 // 타이틀 + 설명 + 취소/확인 버튼 두 개짜리 중앙 모달. 화면마다 좌우 여백은 호출부에서 준다.
 struct PickpleConfirmDialog: View {
     let title: String
-    let description: String
+    var description: String? = nil
     let cancelTitle: String
     let confirmTitle: String
     let onCancel: () -> Void
@@ -24,10 +24,12 @@ struct PickpleConfirmDialog: View {
                     .pickpleTypography(.title01)
                     .foregroundStyle(Color.neutral100)
 
-                Text(description)
-                    .pickpleTypography(.body01)
-                    .foregroundStyle(Color.neutral70)
-                    .multilineTextAlignment(.center)
+                if let description {
+                    Text(description)
+                        .pickpleTypography(.body01)
+                        .foregroundStyle(Color.neutral70)
+                        .multilineTextAlignment(.center)
+                }
             }
 
             HStack(spacing: 8) {
@@ -56,7 +58,7 @@ struct PickpleConfirmDialog: View {
     }
 }
 
-#Preview {
+#Preview("설명 있음") {
     ZStack {
         Color.black.opacity(0.4).ignoresSafeArea()
         PickpleConfirmDialog(
@@ -64,6 +66,20 @@ struct PickpleConfirmDialog: View {
             description: "게시글을 삭제하면 다시는\n볼 수 없어요",
             cancelTitle: "취소",
             confirmTitle: "삭제",
+            onCancel: {},
+            onConfirm: {}
+        )
+        .padding(.horizontal, 40)
+    }
+}
+
+#Preview("설명 없음") {
+    ZStack {
+        Color.black.opacity(0.4).ignoresSafeArea()
+        PickpleConfirmDialog(
+            title: "로그아웃 하시겠습니까?",
+            cancelTitle: "취소",
+            confirmTitle: "로그아웃",
             onCancel: {},
             onConfirm: {}
         )

@@ -40,19 +40,7 @@ struct MyActivityCompactPostCardView: View {
             }
 
             HStack(spacing: 12) {
-                HStack(spacing: 4) {
-                    Image("PickpleVote")
-                        .resizable()
-                        .frame(width: 16, height: 16)
-                    Text("\(post.voteCount)")
-                }
-
-                HStack(spacing: 4) {
-                    Image("PickpleComment")
-                        .resizable()
-                        .frame(width: 16, height: 16)
-                    Text("\(post.commentCount)")
-                }
+                PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount)
 
                 Spacer()
 

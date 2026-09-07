@@ -14,20 +14,7 @@ struct PostDetailHeaderRow: View {
 
     var body: some View {
         HStack {
-            HStack(spacing: 4) {
-                switch type {
-                case .text: Image("PickpleText").resizable().frame(width: 14, height: 14)
-                case .forAgainst: Image("PickpleAgainst").resizable().frame(width: 14, height: 14)
-                case .ab: Image("PickpleAB").resizable().frame(width: 14, height: 14)
-                }
-
-                Text(type.displayName)
-                    .pickpleTypography(.caption)
-                    .foregroundStyle(Color.green80)
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 4)
-            .background(Capsule().foregroundStyle(Color.green20))
+            PostTypeBadge(type: type, iconSize: 14, typography: .caption, textColor: .green80, backgroundColor: .green20)
 
             Spacer()
 

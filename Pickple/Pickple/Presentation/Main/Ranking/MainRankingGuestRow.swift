@@ -33,7 +33,7 @@ struct MainRankingGuestRow: View {
             Spacer()
 
             Button(action: onLoginTapped) {
-                Text("로그인하고 포인트 얻기")
+                Text(MainStrings.rankingGuestLoginCTA)
                     .pickpleTypography(.body01)
                     .foregroundStyle(Color.white)
                     .padding(.horizontal, 16)

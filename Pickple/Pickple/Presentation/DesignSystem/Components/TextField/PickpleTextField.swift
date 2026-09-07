@@ -45,19 +45,6 @@ enum PickpleTextFieldStateType {
     case success
     case select
 
-    /*
-    var caption: String {
-        switch self {
-        case ._default: return ""
-        case .ing: return ""
-        case .complete: return ""
-        case .error: return "error"
-        case .success: return "success"
-        case .select: return "description"
-        }
-    }
-     */
-
     // _default는 기존 PickpleTextField가 쓰던 navy10을 그대로 유지 (이미 실제 화면에 쓰이고 있어서 시각적 변경 방지)
     var borderColor: Color {
         switch self {

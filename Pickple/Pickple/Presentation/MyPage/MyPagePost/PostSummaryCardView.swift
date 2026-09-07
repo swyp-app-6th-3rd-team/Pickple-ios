@@ -24,25 +24,9 @@ struct PostSummaryCardView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 
                 //MARK: - Badge
-                HStack {
-                    switch post.type {
-                    case .text: Image("PickpleText").resizable().frame(width: 16, height: 16)
-                    case .forAgainst: Image("PickpleAgainst").resizable().frame(width: 16, height: 16)
-                    case .ab: Image("PickpleAB").resizable().frame(width: 16, height: 16)
-                    }
-                    
-                    Text(post.type.displayName)
-                        .pickpleTypography(.label)
-                        .foregroundStyle(Color.white)
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 4)
-                .background(
-                    Capsule()
-                        .foregroundStyle(Color.black)
-                )
-                .padding(10)
-                
+                PostTypeBadge(type: post.type)
+                    .padding(10)
+
             }
             
             //MARK: - Title
@@ -62,25 +46,10 @@ struct PostSummaryCardView: View {
             
             //MARK: - Stats
             HStack {
-                HStack(spacing: 12) {
-                    HStack(spacing: 4) {
-                        Image("PickpleVote")
-                            .resizable()
-                            .frame(width: 16, height: 16)
-                        Text("\(post.voteCount)")
-                    }
-                    
-                    HStack(spacing: 4) {
-                        Image("PickpleComment")
-                            .resizable()
-                            .frame(width: 16, height: 16)
-                        
-                        Text("\(post.commentCount)")
-                    }
-                }
-                .pickpleTypography(.label)
-                .foregroundStyle(Color.neutral30)
-                
+                PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount)
+                    .pickpleTypography(.label)
+                    .foregroundStyle(Color.neutral30)
+
                 Spacer()
                 
                 if showsAuthorNickname {

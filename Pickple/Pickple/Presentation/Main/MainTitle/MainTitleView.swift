@@ -29,7 +29,7 @@ struct MainTitleView: View {
                 
                 
             }
-            MainToggleButton(isOn: $isOn, onTitle: "AB", offTitle: "찬반")
+            MainToggleButton(isOn: $isOn, onTitle: MainStrings.abToggleOnTitle, offTitle: MainStrings.abToggleOffTitle)
         }
         .frame(maxWidth: .infinity, minHeight: 56)
     }
