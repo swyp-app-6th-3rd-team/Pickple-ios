@@ -64,19 +64,21 @@ struct CommunitySearchResultCardView: View {
                     .foregroundStyle(Color.neutral30)
                 
             }
-            .frame(width: 217, height: 100)
+            .frame(height: 100)
             .padding(.vertical, 4)
             
             Spacer()
             
-            AsyncImage(url: post.thumbnailUrl) { image in
-                image.resizable().scaledToFill()
-            } placeholder: {
-                Image("McokMyPostPicture").resizable().scaledToFill()
+            if post.type != .text {
+                AsyncImage(url: post.thumbnailUrl) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    Image("McokMyPostPicture").resizable().scaledToFill()
+                }
+                .frame(width: 120, height: 100)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipped()
             }
-            .frame(width: 120, height: 100)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .clipped()
         }
 
     }
