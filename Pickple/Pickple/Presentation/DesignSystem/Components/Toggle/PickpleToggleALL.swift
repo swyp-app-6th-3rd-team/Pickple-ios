@@ -50,5 +50,5 @@ struct PickpleToggleALL: ToggleStyle {
 }
 
 #Preview {
-    TermsAgreementView()
+    TermsAgreementView(profileViewModel: ProfileSetupViewModel())
 }
