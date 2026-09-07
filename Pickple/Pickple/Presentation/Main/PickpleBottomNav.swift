@@ -97,7 +97,7 @@ struct PickpleBottomNav: View {
                         case .account:
                             MyAccountView()
                         case .activity:
-                            MyActivityView(myActivityViewModel: MyActivityViewModel())
+                            MyActivityView(myActivityViewModel: MyActivityViewModel(userPostRepository: RemoteUserPostRepository(apiClient: apiClient)))
                         case .postDetail(let postId, let type):
                             PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId))
                         }
