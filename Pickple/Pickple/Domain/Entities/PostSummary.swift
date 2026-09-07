@@ -19,6 +19,37 @@ struct PostSummary: Identifiable {
     let voteCount: Int
     let commentCount: Int
     let createdAt: Date
+    let voteResult: PostVoteResult?   // 나의 활동 > 투표 탭 전용 임시 필드. 실제 API 없어서 Mock에서만 채움.
 
     //추후 API 스펙에 맞게 수정
+
+    init(
+        id: Int,
+        type: VoteType,
+        category: String,
+        title: String,
+        description: String,
+        thumbnailUrl: URL?,
+        authorNickname: String,
+        authorLevel: Int,
+        authorProfileImageUrl: URL?,
+        voteCount: Int,
+        commentCount: Int,
+        createdAt: Date,
+        voteResult: PostVoteResult? = nil
+    ) {
+        self.id = id
+        self.type = type
+        self.category = category
+        self.title = title
+        self.description = description
+        self.thumbnailUrl = thumbnailUrl
+        self.authorNickname = authorNickname
+        self.authorLevel = authorLevel
+        self.authorProfileImageUrl = authorProfileImageUrl
+        self.voteCount = voteCount
+        self.commentCount = commentCount
+        self.createdAt = createdAt
+        self.voteResult = voteResult
+    }
 }
