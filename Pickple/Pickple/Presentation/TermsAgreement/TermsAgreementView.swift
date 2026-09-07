@@ -14,6 +14,10 @@ struct TermsAgreementView: View {
     @State var serviceTermsOn: Bool = false
     @State var pushNotificationOn: Bool = false
     
+    private var isRequiredAgreed: Bool {
+        personalDataOn && serviceTermsOn
+    }
+    
     private var allOn: Binding<Bool> {
         Binding(
             get: { personalDataOn && serviceTermsOn && pushNotificationOn },
@@ -101,8 +105,18 @@ struct TermsAgreementView: View {
                     .foregroundStyle(Color.neutral80)
                 }
             }
+            
+            Spacer()
+            
+            Button(action: { onCompleted() }) {
+                Text("시작하기")
+            }
+            .frame(maxWidth: .infinity)
+            .buttonStyle(.pickple(isRequiredAgreed ? .enabled : .disabled, 56))
+            .disabled(!isRequiredAgreed)
         }
         .padding(.horizontal, 20)
+        .padding(.top, 45)
     }
 }
 
