@@ -82,11 +82,26 @@ struct CommunitySearchView: View {
                 }
                 .padding(20)
             } else if communitySearchViewModel.results.isEmpty {
-                Spacer()
-                Text(CommunityStrings.searchEmptyMessage)
-                    .pickpleTypography(.body01)
-                    .foregroundStyle(Color.neutral30)
-                Spacer()
+                VStack {
+                    Spacer()
+                    VStack(spacing: 30) {
+                        Image("PickpleNoSearch")
+                            .resizable()
+                            .frame(width: 100, height: 100)
+                            .shadow(color: Color.black.opacity(0.3), radius: 4)
+                        
+                        VStack(spacing: 4) {
+                            Text("검색 결과가 없어요")
+                                .pickpleTypography(.title02)
+                                .foregroundStyle(Color.neutral70)
+                            
+                            Text("다른 검색어를 입력해 보세요")
+                                .pickpleTypography(.body02)
+                                .foregroundStyle(Color.neutral30)
+                        }
+                    }
+                    Spacer()
+                }
             } else {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 8) {
