@@ -45,3 +45,17 @@ struct TextStepOneView: View {
         .padding(.horizontal, 20)
     }
 }
+
+#Preview {
+    let viewModel = PostViewModel()
+    viewModel.selectedType = .text
+
+    return ScrollView {
+        TextStepOneView(
+            postViewModel: viewModel,
+            isCategoryExpanded: .constant(false),
+            categoryOptions: PostViewStrings.categoryOptions
+        )
+        .padding(.top, 32)
+    }
+}

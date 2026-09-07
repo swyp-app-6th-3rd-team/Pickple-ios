@@ -15,8 +15,9 @@ struct DescriptionFieldBlock: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            (Text(PostViewStrings.description) + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
+            Text(PostViewStrings.description)
                 .pickpleTypography(.body01)
+                .foregroundStyle(Color.black)
             
             ZStack(alignment: .bottomTrailing) {
                 if text.isEmpty {

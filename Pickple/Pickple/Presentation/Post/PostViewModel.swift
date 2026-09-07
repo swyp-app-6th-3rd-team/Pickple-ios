@@ -24,8 +24,11 @@ struct PostProductDraft {
     var price: String = ""
     var url: String = ""
 
+    var hasPhoto: Bool { !photos.isEmpty }
+    var hasName: Bool { !name.trimmingCharacters(in: .whitespaces).isEmpty }
+
     var isValid: Bool {
-        !photos.isEmpty && !name.trimmingCharacters(in: .whitespaces).isEmpty
+        hasPhoto && hasName
     }
 }
 
@@ -51,20 +54,11 @@ class PostViewModel {
     var productB = PostProductDraft()
 
     var submitState: PostSubmitState = .idle
-    var currentIndex = 0
 
     let topicMaxLength = 30
     let titleMaxLength = 30
     let descriptionMaxLength = 300
     let productNameMaxLength = 30
-
-    var totalSteps: Int {
-        switch selectedType {
-        case .forAgainst: return 2
-        case .ab: return 3
-        case .text: return 1
-        }
-    }
 
     var isCategorySelected: Bool {
         selectedCategory != PostViewStrings.categoryPlaceholder
@@ -78,12 +72,8 @@ class PostViewModel {
         }
     }
 
-    var isLastStep: Bool {
-        currentIndex >= totalSteps - 1
-    }
-
     // 설명은 모든 유형에서 선택 입력이라 필수값 체크에 포함하지 않는다.
-    var isStepOneValid: Bool {
+    private var isBasicInfoValid: Bool {
         switch selectedType {
         case .forAgainst:
             return isCategorySelected
@@ -94,20 +84,44 @@ class PostViewModel {
         }
     }
 
-    // 마지막 단계까지 포함해 게시(submit) 가능한 상태인지
+    // 한 화면에 모든 입력을 합쳤으므로, 이 화면의 필수 항목이 전부 채워졌는지가 곧 게시 가능 여부다.
     var canSubmit: Bool {
         switch selectedType {
         case .forAgainst:
-            return isStepOneValid && product.isValid
+            return isBasicInfoValid && product.isValid
         case .ab:
-            return isStepOneValid && productA.isValid && productB.isValid
+            return isBasicInfoValid && productA.isValid && productB.isValid
         case .text:
-            return isStepOneValid
+            return isBasicInfoValid
         }
     }
 
-    var isCurrentStepValid: Bool {
-        currentIndex == 0 ? isStepOneValid : canSubmit
+    // 상단 게이지에 쓰는 필수 항목 채움 개수. 설명/가격/URL 같은 선택 입력은 세지 않는다.
+    var requiredFieldsFilledCount: Int {
+        switch selectedType {
+        case .forAgainst:
+            return [isCategorySelected, product.hasPhoto, product.hasName].filter { $0 }.count
+        case .ab:
+            return [isCategorySelected, isTopicFilled, productA.hasPhoto, productA.hasName, productB.hasPhoto, productB.hasName].filter { $0 }.count
+        case .text:
+            return [isCategorySelected, isTitleFilled].filter { $0 }.count
+        }
+    }
+
+    var requiredFieldsTotalCount: Int {
+        switch selectedType {
+        case .forAgainst: return 3
+        case .ab: return 6
+        case .text: return 2
+        }
+    }
+
+    var isTopicFilled: Bool {
+        !topic.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+
+    var isTitleFilled: Bool {
+        !title.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
     // 작성 중인 내용이 하나라도 있으면 나가기 확인이 필요하다고 판단
@@ -126,16 +140,6 @@ class PostViewModel {
 
     func isSelected(_ type: VoteType) -> Bool {
         selectedType == type
-    }
-
-    func moveToPreviousStep() {
-        guard currentIndex > 0 else { return }
-        currentIndex -= 1
-    }
-
-    func moveToNextStep() {
-        guard !isLastStep else { return }
-        currentIndex += 1
     }
 
     // TODO: 실제 게시글 등록 API 연동 필요 — 지금은 항상 성공하는 Mock
