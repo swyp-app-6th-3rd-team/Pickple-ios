@@ -68,7 +68,8 @@ struct MockUserPostRepository: UserPostRepository {
                 authorProfileImageUrl: nil,
                 voteCount: 24,
                 commentCount: 9,
-                createdAt: Date().addingTimeInterval(-60 * 30)
+                createdAt: Date().addingTimeInterval(-60 * 30),
+                voteResult: PostVoteResult(firstLabel: MyActivityStrings.voteSideFor, secondLabel: MyActivityStrings.voteSideAgainst, firstPercentage: 70, secondPercentage: 30)
             ),
             PostSummary(
                 id: 102,
@@ -82,40 +83,79 @@ struct MockUserPostRepository: UserPostRepository {
                 authorProfileImageUrl: nil,
                 voteCount: 15,
                 commentCount: 3,
-                createdAt: Date().addingTimeInterval(-60 * 60 * 6)
+                createdAt: Date().addingTimeInterval(-60 * 60 * 6),
+                voteResult: PostVoteResult(firstLabel: MyActivityStrings.abFirstLabel, secondLabel: MyActivityStrings.abSecondLabel, firstPercentage: 40, secondPercentage: 60)
             ),
-        ]
-    }
-
-    func fetchCommentedPosts() async -> [PostSummary] {
-        [
             PostSummary(
-                id: 201,
-                type: .text,
+                id: 103,
+                type: .forAgainst,
                 category: "생활용품",
-                title: "가습기 추천 좀요",
-                description: "건조한 계절이라 하나 들이려는데 관리 편한 제품으로 추천 부탁드려요.",
+                title: "가습기 살까 말까",
+                description: "건조한 계절이라 하나 들이려는데 관리 편한 제품인지 모르겠어요.",
                 thumbnailUrl: nil,
                 authorNickname: "구름위산책",
                 authorLevel: 2,
                 authorProfileImageUrl: nil,
-                voteCount: 3,
-                commentCount: 18,
-                createdAt: Date().addingTimeInterval(-60 * 60 * 2)
+                voteCount: 6,
+                commentCount: 2,
+                createdAt: Date().addingTimeInterval(-60 * 60 * 12),
+                voteResult: PostVoteResult(firstLabel: MyActivityStrings.voteSideFor, secondLabel: MyActivityStrings.voteSideAgainst, firstPercentage: 30, secondPercentage: 70)
             ),
             PostSummary(
-                id: 202,
-                type: .forAgainst,
+                id: 104,
+                type: .ab,
                 category: "패션/잡화",
-                title: "이 가방 살까 말까",
+                title: "가방 A vs B",
                 description: "예쁘긴 한데 활용도가 낮을까봐 고민돼요. 다들 이런 디자인 잘 들고 다니시나요?",
                 thumbnailUrl: nil,
                 authorNickname: "냥냥펀치",
                 authorLevel: 4,
                 authorProfileImageUrl: nil,
-                voteCount: 7,
+                voteCount: 20,
                 commentCount: 5,
-                createdAt: Date().addingTimeInterval(-60 * 60 * 30)
+                createdAt: Date().addingTimeInterval(-60 * 60 * 30),
+                voteResult: PostVoteResult(firstLabel: MyActivityStrings.abFirstLabel, secondLabel: MyActivityStrings.abSecondLabel, firstPercentage: 90, secondPercentage: 10)
+            ),
+        ]
+    }
+
+    func fetchCommentedPosts() async -> [MyCommentActivity] {
+        [
+            MyCommentActivity(
+                id: 301,
+                content: "그것도 괜찮아보이지만 차라리 같은 흰 색으로 두 켤레 살거면 다른 모델로 사는편이 좋지 않을까?",
+                pickCount: 3,
+                createdAt: Date().addingTimeInterval(-60 * 5),
+                referencedPost: MyCommentActivityPostReference(
+                    id: 201,
+                    type: .forAgainst,
+                    title: "나이키 에어포스 흰색으로 살까?",
+                    thumbnailUrl: nil
+                )
+            ),
+            MyCommentActivity(
+                id: 302,
+                content: "나라면 굳이 같은걸로 살 것 같지는 않아요, 룩마다 다르게 신는 재미가 있어서.",
+                pickCount: 3,
+                createdAt: Date().addingTimeInterval(-60 * 5),
+                referencedPost: MyCommentActivityPostReference(
+                    id: 202,
+                    type: .ab,
+                    title: "OOTD 몇 번 룩이 가장 좋아요?",
+                    thumbnailUrl: nil
+                )
+            ),
+            MyCommentActivity(
+                id: 303,
+                content: "○○ 그거 맞음",
+                pickCount: 3,
+                createdAt: Date().addingTimeInterval(-60 * 5),
+                referencedPost: MyCommentActivityPostReference(
+                    id: 201,
+                    type: .forAgainst,
+                    title: "나이키 에어포스 흰색으로 살까?",
+                    thumbnailUrl: nil
+                )
             ),
         ]
     }

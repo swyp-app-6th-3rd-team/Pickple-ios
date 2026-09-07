@@ -10,19 +10,23 @@ import Foundation
 class MyActivityViewModel {
     private var userPostRepository: UserPostRepository
 
-    var votedPosts: [PostSummary] = []      // 투표
-    var commentedPosts: [PostSummary] = []   // 댓글
-    var writtenPosts: [PostSummary] = []     // 작성글
-    
+    var votedPosts: [PostSummary] = []                        // 투표
+    var commentedActivities: [MyCommentActivity] = []          // 댓글
+    var writtenPosts: [PostSummary] = []                       // 작성글
+
     init(userPostRepository: UserPostRepository = MockUserPostRepository()) {
         self.userPostRepository = userPostRepository
     }
 
     func loadVotedPosts() async { votedPosts = await userPostRepository.fetchVotedPosts() }
-    func loadCommentedPosts() async { commentedPosts = await userPostRepository.fetchCommentedPosts() }
+    func loadCommentedPosts() async { commentedActivities = await userPostRepository.fetchCommentedPosts() }
     func loadWrittenPosts() async {writtenPosts = await userPostRepository.fetchWrittenPosts()}
 
     func sorted(_ posts: [PostSummary], by option: String) -> [PostSummary] {
         PostSortOrder.sorted(posts, ascending: option != MyActivityStrings.latestSortOption) { $0.createdAt }
+    }
+
+    func sorted(_ activities: [MyCommentActivity], by option: String) -> [MyCommentActivity] {
+        PostSortOrder.sorted(activities, ascending: option != MyActivityStrings.latestSortOption) { $0.createdAt }
     }
 }

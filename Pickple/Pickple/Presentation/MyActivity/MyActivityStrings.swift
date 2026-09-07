@@ -13,4 +13,9 @@ enum MyActivityStrings {
     static let sortOptions = ["최신순", "오래된 순"]
     static let latestSortOption = "최신순"
     static let emptyMessage = "아직 참여한 활동이 없어요"
+
+    static let voteSideFor = "사자"
+    static let voteSideAgainst = "말자"
+    static let abFirstLabel = "A"
+    static let abSecondLabel = "B"
 }

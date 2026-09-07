@@ -35,7 +35,7 @@ struct RemoteUserPostRepository: UserPostRepository {
         await fallback.fetchVotedPosts()
     }
 
-    func fetchCommentedPosts() async -> [PostSummary] {
+    func fetchCommentedPosts() async -> [MyCommentActivity] {
         await fallback.fetchCommentedPosts()
     }
 
