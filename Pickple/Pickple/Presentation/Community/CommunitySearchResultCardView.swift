@@ -4,9 +4,7 @@
 //
 //  Created by 박윤수 on 9/7/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 정리는 나중에: 타입 캡슐(아이콘+텍스트+캡슐 배경) 패턴이
-//  CommunityPostCardView/PostSummaryCardView/MainHotPostCardView에도 그대로 중복되어 있음.
-//  당장은 그 기존 스타일을 그대로 재사용하고, 공용 컴포넌트 추출은 나중에.
+//  TODO: 디자인 확정 후 변경 필요 — 여백/폰트 크기는 임시값
 
 import SwiftUI
 
@@ -16,21 +14,8 @@ struct CommunitySearchResultCardView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 4) {
-                    switch post.type {
-                    case .text: Image("PickpleText").resizable().frame(width: 16, height: 16)
-                    case .forAgainst: Image("PickpleAgainst").resizable().frame(width: 16, height: 16)
-                    case .ab: Image("PickpleAB").resizable().frame(width: 16, height: 16)
-                    }
-                    
-                    Text(post.type.displayName)
-                        .pickpleTypography(.label)
-                        .foregroundStyle(Color.white)
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 4)
-                .background(Capsule().foregroundStyle(Color.black))
-                
+                PostTypeBadge(type: post.type)
+
                     Text(post.title)
                         .pickpleTypography(.body01)
                         .foregroundStyle(Color.black)
@@ -40,22 +25,8 @@ struct CommunitySearchResultCardView: View {
 
                     
                     HStack(spacing: 16) {
-                        HStack(spacing: 8) {
-                            HStack(spacing: 4) {
-                                Image("PickpleVote")
-                                    .resizable()
-                                    .frame(width: 16, height: 16)
-                                Text("\(post.voteCount)")
-                            }
-                            
-                            HStack(spacing: 4) {
-                                Image("PickpleComment")
-                                    .resizable()
-                                    .frame(width: 16, height: 16)
-                                Text("\(post.commentCount)")
-                            }
-                        }
-                                                
+                        PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount, groupSpacing: 8)
+
                         Text(post.createdAt.relativeTimeDescription)
                             .pickpleTypography(.caption)
                             .foregroundStyle(Color.neutral40)
