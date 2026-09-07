@@ -47,7 +47,7 @@ struct RemoteUserPostRepository: UserPostRepository {
         PostSummary(
             id: dto.id,
             type: VoteType(serverType: dto.type),
-            category: categoryLabel(for: dto.category),
+            category: PostCategoryLabel.label(for: dto.category),
             title: dto.title,
             description: dto.description ?? "",
             thumbnailUrl: dto.thumbnailUrl.flatMap(URL.init(string:)),
@@ -60,15 +60,5 @@ struct RemoteUserPostRepository: UserPostRepository {
             commentCount: dto.commentCount,
             createdAt: dto.createdAt
         )
-    }
-
-    private static func categoryLabel(for rawCategory: String) -> String {
-        switch rawCategory {
-        case "FASHION": return "패션/잡화"
-        case "ELECTRONICS": return "전자제품"
-        case "BEAUTY": return "뷰티"
-        case "LIVING": return "생활용품"
-        default: return "기타"
-        }
     }
 }
