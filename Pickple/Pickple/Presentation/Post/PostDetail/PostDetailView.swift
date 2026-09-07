@@ -72,6 +72,9 @@ struct PostDetailView: View {
                             onCommentMoreTapped: { comment in
                                 commentMoreMenuTarget = comment
                             },
+                            onLoginRequired: {
+                                loginRequiredDescription = PostDetailStrings.commentViewRequiredDescription
+                            },
                             isSortExpanded: $isSortExpanded
                         )
                     }
