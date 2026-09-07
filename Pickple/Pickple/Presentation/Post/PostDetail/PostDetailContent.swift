@@ -15,6 +15,7 @@ struct PostDetailContent: View {
     let onVote: (PostDetailVoteSide) -> Void
     let onPickTapped: (Comment) -> Void
     let onCommentMoreTapped: (Comment) -> Void
+    let onLoginRequired: () -> Void
     @Binding var isSortExpanded: Bool
 
     var body: some View {
@@ -53,21 +54,12 @@ struct PostDetailContent: View {
                     isSortExpanded: $isSortExpanded
                 )
 
-                if postDetailViewModel.comments.isEmpty {
-                    PostDetailCommentEmptyView()
-                } else {
-                    VStack(alignment: .leading, spacing: 16) {
-                        ForEach(postDetailViewModel.sortedComments) { comment in
-                            PostDetailCommentRow(
-                                comment: comment,
-                                isPicked: postDetailViewModel.isPicked(comment.id),
-                                canPick: postDetailViewModel.canPickAnyComment,
-                                onMoreTapped: { onCommentMoreTapped(comment) },
-                                onPickTapped: { onPickTapped(comment) }
-                            )
-                        }
-                    }
-                }
+                PostDetailCommentListView(
+                    postDetailViewModel: postDetailViewModel,
+                    onPickTapped: onPickTapped,
+                    onCommentMoreTapped: onCommentMoreTapped,
+                    onLoginRequired: onLoginRequired
+                )
             }
             .padding(20)
         }
