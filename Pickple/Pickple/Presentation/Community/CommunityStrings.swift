@@ -14,4 +14,10 @@ enum CommunityStrings {
     static let loginRequiredDescription = "간편 로그인 후 게시글을\n작성할 수 있어요"
     static let cancel = "취소"
     static let login = "로그인"
+
+    static let searchPlaceholder = "상품을 검색해 보세요"
+    static let searchEmptyMessage = "검색 결과가 없어요"
+    static let recentSearchesTitle = "최근 검색어"
+    static let searchResultPrefix = "검색 결과 "
+    static let searchResultSuffix = "건"
 }
