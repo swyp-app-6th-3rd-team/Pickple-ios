@@ -73,7 +73,11 @@ struct CardView: View {
                             )
                             .padding(.horizontal, 20)
                         } else {
-                            
+                            HStack(spacing: 8) {
+                                voteButton(label: firstLabel, side: .first)
+                                voteButton(label: secondLabel, side: .second)
+                            }
+                            .padding(.horizontal, 20)
                         }
                     }
                 }
@@ -86,7 +90,22 @@ struct CardView: View {
                 .onTapGesture(perform: onTapBody)
             }
         }
+
+    // TODO: 디자인 확정 후 변경 필요 — 투표 전 버튼 스타일은 임시값(전용 디자인 없음)
+    private func voteButton(label: String, side: VoteCardSide) -> some View {
+        Button {
+            onVote(side)
+        } label: {
+            Text(label)
+                .pickpleTypography(.body02)
+                .foregroundStyle(Color.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 48)
+                .background(Color.navy60)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
     }
+}
 
 
 // 투표 완료 후 두 항목의 비율을 하나의 막대로 채워서 보여준다.
@@ -133,6 +152,8 @@ private struct VoteCardGaugeBar: View {
             imageUrl: nil,
             secondImageUrl: nil,
             participantCount: 1234,
+            firstOptionId: 0,
+            secondOptionId: 1,
             firstPercentage: nil,
             secondPercentage: nil
         ),
