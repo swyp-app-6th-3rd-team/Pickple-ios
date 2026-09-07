@@ -9,6 +9,8 @@ import Foundation
 
 enum MainStrings {
     static let voteTypeTabs = ["찬반", "AB"]
+    static let abToggleOffTitle = "찬반"
+    static let abToggleOnTitle = "AB"
 
     static let voteSideFor = "사자"
     static let voteSideAgainst = "말자"
@@ -36,4 +38,5 @@ enum MainStrings {
     static let rankingEmptyMessage = "아직 TOP 피커가 존재하지 않아요"
     static let rankingGuestNickname = "게스트"
     static let rankingLoginButton = "로그인하기"
+    static let rankingGuestLoginCTA = "로그인하고 포인트 얻기"
 }
