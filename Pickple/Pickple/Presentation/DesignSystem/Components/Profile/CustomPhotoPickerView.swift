@@ -16,12 +16,9 @@ struct CustomPhotoPickerView: View {
     @Environment(\.dismiss) private var dismiss
     let onSelect: (UIImage) -> Void
 
-    @State private var assets: [PHAsset] = []
-    @State private var thumbnails: [String: UIImage] = [:]
-    @State private var isAuthorizationDenied = false
+    @State private var viewModel = CustomPhotoPickerViewModel()
     @State private var showsCamera = false
 
-    private let imageManager = PHCachingImageManager()
     private let columns = [
         GridItem(.flexible(), spacing: 2),
         GridItem(.flexible(), spacing: 2),
@@ -31,7 +28,7 @@ struct CustomPhotoPickerView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if isAuthorizationDenied {
+                if viewModel.isAuthorizationDenied {
                     Text(CustomPhotoPickerStrings.permissionDeniedMessage)
                         .pickpleTypography(.body01)
                         .foregroundStyle(Color.neutral40)
@@ -41,7 +38,7 @@ struct CustomPhotoPickerView: View {
                         LazyVGrid(columns: columns, spacing: 2) {
                             cameraCell
 
-                            ForEach(assets, id: \.localIdentifier) { asset in
+                            ForEach(viewModel.assets, id: \.localIdentifier) { asset in
                                 assetCell(asset)
                             }
                         }
@@ -57,7 +54,7 @@ struct CustomPhotoPickerView: View {
             }
         }
         .task {
-            await requestAuthorizationAndLoadAssets()
+            await viewModel.requestAuthorizationAndLoadAssets()
         }
         .fullScreenCover(isPresented: $showsCamera) {
             CameraCaptureView { image in
@@ -87,14 +84,14 @@ struct CustomPhotoPickerView: View {
 
     private func assetCell(_ asset: PHAsset) -> some View {
         Button(action: {
-            requestFullImage(for: asset) { image in
+            viewModel.requestFullImage(for: asset) { image in
                 guard let image else { return }
                 onSelect(image)
                 dismiss()
             }
         }) {
             Group {
-                if let thumbnail = thumbnails[asset.localIdentifier] {
+                if let thumbnail = viewModel.thumbnails[asset.localIdentifier] {
                     Image(uiImage: thumbnail)
                         .resizable()
                         .scaledToFill()
@@ -106,66 +103,7 @@ struct CustomPhotoPickerView: View {
             .clipped()
         }
         .task {
-            await loadThumbnail(for: asset)
-        }
-    }
-
-    @MainActor
-    private func requestAuthorizationAndLoadAssets() async {
-        let status = await withCheckedContinuation { continuation in
-            PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
-                continuation.resume(returning: status)
-            }
-        }
-        guard status == .authorized || status == .limited else {
-            isAuthorizationDenied = true
-            return
-        }
-
-        let options = PHFetchOptions()
-        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        let result = PHAsset.fetchAssets(with: .image, options: options)
-        var fetched: [PHAsset] = []
-        result.enumerateObjects { asset, _, _ in fetched.append(asset) }
-        assets = fetched
-    }
-
-    @MainActor
-    private func loadThumbnail(for asset: PHAsset) async {
-        guard thumbnails[asset.localIdentifier] == nil else { return }
-
-        let options = PHImageRequestOptions()
-        options.deliveryMode = .fastFormat
-        options.isNetworkAccessAllowed = true
-
-        let image = await withCheckedContinuation { continuation in
-            imageManager.requestImage(
-                for: asset,
-                targetSize: CGSize(width: 150, height: 150),
-                contentMode: .aspectFill,
-                options: options
-            ) { image, _ in
-                continuation.resume(returning: image)
-            }
-        }
-
-        if let image {
-            thumbnails[asset.localIdentifier] = image
-        }
-    }
-
-    private func requestFullImage(for asset: PHAsset, completion: @escaping (UIImage?) -> Void) {
-        let options = PHImageRequestOptions()
-        options.deliveryMode = .highQualityFormat
-        options.isNetworkAccessAllowed = true
-
-        imageManager.requestImage(
-            for: asset,
-            targetSize: PHImageManagerMaximumSize,
-            contentMode: .aspectFit,
-            options: options
-        ) { image, _ in
-            completion(image)
+            await viewModel.loadThumbnail(for: asset)
         }
     }
 }
