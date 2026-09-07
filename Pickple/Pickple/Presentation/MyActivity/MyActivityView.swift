@@ -39,14 +39,21 @@ struct MyActivityView: View {
             
             switch selectedIndexTwo {
             case 0:
-                MyActivityPostListView(posts: myActivityViewModel.sorted(myActivityViewModel.votedPosts, by: selectedValue))
-                    .task { await myActivityViewModel.loadVotedPosts() }
-                
-            case 1: MyActivityPostListView(posts: myActivityViewModel.sorted(myActivityViewModel.commentedPosts, by: selectedValue))
-                    .task { await myActivityViewModel.loadCommentedPosts() }
+                MyActivityListView(items: myActivityViewModel.sorted(myActivityViewModel.votedPosts, by: selectedValue)) { post in
+                    MyActivityCompactPostCardView(post: post)
+                }
+                .task { await myActivityViewModel.loadVotedPosts() }
+
+            case 1:
+                MyActivityListView(items: myActivityViewModel.sorted(myActivityViewModel.commentedActivities, by: selectedValue)) { activity in
+                    MyActivityCommentActivityRow(activity: activity)
+                }
+                .task { await myActivityViewModel.loadCommentedPosts() }
             case 2:
-                MyActivityPostListView(posts: myActivityViewModel.sorted(myActivityViewModel.writtenPosts, by: selectedValue))
-                    .task { await myActivityViewModel.loadWrittenPosts() }
+                MyActivityListView(items: myActivityViewModel.sorted(myActivityViewModel.writtenPosts, by: selectedValue)) { post in
+                    MyActivityCompactPostCardView(post: post)
+                }
+                .task { await myActivityViewModel.loadWrittenPosts() }
             default:
                 EmptyView()
             }
