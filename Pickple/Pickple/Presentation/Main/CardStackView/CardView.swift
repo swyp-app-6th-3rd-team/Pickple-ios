@@ -24,13 +24,13 @@ struct CardView: View {
     var body: some View {
         VStack(spacing: 22) {
             ZStack(alignment: .topLeading) {
-                    AsyncImage(url: data.imageUrl) { image in
-                        image.resizable()
-                    } placeholder: {
-                        Image("MockAgainstPicture").resizable()
-                    }
+                    cardImage
                     .clipShape(RoundedRectangle(cornerRadius: 16))
-                    
+
+                    bottomGradient
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .allowsHitTesting(false)
+
                 VStack(alignment: .leading) {
                     HStack(spacing: 4) {
                         Image("PickpleFire")
@@ -91,18 +91,56 @@ struct CardView: View {
             }
         }
 
-    // TODO: 디자인 확정 후 변경 필요 — 투표 전 버튼 스타일은 임시값(전용 디자인 없음)
+    // AB 픽은 상품 사진 두 장을 상/하로 나눠서 보여준다. 찬반 픽은 대표 사진 한 장 그대로.
+    @ViewBuilder
+    private var cardImage: some View {
+        if data.type == .ab {
+            VStack(spacing: 0) {
+                productImage(data.imageUrl)
+                productImage(data.secondImageUrl)
+            }
+        } else {
+            productImage(data.imageUrl)
+        }
+    }
+
+    private func productImage(_ url: URL?) -> some View {
+        AsyncImage(url: url) { image in
+            image.resizable()
+        } placeholder: {
+            Image("MockAgainstPicture").resizable()
+        }
+    }
+
+    // 사진 위에 얹는 하단 그라데이션. 디자인 스펙(Figma Fill): Linear, 0%는 #000000 0%(완전 투명),
+    // 100%는 #000000 100%(불투명), 이미지 하단에서 152pt 높이만 적용 — 그 위는 원본 사진이 그대로
+    // 보이고 하단 152pt 구간에서만 검게 깔려서 그 위에 얹는 흰 글씨가 잘 읽히게 한다.
+    private var bottomGradient: some View {
+        VStack(spacing: 0) {
+            Spacer(minLength: 0)
+            LinearGradient(
+                stops: [
+                    .init(color: Color.black.opacity(0), location: 0),
+                    .init(color: Color.black.opacity(1), location: 1)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 152)
+        }
+    }
+
     private func voteButton(label: String, side: VoteCardSide) -> some View {
         Button {
             onVote(side)
         } label: {
             Text(label)
-                .pickpleTypography(.body02)
-                .foregroundStyle(Color.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: 48)
-                .background(Color.navy60)
+                .pickpleTypography(.body01)
+                .foregroundStyle(Color.black)
+                .frame(maxWidth: .infinity, minHeight: 48)
+                .background(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
+                .padding(.bottom, 20)
         }
     }
 }
@@ -142,7 +180,7 @@ private struct VoteCardGaugeBar: View {
     }
 }
 
-#Preview {
+#Preview("찬반 픽") {
     CardView(
         data: VoteCard(
             id: 1,
@@ -156,6 +194,46 @@ private struct VoteCardGaugeBar: View {
             secondOptionId: 1,
             firstPercentage: nil,
             secondPercentage: nil
+        ),
+        onVote: { _ in },
+        onTapBody: {}
+    )
+}
+
+#Preview("AB 픽") {
+    CardView(
+        data: VoteCard(
+            id: 2,
+            type: .ab,
+            productName: "노트북 A vs B",
+            concernText: "둘 중 뭐가 나을까요",
+            imageUrl: nil,
+            secondImageUrl: nil,
+            participantCount: 234,
+            firstOptionId: 0,
+            secondOptionId: 1,
+            firstPercentage: nil,
+            secondPercentage: nil
+        ),
+        onVote: { _ in },
+        onTapBody: {}
+    )
+}
+
+#Preview("AB 픽 - 투표 완료") {
+    CardView(
+        data: VoteCard(
+            id: 3,
+            type: .ab,
+            productName: "노트북 A vs B",
+            concernText: "둘 중 뭐가 나을까요",
+            imageUrl: nil,
+            secondImageUrl: nil,
+            participantCount: 234,
+            firstOptionId: 0,
+            secondOptionId: 1,
+            firstPercentage: 62,
+            secondPercentage: 38
         ),
         onVote: { _ in },
         onTapBody: {}
