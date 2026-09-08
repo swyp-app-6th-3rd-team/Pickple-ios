@@ -11,8 +11,7 @@ import PhotosUI
 struct ProfileSetupView: View {
     @State var profileViewModel: ProfileSetupViewModel = ProfileSetupViewModel()
     var onCompleted: () -> Void = {}
-    
-    @Environment(\.isLoggedIn) private var isLoggedIn
+
     @State private var showsTermsAgreement = false
     
     var body: some View {
@@ -38,15 +37,7 @@ struct ProfileSetupView: View {
             
             //XMARK: - Button
             ProfileButtonView(profileViewModel: profileViewModel, onCompleted: {
-                if isLoggedIn {
-                    Task {
-                        if await profileViewModel.submitProfile() {
-                            onCompleted()
-                        }
-                    }
-                } else {
-                    showsTermsAgreement = true
-                }
+                showsTermsAgreement = true
             })
             .padding(.horizontal, 20)
         }
