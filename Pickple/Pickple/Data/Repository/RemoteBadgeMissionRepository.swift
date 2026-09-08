@@ -22,10 +22,12 @@ struct RemoteBadgeMissionRepository: BadgeMissionRepository {
         let endpoint = APIEndpoint(method: .get, path: "/users/me/badges/missions", requiresAuth: true)
         let dtos: [MissionDTO] = try await apiClient.request(endpoint)
         return dtos.map {
-            BadgeMissionProgress(
+            let family = BadgeIconFamily.forCode($0.code)
+            return BadgeMissionProgress(
                 id: UUID(),
                 title: $0.description,
-                badgeIconOffName: BadgeIconFamily.forCode($0.code).offIconName,
+                badgeIconOffName: family.offIconName,
+                iconFamily: family,
                 current: $0.current,
                 target: $0.goal
             )

@@ -12,6 +12,7 @@ struct BadgeMissionProgress: Identifiable {
     let id: UUID
     let title: String       // "누적 투표 1,000회 달성" 등
     let badgeIconOffName: String  // 대응하는 MyBadge의 잠금 상태 아이콘
+    let iconFamily: BadgeIconFamily  // "N일 연속" 진행도 바 표시 대상 판별 등에 사용
     let current: Int
     let target: Int
 }
