@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct MyPagePostCardEmptyView: View {
+    var action: () -> Void = {}
+
     var body: some View {
-        Button(action: {}) {
+        Button(action: action) {
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
                     .frame(width: 160, height: 238) //Fixed

@@ -12,6 +12,7 @@ import KakaoSDKCommon
 @main
 struct PickpleApp: App {
     @State private var sessionViewModel: AppSessionViewModel
+    @State private var guestVoteTracker = GuestVoteTracker()
     private let loginViewModel: LoginViewModel
     private let profileRepository: ProfileRepository
     private let apiClient: APIClientProtocol
@@ -59,7 +60,8 @@ struct PickpleApp: App {
                         PickpleBottomNav(
                             myPageViewModel: MyPageViewModel(
                                 userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
-                                userPostRepository: RemoteUserPostRepository(apiClient: apiClient)
+                                userPostRepository: RemoteUserPostRepository(apiClient: apiClient),
+                                isLoggedIn: sessionViewModel.sessionState == .loggedIn
                             )
                         )
                             .environment(\.appLogout, sessionViewModel.logout)
@@ -67,6 +69,7 @@ struct PickpleApp: App {
                             .environment(\.apiClient, apiClient)
                             .environment(\.isLoggedIn, sessionViewModel.sessionState == .loggedIn)
                             .environment(\.appRequestLogin, sessionViewModel.requestLogin)
+                            .environment(guestVoteTracker)
                     case .loggedOut:
                         NavigationStack {
                             LoginView(

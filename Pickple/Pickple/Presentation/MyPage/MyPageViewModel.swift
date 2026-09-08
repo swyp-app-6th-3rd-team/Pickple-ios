@@ -13,13 +13,16 @@ class MyPageViewModel {
 
     var userInfo: UserInfo?
     var posts: [PostSummary] = []
-    
+    private(set) var isLoggedIn: Bool
+
     init(
         userInfoRepository: UserInfoRepository = MockUserInfoRepository(),
-        userPostRepository: UserPostRepository = MockUserPostRepository()
+        userPostRepository: UserPostRepository = MockUserPostRepository(),
+        isLoggedIn: Bool = true
     ) {
         self.userInfoRepository = userInfoRepository
         self.userPostRepository = userPostRepository
+        self.isLoggedIn = isLoggedIn
     }
     
     @MainActor

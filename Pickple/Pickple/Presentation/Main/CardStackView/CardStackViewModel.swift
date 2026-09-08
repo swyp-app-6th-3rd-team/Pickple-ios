@@ -17,15 +17,22 @@ class CardStackViewModel {
     private var allCards: [VoteCard] = []
 
     var voteCardData: [VoteCard] = []
-    var guestVoteCount = 0
     var showsLoginRequired = false
 
     private(set) var isLoggedIn: Bool
-    static let guestVoteLimit = 3
+    // 게스트 무료 투표 3회는 이 화면(홈 카드스택) 전용이 아니라 게시글 상세 투표와 공유된다
+    // (기능명세서 2.2·6.3 모두 동일한 "3번까지 허용" 문구) — 그래서 앱 전체에서 하나만
+    // 만들어 공유하는 GuestVoteTracker를 주입받는다.
+    private let guestVoteTracker: GuestVoteTracker
 
-    init(voteCardRepository: VoteCardRepository = MockVoteCardRepository(), isLoggedIn: Bool = true) {
+    init(
+        voteCardRepository: VoteCardRepository = MockVoteCardRepository(),
+        isLoggedIn: Bool = true,
+        guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
+    ) {
         self.voteCardRepository = voteCardRepository
         self.isLoggedIn = isLoggedIn
+        self.guestVoteTracker = guestVoteTracker
     }
 
     // GET /posts/random은 type을 하나만 받아서, 찬반/AB를 각각 불러 합친다 —
@@ -46,11 +53,10 @@ class CardStackViewModel {
         guard let index = voteCardData.firstIndex(where: { $0.id == cardID }), !voteCardData[index].isVoted else { return }
 
         if !isLoggedIn {
-            guard guestVoteCount < Self.guestVoteLimit else {
+            guard guestVoteTracker.registerVote() else {
                 showsLoginRequired = true
                 return
             }
-            guestVoteCount += 1
             // 게스트는 토큰이 없어서 서버에 실제로 투표할 방법이 없다 — 로컬에서만 결과를 흉내낸다.
             let firstPercentage = side == .first ? Int.random(in: 55...80) : Int.random(in: 20...45)
             voteCardData[index].firstPercentage = firstPercentage
