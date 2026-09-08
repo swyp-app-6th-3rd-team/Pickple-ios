@@ -8,22 +8,25 @@
 import SwiftUI
 
 struct MyGradeRow: View {
-    let level: Int
-    let description: String
+    let grade: GradeCriteria
+
+    private var description: String {
+        MyGradeStrings.requirementDescription(point: grade.requiredPoint, voteCount: grade.requiredVoteCount)
+    }
 
     var body: some View {
         HStack(spacing: 12) {
-            Image("PickpleGradeCharacter\(level)")
+            Image("PickpleGradeCharacter\(grade.level)")
                 .resizable()
                 .frame(width: 48, height: 48)
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 2) {
-                    Image("PickpleLevelBadge\(level)")
+                    Image("PickpleLevelBadge\(grade.level)")
                         .resizable()
                         .frame(width: 16, height: 16)
 
-                    Text("LV.\(level)")
+                    Text("LV.\(grade.level)")
                         .pickpleTypography(.label)
                         .foregroundStyle(Color.black)
                 }
@@ -41,5 +44,5 @@ struct MyGradeRow: View {
 }
 
 #Preview {
-    MyGradeRow(level: 2, description: "누적 200P + 투표 20회")
+    MyGradeRow(grade: GradeCriteria(level: 2, name: "LV.2", requiredPoint: 200, requiredVoteCount: 20))
 }
