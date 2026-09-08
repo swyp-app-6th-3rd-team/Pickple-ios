@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct MyPageProfileHeaderView: View {
+    @Environment(MyPageRouter.self) private var myPageRouter
     let myPageViewModel: MyPageViewModel
 
     var body: some View {
-        Button(action: {}) {
+        Button(action: { myPageRouter.push(.profile) }) {
             VStack(spacing: 12) {
                 AsyncImage(url: myPageViewModel.userInfo?.profileImageUrl) { image in
                     image.resizable().scaledToFill()

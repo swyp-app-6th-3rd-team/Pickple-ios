@@ -9,4 +9,5 @@ protocol ProfileRepository {
     func fetchMyProfile() async throws -> UserProfile
     func checkNicknameAvailability(_ nickname: String) async throws -> NicknameAvailability
     func registerProfile(nickname: String) async throws
+    func updateProfile(nickname: String) async throws
 }

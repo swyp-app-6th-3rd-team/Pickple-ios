@@ -12,6 +12,8 @@ class ProfileSetupViewModel {
     var selectedImage: Image?
     // 실제 업로드(POST /images)를 붙일 때 raw 이미지가 필요해서 표시용 Image와 별도로 들고 있는다.
     var selectedUIImage: UIImage?
+    // 수정 화면 진입 시 서버에 저장된 기존 프로필 사진. 새 사진을 고르기 전까지 이걸 보여준다.
+    var existingImageUrl: URL?
     var nickname: String = ""
     var isSubmitting = false
     var errorMessage: String?
@@ -70,6 +72,36 @@ class ProfileSetupViewModel {
         } catch {
             errorMessage = error.localizedDescription
             return false
+        }
+    }
+    
+    @MainActor
+    func updateProfile() async -> Bool {
+        guard isNicknameValid() else { return false }
+        isSubmitting = true
+        defer { isSubmitting = false }
+        do {
+            let availability = try await profileRepository.checkNicknameAvailability(nickname)
+            guard availability.isAvailable else {
+                errorMessage = availability.message
+                return false
+            }
+            try await profileRepository.updateProfile(nickname: nickname)
+            return true
+        } catch {
+            errorMessage = error.localizedDescription
+            return false
+        }
+    }
+
+    @MainActor
+    func loadCurrentProfile() async {
+        do {
+            let profile = try await profileRepository.fetchMyProfile()
+            nickname = profile.nickname ?? ""
+            existingImageUrl = profile.profileImageUrl.flatMap(URL.init(string:))
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
 }

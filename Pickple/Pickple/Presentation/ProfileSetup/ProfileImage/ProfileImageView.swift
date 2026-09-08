@@ -12,9 +12,12 @@ struct ProfileImageView: View {
 
     var body: some View {
         VStack(spacing: 40) {
-            PickpleProfile(selectedImage: profileViewModel.selectedImage, type: .onCamera) { image in
-                profileViewModel.setSelectedImage(image)
-            }
+            PickpleProfile(
+                selectedImage: profileViewModel.selectedImage,
+                type: .onCamera,
+                onSelect: { image in profileViewModel.setSelectedImage(image) },
+                existingImageUrl: profileViewModel.existingImageUrl
+            )
         }
     }
 }

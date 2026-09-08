@@ -10,6 +10,7 @@
 import SwiftUI
 
 enum MyPageRoute: Hashable {
+    case profile
     case grade
     case badge
     case account

@@ -51,4 +51,10 @@ struct RemoteProfileRepository: ProfileRepository {
         let endpoint = APIEndpoint(method: .post, path: "/users/profile", body: body, requiresAuth: true)
         try await apiClient.requestVoid(endpoint)
     }
+    
+    func updateProfile(nickname: String) async throws {
+        let body = try JSONEncoder().encode(ProfileRequestDTO(nickname: nickname, profileImageUrl: nil))
+        let endpoint = APIEndpoint(method: .patch, path: "/users/profile", body: body, requiresAuth: true)
+        try await apiClient.requestVoid(endpoint)
+    }
 }

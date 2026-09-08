@@ -27,6 +27,8 @@ struct PickpleProfile: View {
     let selectedImage: Image?
     let type: PickpleProfileType
     let onSelect: (UIImage) -> Void
+    // 새로 고른 사진(selectedImage)이 없을 때 대신 보여줄, 서버에 이미 저장된 프로필 사진.
+    var existingImageUrl: URL? = nil
 
     @State private var showsPicker = false
 
@@ -47,6 +49,14 @@ struct PickpleProfile: View {
                         .resizable()
                         .frame(width: 160, height: 160)
                         .clipShape(Circle())
+                } else if let existingImageUrl {
+                    AsyncImage(url: existingImageUrl) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        Image("PickpleCharacter").resizable().scaledToFill()
+                    }
+                    .frame(width: 160, height: 160)
+                    .clipShape(Circle())
                 } else {
                     Image("PickpleCharacter")
                         .resizable()
