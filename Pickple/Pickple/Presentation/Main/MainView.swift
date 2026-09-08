@@ -111,8 +111,22 @@ struct MainView: View {
 }
 
 #Preview {
-    NavigationStack {
-        MainView()
+    // 투표할 때마다 연속 출석 미션 current가 1씩 늘어나는 프리뷰 전용 Mock —
+    // MockBadgeMissionRepository는 매번 같은 고정값만 줘서 진행도 바가 안 움직이는데,
+    // reloadMissions() 배선이 실제로 동작하는지 눈으로 확인하려고 여기서만 상태를 들고 있는다.
+    final class IncrementingBadgeMissionRepository: BadgeMissionRepository {
+        private var streakCurrent = 1
+        func fetchInProgressMissions() async -> [BadgeMissionProgress] {
+            defer { streakCurrent = min(streakCurrent + 1, 7) }
+            return [
+                BadgeMissionProgress(id: UUID(), title: "누적 투표 1,000회 달성", badgeIconOffName: "PickpleBadgeMasterOff", current: 0, target: 1000),
+                BadgeMissionProgress(id: UUID(), title: "7일 연속 매일 투표 참여", badgeIconOffName: "PickpleBadgeAttendanceOff", current: streakCurrent, target: 7)
+            ]
+        }
+    }
+
+    return NavigationStack {
+        MainView(mainViewModel: MainViewModel(badgeMissionRepository: IncrementingBadgeMissionRepository()))
     }
     .environment(MainRouter())
 }
