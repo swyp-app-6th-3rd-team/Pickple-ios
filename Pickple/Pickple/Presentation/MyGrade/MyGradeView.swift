@@ -11,6 +11,7 @@ import SwiftUI
 
 struct MyGradeView: View {
     let myPageViewModel: MyPageViewModel
+    @State var gradeViewModel: MyGradeViewModel = MyGradeViewModel()
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -53,8 +54,8 @@ struct MyGradeView: View {
                         .foregroundStyle(Color.neutral5)
                     
                     VStack(spacing: 0) {
-                        ForEach(1...5, id: \.self) { level in
-                            MyGradeRow(level: level, description: MyGradeStrings.gradeDescriptions[level] ?? "")
+                        ForEach(gradeViewModel.grades) { grade in
+                            MyGradeRow(grade: grade)
                         }
                     }
                     .padding(.horizontal, 20)
@@ -63,6 +64,9 @@ struct MyGradeView: View {
         }
         .task {
             await myPageViewModel.loadUserInfo()
+        }
+        .task {
+            await gradeViewModel.loadGrades()
         }
         .navigationBarBackButtonHidden(true)
     }

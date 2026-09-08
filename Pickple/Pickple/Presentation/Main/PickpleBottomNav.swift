@@ -79,7 +79,7 @@ struct PickpleBottomNav: View {
                         case .profile:
                             MyPageProfileEditView()
                         case .grade:
-                            MyGradeView(myPageViewModel: myPageViewModel)
+                            MyGradeView(myPageViewModel: myPageViewModel, gradeViewModel: MyGradeViewModel(gradeRepository: RemoteGradeRepository(apiClient: apiClient)))
                         case .badge:
                             MyBadgeView(myBadgeViewModel: MyBadgeViewModel(myBadgeRepository: RemoteMyBadgeRepository(apiClient: apiClient)))
                         case .account:
