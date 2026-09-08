@@ -27,7 +27,6 @@ enum MainStrings {
     static let badgeMissionTitle = "뱃지 획득 미션"
     static let badgeMissionSubtitleLoggedIn = "뱃지 획득을 위해 미션을 완료해보세요"
     static let badgeMissionSubtitleGuest = "로그인하고 뱃지를 획득해보세요"
-    static let streakKeyword = "연속"
 
     static let tabHome = "홈"
     static let tabCommunity = "커뮤니티"

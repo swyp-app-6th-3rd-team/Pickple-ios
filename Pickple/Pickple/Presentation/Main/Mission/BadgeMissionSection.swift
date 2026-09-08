@@ -57,7 +57,7 @@ struct BadgeMissionSection: View {
                         BadgeMissionProgressRow(mission: mission)
                     }
 
-                    if let streakMission = missions.first(where: { $0.title.contains(MainStrings.streakKeyword) }) {
+                    if let streakMission = missions.first(where: { $0.iconFamily.isStreakType }) {
                         BadgeMissionStreakTracker(current: streakMission.current, target: streakMission.target)
                     }
                 }
@@ -82,8 +82,8 @@ struct BadgeMissionSection: View {
             BadgeMissionSection(
                 isLoggedIn: true,
                 missions: [
-                    BadgeMissionProgress(id: UUID(), title: "누적 투표 1,000회 달성", badgeIconOffName: "PickpleBadgeMasterOff", current: 0, target: 1000),
-                    BadgeMissionProgress(id: UUID(), title: "7일 연속 매일 투표 참여", badgeIconOffName: "PickpleBadgeAttendanceOff", current: 2, target: 7)
+                    BadgeMissionProgress(id: UUID(), title: "누적 투표 1,000회 달성", badgeIconOffName: "PickpleBadgeMasterOff", iconFamily: .master, current: 0, target: 1000),
+                    BadgeMissionProgress(id: UUID(), title: "7일 연속 매일 투표 참여", badgeIconOffName: "PickpleBadgeAttendanceOff", iconFamily: .attendance, current: 2, target: 7)
                 ],
                 isExpanded: $isExpanded
             )

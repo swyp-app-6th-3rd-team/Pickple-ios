@@ -40,4 +40,11 @@ enum BadgeIconFamily: String {
 
     var offIconName: String { "PickpleBadge\(rawValue)Off" }
     var onIconName: String { "PickpleBadge\(rawValue)On" }
+
+    // "N일 연속" 진행도 바(BadgeMissionStreakTracker)를 보여줄 대상인지.
+    // description 문자열에 "연속"이 포함되는지로 판별하던 이전 로직은 실제 서버 문구가
+    // 달라서 안 걸렸던 버그가 있어, 이미 안정 식별자로 쓰고 있는 code(→ family) 기준으로 바꿨다.
+    var isStreakType: Bool {
+        self == .attendance || self == .addict
+    }
 }
