@@ -17,4 +17,6 @@ struct MockProfileRepository: ProfileRepository {
     }
 
     func registerProfile(nickname: String) async throws {}
+    
+    func updateProfile(nickname: String) async throws {}
 }

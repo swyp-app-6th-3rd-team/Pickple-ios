@@ -76,6 +76,8 @@ struct PickpleBottomNav: View {
                 MyPageView(myPageViewModel: myPageViewModel)
                     .navigationDestination(for: MyPageRoute.self) { route in
                         switch route {
+                        case .profile:
+                            MyPageProfileEditView()
                         case .grade:
                             MyGradeView(myPageViewModel: myPageViewModel)
                         case .badge:
