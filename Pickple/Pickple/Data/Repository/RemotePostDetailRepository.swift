@@ -62,6 +62,11 @@ struct RemotePostDetailRepository: PostDetailRepository {
         return Self.toDomain(dto)
     }
 
+    func deletePost() async throws {
+        let endpoint = APIEndpoint(method: .delete, path: "/posts/\(postId)", requiresAuth: true)
+        try await apiClient.requestVoid(endpoint)
+    }
+
     private static func toDomain(_ dto: PostDetailResponseDTO) -> PostDetail {
         PostDetail(
             id: dto.id,

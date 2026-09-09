@@ -312,8 +312,26 @@ LV.1~LV.5의 승급 필요 조건을 낮은 등급부터 돌려준다.
   - `products` 배열 — 상품. 찬반 1개, A/B 2개(R-02). 각 항목: `id`, `name`, `price`(int64, 선택 입력이라 없을 수 있음), `linkUrl`(문자열 선택), `imageUrl`(문자열 선택, 상품당 1장 R-03), `displayOrder`(1=A, 2=B)
   - `options` 배열 — 정확히 둘(R-04). 각 항목: `optionId`, `label`(찬반만, A/B는 null), `productId`(A/B만, 찬반은 null), `displayOrder`, `voteCount`(int64, **투표 안 했으면 필드 자체가 없음**), `percentage`(int32, **투표 안 했으면 필드 자체가 없음**, 반올림 때문에 두 값 합이 100이 아닐 수 있음)
 
-### PATCH /posts/{id} · DELETE /posts/{id} — 게시글 수정 · 삭제 (신규 확인, 2026-09-09)
-> 존재는 확인됐으나 요청/응답 스키마는 아직 상세히 안 봄 — 실제 연동 전 OAS 재확인 필요.
+### PATCH /posts/{id} — 게시글 수정 (신규 확인, 2026-09-10)
+파라미터: `id` (path) 정수(int64) 필수
+요청 본문(`PostUpdateRequest`), 전부 선택:
+- `category` 문자열(enum) — FASHION | ELECTRONICS | BEAUTY | LIVING | ETC. 없으면 유지
+- `title` 문자열(최대 30자) — 없거나 빈 문자열이면 유지
+- `description` 문자열(최대 300자) — 없으면 유지, 빈 문자열이면 비운다
+
+**(R-33) 상품 정보(상품명·가격·URL·사진)와 유형(type)은 이 API로 바꿀 수 없고, 함께 보내도 무시된다** — 투표 대상이
+게시 후 바뀌면 이미 투표한 사람과 통계 정합성이 깨지기 때문으로 추정. 상품을 바꾸고 싶으면 삭제 후 재작성해야 한다.
+클라이언트 미구현 — 기존 작성 화면(사진/상품명/가격/URL 포함)을 그대로 재사용하면 그 필드들이 조용히 무시돼
+사용자가 혼동하므로, 카테고리/제목/설명만 있는 전용 수정 화면이 필요하다(추후 별도 작업).
+
+응답 200 — OK(`ApiResponsePostUpdateResponse`): `postId`, `type`, `category`, `title`, `description`
+
+### DELETE /posts/{id} — 게시글 삭제 (신규 확인, 2026-09-10)
+파라미터: `id` (path) 정수(int64) 필수
+요청 본문 없음. 작성자만 가능. 소프트 삭제라 이후 조회는 404, 투표·댓글은 거절된다.
+응답 200 — OK(`ApiResponseVoid`, 빈 본문)
+
+`RemotePostDetailRepository.deletePost()`로 실연동됨(§6.1 삭제 메뉴).
 
 ### GET /posts/random — 랜덤 투표 카드 (신규 확인, 2026-09-07)
 찬반/AB 픽만 대상(GENERAL 제외)인 시드 기반 임의 순서 카드 목록. 로그인 사용자가 이미 투표한 카드에만 선택 결과(`selectedOptionId`, 옵션별 `voteCount`/`percentage`)가 포함된다 — 투표 전 통계 블라인드 규칙(CLAUDE.md)이 서버에서부터 지켜짐.

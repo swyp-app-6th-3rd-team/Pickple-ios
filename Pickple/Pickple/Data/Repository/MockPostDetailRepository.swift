@@ -9,6 +9,8 @@ import Foundation
 struct MockPostDetailRepository: PostDetailRepository {
     let type: VoteType
 
+    func deletePost() async throws {}
+
     func fetchPostDetail() async throws -> PostDetail {
         let author = (
             id: 1,

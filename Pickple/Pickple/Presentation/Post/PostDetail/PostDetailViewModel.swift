@@ -88,6 +88,17 @@ class PostDetailViewModel {
         }
     }
 
+    // 성공하면 true — 화면 쪽에서 이 값을 보고 뒤로 나갈지 실패 토스트를 띄울지 정한다.
+    func deletePost() async -> Bool {
+        do {
+            try await postDetailRepository.deletePost()
+            return true
+        } catch {
+            print("[PostDetail] 삭제 실패: \(error)")
+            return false
+        }
+    }
+
     // 게스트는 로그인 계정이 없어서 서버에 프로필 사진을 물어볼 수 없다 — 그 경우
     // myProfileImageUrl은 nil로 남고, 투표 버튼 쪽에서 기본 이미지로 대체해서 보여준다.
     func loadMyProfileImage() async {

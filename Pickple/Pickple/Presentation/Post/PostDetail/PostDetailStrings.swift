@@ -23,6 +23,8 @@ enum PostDetailStrings {
     static let menuBlock = "차단하기"
     static let menuClose = "닫기"
 
+    static let deleteFailedToast = "삭제에 실패했어요. 다시 시도해주세요"
+
     static let voteRequiredTitle = "로그인이 필요해요"
     static let voteRequiredDescription = "간편 로그인 후 더 많은 투표에\n참여해 보세요"
     static let commentRequiredDescription = "간편 로그인 후 댓글을\n작성할 수 있어요"

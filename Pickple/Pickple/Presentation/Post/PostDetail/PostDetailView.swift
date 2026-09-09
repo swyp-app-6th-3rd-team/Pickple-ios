@@ -18,6 +18,7 @@ struct PostDetailView: View {
     
     @State private var isSortExpanded = false
     @State private var showsSuccessToast = false
+    @State private var showsDeleteFailureToast = false
     @State private var showsMoreMenu = false
     @State private var postActionConfirm: PostDetailConfirmAction?
     @State private var loginRequiredDescription: String?
@@ -150,8 +151,13 @@ struct PostDetailView: View {
                         onConfirm: {
                             switch postActionConfirm {
                             case .delete:
-                                //TODO: 실제 게시글 삭제 API 연동 필요
-                                dismiss()
+                                Task {
+                                    if await postDetailViewModel.deletePost() {
+                                        dismiss()
+                                    } else {
+                                        showsDeleteFailureToast = true
+                                    }
+                                }
                             case .report:
                                 break //TODO: 실제 신고 API 연동 필요
                             case .block:
@@ -230,6 +236,7 @@ struct PostDetailView: View {
             PostWriteFlowView(postViewModel: editingPostViewModel)
         }
         .pickpleToast(isPresented: $showsSuccessToast, message: PostViewStrings.submitSucceededToast)
+        .pickpleToast(isPresented: $showsDeleteFailureToast, message: PostDetailStrings.deleteFailedToast)
         .navigationBarBackButtonHidden(true)
         .task {
             postDetailViewModel.isLoggedIn = isLoggedIn
