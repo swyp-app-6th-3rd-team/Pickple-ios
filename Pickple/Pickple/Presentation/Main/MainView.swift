@@ -14,6 +14,7 @@ struct MainView: View {
     @Environment(MainRouter.self) private var mainRouter
     @Environment(\.appRequestLogin) private var appRequestLogin
     @State private var isMissionExpanded = false
+    @State private var showsBadgeLoginRequired = false
     var onRequestCommunityTab: (() -> Void)? = nil
 
     init(
@@ -61,7 +62,8 @@ struct MainView: View {
                             BadgeMissionSection(
                                 isLoggedIn: mainViewModel.isLoggedIn,
                                 missions: mainViewModel.missions,
-                                isExpanded: $isMissionExpanded
+                                isExpanded: $isMissionExpanded,
+                                onLoginTapped: { showsBadgeLoginRequired = true }
                             )
                         }
 
@@ -96,6 +98,22 @@ struct MainView: View {
                         onCancel: { cardStackViewModel.showsLoginRequired = false },
                         onConfirm: {
                             cardStackViewModel.showsLoginRequired = false
+                            appRequestLogin()
+                        }
+                    )
+                }
+            }
+
+            if showsBadgeLoginRequired {
+                PickpleDialogOverlay {
+                    PickpleConfirmDialog(
+                        title: MainStrings.loginRequiredTitle,
+                        description: MainStrings.loginRequiredDescription,
+                        cancelTitle: MainStrings.cancel,
+                        confirmTitle: MainStrings.login,
+                        onCancel: { showsBadgeLoginRequired = false },
+                        onConfirm: {
+                            showsBadgeLoginRequired = false
                             appRequestLogin()
                         }
                     )

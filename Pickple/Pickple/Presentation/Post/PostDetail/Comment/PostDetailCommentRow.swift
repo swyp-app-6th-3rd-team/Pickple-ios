@@ -19,22 +19,13 @@ struct PostDetailCommentRow: View {
         VStack(alignment: .leading, spacing: 12) {
                 //MARK: - Profile
                 HStack(spacing: 12) {
-                if let authorProfileImageUrl = comment.authorProfileImageUrl {
-                    AsyncImage(url: authorProfileImageUrl) { image in
-                        image.resizable().scaledToFill()
-                    } placeholder: {
-                        Image(systemName: "person.circle.fill")
-                            .resizable()
-                            .foregroundStyle(Color.neutral20)
-                    }
-                    .frame(width: 32, height: 32)
-                    .clipShape(Circle())
-                } else {
-                    Image(systemName: "person.circle.fill")
-                        .resizable()
-                        .frame(width: 32, height: 32)
-                        .foregroundStyle(Color.neutral20)
+                AsyncImage(url: comment.authorProfileImageUrl) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    Image("PickpleCharacter").resizable().scaledToFill()
                 }
+                .frame(width: 32, height: 32)
+                .clipShape(Circle())
                     HStack(spacing: 2) {
                     Text(comment.authorNickname)
                         .pickpleTypography(.body01)
@@ -63,16 +54,16 @@ struct PostDetailCommentRow: View {
                     
                     //MARK: - OnePick
                     HStack(spacing: 4) {
-                        Image("PickpleOnePick")
+                        Image(isPicked ? "Gamification" : "PickpleOnePick")
                             .resizable()
                             .frame(width: 20, height: 20)
                         Text(PostDetailStrings.pickCount(comment.pickCount))
                     }
                     .pickpleTypography(.label)
-                    .foregroundStyle(isPicked ? Color.red60 : Color.neutral30)
+                    .foregroundStyle(isPicked ? Color.neutral100 : Color.neutral30)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
-                    .background(isPicked ? Color.red10 : Color.neutral5)
+                    .background(isPicked ? Color.yellow60 : Color.neutral5)
                     .clipShape(Capsule())
                 }
                 .disabled(!canPick)

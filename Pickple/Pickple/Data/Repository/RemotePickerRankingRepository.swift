@@ -48,7 +48,7 @@ struct RemotePickerRankingRepository: PickerRankingRepository {
             rank: dto.ranking,
             nickname: dto.nickname,
             level: 1,
-            profileImageName: dto.profileImageUrl,
+            profileImageUrl: dto.profileImageUrl.flatMap(URL.init(string:)),
             points: dto.point
         )
     }

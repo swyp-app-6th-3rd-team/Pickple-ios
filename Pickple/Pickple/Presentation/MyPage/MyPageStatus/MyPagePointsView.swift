@@ -10,13 +10,14 @@ import SwiftUI
 struct MyPagePointsView: View {
     let myPageViewModel: MyPageViewModel
 
-    // 게스트는 포인트/등급을 조회할 계정이 없어서 명세대로 가장 첫 등급(LV.1), 0P/0%로 고정한다.
+    // 게스트는 포인트를 조회할 계정이 없어서 0P로 고정한다.
     private var points: Int {
         myPageViewModel.isLoggedIn ? (myPageViewModel.userInfo?.points ?? 0) : 0
     }
 
-    private var level: Int {
-        myPageViewModel.isLoggedIn ? (myPageViewModel.userInfo?.level ?? 1) : 1
+    // 게스트는 등급을 조회할 계정이 없어서 "LV. -"로 표시한다.
+    private var level: Int? {
+        myPageViewModel.isLoggedIn ? myPageViewModel.userInfo?.level : nil
     }
 
     private var pointsToNextLevel: Int {
@@ -80,12 +81,14 @@ private struct MyPagePointsLevelFooter: View {
         VStack(spacing: 8) {
             HStack {
                 HStack(spacing: 8) {
-                    Image("PickpleBadge1")
-
                     if let level {
-                        Text("LV. \(level)")
-                            .foregroundStyle(Color.neutral100)
+                        Image("PickpleBadge\(level)")
+                    } else {
+                        Image("badge")
                     }
+
+                    Text(level.map { "LV. \($0)" } ?? "-")
+                        .foregroundStyle(Color.neutral100)
                 }
 
                 Spacer()

@@ -48,7 +48,7 @@ struct PickpleBottomNav: View {
                     .navigationDestination(for: MainRoute.self) { route in
                         switch route {
                         case .postDetail(let postId, let type):
-                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), guestVoteTracker: guestVoteTracker)
+                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), guestVoteTracker: guestVoteTracker)
                         case .ranking:
                             MainRankingView(mainRankingViewModel: MainRankingViewModel(pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient), isLoggedIn: isLoggedIn))
                         }
@@ -63,7 +63,7 @@ struct PickpleBottomNav: View {
                     .navigationDestination(for: CommunityRoute.self) { route in
                         switch route {
                         case .postDetail(let postId, let type):
-                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), guestVoteTracker: guestVoteTracker)
+                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), guestVoteTracker: guestVoteTracker)
                         case .search:
                             CommunitySearchView(communitySearchViewModel: CommunitySearchViewModel(communityRepository: RemoteCommunityRepository(apiClient: apiClient)))
                         }
@@ -88,7 +88,7 @@ struct PickpleBottomNav: View {
                         case .activity:
                             MyActivityView(myActivityViewModel: MyActivityViewModel(userPostRepository: RemoteUserPostRepository(apiClient: apiClient)))
                         case .postDetail(let postId, let type):
-                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), guestVoteTracker: guestVoteTracker)
+                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), guestVoteTracker: guestVoteTracker)
                         }
                     }
             }

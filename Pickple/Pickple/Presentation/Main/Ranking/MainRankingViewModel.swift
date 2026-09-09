@@ -17,7 +17,7 @@ class MainRankingViewModel {
 
     private(set) var isLoggedIn: Bool
     // TODO: 실제로는 로그인한 유저 본인의 랭킹 데이터로 대체 필요
-    let myRanking = PickerRanking(id: UUID(), rank: 24, nickname: "닉네임", level: 5, profileImageName: "PickpleProfileSample", points: 1000)
+    let myRanking = PickerRanking(id: UUID(), rank: 24, nickname: "닉네임", level: 5, profileImageUrl: nil, points: 1000)
 
     init(pickerRankingRepository: PickerRankingRepository = MockPickerRankingRepository(), isLoggedIn: Bool = true) {
         self.pickerRankingRepository = pickerRankingRepository

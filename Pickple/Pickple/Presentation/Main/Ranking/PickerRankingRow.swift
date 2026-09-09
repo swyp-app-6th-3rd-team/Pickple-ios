@@ -4,7 +4,6 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 프로필 사진 없을 때 아바타는 임시 시스템 아이콘
 
 import SwiftUI
 
@@ -33,18 +32,13 @@ struct PickerRankingRow: View {
                     .frame(width: 28, height: 28)
             }
 
-            if let profileImageName = ranking.profileImageName {
-                Image(profileImageName)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 48, height: 48)
-                    .clipShape(Circle())
-            } else {
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .frame(width: 48, height: 48)
-                    .foregroundStyle(Color.neutral20)
+            AsyncImage(url: ranking.profileImageUrl) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                Image("PickpleCharacter").resizable().scaledToFill()
             }
+            .frame(width: 48, height: 48)
+            .clipShape(Circle())
 
             HStack(spacing: 4) {
                 Text(ranking.nickname)
@@ -67,8 +61,8 @@ struct PickerRankingRow: View {
 
 #Preview {
     VStack(spacing: 16) {
-        PickerRankingRow(ranking: PickerRanking(id: UUID(), rank: 1, nickname: "닉네임", level: 5, profileImageName: nil, points: 1000))
-        PickerRankingRow(ranking: PickerRanking(id: UUID(), rank: 4, nickname: "닉네임", level: 5, profileImageName: nil, points: 1000))
+        PickerRankingRow(ranking: PickerRanking(id: UUID(), rank: 1, nickname: "닉네임", level: 5, profileImageUrl: nil, points: 1000))
+        PickerRankingRow(ranking: PickerRanking(id: UUID(), rank: 4, nickname: "닉네임", level: 5, profileImageUrl: nil, points: 1000))
     }
     .padding()
 }

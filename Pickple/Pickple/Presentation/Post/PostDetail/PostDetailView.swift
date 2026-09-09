@@ -34,11 +34,12 @@ struct PostDetailView: View {
     init(
         voteType: VoteType = .text,
         commentRepository: CommentRepository = MockCommentRepository(),
+        userInfoRepository: UserInfoRepository = MockUserInfoRepository(),
         showsSuccessToastOnAppear: Bool = false,
         guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
     ) {
         self.showsSuccessToastOnAppear = showsSuccessToastOnAppear
-        _postDetailViewModel = State(initialValue: PostDetailViewModel(voteType: voteType, commentRepository: commentRepository, guestVoteTracker: guestVoteTracker))
+        _postDetailViewModel = State(initialValue: PostDetailViewModel(voteType: voteType, commentRepository: commentRepository, userInfoRepository: userInfoRepository, guestVoteTracker: guestVoteTracker))
     }
     
     var body: some View {
@@ -223,6 +224,7 @@ struct PostDetailView: View {
             postDetailViewModel.isLoggedIn = isLoggedIn
             await postDetailViewModel.loadPostDetail()
             await postDetailViewModel.loadComments()
+            await postDetailViewModel.loadMyProfileImage()
             if showsSuccessToastOnAppear {
                 showsSuccessToast = true
             }

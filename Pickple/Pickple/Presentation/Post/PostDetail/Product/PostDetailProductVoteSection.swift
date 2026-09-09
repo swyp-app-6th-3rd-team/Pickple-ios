@@ -37,6 +37,7 @@ struct PostDetailProductVoteSection: View {
                     votedSide: postDetailViewModel.votedSide,
                     firstPercentage: PostDetailViewModel.firstVotePercentage,
                     secondPercentage: PostDetailViewModel.secondVotePercentage,
+                    myProfileImageUrl: postDetailViewModel.myProfileImageUrl,
                     onVote: onVote
                 )
             }

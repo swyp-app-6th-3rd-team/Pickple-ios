@@ -72,8 +72,10 @@ class CardStackViewModel {
         voteCardData[index].secondPercentage = result.secondPercentage
     }
 
-    func removeTopCard() {
+    // 카드를 배열에서 제거하지 않고 맨 뒤로 옮겨서, 다 넘기면 처음 카드부터 다시 무한으로 순환한다.
+    func moveTopCardToBack() {
         guard !voteCardData.isEmpty else { return }
-        voteCardData.removeFirst()
+        let card = voteCardData.removeFirst()
+        voteCardData.append(card)
     }
 }

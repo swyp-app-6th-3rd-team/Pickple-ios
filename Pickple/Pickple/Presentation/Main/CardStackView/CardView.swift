@@ -117,7 +117,7 @@ struct CardView: View {
     // 보이고 하단 152pt 구간에서만 검게 깔려서 그 위에 얹는 흰 글씨가 잘 읽히게 한다.
     private var bottomGradient: some View {
         VStack(spacing: 0) {
-            Spacer(minLength: 0)
+            Spacer()
             LinearGradient(
                 stops: [
                     .init(color: Color.black.opacity(0), location: 0),

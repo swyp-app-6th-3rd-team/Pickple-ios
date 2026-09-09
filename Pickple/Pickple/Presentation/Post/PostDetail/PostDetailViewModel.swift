@@ -10,6 +10,7 @@ import Foundation
 class PostDetailViewModel {
     private let postDetailRepository: PostDetailRepository
     private let commentRepository: CommentRepository
+    private let userInfoRepository: UserInfoRepository
 
     var post: PostDetail?
     var comments: [Comment] = []
@@ -18,6 +19,7 @@ class PostDetailViewModel {
     var currentImageIndex = 0
     var selectedProductTab: PostDetailVoteSide = .first
     var votedSide: PostDetailVoteSide?
+    var myProfileImageUrl: URL?
     // 한 게시글에 원픽은 하나만 가능하고 취소할 수 없다.
     var pickedCommentID: Int?
     var editingCommentID: Int?
@@ -68,17 +70,26 @@ class PostDetailViewModel {
         voteType: VoteType,
         postDetailRepository: PostDetailRepository? = nil,
         commentRepository: CommentRepository = MockCommentRepository(),
+        userInfoRepository: UserInfoRepository = MockUserInfoRepository(),
         isLoggedIn: Bool = true,
         guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
     ) {
         self.postDetailRepository = postDetailRepository ?? MockPostDetailRepository(type: voteType)
         self.commentRepository = commentRepository
+        self.userInfoRepository = userInfoRepository
         self.isLoggedIn = isLoggedIn
         self.guestVoteTracker = guestVoteTracker
     }
 
     func loadPostDetail() async {
         post = await postDetailRepository.fetchPostDetail()
+    }
+
+    // 게스트는 로그인 계정이 없어서 서버에 프로필 사진을 물어볼 수 없다 — 그 경우
+    // myProfileImageUrl은 nil로 남고, 투표 버튼 쪽에서 기본 이미지로 대체해서 보여준다.
+    func loadMyProfileImage() async {
+        guard isLoggedIn else { return }
+        myProfileImageUrl = try? await userInfoRepository.fetchUserInfo().profileImageUrl
     }
 
     func loadComments() async {
