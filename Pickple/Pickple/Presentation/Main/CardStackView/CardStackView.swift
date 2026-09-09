@@ -43,11 +43,25 @@ struct CardStackView: View {
         }
     }
 
-    // 맨 앞 카드(0)는 안 기울고, 나머지는 전부 같은 각도로 살짝 기울어짐
-    // index == 0일 때 .degrees(dragOffset.width / 20)을 쓰면 드래그하는 만큼 같이 기울어지는 효과
+    // 맨 앞 카드(0)는 안 기울고 뒤 카드들은 기본적으로 -5도 기울어져 있다.
+    // 바로 다음 카드(1)만 앞 카드를 얼마나 드래그했는지에 비례해서 -5도 → 0도로 실시간으로
+    // 펴지게 해서, 카드가 넘어갈 때 각도가 툭 튀지 않고 자연스럽게 이어진다.
+    // swipeThreshold(스와이프 확정 거리)보다 훨씬 긴 rotationUnwindDistance를 기준으로 삼아서
+    // 손을 떼는 시점(threshold 근처)에는 아직 다 안 펴진 상태로, 더 끝까지 끌어야 완전히 펴지게 완화했다.
     private func rotation(for index: Int) -> Angle {
-        index == 0 ? .zero : .degrees(2.65)
+        switch index {
+        case 0:
+            return .zero
+        case 1:
+            let progress = min(abs(dragOffset.width) / rotationUnwindDistance, 1)
+            return .degrees(restingRotationDegrees * (1 - progress))
+        default:
+            return .degrees(restingRotationDegrees)
+        }
     }
+
+    private let restingRotationDegrees: Double = -5.0
+    private let rotationUnwindDistance: CGFloat = 320
 
     private func dragGesture(isTop: Bool) -> some Gesture {
         DragGesture()
