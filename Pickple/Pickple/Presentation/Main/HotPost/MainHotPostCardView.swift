@@ -38,8 +38,12 @@ struct MainHotPostCardView: View {
 
             HStack(spacing: 8) {
                 PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount)
+                    .layoutPriority(1)
 
+                // 투표수/댓글수 자릿수가 늘어나 카드 폭(150pt)이 빠듯해지면, 상대적으로
+                // 덜 중요한 "n분 전" 쪽이 먼저 줄어들도록 우선순위를 낮춘다.
                 Text(post.createdAt.relativeTimeDescription)
+                    .lineLimit(1)
             }
             .pickpleTypography(.caption)
             .foregroundStyle(Color.neutral30)

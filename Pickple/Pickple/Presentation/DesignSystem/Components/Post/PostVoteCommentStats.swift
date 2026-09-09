@@ -20,12 +20,16 @@ struct PostVoteCommentStats: View {
                     .resizable()
                     .frame(width: 16, height: 16)
                 Text("\(voteCount)")
+                    .lineLimit(1)
+                    .fixedSize()
             }
             HStack(spacing: 4) {
                 Image("PickpleComment")
                     .resizable()
                     .frame(width: 16, height: 16)
                 Text("\(commentCount)")
+                    .lineLimit(1)
+                    .fixedSize()
             }
         }
     }
