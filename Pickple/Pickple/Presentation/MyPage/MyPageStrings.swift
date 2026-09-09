@@ -27,6 +27,4 @@ enum MyPageStrings {
     static let voteCount = "투표"
     static let commentCount = "댓글"
     static let postCount = "게시글"
-
-    static let guestNickname = "로그인해주세요"
 }

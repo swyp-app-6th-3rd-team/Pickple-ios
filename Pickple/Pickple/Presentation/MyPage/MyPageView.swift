@@ -23,7 +23,7 @@ struct MyPageView: View {
             }
             ScrollView {
                     VStack(spacing: 0) {
-                        MyPageProfileHeaderView(myPageViewModel: myPageViewModel)
+                        MyPageProfileHeaderView(myPageViewModel: myPageViewModel, onLoginTapped: { showsLoginRequired = true })
 
                         MyPageStatusView(myPageViewModel: myPageViewModel)
 
