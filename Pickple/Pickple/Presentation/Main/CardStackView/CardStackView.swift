@@ -22,6 +22,7 @@ struct CardStackView: View {
             ForEach(Array(cardStackViewModel.voteCardData.enumerated()), id: \.element.id) { index, data in
                 CardView(
                     data: data,
+                    myProfileImageUrl: cardStackViewModel.myProfileImageUrl,
                     onVote: { side in
                         Task {
                             await cardStackViewModel.vote(cardID: data.id, side: side)

@@ -123,6 +123,7 @@ struct MainView: View {
         .task {
             await cardStackViewModel.loadCards()
             cardStackViewModel.filterCards(by: mainViewModel.selectedType)
+            await cardStackViewModel.loadMyProfileImage()
             await mainViewModel.loadHomeData()
         }
     }

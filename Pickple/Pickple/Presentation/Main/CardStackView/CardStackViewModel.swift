@@ -6,18 +6,16 @@
 //
 import Foundation
 
-enum VoteCardSide {
-    case first
-    case second
-}
-
 @Observable
 class CardStackViewModel {
     private var voteCardRepository: VoteCardRepository
+    private let userInfoRepository: UserInfoRepository
     private var allCards: [VoteCard] = []
 
     var voteCardData: [VoteCard] = []
     var showsLoginRequired = false
+    // 게시글 상세 투표 버튼과 동일하게, 내가 고른 쪽 옆에 보여줄 내 프로필 사진.
+    var myProfileImageUrl: URL?
 
     private(set) var isLoggedIn: Bool
     // 게스트 무료 투표 3회는 이 화면(홈 카드스택) 전용이 아니라 게시글 상세 투표와 공유된다
@@ -27,12 +25,21 @@ class CardStackViewModel {
 
     init(
         voteCardRepository: VoteCardRepository = MockVoteCardRepository(),
+        userInfoRepository: UserInfoRepository = MockUserInfoRepository(),
         isLoggedIn: Bool = true,
         guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
     ) {
         self.voteCardRepository = voteCardRepository
+        self.userInfoRepository = userInfoRepository
         self.isLoggedIn = isLoggedIn
         self.guestVoteTracker = guestVoteTracker
+    }
+
+    // 게스트는 로그인 계정이 없어서 서버에 프로필 사진을 물어볼 수 없다 — 그 경우
+    // myProfileImageUrl은 nil로 남고, 투표 버튼 쪽에서 기본 이미지로 대체해서 보여준다.
+    func loadMyProfileImage() async {
+        guard isLoggedIn else { return }
+        myProfileImageUrl = try? await userInfoRepository.fetchUserInfo().profileImageUrl
     }
 
     // GET /posts/random은 type을 하나만 받아서, 찬반/AB를 각각 불러 합친다 —
@@ -49,7 +56,7 @@ class CardStackViewModel {
     }
 
     @MainActor
-    func vote(cardID: Int, side: VoteCardSide) async {
+    func vote(cardID: Int, side: PostDetailVoteSide) async {
         guard let index = voteCardData.firstIndex(where: { $0.id == cardID }), !voteCardData[index].isVoted else { return }
 
         if !isLoggedIn {
@@ -61,6 +68,7 @@ class CardStackViewModel {
             let firstPercentage = side == .first ? Int.random(in: 55...80) : Int.random(in: 20...45)
             voteCardData[index].firstPercentage = firstPercentage
             voteCardData[index].secondPercentage = 100 - firstPercentage
+            voteCardData[index].votedSide = side
             return
         }
 
@@ -70,6 +78,7 @@ class CardStackViewModel {
         guard let result = try? await voteCardRepository.castVote(postId: cardID, optionId: optionId) else { return }
         voteCardData[index].firstPercentage = result.firstPercentage
         voteCardData[index].secondPercentage = result.secondPercentage
+        voteCardData[index].votedSide = side
     }
 
     // 카드를 배열에서 제거하지 않고 맨 뒤로 옮겨서, 다 넘기면 처음 카드부터 다시 무한으로 순환한다.
