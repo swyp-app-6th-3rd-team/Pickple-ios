@@ -81,7 +81,11 @@ class PostDetailViewModel {
     }
 
     func loadPostDetail() async {
-        post = try? await postDetailRepository.fetchPostDetail()
+        do {
+            post = try await postDetailRepository.fetchPostDetail()
+        } catch {
+            print("[PostDetail] 로드 실패: \(error)")
+        }
     }
 
     // 게스트는 로그인 계정이 없어서 서버에 프로필 사진을 물어볼 수 없다 — 그 경우
@@ -92,7 +96,11 @@ class PostDetailViewModel {
     }
 
     func loadComments() async {
-        comments = (try? await commentRepository.fetchComments()) ?? []
+        do {
+            comments = try await commentRepository.fetchComments()
+        } catch {
+            print("[Comment] 목록 로드 실패: \(error)")
+        }
     }
 
     func submitComment() async {
@@ -111,6 +119,7 @@ class PostDetailViewModel {
             commentInput = ""
         } catch {
             // TODO: 실패 시 사용자 안내(토스트 등) 필요 — 지금은 입력값을 유지만 한다.
+            print("[Comment] 작성/수정 실패: \(error)")
         }
     }
 

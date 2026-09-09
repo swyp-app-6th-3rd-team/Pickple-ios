@@ -32,6 +32,10 @@ class CommunityViewModel {
     }
 
     func loadPosts() async {
-        posts = (try? await communityRepository.fetchPosts()) ?? []
+        do {
+            posts = try await communityRepository.fetchPosts()
+        } catch {
+            print("[Community] 게시글 로드 실패: \(error)")
+        }
     }
 }
