@@ -103,9 +103,8 @@ struct PostDetailVoteButtons: View {
     }
 
     // 라벨이 자기 세그먼트를 넘어 반대쪽 배경 위에 걸치면, 걸친 부분만큼은 실제로 그
-    // 아래 깔린 배경(반대쪽)에 맞는 색이어야 한다. 그래서 같은 텍스트를 두 벌 겹쳐
-    // 그리고, 경계 지점을 기준으로 각각 반쪽만 보이게 마스킹해서 글자 일부만 색이
-    // 바뀌는 것처럼 보이게 한다.
+    // 아래 깔린 배경(반대쪽)에 맞는 색이어야 한다. 경계 지점에 하드 스톱 그러데이션을
+    // 줘서 그 지점 기준으로 글자 색이 뚝 끊기게 한다.
     private func splitLabel(
         _ text: String,
         measuredWidth: CGFloat,
@@ -135,22 +134,25 @@ struct PostDetailVoteButtons: View {
         let clamped = max(0, min(crossPoint, measuredWidth))
         let leadingColor = anchor == .leading ? ownColor : otherColor
         let trailingColor = anchor == .leading ? otherColor : ownColor
+        let fraction = measuredWidth > 0 ? clamped / measuredWidth : 0
 
-        return ZStack(alignment: .leading) {
-            Text(text)
-                .pickpleTypography(.body01)
-                .foregroundStyle(leadingColor)
-                .mask(alignment: .leading) {
-                    Rectangle().frame(width: clamped)
-                }
-
-            Text(text)
-                .pickpleTypography(.body01)
-                .foregroundStyle(trailingColor)
-                .mask(alignment: .trailing) {
-                    Rectangle().frame(width: measuredWidth - clamped)
-                }
-        }
+        // 텍스트를 두 벌 겹쳐 각각 마스킹하는 대신, 경계 지점에 같은 색 스톱을 두 번
+        // 넣어(하드 스톱) 그러데이션이 아니라 그 지점에서 뚝 끊기게 만든다 — Text 하나로
+        // 끝나고, .mask()를 안 써서 이전에 겪었던 마스킹 관련 렌더링 문제도 피한다.
+        return Text(text)
+            .pickpleTypography(.body01)
+            .foregroundStyle(
+                LinearGradient(
+                    stops: [
+                        .init(color: leadingColor, location: fraction),
+                        .init(color: leadingColor, location: fraction),
+                        .init(color: trailingColor, location: fraction),
+                        .init(color: trailingColor, location: 1)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
     }
 
     private var profileIcon: some View {
