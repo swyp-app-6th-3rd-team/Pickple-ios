@@ -35,6 +35,7 @@ struct BadgeMissionStreakTracker: View {
                 }
             }
         }
+        .animation(.easeInOut(duration: 0.35), value: current)
     }
 
     // 완료 구간(파랑) → 오늘 구간(그라데이션) → 이후 구간(트랙 배경) 순으로 이어지는 연결선.
@@ -77,6 +78,7 @@ struct BadgeMissionStreakTracker: View {
         return Image(imageName)
             .resizable()
             .frame(width: 24, height: 24)
+            .contentTransition(.opacity)
     }
 }
 

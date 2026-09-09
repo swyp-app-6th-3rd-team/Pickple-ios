@@ -10,6 +10,7 @@ import SwiftUI
 struct CardStackView: View {
     let cardStackViewModel: CardStackViewModel
     let onTapCard: (VoteCard) -> Void
+    var onVoteCompleted: () -> Void = {}
     @State private var dragOffset: CGSize = .zero
 
     private let swipeThreshold: CGFloat = 120
@@ -21,7 +22,12 @@ struct CardStackView: View {
             ForEach(Array(cardStackViewModel.voteCardData.enumerated()), id: \.element.id) { index, data in
                 CardView(
                     data: data,
-                    onVote: { side in Task { await cardStackViewModel.vote(cardID: data.id, side: side) } },
+                    onVote: { side in
+                        Task {
+                            await cardStackViewModel.vote(cardID: data.id, side: side)
+                            onVoteCompleted()
+                        }
+                    },
                     onTapBody: { onTapCard(data) }
                 )
                     .zIndex(Double(-index))

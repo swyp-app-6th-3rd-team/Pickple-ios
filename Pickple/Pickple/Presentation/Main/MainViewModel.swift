@@ -61,4 +61,12 @@ class MainViewModel {
         hotPosts = Array((await popularPostsResult ?? []).prefix(10))
         topRankings = await rankingsResult ?? []
     }
+
+    // 투표 직후 미션 진행도만 다시 불러온다 — 명세서 "투표 시 미션 2의 상태바가
+    // 즉시 변경됨" 요건. hotPosts/topRankings까지 같이 다시 부르는 loadHomeData()를
+    // 매 투표마다 부르면 불필요한 네트워크 호출이 늘어서 이 부분만 따로 뺐다.
+    @MainActor
+    func reloadMissions() async {
+        missions = (try? await badgeMissionRepository.fetchInProgressMissions()) ?? []
+    }
 }

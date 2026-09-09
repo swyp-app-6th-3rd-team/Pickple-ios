@@ -47,9 +47,15 @@ struct MainView: View {
 
                     VStack(spacing: 50) {
                         VStack(spacing: 30) {
-                            CardStackView(cardStackViewModel: cardStackViewModel, onTapCard: { card in
-                                mainRouter.push(.postDetail(postId: card.id, type: card.type))
-                            })
+                            CardStackView(
+                                cardStackViewModel: cardStackViewModel,
+                                onTapCard: { card in
+                                    mainRouter.push(.postDetail(postId: card.id, type: card.type))
+                                },
+                                onVoteCompleted: {
+                                    Task { await mainViewModel.reloadMissions() }
+                                }
+                            )
                             .padding(.top, 30)
                             
                             BadgeMissionSection(
