@@ -50,6 +50,7 @@ struct PostDetailVoteButtons: View {
                         isVoted: isVoted,
                         isSelected: votedSide == .first,
                         corner: .leading,
+                        isFullWidth: firstPercentage >= 100,
                         action: { onVote(.first) }
                     )
                     .frame(width: firstWidth)
@@ -59,6 +60,7 @@ struct PostDetailVoteButtons: View {
                         isVoted: isVoted,
                         isSelected: votedSide == .second,
                         corner: .trailing,
+                        isFullWidth: secondPercentage >= 100,
                         action: { onVote(.second) }
                     )
                     .frame(width: secondWidth)
@@ -176,6 +178,9 @@ private struct PostDetailVoteSegment: View {
     let isVoted: Bool
     let isSelected: Bool
     let corner: PostDetailVoteSegmentCorner
+    // 반대쪽이 0%라 이 세그먼트 혼자 바 전체를 차지할 때 — 원래 "서로 맞닿는 안쪽 모서리"였던
+    // 게 이제는 바의 진짜 바깥쪽 끝이라, 각지게 두면 안 되고 둥글게 처리해야 한다.
+    let isFullWidth: Bool
     let action: () -> Void
 
     var body: some View {
@@ -207,7 +212,7 @@ private struct PostDetailVoteSegment: View {
     // 투표 전엔 두 버튼이 각자 독립된 알약 모양이고, 투표 후엔 하나의 바로 합쳐지므로
     // 서로 맞닿는 안쪽 모서리는 각지게, 바깥쪽 모서리만 둥글게 그린다.
     private var shape: UnevenRoundedRectangle {
-        guard isVoted else {
+        guard isVoted, !isFullWidth else {
             return UnevenRoundedRectangle(topLeadingRadius: 8, bottomLeadingRadius: 8, bottomTrailingRadius: 8, topTrailingRadius: 8)
         }
         switch corner {
