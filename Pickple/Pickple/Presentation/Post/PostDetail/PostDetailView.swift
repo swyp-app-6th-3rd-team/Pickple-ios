@@ -34,10 +34,11 @@ struct PostDetailView: View {
     init(
         voteType: VoteType = .text,
         commentRepository: CommentRepository = MockCommentRepository(),
-        showsSuccessToastOnAppear: Bool = false
+        showsSuccessToastOnAppear: Bool = false,
+        guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
     ) {
         self.showsSuccessToastOnAppear = showsSuccessToastOnAppear
-        _postDetailViewModel = State(initialValue: PostDetailViewModel(voteType: voteType, commentRepository: commentRepository))
+        _postDetailViewModel = State(initialValue: PostDetailViewModel(voteType: voteType, commentRepository: commentRepository, guestVoteTracker: guestVoteTracker))
     }
     
     var body: some View {
@@ -58,9 +59,7 @@ struct PostDetailView: View {
                             postDetailViewModel: postDetailViewModel,
                             onMoreTapped: { showsMoreMenu = true },
                             onVote: { side in
-                                if postDetailViewModel.isLoggedIn {
-                                    postDetailViewModel.vote(side)
-                                } else {
+                                if postDetailViewModel.vote(side) {
                                     loginRequiredDescription = PostDetailStrings.voteRequiredDescription
                                 }
                             },

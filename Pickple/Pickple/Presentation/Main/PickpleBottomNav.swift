@@ -21,6 +21,7 @@ import SwiftUI
 struct PickpleBottomNav: View {
     @Environment(\.apiClient) private var apiClient
     @Environment(\.isLoggedIn) private var isLoggedIn
+    @Environment(GuestVoteTracker.self) private var guestVoteTracker
     @State private var selectedTab = 0
     @State private var mainRouter = MainRouter()
     @State private var communityRouter = CommunityRouter()
@@ -41,13 +42,13 @@ struct PickpleBottomNav: View {
                         pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient),
                         isLoggedIn: isLoggedIn
                     ),
-                    cardStackViewModel: CardStackViewModel(voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient), isLoggedIn: isLoggedIn),
+                    cardStackViewModel: CardStackViewModel(voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient), isLoggedIn: isLoggedIn, guestVoteTracker: guestVoteTracker),
                     onRequestCommunityTab: { selectedTab = 1 }
                 )
                     .navigationDestination(for: MainRoute.self) { route in
                         switch route {
                         case .postDetail(let postId, let type):
-                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId))
+                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), guestVoteTracker: guestVoteTracker)
                         case .ranking:
                             MainRankingView(mainRankingViewModel: MainRankingViewModel(pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient), isLoggedIn: isLoggedIn))
                         }
@@ -62,7 +63,7 @@ struct PickpleBottomNav: View {
                     .navigationDestination(for: CommunityRoute.self) { route in
                         switch route {
                         case .postDetail(let postId, let type):
-                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId))
+                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), guestVoteTracker: guestVoteTracker)
                         case .search:
                             CommunitySearchView(communitySearchViewModel: CommunitySearchViewModel(communityRepository: RemoteCommunityRepository(apiClient: apiClient)))
                         }
@@ -87,7 +88,7 @@ struct PickpleBottomNav: View {
                         case .activity:
                             MyActivityView(myActivityViewModel: MyActivityViewModel(userPostRepository: RemoteUserPostRepository(apiClient: apiClient)))
                         case .postDetail(let postId, let type):
-                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId))
+                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), guestVoteTracker: guestVoteTracker)
                         }
                     }
             }

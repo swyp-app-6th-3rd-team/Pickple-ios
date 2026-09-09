@@ -23,6 +23,9 @@ class PostDetailViewModel {
     var editingCommentID: Int?
 
     var isLoggedIn: Bool
+    // 게스트 무료 투표 3회는 홈 카드스택과 공유된다(기능명세서 2.2·6.3 동일 문구) — 화면마다
+    // 따로 세지 않도록 앱 전체에서 하나만 만들어 공유하는 GuestVoteTracker를 주입받는다.
+    private let guestVoteTracker: GuestVoteTracker
 
     static let sortOptions = ["최신순", "오래된 순"]
     // TODO: 실제 투표 결과 API 연동 필요 — 지금은 고정된 Mock 비율
@@ -65,11 +68,13 @@ class PostDetailViewModel {
         voteType: VoteType,
         postDetailRepository: PostDetailRepository? = nil,
         commentRepository: CommentRepository = MockCommentRepository(),
-        isLoggedIn: Bool = true
+        isLoggedIn: Bool = true,
+        guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
     ) {
         self.postDetailRepository = postDetailRepository ?? MockPostDetailRepository(type: voteType)
         self.commentRepository = commentRepository
         self.isLoggedIn = isLoggedIn
+        self.guestVoteTracker = guestVoteTracker
     }
 
     func loadPostDetail() async {
@@ -118,9 +123,16 @@ class PostDetailViewModel {
     }
 
     // TODO: 실제 투표 API 연동 필요 — 지금은 로컬 상태만 변경
-    func vote(_ side: PostDetailVoteSide) {
-        guard votedSide == nil else { return }
+    // 게스트는 홈 카드스택과 공유하는 무료 투표 3회까지만 허용한다(기능명세서 6.3).
+    // 반환값 true = 로그인 유도 모달을 띄워야 함(게스트 한도 초과). false = 투표 적용됐거나 이미 투표한 상태.
+    @discardableResult
+    func vote(_ side: PostDetailVoteSide) -> Bool {
+        guard votedSide == nil else { return false }
+        if !isLoggedIn {
+            guard guestVoteTracker.registerVote() else { return true }
+        }
         votedSide = side
+        return false
     }
 
     func pickComment(_ commentID: Int) async {

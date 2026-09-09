@@ -10,17 +10,26 @@ import SwiftUI
 struct MyPagePointsView: View {
     let myPageViewModel: MyPageViewModel
 
-    private var currentPoints: Int? {
-        myPageViewModel.userInfo?.points
+    // 게스트는 포인트/등급을 조회할 계정이 없어서 명세대로 가장 첫 등급(LV.1), 0P/0%로 고정한다.
+    private var points: Int {
+        myPageViewModel.isLoggedIn ? (myPageViewModel.userInfo?.points ?? 0) : 0
+    }
+
+    private var level: Int {
+        myPageViewModel.isLoggedIn ? (myPageViewModel.userInfo?.level ?? 1) : 1
+    }
+
+    private var pointsToNextLevel: Int {
+        myPageViewModel.isLoggedIn ? (myPageViewModel.userInfo?.pointsToNextLevel ?? 0) : 0
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            MyPagePointsHeaderRow(points: myPageViewModel.userInfo?.points)
+            MyPagePointsHeaderRow(points: points)
             MyPagePointsLevelFooter(
-                level: myPageViewModel.userInfo?.level,
-                pointsToNextLevel: myPageViewModel.userInfo?.pointsToNextLevel,
-                currentPoints: currentPoints
+                level: level,
+                pointsToNextLevel: pointsToNextLevel,
+                currentPoints: points
             )
         }
         .frame(width: 353) //Fixed
