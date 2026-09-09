@@ -77,37 +77,32 @@ struct RemoteUserPostRepository: UserPostRepository {
         return response.content.map(Self.toDomain)
     }
 
+    // "내가 올린/투표한/작성한 글" 목록이라 서버가 작성자 정보를 따로 안 준다(항상 본인 글이라
+    // 자명해서, API_SPEC 기준) — authorNickname/authorLevel은 nil로 두고, 화면 쪽에서 작성자
+    // 정보를 아예 표시하지 않는다.
     private static func toDomain(_ dto: ActivityItemDTO) -> PostSummary {
-        PostSummary(
+        .fromServerFields(
             id: dto.id,
-            type: VoteType(serverType: dto.type),
-            category: PostCategoryLabel.label(for: dto.category),
+            type: dto.type,
+            category: dto.category,
             title: dto.title,
-            description: dto.description ?? "",
-            thumbnailUrl: dto.thumbnailUrl.flatMap(URL.init(string:)),
-            // "내가 올린 글" 목록이라 서버가 작성자 정보를 따로 안 준다(본인이 자명해서) —
-            // 실제 내 닉네임/레벨로 채우려면 별도로 내 프로필을 조회해서 합쳐야 한다. 이번 범위 밖.
-            authorNickname: "나",
-            authorLevel: 1,
-            authorProfileImageUrl: nil,
-            voteCount: dto.voteCount ?? 0,
+            description: dto.description,
+            thumbnailUrl: dto.thumbnailUrl,
+            voteCount: dto.voteCount,
             commentCount: dto.commentCount,
             createdAt: dto.createdAt
         )
     }
 
     private static func toDomain(_ dto: ActivityListItemDTO) -> PostSummary {
-        PostSummary(
+        .fromServerFields(
             id: dto.id,
-            type: VoteType(serverType: dto.type),
-            category: PostCategoryLabel.label(for: dto.category),
+            type: dto.type,
+            category: dto.category,
             title: dto.title,
-            description: dto.description ?? "",
-            thumbnailUrl: dto.thumbnailUrl.flatMap(URL.init(string:)),
-            authorNickname: "나",
-            authorLevel: 1,
-            authorProfileImageUrl: nil,
-            voteCount: dto.voteCount ?? 0,
+            description: dto.description,
+            thumbnailUrl: dto.thumbnailUrl,
+            voteCount: dto.voteCount,
             commentCount: dto.commentCount,
             createdAt: dto.activityAt ?? dto.createdAt
         )
