@@ -110,7 +110,8 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
 
     // 서버 응답의 날짜 형식이 밀리초 유무·타임존 유무로 섞여 있어서(예: 스프링 부트가 흔히
     // 쓰는 타임존 없는 LocalDateTime 직렬화 "yyyy-MM-ddTHH:mm:ss"), 여러 형식을 순서대로
-    // 시도한다. 타임존이 없는 형식은 UTC로 간주한다.
+    // 시도한다. 타임존이 없는 형식은 UTC가 아니라 KST(Asia/Seoul)로 간주한다 — 한국 서비스라
+    // 서버 로컬 시간이 KST일 가능성이 높고, UTC로 잘못 간주하면 표시 시각이 9시간 밀린다.
     private static let iso8601WithFractional: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -126,7 +127,7 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
     private static let noTimezoneWithFractional: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone(identifier: "UTC")
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
         return formatter
     }()
@@ -134,7 +135,7 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
     private static let noTimezonePlain: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone(identifier: "UTC")
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         return formatter
     }()
