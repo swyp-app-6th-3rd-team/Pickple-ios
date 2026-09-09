@@ -40,7 +40,7 @@ struct MyActivityView: View {
             switch selectedIndexTwo {
             case 0:
                 MyActivityListView(items: myActivityViewModel.sorted(myActivityViewModel.votedPosts, by: selectedValue)) { post in
-                    MyActivityCompactPostCardView(post: post)
+                    MyActivityVotedPostCardView(post: post)
                 }
                 .task { await myActivityViewModel.loadVotedPosts() }
 
@@ -51,7 +51,7 @@ struct MyActivityView: View {
                 .task { await myActivityViewModel.loadCommentedPosts() }
             case 2:
                 MyActivityListView(items: myActivityViewModel.sorted(myActivityViewModel.writtenPosts, by: selectedValue)) { post in
-                    MyActivityCompactPostCardView(post: post)
+                    MyActivityWrittenPostCardView(post: post)
                 }
                 .task { await myActivityViewModel.loadWrittenPosts() }
             default:
