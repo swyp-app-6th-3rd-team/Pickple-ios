@@ -74,7 +74,10 @@ private struct ComparisonPhotoSlot: View {
             }
         }
         .sheet(isPresented: $showsPicker) {
-            CustomPhotoPickerView(onSelect: { image in photos = [image] })
+            CustomPhotoPickerView(onSelect: { images in
+                guard let image = images.first else { return }
+                photos = [image]
+            })
         }
     }
 }
