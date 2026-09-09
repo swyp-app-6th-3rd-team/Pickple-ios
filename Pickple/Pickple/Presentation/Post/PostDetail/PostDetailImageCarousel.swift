@@ -10,19 +10,21 @@ import SwiftUI
 
 // 찬반/A-B 게시글 상세 상단의 사진 캐러셀. 뒤로가기·실시간 참여 인원·페이지 표시를 겹쳐서 보여준다.
 struct PostDetailImageCarousel: View {
-    let images: [String]
+    let images: [URL]
     let participantCount: Int
     @Binding var currentIndex: Int
 
     var body: some View {
         ZStack(alignment: .bottom) {
             TabView(selection: $currentIndex) {
-                ForEach(Array(images.enumerated()), id: \.offset) { index, imageName in
-                    Image(imageName)
-                        .resizable()
-                        .scaledToFill()
-                        .tag(index)
-                        .clipped()
+                ForEach(Array(images.enumerated()), id: \.offset) { index, imageUrl in
+                    AsyncImage(url: imageUrl) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        Image("MockAgainstPicture").resizable().scaledToFill()
+                    }
+                    .tag(index)
+                    .clipped()
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
@@ -70,7 +72,7 @@ struct PostDetailImageCarousel: View {
 
 #Preview {
     PostDetailImageCarousel(
-        images: ["McokMyPostPicture", "McokMyPostPicture"],
+        images: [],
         participantCount: 3,
         currentIndex: .constant(0)
     )

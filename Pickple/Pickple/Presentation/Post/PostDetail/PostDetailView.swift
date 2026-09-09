@@ -33,13 +33,22 @@ struct PostDetailView: View {
     
     init(
         voteType: VoteType = .text,
+        postDetailRepository: PostDetailRepository? = nil,
         commentRepository: CommentRepository = MockCommentRepository(),
         userInfoRepository: UserInfoRepository = MockUserInfoRepository(),
+        voteCardRepository: VoteCardRepository = MockVoteCardRepository(),
         showsSuccessToastOnAppear: Bool = false,
         guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
     ) {
         self.showsSuccessToastOnAppear = showsSuccessToastOnAppear
-        _postDetailViewModel = State(initialValue: PostDetailViewModel(voteType: voteType, commentRepository: commentRepository, userInfoRepository: userInfoRepository, guestVoteTracker: guestVoteTracker))
+        _postDetailViewModel = State(initialValue: PostDetailViewModel(
+            voteType: voteType,
+            postDetailRepository: postDetailRepository,
+            commentRepository: commentRepository,
+            userInfoRepository: userInfoRepository,
+            voteCardRepository: voteCardRepository,
+            guestVoteTracker: guestVoteTracker
+        ))
     }
     
     var body: some View {
@@ -60,8 +69,10 @@ struct PostDetailView: View {
                             postDetailViewModel: postDetailViewModel,
                             onMoreTapped: { showsMoreMenu = true },
                             onVote: { side in
-                                if postDetailViewModel.vote(side) {
-                                    loginRequiredDescription = PostDetailStrings.voteRequiredDescription
+                                Task {
+                                    if await postDetailViewModel.vote(side) {
+                                        loginRequiredDescription = PostDetailStrings.voteRequiredDescription
+                                    }
                                 }
                             },
                             onPickTapped: { comment in

@@ -42,13 +42,20 @@ struct PickpleBottomNav: View {
                         pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient),
                         isLoggedIn: isLoggedIn
                     ),
-                    cardStackViewModel: CardStackViewModel(voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient), isLoggedIn: isLoggedIn, guestVoteTracker: guestVoteTracker),
+                    cardStackViewModel: CardStackViewModel(voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), isLoggedIn: isLoggedIn, guestVoteTracker: guestVoteTracker),
                     onRequestCommunityTab: { selectedTab = 1 }
                 )
                     .navigationDestination(for: MainRoute.self) { route in
                         switch route {
                         case .postDetail(let postId, let type):
-                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), guestVoteTracker: guestVoteTracker)
+                            PostDetailView(
+                                voteType: type,
+                                postDetailRepository: RemotePostDetailRepository(apiClient: apiClient, postId: postId),
+                                commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
+                                userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
+                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
+                                guestVoteTracker: guestVoteTracker
+                            )
                         case .ranking:
                             MainRankingView(mainRankingViewModel: MainRankingViewModel(pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient), isLoggedIn: isLoggedIn))
                         }
@@ -63,7 +70,14 @@ struct PickpleBottomNav: View {
                     .navigationDestination(for: CommunityRoute.self) { route in
                         switch route {
                         case .postDetail(let postId, let type):
-                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), guestVoteTracker: guestVoteTracker)
+                            PostDetailView(
+                                voteType: type,
+                                postDetailRepository: RemotePostDetailRepository(apiClient: apiClient, postId: postId),
+                                commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
+                                userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
+                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
+                                guestVoteTracker: guestVoteTracker
+                            )
                         case .search:
                             CommunitySearchView(communitySearchViewModel: CommunitySearchViewModel(communityRepository: RemoteCommunityRepository(apiClient: apiClient)))
                         }
@@ -88,7 +102,14 @@ struct PickpleBottomNav: View {
                         case .activity:
                             MyActivityView(myActivityViewModel: MyActivityViewModel(userPostRepository: RemoteUserPostRepository(apiClient: apiClient)))
                         case .postDetail(let postId, let type):
-                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), guestVoteTracker: guestVoteTracker)
+                            PostDetailView(
+                                voteType: type,
+                                postDetailRepository: RemotePostDetailRepository(apiClient: apiClient, postId: postId),
+                                commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
+                                userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
+                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
+                                guestVoteTracker: guestVoteTracker
+                            )
                         }
                     }
             }

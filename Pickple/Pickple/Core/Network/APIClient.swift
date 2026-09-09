@@ -79,6 +79,8 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
                 throw APIError.unauthorized
             }
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else if endpoint.attachesAuthIfAvailable, let token = await tokenProvider.accessToken() {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
         let data: Data

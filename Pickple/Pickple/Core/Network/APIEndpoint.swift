@@ -23,6 +23,9 @@ struct APIEndpoint: Sendable {
     // multipart/form-data 업로드(POST /images)에서만 쓴다. body와는 배타적 — 둘 다 있으면 multipartFiles가 우선한다.
     var multipartFiles: [MultipartFile]? = nil
     var requiresAuth: Bool = false
+    // 인증 없이도 호출 가능하지만(게스트 허용), 로그인 상태면 토큰을 실어서 서버가 개인화된
+    // 데이터(예: 내 투표 여부)를 내려주게 한다. requiresAuth와 달리 토큰이 없어도 실패하지 않는다.
+    var attachesAuthIfAvailable: Bool = false
 }
 
 // multipart/form-data 파트 하나(이미지 파일 하나).

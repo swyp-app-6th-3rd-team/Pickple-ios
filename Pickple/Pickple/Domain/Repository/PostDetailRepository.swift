@@ -6,6 +6,5 @@
 //
 
 protocol PostDetailRepository {
-    //실제 API와 연동
-    func fetchPostDetail() async -> PostDetail
+    func fetchPostDetail() async throws -> PostDetail
 }

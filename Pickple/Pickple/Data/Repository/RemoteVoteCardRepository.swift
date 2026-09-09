@@ -70,7 +70,7 @@ struct RemoteVoteCardRepository: VoteCardRepository {
             method: .get,
             path: "/posts/random",
             queryItems: [URLQueryItem(name: "type", value: type.serverTypeValue)],
-            requiresAuth: false
+            attachesAuthIfAvailable: true
         )
         let response: PostRandomResponseDTO = try await apiClient.request(endpoint)
         return response.content.map(Self.toDomain)
