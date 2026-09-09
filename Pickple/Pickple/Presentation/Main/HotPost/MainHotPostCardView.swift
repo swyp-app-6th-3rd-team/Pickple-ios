@@ -37,7 +37,7 @@ struct MainHotPostCardView: View {
                 .lineLimit(1)
 
             HStack(spacing: 8) {
-                PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount, iconSize: 12, iconTextSpacing: 2, groupSpacing: 8)
+                PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount)
 
                 Text(post.createdAt.relativeTimeDescription)
             }

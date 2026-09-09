@@ -12,23 +12,19 @@ import SwiftUI
 struct PostVoteCommentStats: View {
     let voteCount: Int
     let commentCount: Int
-    var iconSize: CGFloat = 16
-    var iconTextSpacing: CGFloat = 4
-    var groupSpacing: CGFloat = 12
 
     var body: some View {
-        HStack(spacing: groupSpacing) {
-            HStack(spacing: iconTextSpacing) {
+        HStack(spacing: 12) {
+            HStack(spacing: 4) {
                 Image("PickpleVote")
                     .resizable()
-                    .frame(width: iconSize, height: iconSize)
+                    .frame(width: 16, height: 16)
                 Text("\(voteCount)")
             }
-
-            HStack(spacing: iconTextSpacing) {
+            HStack(spacing: 4) {
                 Image("PickpleComment")
                     .resizable()
-                    .frame(width: iconSize, height: iconSize)
+                    .frame(width: 16, height: 16)
                 Text("\(commentCount)")
             }
         }

@@ -34,9 +34,10 @@ struct MyActivityCommentActivityRow: View {
                     AsyncImage(url: thumbnailUrl) { image in
                         image.resizable().scaledToFill()
                     } placeholder: {
-                        Image("McokMyPostPicture").resizable().scaledToFill()
+                        Image("McokMyPostPicture")
+                            .resizable().scaledToFill()
                     }
-                    .frame(width: 56, height: 56)
+                    .frame(width: 72, height: 72)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .clipped()
                 }
