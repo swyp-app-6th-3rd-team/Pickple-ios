@@ -22,14 +22,26 @@ struct PostDetailVoteButtons: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let firstWidth = segmentWidth(totalWidth: proxy.size.width, percentage: firstPercentage)
-            let secondWidth = segmentWidth(totalWidth: proxy.size.width, percentage: secondPercentage)
+            let totalWidth = proxy.size.width
+            let firstWidth = segmentWidth(totalWidth: totalWidth, percentage: firstPercentage)
+            let secondWidth = segmentWidth(totalWidth: totalWidth, percentage: secondPercentage)
             // 라벨이 자기 세그먼트 폭을 넘어 반대쪽 배경 위에 걸치는지는 실제 텍스트 폭을
             // 알아야 판단할 수 있다. GeometryReader로 렌더링 결과를 측정해 @State에
             // 반영하는 방식은 SwiftUI 렌더링 타이밍에 따라 결과가 들쭉날쭉했어서,
             // 렌더링 결과를 기다리지 않고 같은 폰트로 미리 동기적으로 계산한다.
             let firstTextWidth = Self.textWidth("\(firstLabel) \(firstPercentage)%")
             let secondTextWidth = Self.textWidth("\(secondLabel) \(secondPercentage)%")
+
+            // 두 라벨이 같은 경계선(boundaryX) 하나를 공유한다 — 그 왼쪽은 1번 세그먼트
+            // 색, 오른쪽은 2번 세그먼트 색이다. 라벨이 어느 벽에 붙어있든 이 기준 하나로
+            // 계산하면 라벨별로 "내 색/반대 색"을 따로 뒤집어 챙길 필요가 없다.
+            let boundaryX = firstWidth
+            let firstColor: Color = votedSide == .first ? .white : .neutral70
+            let secondColor: Color = votedSide == .second ? .white : .neutral70
+            // 라벨은 벽에서 12pt 떨어진 지점에서 시작하지만, 선택된 쪽(아이콘이 붙는 쪽)은
+            // 아이콘(28)+간격(4)만큼 더 안쪽에서 시작한다.
+            let firstLabelStartX: CGFloat = votedSide == .first ? 44 : 12
+            let secondLabelStartX = totalWidth - (votedSide == .second ? 44 : 12) - secondTextWidth
 
             ZStack {
                 HStack(spacing: isVoted ? 0 : 8) {
@@ -63,9 +75,10 @@ struct PostDetailVoteButtons: View {
                         splitLabel(
                             "\(firstLabel) \(firstPercentage)%",
                             measuredWidth: firstTextWidth,
-                            ownSegmentWidth: firstWidth,
-                            isOwnSelected: votedSide == .first,
-                            anchor: .leading
+                            labelStartX: firstLabelStartX,
+                            boundaryX: boundaryX,
+                            beforeColor: firstColor,
+                            afterColor: secondColor
                         )
                         Spacer(minLength: 0)
                     }
@@ -76,9 +89,10 @@ struct PostDetailVoteButtons: View {
                         splitLabel(
                             "\(secondLabel) \(secondPercentage)%",
                             measuredWidth: secondTextWidth,
-                            ownSegmentWidth: secondWidth,
-                            isOwnSelected: votedSide == .second,
-                            anchor: .trailing
+                            labelStartX: secondLabelStartX,
+                            boundaryX: boundaryX,
+                            beforeColor: firstColor,
+                            afterColor: secondColor
                         )
                         if votedSide == .second { profileIcon }
                     }
@@ -102,52 +116,29 @@ struct PostDetailVoteButtons: View {
         return ceil((text as NSString).size(withAttributes: attributes).width)
     }
 
-    // 라벨이 자기 세그먼트를 넘어 반대쪽 배경 위에 걸치면, 걸친 부분만큼은 실제로 그
-    // 아래 깔린 배경(반대쪽)에 맞는 색이어야 한다. 경계 지점에 하드 스톱 그러데이션을
-    // 줘서 그 지점 기준으로 글자 색이 뚝 끊기게 한다.
+    // 라벨이 boundaryX를 넘어가면, 넘어간 부분은 그 자리에 실제로 깔린 반대쪽 배경에
+    // 맞는 색이어야 한다. 경계 지점에 하드 스톱 그러데이션을 줘서 그 지점 기준으로
+    // 글자 색이 뚝 끊기게 한다 — beforeColor/afterColor는 두 라벨이 공유하는 값이라
+    // 라벨마다 "내 색/반대 색"을 따로 뒤집을 필요가 없다.
     private func splitLabel(
         _ text: String,
         measuredWidth: CGFloat,
-        ownSegmentWidth: CGFloat,
-        isOwnSelected: Bool,
-        anchor: PostDetailVoteSegmentCorner
+        labelStartX: CGFloat,
+        boundaryX: CGFloat,
+        beforeColor: Color,
+        afterColor: Color
     ) -> some View {
-        let ownColor: Color = isOwnSelected ? .white : .neutral70
-        let otherColor: Color = isOwnSelected ? .neutral70 : .white
+        let fraction = measuredWidth > 0 ? min(max((boundaryX - labelStartX) / measuredWidth, 0), 1) : 0
 
-        // 라벨은 벽에서 12pt 떨어진 지점에서 시작하지만, 선택된 쪽(아이콘이 붙는 쪽)은
-        // 아이콘(28)+간격(4)만큼 더 안쪽에서 시작한다. 이 간격을 빼먹으면 선택된
-        // 세그먼트가 좁을 때 실제로는 경계를 넘은 부분을 안 넘은 것으로 잘못 계산한다.
-        let edgeInset: CGFloat = isOwnSelected ? (12 + 28 + 4) : 12
-
-        // 라벨 로컬 좌표(왼쪽=0)에서, 자기 세그먼트 배경이 끝나고 반대쪽 배경으로
-        // 넘어가는 지점. .leading 쪽(왼쪽 벽에 붙는 라벨)은 자기 세그먼트가 왼쪽에
-        // 있으므로 그대로, .trailing 쪽(오른쪽 벽에 붙는 라벨)은 텍스트가 오른쪽
-        // 끝을 기준으로 왼쪽으로 자라나므로 뒤집어 계산한다.
-        let crossPoint: CGFloat
-        switch anchor {
-        case .leading:
-            crossPoint = ownSegmentWidth - edgeInset
-        case .trailing:
-            crossPoint = measuredWidth - (ownSegmentWidth - edgeInset)
-        }
-        let clamped = max(0, min(crossPoint, measuredWidth))
-        let leadingColor = anchor == .leading ? ownColor : otherColor
-        let trailingColor = anchor == .leading ? otherColor : ownColor
-        let fraction = measuredWidth > 0 ? clamped / measuredWidth : 0
-
-        // 텍스트를 두 벌 겹쳐 각각 마스킹하는 대신, 경계 지점에 같은 색 스톱을 두 번
-        // 넣어(하드 스톱) 그러데이션이 아니라 그 지점에서 뚝 끊기게 만든다 — Text 하나로
-        // 끝나고, .mask()를 안 써서 이전에 겪었던 마스킹 관련 렌더링 문제도 피한다.
         return Text(text)
             .pickpleTypography(.body01)
             .foregroundStyle(
                 LinearGradient(
                     stops: [
-                        .init(color: leadingColor, location: fraction),
-                        .init(color: leadingColor, location: fraction),
-                        .init(color: trailingColor, location: fraction),
-                        .init(color: trailingColor, location: 1)
+                        .init(color: beforeColor, location: fraction),
+                        .init(color: beforeColor, location: fraction),
+                        .init(color: afterColor, location: fraction),
+                        .init(color: afterColor, location: 1)
                     ],
                     startPoint: .leading,
                     endPoint: .trailing
