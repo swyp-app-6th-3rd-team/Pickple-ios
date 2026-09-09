@@ -145,7 +145,12 @@ class PostDetailViewModel {
     }
 
     func deleteComment(_ commentID: Int) async {
-        guard (try? await commentRepository.deleteComment(id: commentID)) != nil else { return }
+        do {
+            try await commentRepository.deleteComment(id: commentID)
+        } catch {
+            print("[Comment] 삭제 실패: \(error)")
+            return
+        }
         comments.removeAll { $0.id == commentID }
         if editingCommentID == commentID {
             cancelEditingComment()
