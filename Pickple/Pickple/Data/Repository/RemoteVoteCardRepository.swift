@@ -97,6 +97,16 @@ struct RemoteVoteCardRepository: VoteCardRepository {
         let firstPercentage = sortedOptions.first?.percentage
         let secondPercentage = sortedOptions.count > 1 ? sortedOptions[1].percentage : nil
 
+        // PostDetailVoteButtons 등 화면은 firstPercentage가 아니라 votedSide로 투표 여부를
+        // 판단하는데, 이 필드를 안 채워서 서버가 이미 투표한 카드를 내려줘도 항상 미투표
+        // 상태로 보였다. selectedOptionId가 몇 번째 옵션인지 찾아 votedSide를 채운다.
+        let votedSide: PostDetailVoteSide? = {
+            guard let selectedOptionId = dto.selectedOptionId else { return nil }
+            if selectedOptionId == sortedOptions.first?.optionId { return .first }
+            if sortedOptions.count > 1 && selectedOptionId == sortedOptions[1].optionId { return .second }
+            return nil
+        }()
+
         return VoteCard(
             id: dto.id,
             type: VoteType(serverType: dto.type),
@@ -108,7 +118,8 @@ struct RemoteVoteCardRepository: VoteCardRepository {
             firstOptionId: sortedOptions.first?.optionId,
             secondOptionId: sortedOptions.count > 1 ? sortedOptions[1].optionId : nil,
             firstPercentage: isVoted ? (firstPercentage ?? 0) : nil,
-            secondPercentage: isVoted ? (secondPercentage ?? 0) : nil
+            secondPercentage: isVoted ? (secondPercentage ?? 0) : nil,
+            votedSide: votedSide
         )
     }
 }
