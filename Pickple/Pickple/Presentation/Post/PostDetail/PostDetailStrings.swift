@@ -38,8 +38,8 @@ enum PostDetailStrings {
     static let priceLabel = "가격"
     static let purchaseLinkLabel = "구매처"
 
-    static let productAFallback = "상품A"
-    static let productBFallback = "상품B"
+    static let productAFallback = "A"
+    static let productBFallback = "B"
     static let voteSideFor = "사자"
     static let voteSideAgainst = "말자"
 }

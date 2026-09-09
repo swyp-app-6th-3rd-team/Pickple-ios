@@ -15,6 +15,7 @@ struct PostDetailVoteButtons: View {
     let votedSide: PostDetailVoteSide?
     let firstPercentage: Int
     let secondPercentage: Int
+    let myProfileImageUrl: URL?
     let onVote: (PostDetailVoteSide) -> Void
 
     private var isVoted: Bool { votedSide != nil }
@@ -26,7 +27,8 @@ struct PostDetailVoteButtons: View {
                     label: firstLabel,
                     percentage: firstPercentage,
                     isVoted: isVoted,
-                    isWinning: firstPercentage >= secondPercentage,
+                    isSelected: votedSide == .first,
+                    myProfileImageUrl: myProfileImageUrl,
                     corner: .leading,
                     action: { onVote(.first) }
                 )
@@ -36,7 +38,8 @@ struct PostDetailVoteButtons: View {
                     label: secondLabel,
                     percentage: secondPercentage,
                     isVoted: isVoted,
-                    isWinning: secondPercentage >= firstPercentage,
+                    isSelected: votedSide == .second,
+                    myProfileImageUrl: myProfileImageUrl,
                     corner: .trailing,
                     action: { onVote(.second) }
                 )
@@ -61,30 +64,69 @@ private struct PostDetailVoteSegment: View {
     let label: String
     let percentage: Int
     let isVoted: Bool
-    let isWinning: Bool
+    let isSelected: Bool
+    let myProfileImageUrl: URL?
     let corner: PostDetailVoteSegmentCorner
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Text(isVoted ? "\(label) \(percentage)%" : label)
-                .pickpleTypography(.body01)
-                .foregroundStyle(textColor)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(backgroundColor)
+            HStack(spacing: 0) {
+                // 투표 후엔 라벨(+내 프로필 사진)을 각 옵션의 바깥쪽 가장자리에 붙인다.
+                if isVoted, corner == .trailing {
+                    Spacer(minLength: 0)
+                }
+
+                labelContent
+                    .padding(.horizontal, isVoted ? 12 : 0)
+
+                if isVoted, corner == .leading {
+                    Spacer(minLength: 0)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(backgroundColor)
         }
         .disabled(isVoted)
         .clipShape(shape)
     }
 
+    private var labelContent: some View {
+        HStack(spacing: 4) {
+            // 내가 고른 쪽에만 내 프로필 사진을 보여줘서 "내가 투표한 결과"임을 표시한다.
+            if isVoted && isSelected {
+                profileIcon
+            }
+
+            Text(isVoted ? "\(label) \(percentage)%" : label)
+                .pickpleTypography(.body01)
+                .foregroundStyle(textColor)
+        }
+    }
+
+    private var profileIcon: some View {
+        AsyncImage(url: myProfileImageUrl) { image in
+            image.resizable().scaledToFill()
+        } placeholder: {
+            ZStack {
+                Color.white
+                Image("PickpleCharacter")
+                    .resizable()
+                    .scaledToFill()
+            }
+        }
+        .frame(width: 28, height: 28)
+        .clipShape(Circle())
+    }
+
     private var textColor: Color {
         guard isVoted else { return Color.neutral70 }
-        return isWinning ? Color.white : Color.neutral70
+        return isSelected ? Color.white : Color.neutral70
     }
 
     private var backgroundColor: Color {
         guard isVoted else { return Color.neutral10 }
-        return isWinning ? Color.neutral100 : Color.neutral10
+        return isSelected ? Color.neutral100 : Color.neutral10
     }
 
     // 투표 전엔 두 버튼이 각자 독립된 알약 모양이고, 투표 후엔 하나의 바로 합쳐지므로
@@ -114,6 +156,7 @@ private struct PostDetailVoteSegment: View {
                     votedSide: votedSide,
                     firstPercentage: 70,
                     secondPercentage: 30,
+                    myProfileImageUrl: nil,
                     onVote: { votedSide = $0 }
                 )
             }
