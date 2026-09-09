@@ -77,13 +77,13 @@ struct CardStackView: View {
                     return
                 }
                 // 넘겼으면 그 방향으로 화면 밖까지 날려보내고,
-                // 애니메이션이 끝난 뒤(completion)에만 실제로 배열에서 제거해서
+                // 애니메이션이 끝난 뒤(completion)에만 실제로 맨 뒤로 옮겨서
                 // 카드가 사라지는 것과 다음 카드가 앞으로 오는 게 자연스럽게 이어지게 함
                 let direction: CGFloat = value.translation.width > 0 ? 1 : -1
                 withAnimation(.easeOut(duration: 0.25)) {
                     dragOffset.width = direction * 600
                 } completion: {
-                    cardStackViewModel.removeTopCard()
+                    cardStackViewModel.moveTopCardToBack()
                     dragOffset = .zero
                 }
             }
