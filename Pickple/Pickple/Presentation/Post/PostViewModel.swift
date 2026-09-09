@@ -60,6 +60,8 @@ class PostViewModel {
     var productB = PostProductDraft()
 
     var submitState: PostSubmitState = .idle
+    // 게시 성공 후 실제 상세 화면으로 이동하기 위한, 서버가 내려준 진짜 글 ID.
+    private(set) var createdPostId: Int?
 
     let topicMaxLength = 30
     let titleMaxLength = 30
@@ -173,7 +175,7 @@ class PostViewModel {
     func submitPost() async {
         submitState = .submitting
         do {
-            _ = try await postWriteRepository.createPost(
+            createdPostId = try await postWriteRepository.createPost(
                 type: selectedType,
                 category: selectedCategory,
                 title: submittedTitle,

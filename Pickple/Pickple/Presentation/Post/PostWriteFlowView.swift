@@ -13,6 +13,7 @@ import SwiftUI
 struct PostWriteFlowView: View {
     let postViewModel: PostViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.apiClient) private var apiClient
 
     @State private var isCategoryExpanded = false
     @State private var showsLeaveConfirm = false
@@ -68,8 +69,16 @@ struct PostWriteFlowView: View {
         .pickpleToast(isPresented: $showsFailureToast, message: PostViewStrings.submitFailedToast)
         .navigationBarBackButtonHidden(true)
         .navigationDestination(isPresented: $navigatesToDetail) {
-            // TODO: 방금 게시한 글을 바로 보여주려면 실제 등록된 게시글 정보 연동 필요 — 지금은 유형에 맞는 Mock 상세로 이동
-            PostDetailView(voteType: postViewModel.selectedType, showsSuccessToastOnAppear: true)
+            if let postId = postViewModel.createdPostId {
+                PostDetailView(
+                    voteType: postViewModel.selectedType,
+                    postDetailRepository: RemotePostDetailRepository(apiClient: apiClient, postId: postId),
+                    commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
+                    userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
+                    voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
+                    showsSuccessToastOnAppear: true
+                )
+            }
         }
     }
 
