@@ -33,7 +33,7 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
         self.tokenProvider = tokenProvider
 
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
+        decoder.dateDecodingStrategy = .custom(Self.decodeFlexibleDate)
         self.decoder = decoder
     }
 
@@ -106,6 +106,57 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
         }
 
         return (data, httpResponse)
+    }
+
+    // 서버 응답의 날짜 형식이 밀리초 유무·타임존 유무로 섞여 있어서(예: 스프링 부트가 흔히
+    // 쓰는 타임존 없는 LocalDateTime 직렬화 "yyyy-MM-ddTHH:mm:ss"), 여러 형식을 순서대로
+    // 시도한다. 타임존이 없는 형식은 UTC로 간주한다.
+    private static let iso8601WithFractional: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+
+    private static let iso8601Plain: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+        return formatter
+    }()
+
+    private static let noTimezoneWithFractional: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "UTC")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
+        return formatter
+    }()
+
+    private static let noTimezonePlain: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "UTC")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return formatter
+    }()
+
+    private static func decodeFlexibleDate(from decoder: Decoder) throws -> Date {
+        let container = try decoder.singleValueContainer()
+        let dateString = try container.decode(String.self)
+
+        if let date = iso8601WithFractional.date(from: dateString) { return date }
+        if let date = iso8601Plain.date(from: dateString) { return date }
+        if let date = noTimezoneWithFractional.date(from: dateString) { return date }
+        if let date = noTimezonePlain.date(from: dateString) { return date }
+        // 소수점 초 자릿수가 위 어느 것과도 안 맞으면, 앞 19자("yyyy-MM-ddTHH:mm:ss")만
+        // 잘라서 마지막으로 시도한다.
+        if dateString.count > 19, let date = noTimezonePlain.date(from: String(dateString.prefix(19))) {
+            return date
+        }
+
+        throw DecodingError.dataCorruptedError(
+            in: container,
+            debugDescription: "Expected date string to be ISO8601-formatted."
+        )
     }
 
     private static func multipartBody(files: [MultipartFile], boundary: String) -> Data {
