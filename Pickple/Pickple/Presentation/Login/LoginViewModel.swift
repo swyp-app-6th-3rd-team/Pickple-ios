@@ -18,6 +18,8 @@ class LoginViewModel {
 
     var isLoading = false
     var errorMessage: String?
+    var onLoginSuccess: () -> Void = {}
+    var onGuestContinue: () -> Void = {}
 
     init(authRepository: AuthRepository, tokenStore: InMemoryTokenStore, refreshTokenStore: RefreshTokenStoring) {
         self.authRepository = authRepository
@@ -25,11 +27,8 @@ class LoginViewModel {
         self.refreshTokenStore = refreshTokenStore
     }
 
-    // 반환값이 성공 여부를 나타내는 유일한 근거다 — errorMessage가 nil인 것만으로는
-    // "성공"과 "사용자가 취소해서 에러를 안 띄운 경우"를 구분할 수 없어서 별도로 필요하다.
     @MainActor
-    @discardableResult
-    func loginWithApple() async -> Bool {
+    func loginWithApple() async {
         isLoading = true
         defer { isLoading = false }
         do {
@@ -41,18 +40,16 @@ class LoginViewModel {
                 name: result.fullName.map { PersonNameComponentsFormatter().string(from: $0) }
             )
             try await SessionTokenPersistence.save(tokens, tokenStore: tokenStore, refreshTokenStore: refreshTokenStore)
-            return true
+            onLoginSuccess()
         } catch let error as ASAuthorizationError where error.code == .canceled {
             // 사용자가 Apple 로그인 시트를 직접 취소한 경우 — 에러가 아니라 정상적인 중단이라 alert을 띄우지 않는다.
-            return false
         } catch {
             errorMessage = error.localizedDescription
-            return false
         }
     }
-    
+
     @MainActor
-    func loginWithKakao() async -> Bool {
+    func loginWithKakao() async {
         isLoading = true
         defer { isLoading = false }
         do {
@@ -62,13 +59,15 @@ class LoginViewModel {
                 rawNonce: result.rawNonce
             )
             try await SessionTokenPersistence.save(tokens, tokenStore: tokenStore, refreshTokenStore: refreshTokenStore)
-            return true
+            onLoginSuccess()
         } catch SdkError.ClientFailed(reason: .Cancelled, errorMessage: _) {
             // 사용자가 카카오 로그인 화면을 직접 취소한 경우 — 에러가 아니라 정상적인 중단이라 alert을 띄우지 않는다.
-            return false
         } catch {
             errorMessage = error.localizedDescription
-            return false
         }
+    }
+
+    func continueAsGuest() {
+        onGuestContinue()
     }
 }

@@ -8,64 +8,40 @@
 import SwiftUI
 
 struct LoginView: View {
-    let viewModel: LoginViewModel
-    var onLoginSuccess: () -> Void = {}
-    var onGuestContinue: () -> Void = {}
+    let loginViewModel: LoginViewModel
 
     var body: some View {
-        VStack(spacing: 40) {
+        VStack {
             Spacer()
 
             //MARK: - Title
-            VStack(spacing: 7) {
+            VStack(spacing: 4) {
                 Image("PickpleLoginLogo")
                     .resizable()
                     .frame(width: 200, height: 45)
 
                 //XMARK: - OnBoardingImage
-                VStack(spacing: 0) {
+                VStack(spacing: 7) {
                     Image("PickpleOnBoardingImage")
                         .resizable()
                         .frame(width: 350, height: 350)
 
                     //MARK: - Login Buttons
                     VStack(spacing: 8) {
-                        LoginButton(provider: .kakao) {
-                            Task {
-                                if await viewModel.loginWithKakao() {
-                                    onLoginSuccess()
-                                }
-                            }
-                        }
-                        LoginButton(provider: .apple) {
-                            Task {
-                                if await viewModel.loginWithApple() {
-                                    onLoginSuccess()
-                                }
-                            }
-                        }
-                        LoginButton(provider: .guest) {
-                            onGuestContinue()
-                        }
+                        LoginButtonSection(loginViewModel: loginViewModel)
                     }
                     .padding(.horizontal, 20)
                 }
             }
-            
-            //XMARK: - Text
-            Text(LoginStrings.termsNotice)
-                .pickpleTypography(.caption)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(Color.neutral30)
-
+            Spacer()
         }
         .alert(LoginStrings.loginFailedTitle, isPresented: Binding(
-            get: { viewModel.errorMessage != nil },
-            set: { isPresented in if !isPresented { viewModel.errorMessage = nil } }
+            get: { loginViewModel.errorMessage != nil },
+            set: { isPresented in if !isPresented { loginViewModel.errorMessage = nil } }
         )) {
             Button(LoginStrings.confirm, role: .cancel) {}
         } message: {
-            Text(viewModel.errorMessage ?? "")
+            Text(loginViewModel.errorMessage ?? "")
         }
     }
 }
@@ -74,10 +50,10 @@ struct LoginView: View {
 #Preview {
     let tokenStore = InMemoryTokenStore()
     let apiClient = APIClient(baseURL: APIEnvironment.devBaseURL, tokenProvider: tokenStore)
-    let viewModel = LoginViewModel(
+    let loginViewModel = LoginViewModel(
         authRepository: RemoteAuthRepository(apiClient: apiClient),
         tokenStore: tokenStore,
         refreshTokenStore: KeychainRefreshTokenStore()
     )
-    LoginView(viewModel: viewModel)
+    LoginView(loginViewModel: loginViewModel)
 }

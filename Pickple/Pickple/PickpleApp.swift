@@ -31,17 +31,23 @@ struct PickpleApp: App {
 
         self.apiClient = apiClient
         self.profileRepository = profileRepository
-        _sessionViewModel = State(initialValue: AppSessionViewModel(
+
+        let sessionViewModel = AppSessionViewModel(
             authRepository: authRepository,
             profileRepository: profileRepository,
             tokenStore: tokenStore,
             refreshTokenStore: refreshTokenStore
-        ))
-        loginViewModel = LoginViewModel(
+        )
+        _sessionViewModel = State(initialValue: sessionViewModel)
+
+        let loginViewModel = LoginViewModel(
             authRepository: authRepository,
             tokenStore: tokenStore,
             refreshTokenStore: refreshTokenStore
         )
+        loginViewModel.onLoginSuccess = { Task { await sessionViewModel.handleLoginSuccess() } }
+        loginViewModel.onGuestContinue = { sessionViewModel.continueAsGuest() }
+        self.loginViewModel = loginViewModel
     }
 
     var body: some Scene {
@@ -72,13 +78,7 @@ struct PickpleApp: App {
                             .environment(guestVoteTracker)
                     case .loggedOut:
                         NavigationStack {
-                            LoginView(
-                                viewModel: loginViewModel,
-                                onLoginSuccess: {
-                                    Task { await sessionViewModel.handleLoginSuccess() }
-                                },
-                                onGuestContinue: { sessionViewModel.continueAsGuest() }
-                            )
+                            LoginView(loginViewModel: loginViewModel)
                         }
                     }
                 }
