@@ -22,6 +22,15 @@ struct PostDetailVoteButtons: View {
 
     var body: some View {
         GeometryReader { proxy in
+            let firstWidth = segmentWidth(totalWidth: proxy.size.width, percentage: firstPercentage)
+            let secondWidth = segmentWidth(totalWidth: proxy.size.width, percentage: secondPercentage)
+            // 라벨이 자기 세그먼트 폭을 넘어 반대쪽 배경 위에 걸치는지는 실제 텍스트 폭을
+            // 알아야 판단할 수 있다. GeometryReader로 렌더링 결과를 측정해 @State에
+            // 반영하는 방식은 SwiftUI 렌더링 타이밍에 따라 결과가 들쭉날쭉했어서,
+            // 렌더링 결과를 기다리지 않고 같은 폰트로 미리 동기적으로 계산한다.
+            let firstTextWidth = Self.textWidth("\(firstLabel) \(firstPercentage)%")
+            let secondTextWidth = Self.textWidth("\(secondLabel) \(secondPercentage)%")
+
             ZStack {
                 HStack(spacing: isVoted ? 0 : 8) {
                     PostDetailVoteSegment(
@@ -31,7 +40,7 @@ struct PostDetailVoteButtons: View {
                         corner: .leading,
                         action: { onVote(.first) }
                     )
-                    .frame(width: segmentWidth(totalWidth: proxy.size.width, percentage: firstPercentage))
+                    .frame(width: firstWidth)
 
                     PostDetailVoteSegment(
                         label: secondLabel,
@@ -40,7 +49,7 @@ struct PostDetailVoteButtons: View {
                         corner: .trailing,
                         action: { onVote(.second) }
                     )
-                    .frame(width: segmentWidth(totalWidth: proxy.size.width, percentage: secondPercentage))
+                    .frame(width: secondWidth)
                 }
 
                 // 양쪽 라벨(선택 쪽은 아이콘까지)을 세그먼트 폭과 무관하게 항상 바 전체의
@@ -51,14 +60,26 @@ struct PostDetailVoteButtons: View {
                 ZStack {
                     HStack(spacing: 4) {
                         if votedSide == .first { profileIcon }
-                        resultLabel(firstLabel, percentage: firstPercentage, isSelected: votedSide == .first)
+                        splitLabel(
+                            "\(firstLabel) \(firstPercentage)%",
+                            measuredWidth: firstTextWidth,
+                            ownSegmentWidth: firstWidth,
+                            isOwnSelected: votedSide == .first,
+                            anchor: .leading
+                        )
                         Spacer(minLength: 0)
                     }
                     .padding(.leading, 12)
 
                     HStack(spacing: 4) {
                         Spacer(minLength: 0)
-                        resultLabel(secondLabel, percentage: secondPercentage, isSelected: votedSide == .second)
+                        splitLabel(
+                            "\(secondLabel) \(secondPercentage)%",
+                            measuredWidth: secondTextWidth,
+                            ownSegmentWidth: secondWidth,
+                            isOwnSelected: votedSide == .second,
+                            anchor: .trailing
+                        )
                         if votedSide == .second { profileIcon }
                     }
                     .padding(.trailing, 12)
@@ -71,10 +92,65 @@ struct PostDetailVoteButtons: View {
         .animation(.easeInOut(duration: 0.35), value: votedSide)
     }
 
-    private func resultLabel(_ label: String, percentage: Int, isSelected: Bool) -> some View {
-        Text("\(label) \(percentage)%")
-            .pickpleTypography(.body01)
-            .foregroundStyle(isSelected ? Color.white : Color.neutral70)
+    // 실제 SwiftUI 렌더링 결과를 기다리지 않고, 같은 폰트로 미리 텍스트 폭을 계산한다.
+    private static func textWidth(_ text: String) -> CGFloat {
+        let typography = PickpleTypography.body01
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: typography.uiFont,
+            .kern: typography.tracking
+        ]
+        return ceil((text as NSString).size(withAttributes: attributes).width)
+    }
+
+    // 라벨이 자기 세그먼트를 넘어 반대쪽 배경 위에 걸치면, 걸친 부분만큼은 실제로 그
+    // 아래 깔린 배경(반대쪽)에 맞는 색이어야 한다. 그래서 같은 텍스트를 두 벌 겹쳐
+    // 그리고, 경계 지점을 기준으로 각각 반쪽만 보이게 마스킹해서 글자 일부만 색이
+    // 바뀌는 것처럼 보이게 한다.
+    private func splitLabel(
+        _ text: String,
+        measuredWidth: CGFloat,
+        ownSegmentWidth: CGFloat,
+        isOwnSelected: Bool,
+        anchor: PostDetailVoteSegmentCorner
+    ) -> some View {
+        let ownColor: Color = isOwnSelected ? .white : .neutral70
+        let otherColor: Color = isOwnSelected ? .neutral70 : .white
+
+        // 라벨은 벽에서 12pt 떨어진 지점에서 시작하지만, 선택된 쪽(아이콘이 붙는 쪽)은
+        // 아이콘(28)+간격(4)만큼 더 안쪽에서 시작한다. 이 간격을 빼먹으면 선택된
+        // 세그먼트가 좁을 때 실제로는 경계를 넘은 부분을 안 넘은 것으로 잘못 계산한다.
+        let edgeInset: CGFloat = isOwnSelected ? (12 + 28 + 4) : 12
+
+        // 라벨 로컬 좌표(왼쪽=0)에서, 자기 세그먼트 배경이 끝나고 반대쪽 배경으로
+        // 넘어가는 지점. .leading 쪽(왼쪽 벽에 붙는 라벨)은 자기 세그먼트가 왼쪽에
+        // 있으므로 그대로, .trailing 쪽(오른쪽 벽에 붙는 라벨)은 텍스트가 오른쪽
+        // 끝을 기준으로 왼쪽으로 자라나므로 뒤집어 계산한다.
+        let crossPoint: CGFloat
+        switch anchor {
+        case .leading:
+            crossPoint = ownSegmentWidth - edgeInset
+        case .trailing:
+            crossPoint = measuredWidth - (ownSegmentWidth - edgeInset)
+        }
+        let clamped = max(0, min(crossPoint, measuredWidth))
+        let leadingColor = anchor == .leading ? ownColor : otherColor
+        let trailingColor = anchor == .leading ? otherColor : ownColor
+
+        return ZStack(alignment: .leading) {
+            Text(text)
+                .pickpleTypography(.body01)
+                .foregroundStyle(leadingColor)
+                .mask(alignment: .leading) {
+                    Rectangle().frame(width: clamped)
+                }
+
+            Text(text)
+                .pickpleTypography(.body01)
+                .foregroundStyle(trailingColor)
+                .mask(alignment: .trailing) {
+                    Rectangle().frame(width: measuredWidth - clamped)
+                }
+        }
     }
 
     private var profileIcon: some View {
