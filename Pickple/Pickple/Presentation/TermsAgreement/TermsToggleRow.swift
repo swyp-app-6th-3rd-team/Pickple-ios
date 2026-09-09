@@ -20,12 +20,15 @@ struct TermsToggleRow: View {
             Toggle(isOn: $isOn) {}
 
             Text(title)
-
+                .pickpleTypography(.body02)
+                .foregroundStyle(Color.neutral80)
+                
             Spacer()
 
             if showsViewButton {
                 Button(action: onViewTapped) {
                     Text(TermsAgreementStrings.viewButton)
+                        .pickpleTypography(.body02)
                         .underline()
                         .foregroundStyle(Color.neutral40)
                 }
