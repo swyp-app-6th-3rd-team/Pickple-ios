@@ -163,8 +163,19 @@ class PostDetailViewModel {
     }
 
     func pickComment(_ commentID: Int) async {
-        guard canPickAnyComment, let index = comments.firstIndex(where: { $0.id == commentID }) else { return }
-        guard (try? await commentRepository.pickComment(id: commentID)) != nil else { return }
+        guard canPickAnyComment,
+              let index = comments.firstIndex(where: { $0.id == commentID }),
+              !comments[index].mine
+        else {
+            print("[Pick] canPickAnyComment=\(canPickAnyComment), commentID=\(commentID) 로컬에서 막힘")
+            return
+        }
+        do {
+            try await commentRepository.pickComment(id: commentID)
+        } catch {
+            print("[Pick] 원픽 요청 실패: \(error)")
+            return
+        }
         comments[index].pickCount += 1
         pickedCommentID = commentID
     }
