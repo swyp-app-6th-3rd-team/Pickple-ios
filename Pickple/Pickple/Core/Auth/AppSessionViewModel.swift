@@ -101,6 +101,12 @@ class AppSessionViewModel {
 
     @MainActor
     func logout() async {
+        // 게스트는 서버에 인증된 적이 없어서 로그아웃 API를 부를 게 없다 —
+        // 로컬 상태만 정리하고 바로 로그인 화면으로 넘어간다.
+        guard sessionState != .guest else {
+            await clearLocalSession()
+            return
+        }
         // accessToken을 지우기 전에 먼저 호출해야 Bearer 헤더가 실린다.
         // 서버 호출이 실패해도(네트워크 등) 로컬 로그아웃은 그대로 진행한다.
         try? await authRepository.logout()
