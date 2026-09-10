@@ -23,11 +23,22 @@ struct CommunityView: View {
         ScrollViewReader { scrollProxy in
             ZStack {
                 VStack(spacing: 0) {
+                    // 정렬 드롭박스가 펼쳐지면 아래 게시글 목록 영역까지 넘쳐서 그려지므로,
+                    // 같은 VStack의 형제인 목록보다 위에 그려지도록 zIndex로 명시한다.
                     CommunityHeaderView(communityViewModel: communityViewModel)
+                        .zIndex(1)
                     CommunityPostListSection(
                         communityViewModel: communityViewModel,
                         onTapPost: { post in communityRouter.push(.postDetail(postId: post.id, type: post.type)) }
                     )
+                    .overlay {
+                        // 드롭박스가 펼쳐진 동안 목록 쪽을 탭하면(게시글 탭 포함) 드롭박스만 접는다.
+                        if communityViewModel.isSortExpanded {
+                            Color.clear
+                                .contentShape(Rectangle())
+                                .onTapGesture { communityViewModel.isSortExpanded = false }
+                        }
+                    }
                 }
 
                 VStack {
