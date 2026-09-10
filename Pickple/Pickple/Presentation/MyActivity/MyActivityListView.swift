@@ -13,6 +13,8 @@ struct MyActivityListView<Item: Identifiable, RowContent: View>: View {
     let items: [Item]
     // 마지막 아이템이 화면에 나타났을 때 호출 — 다음 페이지를 이어 받는 트리거용(기본은 no-op).
     var onReachEnd: (Item) -> Void = { _ in }
+    // 카드를 탭했을 때 호출 — 참조 게시글 상세로 이동시키는 트리거용(기본은 no-op).
+    var onTapItem: (Item) -> Void = { _ in }
     @ViewBuilder let row: (Item) -> RowContent
 
     var body: some View {
@@ -26,7 +28,7 @@ struct MyActivityListView<Item: Identifiable, RowContent: View>: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(items) { item in
-                        Button(action: {}) {   // TODO: 실제 상세 이동 연동 필요 — 기존 동작(no-op) 유지
+                        Button(action: { onTapItem(item) }) {
                             row(item)
                                 .multilineTextAlignment(.leading)
 

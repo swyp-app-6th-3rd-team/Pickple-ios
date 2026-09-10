@@ -10,6 +10,7 @@ import SwiftUI
 struct MyActivityView: View {
     @State var myActivityViewModel: MyActivityViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(MyPageRouter.self) private var myPageRouter
 
     @State private var isShown: Bool = false
     @State private var selectedIndexTwo = 0
@@ -41,21 +42,26 @@ struct MyActivityView: View {
             case 0:
                 MyActivityListView(
                     items: myActivityViewModel.sorted(myActivityViewModel.votedPosts, by: selectedValue),
-                    onReachEnd: { post in Task { await myActivityViewModel.loadMoreVotedPostsIfNeeded(currentPost: post) } }
+                    onReachEnd: { post in Task { await myActivityViewModel.loadMoreVotedPostsIfNeeded(currentPost: post) } },
+                    onTapItem: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) }
                 ) { post in
                     MyActivityVotedPostCardView(post: post)
                 }
                 .task { await myActivityViewModel.loadVotedPosts() }
 
             case 1:
-                MyActivityListView(items: myActivityViewModel.sorted(myActivityViewModel.commentedActivities, by: selectedValue)) { activity in
+                MyActivityListView(
+                    items: myActivityViewModel.sorted(myActivityViewModel.commentedActivities, by: selectedValue),
+                    onTapItem: { activity in myPageRouter.push(.postDetail(postId: activity.referencedPost.id, type: activity.referencedPost.type)) }
+                ) { activity in
                     MyActivityCommentActivityRow(activity: activity)
                 }
                 .task { await myActivityViewModel.loadCommentedPosts() }
             case 2:
                 MyActivityListView(
                     items: myActivityViewModel.sorted(myActivityViewModel.writtenPosts, by: selectedValue),
-                    onReachEnd: { post in Task { await myActivityViewModel.loadMoreWrittenPostsIfNeeded(currentPost: post) } }
+                    onReachEnd: { post in Task { await myActivityViewModel.loadMoreWrittenPostsIfNeeded(currentPost: post) } },
+                    onTapItem: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) }
                 ) { post in
                     MyActivityWrittenPostCardView(post: post)
                 }
@@ -70,4 +76,5 @@ struct MyActivityView: View {
 
 #Preview {
     MyActivityView(myActivityViewModel: MyActivityViewModel(userPostRepository: MockUserPostRepository()))
+        .environment(MyPageRouter())
 }
