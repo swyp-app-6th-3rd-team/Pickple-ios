@@ -59,17 +59,14 @@ struct MyPageProfileHeaderView: View {
                             Spacer()
                         }
                         
-                        Button(action: {}) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .frame(maxWidth: .infinity, minHeight: 56)
-                                    .foregroundStyle(Color.yellow60)
-                                Text("로그인")
-                                    .pickpleTypography(.title02)
-                                    .foregroundStyle(Color.navy60)
-                            }
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 8)
+                                .frame(maxWidth: .infinity, minHeight: 56)
+                                .foregroundStyle(Color.yellow60)
+                            Text("로그인")
+                                .pickpleTypography(.title02)
+                                .foregroundStyle(Color.navy60)
                         }
-                        
                         .padding(.horizontal, 20)
                     }
                 }
