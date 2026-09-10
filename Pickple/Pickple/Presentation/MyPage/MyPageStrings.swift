@@ -24,6 +24,18 @@ enum MyPageStrings {
     static let postLoginRequiredTitle = "로그인이 필요해요"
     static let postLoginRequiredDescription = "간편 로그인 후 게시글을\n작성할 수 있어요"
 
+    // TODO: 문구 확정 필요 — 지금은 postLoginRequired와 동일한 임시 문구
+    static let gradeLoginRequiredTitle = "로그인이 필요해요"
+    static let gradeLoginRequiredDescription = "간편 로그인 후 나의 등급을\n확인할 수 있어요"
+
+    // TODO: 문구 확정 필요 — 지금은 postLoginRequired와 동일한 임시 문구
+    static let badgeLoginRequiredTitle = "로그인이 필요해요"
+    static let badgeLoginRequiredDescription = "간편 로그인 후 나의 뱃지를\n확인할 수 있어요"
+
+    // TODO: 문구 확정 필요 — 지금은 postLoginRequired와 동일한 임시 문구
+    static let viewAllLoginRequiredTitle = "로그인이 필요해요"
+    static let viewAllLoginRequiredDescription = "간편 로그인 후 작성한 투표를\n모두 확인할 수 있어요"
+
     static let currentPoints = "현재 보유 포인트"
     static let nextLevel = "다음 레벨까지"
 
