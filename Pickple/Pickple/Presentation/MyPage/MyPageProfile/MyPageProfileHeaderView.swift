@@ -22,10 +22,18 @@ struct MyPageProfileHeaderView: View {
         }) {
             VStack(spacing: 12) {
                 if myPageViewModel.isLoggedIn {
+                    // 서버가 실제 사진을 안 줬을 때(기본 프로필)는 캐릭터 이미지를 원 전체에
+                    // 채우지 않고, 흰 배경 원 위에 작게 올려서 "기본 이미지"라는 느낌을 준다.
                     AsyncImage(url: myPageViewModel.userInfo?.profileImageUrl) { image in
                         image.resizable().scaledToFill()
                     } placeholder: {
-                        Image("PickpleCharacter").resizable().scaledToFill()
+                        ZStack {
+                            Circle().fill(Color.white)
+                            Image("PickpleCharacter")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 50, height: 50)
+                        }
                     }
                     .frame(width: 84, height: 84)
                     .clipShape(Circle())
