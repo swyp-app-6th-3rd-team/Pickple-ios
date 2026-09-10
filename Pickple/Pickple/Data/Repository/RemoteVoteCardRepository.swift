@@ -65,15 +65,14 @@ struct RemoteVoteCardRepository: VoteCardRepository {
     // 홈 카드스택은 찬반/AB 픽만 스와이프 대상이라(일반 글 제외), GET /posts/random으로
     // 유형별로 따로 호출한다 — GET /posts 기반 구현과 달리 서버가 진짜 임의 순서를 주고,
     // 투표에 필요한 optionId와 AB 두 번째 상품 사진도 여기서 온다(GET /posts는 둘 다 없었음).
-    func fetchCards(type: VoteType) async throws -> [VoteCard] {
-        let endpoint = APIEndpoint(
-            method: .get,
-            path: "/posts/random",
-            queryItems: [URLQueryItem(name: "type", value: type.serverTypeValue)],
-            attachesAuthIfAvailable: true
-        )
+    func fetchCards(type: VoteType, cursor: String?) async throws -> VoteCardPage {
+        var queryItems = [URLQueryItem(name: "type", value: type.serverTypeValue)]
+        if let cursor {
+            queryItems.append(URLQueryItem(name: "cursor", value: cursor))
+        }
+        let endpoint = APIEndpoint(method: .get, path: "/posts/random", queryItems: queryItems, attachesAuthIfAvailable: true)
         let response: PostRandomResponseDTO = try await apiClient.request(endpoint)
-        return response.content.map(Self.toDomain)
+        return VoteCardPage(items: response.content.map(Self.toDomain), nextCursor: response.nextCursor, hasNext: response.hasNext)
     }
 
     func castVote(postId: Int, optionId: Int) async throws -> (firstPercentage: Int, secondPercentage: Int) {

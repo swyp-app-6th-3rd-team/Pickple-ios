@@ -12,6 +12,12 @@ class CardStackViewModel {
     private let userInfoRepository: UserInfoRepository
     private var allCards: [VoteCard] = []
 
+    private var forAgainstCursor: String?
+    private var forAgainstHasNext = false
+    private var abCursor: String?
+    private var abHasNext = false
+    private var isFetchingMore = false
+
     var voteCardData: [VoteCard] = []
     var showsLoginRequired = false
     // 게시글 상세 투표 버튼과 동일하게, 내가 고른 쪽 옆에 보여줄 내 프로필 사진.
@@ -45,9 +51,15 @@ class CardStackViewModel {
     // GET /posts/random은 type을 하나만 받아서, 찬반/AB를 각각 불러 합친다 —
     // 이후 탭 전환(filterCards)은 새 네트워크 호출 없이 이 합쳐둔 목록을 그냥 필터링만 한다.
     func loadCards() async {
-        async let forAgainst = try? voteCardRepository.fetchCards(type: .forAgainst)
-        async let ab = try? voteCardRepository.fetchCards(type: .ab)
-        allCards = (await forAgainst ?? []) + (await ab ?? [])
+        async let forAgainst = try? voteCardRepository.fetchCards(type: .forAgainst, cursor: nil)
+        async let ab = try? voteCardRepository.fetchCards(type: .ab, cursor: nil)
+        let forAgainstPage = await forAgainst
+        let abPage = await ab
+        allCards = (forAgainstPage?.items ?? []) + (abPage?.items ?? [])
+        forAgainstCursor = forAgainstPage?.nextCursor
+        forAgainstHasNext = forAgainstPage?.hasNext ?? false
+        abCursor = abPage?.nextCursor
+        abHasNext = abPage?.hasNext ?? false
     }
 
     // 홈 화면 상단 찬반/AB 탭 전환 시, 해당 유형의 카드만 다시 스와이프 스택으로 채운다.
@@ -82,9 +94,36 @@ class CardStackViewModel {
     }
 
     // 카드를 배열에서 제거하지 않고 맨 뒤로 옮겨서, 다 넘기면 처음 카드부터 다시 무한으로 순환한다.
+    // 서버에 아직 안 받아온 카드가 남아있으면(hasNext) 순환 전에 먼저 더 받아와서, 같은 카드를
+    // 반복해서 보여주기 전에 실제 랜덤 카드를 최대한 먼저 소진한다.
     func moveTopCardToBack() {
         guard !voteCardData.isEmpty else { return }
         let card = voteCardData.removeFirst()
         voteCardData.append(card)
+        Task { await loadMoreIfNeeded(for: card.type) }
+    }
+
+    private func loadMoreIfNeeded(for type: VoteType) async {
+        guard !isFetchingMore else { return }
+        let hasNext = type == .forAgainst ? forAgainstHasNext : abHasNext
+        guard hasNext else { return }
+        let cursor = type == .forAgainst ? forAgainstCursor : abCursor
+
+        isFetchingMore = true
+        defer { isFetchingMore = false }
+
+        guard let page = try? await voteCardRepository.fetchCards(type: type, cursor: cursor) else { return }
+        let existingIds = Set(allCards.map(\.id))
+        let newCards = page.items.filter { !existingIds.contains($0.id) }
+        allCards += newCards
+        voteCardData += newCards.filter { $0.type == type }
+
+        if type == .forAgainst {
+            forAgainstCursor = page.nextCursor
+            forAgainstHasNext = page.hasNext
+        } else {
+            abCursor = page.nextCursor
+            abHasNext = page.hasNext
+        }
     }
 }
