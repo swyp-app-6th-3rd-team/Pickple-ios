@@ -106,7 +106,10 @@ class PostDetailViewModel {
         myProfileImageUrl = try? await userInfoRepository.fetchUserInfo().profileImageUrl
     }
 
+    // 게스트는 댓글 목록 조회가 서버에서 항상 인증 오류로 거부돼서(블러 처리 UI와 일치하는
+    // 의도된 동작), 실패가 뻔한 요청을 보내는 대신 여기서 바로 건너뛴다.
     func loadComments() async {
+        guard isLoggedIn else { return }
         do {
             comments = try await commentRepository.fetchComments()
         } catch {
