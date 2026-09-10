@@ -17,7 +17,9 @@ struct PostDetailCommentListView: View {
         // 게스트는 댓글 목록 조회 자체가 인증을 요구해서 항상 comments == []다 — isLoggedIn을
         // 먼저 체크해야, 게스트가 "댓글 없음" 빈 화면이 아니라 블러+로그인 화면을 본다.
         if !postDetailViewModel.isLoggedIn {
-            commentRows
+            // 게스트는 실제 댓글을 절대 못 받아오므로(항상 []), 블러 뒤에 보여줄 내용이 없다.
+            // 실제 목록처럼 보이도록 자리만 차지하는 가짜 댓글을 대신 그린다.
+            placeholderCommentRows
                 .blur(radius: 6) // TODO: 디자인 확정 필요 - 임시 블러 값
                 .disabled(true)
                 .overlay {
@@ -68,6 +70,30 @@ struct PostDetailCommentListView: View {
                     canPick: postDetailViewModel.canPickAnyComment && !comment.mine,
                     onMoreTapped: { onCommentMoreTapped(comment) },
                     onPickTapped: { onPickTapped(comment) }
+                )
+            }
+        }
+    }
+
+    // 실제 데이터가 아니라 블러 뒤에 깔 모양만 필요해서, id는 음수로 둬서 실제 댓글 id와
+    // 절대 겹치지 않게 한다. 어차피 .disabled(true)와 overlay 버튼에 가려져 탭도 안 된다.
+    private var placeholderComments: [Comment] {
+        [
+            Comment(id: -1, authorNickname: "픽플고인물", authorLevel: 5, authorProfileImageUrl: nil, content: "이거 너무 좋아요 제가 뭐뭐 써봤는데 좋습니다", createdAt: Date(), pickCount: 3, mine: false),
+            Comment(id: -2, authorNickname: "픽플고인물", authorLevel: 1, authorProfileImageUrl: nil, content: "이거 너무 좋아요 제가 뭐뭐 써봤는데 좋습니다", createdAt: Date(), pickCount: 3, mine: false),
+            Comment(id: -3, authorNickname: "픽플고인물", authorLevel: 2, authorProfileImageUrl: nil, content: "이거 너무 좋아요 제가 뭐뭐 써봤는데 좋습니다", createdAt: Date(), pickCount: 3, mine: false)
+        ]
+    }
+
+    private var placeholderCommentRows: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            ForEach(placeholderComments) { comment in
+                PostDetailCommentRow(
+                    comment: comment,
+                    isPicked: false,
+                    canPick: false,
+                    onMoreTapped: {},
+                    onPickTapped: {}
                 )
             }
         }
