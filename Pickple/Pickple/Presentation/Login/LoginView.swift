@@ -36,6 +36,7 @@ struct LoginView: View {
             }
             Spacer()
         }
+        .background(Color.white.ignoresSafeArea())
         .alert(LoginStrings.loginFailedTitle, isPresented: Binding(
             get: { loginViewModel.errorMessage != nil },
             set: { isPresented in if !isPresented { loginViewModel.errorMessage = nil } }

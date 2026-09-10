@@ -78,6 +78,7 @@ struct MyBadgeView: View {
                 //TODO: 확인 처리(서버에 확인 여부 반영 등) 연결 필요
             }
         }
+        .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .tabBar)
     }

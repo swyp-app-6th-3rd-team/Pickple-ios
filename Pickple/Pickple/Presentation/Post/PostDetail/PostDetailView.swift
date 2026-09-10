@@ -51,6 +51,9 @@ struct PostDetailView: View {
     
     var body: some View {
         ZStack {
+            Color.white
+                .ignoresSafeArea()
+
             VStack(spacing: 0) {
                 if postDetailViewModel.post?.type == .text {
                     PickpleGNB(

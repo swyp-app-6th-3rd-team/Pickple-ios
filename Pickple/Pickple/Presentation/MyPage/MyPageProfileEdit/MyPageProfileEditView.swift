@@ -38,6 +38,7 @@ struct MyPageProfileEditView: View {
         .task {
             await profileViewModel.loadCurrentProfile()
         }
+        .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .tabBar)
     }
