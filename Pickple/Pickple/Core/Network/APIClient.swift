@@ -112,19 +112,22 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
     // 쓰는 타임존 없는 LocalDateTime 직렬화 "yyyy-MM-ddTHH:mm:ss"), 여러 형식을 순서대로
     // 시도한다. 타임존이 없는 형식은 UTC가 아니라 KST(Asia/Seoul)로 간주한다 — 한국 서비스라
     // 서버 로컬 시간이 KST일 가능성이 높고, UTC로 잘못 간주하면 표시 시각이 9시간 밀린다.
-    private static let iso8601WithFractional: ISO8601DateFormatter = {
+    // JSONDecoder.dateDecodingStrategy(.custom)가 기대하는 클로저 타입은 격리가 없는 동기
+    // 함수라, -default-isolation=MainActor 기본값과 안 맞아 격리를 명시적으로 꺼야 한다.
+    // 아래 포매터들은 설정 후 값이 안 바뀌는 불변 객체라 여러 컨텍스트에서 읽기만 해도 안전하다.
+    nonisolated(unsafe) private static let iso8601WithFractional: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return formatter
     }()
 
-    private static let iso8601Plain: ISO8601DateFormatter = {
+    nonisolated(unsafe) private static let iso8601Plain: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime]
         return formatter
     }()
 
-    private static let noTimezoneWithFractional: DateFormatter = {
+    nonisolated(unsafe) private static let noTimezoneWithFractional: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
@@ -132,7 +135,7 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
         return formatter
     }()
 
-    private static let noTimezonePlain: DateFormatter = {
+    nonisolated(unsafe) private static let noTimezonePlain: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
@@ -140,7 +143,9 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
         return formatter
     }()
 
-    private static func decodeFlexibleDate(from decoder: Decoder) throws -> Date {
+    // 이 함수 자체도 nonisolated여야 위 .custom(Self.decodeFlexibleDate) 대입이 성립한다 —
+    // 격리 없는 함수 4개를 읽기만 해서 안전하다.
+    nonisolated private static func decodeFlexibleDate(from decoder: Decoder) throws -> Date {
         let container = try decoder.singleValueContainer()
         let dateString = try container.decode(String.self)
 
