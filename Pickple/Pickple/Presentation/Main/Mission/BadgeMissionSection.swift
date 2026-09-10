@@ -14,6 +14,19 @@ struct BadgeMissionSection: View {
     @Binding var isExpanded: Bool
     var onLoginTapped: () -> Void = {}
 
+    // 미션1(누적)·미션2(일일+연속) 중 어느 쪽이든 완료하면 그날 치가 끝난다 — 두 계열에서
+    // 각각 완료된 단계 수(계열이 목록에서 빠졌으면 4단계 전부 완료로 침)를 합쳐서 며칠차인지
+    // 정한다. 최대 3+3(완료)+1(진행중) = 7이라 트래커의 7칸과 정확히 맞아떨어진다.
+    private var missionDay: Int {
+        func completedCount(cumulative: Bool) -> Int {
+            if let active = missions.first(where: { $0.iconFamily.isCumulativeFamily == cumulative }) {
+                return active.iconFamily.ladderPosition - 1
+            }
+            return 4
+        }
+        return min(completedCount(cumulative: true) + completedCount(cumulative: false) + 1, 7)
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             Button {
@@ -50,12 +63,11 @@ struct BadgeMissionSection: View {
                             BadgeMissionProgressRow(mission: mission)
                         }
 
-                        // 7칸 고정 — API의 current/goal(예: 오늘 투표 3/20)이 아니라, "미션 2"
-                        // 사다리를 몇 단계째 깨고 있는지가 며칠차다. 나머지 칸은 이후 추가될
-                        // 단계를 위해 잠긴 채로 남는다(기획 확정 전까지 임시).
-                        if let day = missions.compactMap({ $0.iconFamily.missionTwoDayNumber }).first {
-                            BadgeMissionStreakTracker(current: day, target: 7)
-                        }
+                        // 미션1·미션2 둘 다 매일 채워야 하는 게 아니라, 둘 중 하나를 완료해도
+                        // 그날 치가 끝난다 — 두 계열에서 각각 완료된 단계 수(최대 3+3)를 합쳐서
+                        // 며칠차인지 정한다. 한 계열이 다 채워져서 목록에서 빠졌으면(§완료) 그
+                        // 계열은 4단계 전부 완료로 센다.
+                        BadgeMissionStreakTracker(current: missionDay, target: 7)
                     }
                     .padding(.horizontal, 16)
                     .padding(.bottom, 16)
