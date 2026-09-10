@@ -46,15 +46,18 @@ struct RemoteProfileRepository: ProfileRepository {
     // 이미지 업로드(POST /images)는 attachType이 PRODUCT/COMMENT만 있고 PROFILE이 없어서
     // 프로필 사진 용도로 써도 되는지 확인 안 됨 — 그래서 profileImageUrl은 항상 nil로 보낸다.
     // 서버가 안 주면 기본 이미지를 채워준다(API_SPEC 기준). 용도 확인되면 여기 확장.
+    // 등록/수정은 HTTP 메서드(POST/PATCH)만 다르고 나머지는 동일해서 공용으로 뺐다.
     func registerProfile(nickname: String) async throws {
-        let body = try JSONEncoder().encode(ProfileRequestDTO(nickname: nickname, profileImageUrl: nil))
-        let endpoint = APIEndpoint(method: .post, path: "/users/profile", body: body, requiresAuth: true)
-        try await apiClient.requestVoid(endpoint)
+        try await saveProfile(nickname: nickname, method: .post)
     }
-    
+
     func updateProfile(nickname: String) async throws {
+        try await saveProfile(nickname: nickname, method: .patch)
+    }
+
+    private func saveProfile(nickname: String, method: HTTPMethod) async throws {
         let body = try JSONEncoder().encode(ProfileRequestDTO(nickname: nickname, profileImageUrl: nil))
-        let endpoint = APIEndpoint(method: .patch, path: "/users/profile", body: body, requiresAuth: true)
+        let endpoint = APIEndpoint(method: method, path: "/users/profile", body: body, requiresAuth: true)
         try await apiClient.requestVoid(endpoint)
     }
 }

@@ -32,30 +32,26 @@ struct RemoteAuthRepository: AuthRepository {
     let apiClient: APIClientProtocol
 
     func loginWithApple(authorizationCode: String, identityToken: String, rawNonce: String, name: String?) async throws -> AuthTokens {
-        let body = try JSONEncoder().encode(AppleLoginRequestDTO(
+        try await authenticate(path: "/auth/apple", body: AppleLoginRequestDTO(
             authorizationCode: authorizationCode,
             identityToken: identityToken,
             rawNonce: rawNonce,
             name: name
         ))
-        let endpoint = APIEndpoint(method: .post, path: "/auth/apple", body: body, requiresAuth: false)
-        let dto: AuthTokensDTO = try await apiClient.request(endpoint)
-        return AuthTokens(accessToken: dto.accessToken, refreshToken: dto.refreshToken)
     }
-    
+
     func loginWithKakao(identityToken: String?, rawNonce: String) async throws -> AuthTokens {
-            let body = try JSONEncoder().encode(KakaoLoginRequestDTO(
-                identityToken: identityToken,
-                nonce: rawNonce
-            ))
-            let endpoint = APIEndpoint(method: .post, path: "/auth/kakao", body: body, requiresAuth: false)
-            let dto: AuthTokensDTO = try await apiClient.request(endpoint)
-            return AuthTokens(accessToken: dto.accessToken, refreshToken: dto.refreshToken)
+        try await authenticate(path: "/auth/kakao", body: KakaoLoginRequestDTO(identityToken: identityToken, nonce: rawNonce))
     }
 
     func refreshAccessToken(refreshToken: String) async throws -> AuthTokens {
-        let body = try JSONEncoder().encode(MobileRefreshRequestDTO(refreshToken: refreshToken))
-        let endpoint = APIEndpoint(method: .post, path: "/auth/mobile/refresh", body: body, requiresAuth: false)
+        try await authenticate(path: "/auth/mobile/refresh", body: MobileRefreshRequestDTO(refreshToken: refreshToken))
+    }
+
+    // 로그인/토큰 재발급 3종이 전부 "바디 인코딩 → 요청 → AuthTokens 매핑"만 반복해서 공용으로 뺐다.
+    private func authenticate<Body: Encodable>(path: String, body: Body) async throws -> AuthTokens {
+        let encodedBody = try JSONEncoder().encode(body)
+        let endpoint = APIEndpoint(method: .post, path: path, body: encodedBody, requiresAuth: false)
         let dto: AuthTokensDTO = try await apiClient.request(endpoint)
         return AuthTokens(accessToken: dto.accessToken, refreshToken: dto.refreshToken)
     }

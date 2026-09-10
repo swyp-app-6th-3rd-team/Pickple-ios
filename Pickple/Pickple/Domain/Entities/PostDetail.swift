@@ -65,7 +65,8 @@ struct PostDetail: Identifiable {
     let authorGradeName: String
     let authorRanking: Int?
     let isMine: Bool
-    let vote: PostDetailVote?
+    // votingApplied(...)가 이 필드만 바꿔서 복사본을 만들 수 있으려면 var여야 한다.
+    var vote: PostDetailVote?
 
     var participantCount: Int { vote?.voterCount ?? 0 }
 
@@ -127,30 +128,14 @@ struct PostDetail: Identifiable {
             )
         }
 
-        let updatedVote = PostDetailVote(
+        var updated = self
+        updated.vote = PostDetailVote(
             voted: true,
             selectedOptionId: selectedOptionId,
             voterCount: vote.voted ? vote.voterCount : vote.voterCount + 1,
             products: vote.products,
             options: updatedOptions
         )
-
-        return PostDetail(
-            id: id,
-            type: type,
-            category: category,
-            title: title,
-            description: description,
-            createdAt: createdAt,
-            commentCount: commentCount,
-            authorId: authorId,
-            authorNickname: authorNickname,
-            authorProfileImageUrl: authorProfileImageUrl,
-            authorGradeLevel: authorGradeLevel,
-            authorGradeName: authorGradeName,
-            authorRanking: authorRanking,
-            isMine: isMine,
-            vote: updatedVote
-        )
+        return updated
     }
 }

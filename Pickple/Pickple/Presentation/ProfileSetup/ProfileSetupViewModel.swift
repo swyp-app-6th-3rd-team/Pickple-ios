@@ -56,27 +56,20 @@ class ProfileSetupViewModel {
         }
     }
 
+    // 등록/수정 둘 다 "닉네임 유효성 확인 → 중복 검사 → 실제 저장 호출" 순서가 같고
+    // 마지막 저장 호출(register/update)만 달라서 공용으로 뺐다.
     @MainActor
     func submitProfile() async -> Bool {
-        guard isNicknameValid() else { return false }
-        isSubmitting = true
-        defer { isSubmitting = false }
-        do {
-            let availability = try await profileRepository.checkNicknameAvailability(nickname)
-            guard availability.isAvailable else {
-                errorMessage = availability.message
-                return false
-            }
-            try await profileRepository.registerProfile(nickname: nickname)
-            return true
-        } catch {
-            errorMessage = error.localizedDescription
-            return false
-        }
+        await save { try await self.profileRepository.registerProfile(nickname: self.nickname) }
     }
-    
+
     @MainActor
     func updateProfile() async -> Bool {
+        await save { try await self.profileRepository.updateProfile(nickname: self.nickname) }
+    }
+
+    @MainActor
+    private func save(_ persist: () async throws -> Void) async -> Bool {
         guard isNicknameValid() else { return false }
         isSubmitting = true
         defer { isSubmitting = false }
@@ -86,7 +79,7 @@ class ProfileSetupViewModel {
                 errorMessage = availability.message
                 return false
             }
-            try await profileRepository.updateProfile(nickname: nickname)
+            try await persist()
             return true
         } catch {
             errorMessage = error.localizedDescription
