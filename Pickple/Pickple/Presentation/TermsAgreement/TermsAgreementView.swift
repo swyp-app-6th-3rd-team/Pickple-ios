@@ -56,6 +56,7 @@ struct TermsAgreementView: View {
         }
         .padding(.horizontal, 20)
         .padding(.top, 45)
+        .background(Color.white.ignoresSafeArea())
     }
 }
 

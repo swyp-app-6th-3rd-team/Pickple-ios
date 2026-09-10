@@ -22,6 +22,9 @@ struct CommunityView: View {
     var body: some View {
         ScrollViewReader { scrollProxy in
             ZStack {
+                Color.white
+                    .ignoresSafeArea()
+
                 VStack(spacing: 0) {
                     // 정렬 드롭박스가 펼쳐지면 아래 게시글 목록 영역까지 넘쳐서 그려지므로,
                     // 같은 VStack의 형제인 목록보다 위에 그려지도록 zIndex로 명시한다.

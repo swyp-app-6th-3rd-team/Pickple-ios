@@ -68,6 +68,7 @@ struct MyGradeView: View {
         .task {
             await gradeViewModel.loadGrades()
         }
+        .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .tabBar)
     }

@@ -70,6 +70,7 @@ struct MyActivityView: View {
                 EmptyView()
             }
         }
+        .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .tabBar)
     }

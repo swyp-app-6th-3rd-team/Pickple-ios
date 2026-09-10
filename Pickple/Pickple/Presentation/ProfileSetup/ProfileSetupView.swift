@@ -49,6 +49,7 @@ struct ProfileSetupView: View {
         } message: {
             Text(profileViewModel.errorMessage ?? "")
         }
+        .background(Color.white.ignoresSafeArea())
         .sheet(isPresented: $showsTermsAgreement)  {
             TermsAgreementView(profileViewModel: profileViewModel, onCompleted: {
                 showsTermsAgreement = false

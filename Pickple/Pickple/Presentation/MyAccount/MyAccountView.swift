@@ -21,6 +21,9 @@ struct MyAccountView: View {
 
     var body: some View {
         ZStack {
+            Color.white
+                .ignoresSafeArea()
+
             VStack(spacing: 0) {
                 PickpleGNB(
                     leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
