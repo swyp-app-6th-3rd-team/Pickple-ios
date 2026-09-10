@@ -58,8 +58,13 @@ struct MyPageView: View {
                             .background(Color.neutral5)
 
                         MyPageExtraView(
-                            isLoggedIn: myPageViewModel.isLoggedIn,
-                            onTapAccount: { myPageRouter.push(.account) }
+                            onTapAccount: {
+                                if myPageViewModel.isLoggedIn {
+                                    myPageRouter.push(.account)
+                                } else {
+                                    showsLoginRequired = true
+                                }
+                            }
                         )
 
                     }
