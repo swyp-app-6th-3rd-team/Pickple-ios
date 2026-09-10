@@ -23,7 +23,7 @@ struct PickpleDropdownView: View {
             }) {
                 HStack {
                     Text(selectedValue)
-                        .foregroundStyle(Color.neutral40)
+                        .foregroundStyle(selectedValue == PostViewStrings.categoryPlaceholder ? Color.neutral40 : Color.black)
                     Spacer()
                     Image("PickpleArrowDown")
                         .rotationEffect(.degrees(isExpanded ? 180 : 0))
