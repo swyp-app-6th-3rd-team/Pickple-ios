@@ -82,7 +82,7 @@ struct MainRankingView: View {
                                 PickerRankingRow(ranking: ranking)
                                     .task { await mainRankingViewModel.loadMoreIfNeeded(currentItem: ranking) }
                                     .background {
-                                        if mainRankingViewModel.isLoggedIn && ranking.rank == mainRankingViewModel.myRanking.rank {
+                                        if mainRankingViewModel.isLoggedIn, let myRanking = mainRankingViewModel.myRanking, ranking.rank == myRanking.rank {
                                             GeometryReader { rowGeo in
                                                 Color.clear
                                                     .preference(key: MyRankRowFramePreferenceKey.self, value: rowGeo.frame(in: .named("rankingScroll")))
@@ -104,11 +104,12 @@ struct MainRankingView: View {
                     .onPreferenceChange(MyRankRowFramePreferenceKey.self) { myRankRowFrame = $0 }
 
                     if mainRankingViewModel.isLoggedIn {
-                        if !isMyRankRowVisible {
+                        // 가입 직후처럼 아직 배치로 순위가 매겨지지 않았으면(myRanking == nil) 보여줄 순위가 없다.
+                        if let myRanking = mainRankingViewModel.myRanking, !isMyRankRowVisible {
                             // 리스트 안 실제 행은 세로 패딩이 전혀 없는 순수 높이로 측정되므로(LazyVStack의
                             // .padding(20)은 전체 스택 가장자리에만 붙지 개별 행엔 안 붙음), 여기서도
                             // 세로 패딩 없이 가로 패딩만 맞춰야 겹치는 순간 높이가 정확히 일치한다.
-                            PickerRankingRow(ranking: mainRankingViewModel.myRanking)
+                            PickerRankingRow(ranking: myRanking)
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, myRankCardVerticalPadding)
                                 .rankingFloatingCardStyle()
@@ -124,6 +125,7 @@ struct MainRankingView: View {
         .toolbar(.hidden, for: .tabBar)
         .task {
             await mainRankingViewModel.loadInitial()
+            await mainRankingViewModel.loadMyRanking()
         }
         .overlay {
             if showsLoginRequired {
