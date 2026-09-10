@@ -104,7 +104,12 @@ struct CommunityView: View {
             }
             .fullScreenCover(item: $writeFlowType) { _ in
                 NavigationStack {
-                    PostWriteFlowView(postViewModel: composePostViewModel)
+                    // 성공 시 이 모달을 닫고, 커뮤니티 탭의 실제 네비게이션 스택에 상세 화면을
+                    // push한다 — 그래야 상세 화면에서 뒤로가기를 누르면 작성 화면이 아니라
+                    // 커뮤니티 목록으로 돌아간다.
+                    PostWriteFlowView(postViewModel: composePostViewModel, onPostSaved: { postId, type in
+                        communityRouter.push(.postDetail(postId: postId, type: type))
+                    })
                 }
             }
         }

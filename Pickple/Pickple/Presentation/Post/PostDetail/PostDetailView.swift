@@ -9,9 +9,6 @@
 import SwiftUI
 
 struct PostDetailView: View {
-    var showsSuccessToastOnAppear: Bool = false
-    var successToastMessage: String = PostViewStrings.submitSucceededToast
-
     @State private var postDetailViewModel: PostDetailViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.isLoggedIn) private var isLoggedIn
@@ -40,12 +37,8 @@ struct PostDetailView: View {
         commentRepository: CommentRepository = MockCommentRepository(),
         userInfoRepository: UserInfoRepository = MockUserInfoRepository(),
         voteCardRepository: VoteCardRepository = MockVoteCardRepository(),
-        showsSuccessToastOnAppear: Bool = false,
-        successToastMessage: String = PostViewStrings.submitSucceededToast,
         guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
     ) {
-        self.showsSuccessToastOnAppear = showsSuccessToastOnAppear
-        self.successToastMessage = successToastMessage
         _postDetailViewModel = State(initialValue: PostDetailViewModel(
             voteType: voteType,
             postDetailRepository: postDetailRepository,
@@ -237,9 +230,14 @@ struct PostDetailView: View {
             )
         }
         .navigationDestination(isPresented: $navigatesToEdit) {
-            PostWriteFlowView(postViewModel: editingPostViewModel)
+            // 수정 성공 후 새 상세 화면을 push하는 대신, 이 화면(이미 스택에 있던 원본)으로
+            // 그냥 돌아와서 데이터만 새로 불러온다 — 그래야 뒤로가기가 작성 화면으로 되돌아가지 않는다.
+            PostWriteFlowView(postViewModel: editingPostViewModel, onPostSaved: { _, _ in
+                Task { await postDetailViewModel.loadPostDetail() }
+                showsSuccessToast = true
+            })
         }
-        .pickpleToast(isPresented: $showsSuccessToast, message: successToastMessage)
+        .pickpleToast(isPresented: $showsSuccessToast, message: PostViewStrings.submitEditSucceededToast)
         .pickpleToast(isPresented: $showsDeleteFailureToast, message: PostDetailStrings.deleteFailedToast)
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .tabBar)
@@ -248,15 +246,12 @@ struct PostDetailView: View {
             await postDetailViewModel.loadPostDetail()
             await postDetailViewModel.loadComments()
             await postDetailViewModel.loadMyProfileImage()
-            if showsSuccessToastOnAppear {
-                showsSuccessToast = true
-            }
         }
     }
 }
 
 #Preview {
     NavigationStack {
-        PostDetailView(voteType: .ab, showsSuccessToastOnAppear: false)
+        PostDetailView(voteType: .ab)
     }
 }

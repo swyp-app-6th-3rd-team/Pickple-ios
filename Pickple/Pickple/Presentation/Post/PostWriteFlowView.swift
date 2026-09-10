@@ -12,13 +12,15 @@ import SwiftUI
 // 상단 게이지가 필수 항목 채움 정도를 보여준다.
 struct PostWriteFlowView: View {
     let postViewModel: PostViewModel
+    // 게시/수정 성공 시 호출 — 호출부가 이 화면을 어떻게 닫고 어디로 보여줄지 결정한다
+    // (여기서 직접 상세 화면을 push하면, 그 화면에서 뒤로가기를 눌렀을 때 이 작성 화면으로
+    // 되돌아와버리는 문제가 있었다).
+    var onPostSaved: (Int, VoteType) -> Void = { _, _ in }
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.apiClient) private var apiClient
 
     @State private var isCategoryExpanded = false
     @State private var showsLeaveConfirm = false
     @State private var showsFailureToast = false
-    @State private var navigatesToDetail = false
 
     private let categoryOptions = PostViewStrings.categoryOptions
 
@@ -71,19 +73,6 @@ struct PostWriteFlowView: View {
         .pickpleToast(isPresented: $showsFailureToast, message: postViewModel.isEditing ? PostViewStrings.submitEditFailedToast : PostViewStrings.submitFailedToast)
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .tabBar)
-        .navigationDestination(isPresented: $navigatesToDetail) {
-            if let postId = postViewModel.createdPostId {
-                PostDetailView(
-                    voteType: postViewModel.selectedType,
-                    postDetailRepository: RemotePostDetailRepository(apiClient: apiClient, postId: postId),
-                    commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
-                    userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
-                    voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
-                    showsSuccessToastOnAppear: true,
-                    successToastMessage: postViewModel.isEditing ? PostViewStrings.submitEditSucceededToast : PostViewStrings.submitSucceededToast
-                )
-            }
-        }
     }
 
     private func handleBack() {
@@ -97,8 +86,9 @@ struct PostWriteFlowView: View {
     private func handleSubmit() {
         Task {
             await postViewModel.submitPost()
-            if postViewModel.submitState == .succeeded {
-                navigatesToDetail = true
+            if postViewModel.submitState == .succeeded, let postId = postViewModel.createdPostId {
+                onPostSaved(postId, postViewModel.selectedType)
+                dismiss()
             } else {
                 showsFailureToast = true
             }
