@@ -7,22 +7,11 @@
 
 import Foundation
 
+// GET /users/me/posts/recent와 GET /users/me/activities(type=VOTE|COMMENT|POST) 둘 다
+// GET /posts의 content 항목과 같은 필드를 준다. 후자만 activityAt(내가 이 게시글에 활동한
+// 시각)을 추가로 주는데, 전자엔 그 키 자체가 없어서 Optional로 두면 자연히 nil로 디코딩된다
+// — 두 응답이 같은 구조라 DTO 하나로 공유한다.
 struct ActivityItemDTO: Decodable {
-    let id: Int
-    let type: String
-    let category: String
-    let title: String
-    let description: String?
-    let commentCount: Int
-    let voteCount: Int?
-    let thumbnailUrl: String?
-    let createdAt: Date
-}
-
-// GET /users/me/activities(type=VOTE|COMMENT|POST) 응답. GET /posts의 content 항목 필드 +
-// activityAt(내가 이 게시글에 활동한 시각) — 커서 페이징 지원하지만, 지금 UserPostRepository
-// 프로토콜은 커서를 안 받아서 첫 페이지만 가져온다.
-private struct ActivityListItemDTO: Decodable {
     let id: Int
     let type: String
     let category: String
@@ -35,8 +24,9 @@ private struct ActivityListItemDTO: Decodable {
     let activityAt: Date?
 }
 
+// 커서 페이징 지원하지만, 지금 UserPostRepository 프로토콜은 커서를 안 받아서 첫 페이지만 가져온다.
 private struct ActivityListResponseDTO: Decodable {
-    let content: [ActivityListItemDTO]
+    let content: [ActivityItemDTO]
     let nextCursor: String?
     let hasNext: Bool
 }
@@ -51,8 +41,8 @@ struct RemoteUserPostRepository: UserPostRepository {
         return dtos.map(Self.toDomain)
     }
 
-    func fetchVotedPosts() async -> [PostSummary] {
-        await fetchActivities(type: "VOTE")
+    func fetchVotedPosts(cursor: String?) async -> UserPostPage {
+        await fetchActivities(type: "VOTE", cursor: cursor)
     }
 
     // GET /users/me/activities(type=COMMENT)는 "게시글 카드"만 주고 내가 쓴 댓글의 실제 내용은
@@ -62,39 +52,26 @@ struct RemoteUserPostRepository: UserPostRepository {
         await fallback.fetchCommentedPosts()
     }
 
-    func fetchWrittenPosts() async -> [PostSummary] {
-        await fetchActivities(type: "POST")
+    func fetchWrittenPosts(cursor: String?) async -> UserPostPage {
+        await fetchActivities(type: "POST", cursor: cursor)
     }
 
-    private func fetchActivities(type: String) async -> [PostSummary] {
-        let endpoint = APIEndpoint(
-            method: .get,
-            path: "/users/me/activities",
-            queryItems: [URLQueryItem(name: "type", value: type)],
-            requiresAuth: true
-        )
-        guard let response: ActivityListResponseDTO = try? await apiClient.request(endpoint) else { return [] }
-        return response.content.map(Self.toDomain)
+    private func fetchActivities(type: String, cursor: String?) async -> UserPostPage {
+        var queryItems = [URLQueryItem(name: "type", value: type)]
+        if let cursor {
+            queryItems.append(URLQueryItem(name: "cursor", value: cursor))
+        }
+        let endpoint = APIEndpoint(method: .get, path: "/users/me/activities", queryItems: queryItems, requiresAuth: true)
+        guard let response: ActivityListResponseDTO = try? await apiClient.request(endpoint) else {
+            return UserPostPage(items: [], nextCursor: nil, hasNext: false)
+        }
+        return UserPostPage(items: response.content.map(Self.toDomain), nextCursor: response.nextCursor, hasNext: response.hasNext)
     }
 
     // "내가 올린/투표한/작성한 글" 목록이라 서버가 작성자 정보를 따로 안 준다(항상 본인 글이라
     // 자명해서, API_SPEC 기준) — authorNickname/authorLevel은 nil로 두고, 화면 쪽에서 작성자
-    // 정보를 아예 표시하지 않는다.
+    // 정보를 아예 표시하지 않는다. activityAt이 없으면(=/users/me/posts/recent) createdAt을 쓴다.
     private static func toDomain(_ dto: ActivityItemDTO) -> PostSummary {
-        .fromServerFields(
-            id: dto.id,
-            type: dto.type,
-            category: dto.category,
-            title: dto.title,
-            description: dto.description,
-            thumbnailUrl: dto.thumbnailUrl,
-            voteCount: dto.voteCount,
-            commentCount: dto.commentCount,
-            createdAt: dto.createdAt
-        )
-    }
-
-    private static func toDomain(_ dto: ActivityListItemDTO) -> PostSummary {
         .fromServerFields(
             id: dto.id,
             type: dto.type,

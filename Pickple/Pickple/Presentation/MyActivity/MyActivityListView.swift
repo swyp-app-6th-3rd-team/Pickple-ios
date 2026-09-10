@@ -11,6 +11,8 @@ import SwiftUI
 
 struct MyActivityListView<Item: Identifiable, RowContent: View>: View {
     let items: [Item]
+    // 마지막 아이템이 화면에 나타났을 때 호출 — 다음 페이지를 이어 받는 트리거용(기본은 no-op).
+    var onReachEnd: (Item) -> Void = { _ in }
     @ViewBuilder let row: (Item) -> RowContent
 
     var body: some View {
@@ -28,6 +30,11 @@ struct MyActivityListView<Item: Identifiable, RowContent: View>: View {
                             row(item)
                                 .multilineTextAlignment(.leading)
 
+                        }
+                        .task {
+                            if item.id == items.last?.id {
+                                onReachEnd(item)
+                            }
                         }
                         Divider()
                             .padding(.vertical, 20)

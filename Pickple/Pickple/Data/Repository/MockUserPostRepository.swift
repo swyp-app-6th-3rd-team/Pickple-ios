@@ -54,7 +54,11 @@ struct MockUserPostRepository: UserPostRepository {
         ]
     }
 
-    func fetchVotedPosts() async -> [PostSummary] {
+    func fetchVotedPosts(cursor: String?) async -> UserPostPage {
+        UserPostPage(items: votedPosts, nextCursor: nil, hasNext: false)
+    }
+
+    private var votedPosts: [PostSummary] {
         [
             PostSummary(
                 id: 101,
@@ -160,7 +164,7 @@ struct MockUserPostRepository: UserPostRepository {
         ]
     }
 
-    func fetchWrittenPosts() async -> [PostSummary] {
-        await fetchMyPosts()
+    func fetchWrittenPosts(cursor: String?) async -> UserPostPage {
+        UserPostPage(items: await fetchMyPosts(), nextCursor: nil, hasNext: false)
     }
 }

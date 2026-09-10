@@ -39,7 +39,10 @@ struct MyActivityView: View {
             
             switch selectedIndexTwo {
             case 0:
-                MyActivityListView(items: myActivityViewModel.sorted(myActivityViewModel.votedPosts, by: selectedValue)) { post in
+                MyActivityListView(
+                    items: myActivityViewModel.sorted(myActivityViewModel.votedPosts, by: selectedValue),
+                    onReachEnd: { post in Task { await myActivityViewModel.loadMoreVotedPostsIfNeeded(currentPost: post) } }
+                ) { post in
                     MyActivityVotedPostCardView(post: post)
                 }
                 .task { await myActivityViewModel.loadVotedPosts() }
@@ -50,7 +53,10 @@ struct MyActivityView: View {
                 }
                 .task { await myActivityViewModel.loadCommentedPosts() }
             case 2:
-                MyActivityListView(items: myActivityViewModel.sorted(myActivityViewModel.writtenPosts, by: selectedValue)) { post in
+                MyActivityListView(
+                    items: myActivityViewModel.sorted(myActivityViewModel.writtenPosts, by: selectedValue),
+                    onReachEnd: { post in Task { await myActivityViewModel.loadMoreWrittenPostsIfNeeded(currentPost: post) } }
+                ) { post in
                     MyActivityWrittenPostCardView(post: post)
                 }
                 .task { await myActivityViewModel.loadWrittenPosts() }
