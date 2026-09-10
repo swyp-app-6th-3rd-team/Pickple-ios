@@ -23,10 +23,22 @@ struct CommunityView: View {
         ScrollViewReader { scrollProxy in
             ZStack {
                 VStack(spacing: 0) {
+                    // 정렬 드롭박스가 펼쳐지면 아래 게시글 목록 영역까지 넘쳐서 그려지므로,
+                    // 같은 VStack의 형제인 목록보다 위에 그려지도록 zIndex로 명시한다.
                     CommunityHeaderView(communityViewModel: communityViewModel)
+                        .zIndex(1)
                     CommunityPostListSection(
                         communityViewModel: communityViewModel,
                         onTapPost: { post in communityRouter.push(.postDetail(postId: post.id, type: post.type)) }
+                    )
+                    // 게시글 탭 등 목록 안의 제스처를 막지 않고 같이 받아서, 드롭박스가 펼쳐진 채로
+                    // 게시글을 눌러도 닫기+이동이 한 번의 탭으로 끝나게 한다.
+                    .simultaneousGesture(
+                        TapGesture().onEnded {
+                            if communityViewModel.isSortExpanded {
+                                communityViewModel.isSortExpanded = false
+                            }
+                        }
                     )
                 }
 
@@ -89,6 +101,7 @@ struct CommunityView: View {
                 await communityViewModel.loadPosts()
             }
             .onChange(of: communityViewModel.selectedCategory) { _, _ in
+                communityViewModel.isSortExpanded = false
                 Task { await communityViewModel.loadPosts() }
             }
             .onChange(of: communityViewModel.sortOption) { _, _ in
