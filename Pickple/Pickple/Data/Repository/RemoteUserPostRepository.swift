@@ -24,7 +24,6 @@ struct ActivityItemDTO: Decodable {
     let activityAt: Date?
 }
 
-// 커서 페이징 지원하지만, 지금 UserPostRepository 프로토콜은 커서를 안 받아서 첫 페이지만 가져온다.
 private struct ActivityListResponseDTO: Decodable {
     let content: [ActivityItemDTO]
     let nextCursor: String?
@@ -33,7 +32,6 @@ private struct ActivityListResponseDTO: Decodable {
 
 struct RemoteUserPostRepository: UserPostRepository {
     let apiClient: APIClientProtocol
-    private let fallback = MockUserPostRepository()
 
     func fetchMyPosts() async throws -> [PostSummary] {
         let endpoint = APIEndpoint(method: .get, path: "/users/me/posts/recent", requiresAuth: true)
@@ -46,10 +44,41 @@ struct RemoteUserPostRepository: UserPostRepository {
     }
 
     // GET /users/me/activities(type=COMMENT)는 "게시글 카드"만 주고 내가 쓴 댓글의 실제 내용은
-    // 안 내려줘서(2026-09-06 OAS 확인), MyCommentActivity(댓글 내용 + 참조 게시글)를 채울 방법이
-    // 없다. 백엔드가 댓글 내용을 포함해서 내려주기 전까진 Mock 유지.
+    // 안 내려줘서(2026-09-06 OAS 확인), 댓글 내용을 채우려면 게시글마다 GET /posts/{id}/comments를
+    // 추가로 불러 mine==true인 댓글을 걸러야 한다(N+1). "나의 활동" 탭은 개인 활동 내역이라
+    // 대상 게시글 수가 자연히 작아서(전체 피드처럼 반복적으로 많이 불러오는 화면이 아님) 이
+    // 비용을 감당하기로 함. 한 게시글에 내 댓글이 여러 개면 게시글당 한 줄이 아니라 댓글마다
+    // 한 줄씩 보여준다(활동 목록의 "참여 게시글 수" 집계와는 다른 기준).
     func fetchCommentedPosts() async -> [MyCommentActivity] {
-        await fallback.fetchCommentedPosts()
+        var commentedPosts: [PostSummary] = []
+        var cursor: String?
+        while true {
+            let page = await fetchActivities(type: "COMMENT", cursor: cursor)
+            commentedPosts += page.items
+            guard page.hasNext, let next = page.nextCursor else { break }
+            cursor = next
+        }
+
+        var activities: [MyCommentActivity] = []
+        for post in commentedPosts {
+            let commentRepository = RemoteCommentRepository(apiClient: apiClient, postId: post.id)
+            guard let comments = try? await commentRepository.fetchComments() else { continue }
+            for comment in comments where comment.mine {
+                activities.append(MyCommentActivity(
+                    id: comment.id,
+                    content: comment.content,
+                    pickCount: comment.pickCount,
+                    createdAt: comment.createdAt,
+                    referencedPost: MyCommentActivityPostReference(
+                        id: post.id,
+                        type: post.type,
+                        title: post.title,
+                        thumbnailUrl: post.thumbnailUrl
+                    )
+                ))
+            }
+        }
+        return activities.sorted { $0.createdAt > $1.createdAt }
     }
 
     func fetchWrittenPosts(cursor: String?) async -> UserPostPage {

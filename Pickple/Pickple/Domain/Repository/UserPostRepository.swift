@@ -16,7 +16,8 @@ protocol UserPostRepository {
     func fetchMyPosts() async throws -> [PostSummary]
     func fetchVotedPosts(cursor: String?) async -> UserPostPage
     // 댓글 목록 API(GET /users/me/activities?type=COMMENT)가 게시글 카드만 주고 내가 쓴 댓글의
-    // 실제 내용은 안 내려줘서(2026-09-06 OAS 확인) Mock 유지 — RemoteUserPostRepository 참고.
+    // 실제 내용은 안 줘서(2026-09-06 OAS 확인), 게시글마다 댓글 목록을 추가로 불러 조합한다 —
+    // RemoteUserPostRepository.fetchCommentedPosts() 참고.
     func fetchCommentedPosts() async -> [MyCommentActivity]
     func fetchWrittenPosts(cursor: String?) async -> UserPostPage
 }
