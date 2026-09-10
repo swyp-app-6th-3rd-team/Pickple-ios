@@ -17,6 +17,7 @@ struct ProductPriceFieldBlock: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(label)
                 .pickpleTypography(.body01)
+            //4c4c4c 색상 미정
 
             PickpleTextField(
                 text: $price,
