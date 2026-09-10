@@ -81,7 +81,7 @@ class AppSessionViewModel {
     // 끝나는 쪽에 맞춰 스플래시를 내린다.
     @MainActor
     func restoreSession() async {
-        async let minimumSplashDuration = try? await Task.sleep(for: .seconds(1.2))
+        async let minimumSplashDuration = try? await Task.sleep(for: .seconds(1.5))
         await performTokenRestore()
         _ = await minimumSplashDuration
         isRestoringSession = false
