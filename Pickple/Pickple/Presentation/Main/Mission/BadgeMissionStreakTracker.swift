@@ -46,8 +46,10 @@ struct BadgeMissionStreakTracker: View {
         }
 
         let segmentWidth = 1 / CGFloat(target - 1)
-        let todayStart = CGFloat(current - 2) * segmentWidth
-        let todayEnd = min(1, CGFloat(current - 1) * segmentWidth)
+        // current가 1(스트릭 첫날)이면 todayStart가 음수가 되어 첫 stop(location: 0)보다
+        // 앞서면서 그라데이션 stop 순서가 역전된다. 0...1로 clamp해서 항상 오름차순을 보장한다.
+        let todayStart = max(0, min(1, CGFloat(current - 2) * segmentWidth))
+        let todayEnd = max(todayStart, min(1, CGFloat(current - 1) * segmentWidth))
 
         return LinearGradient(
             stops: [
