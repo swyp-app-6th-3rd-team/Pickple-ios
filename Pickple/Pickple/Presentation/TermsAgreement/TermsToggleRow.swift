@@ -13,6 +13,7 @@ struct TermsToggleRow: View {
     @Binding var isOn: Bool
     let title: String
     var showsViewButton: Bool = true
+    var url: String = ""
     var onViewTapped: () -> Void = {}
 
     var body: some View {
@@ -26,7 +27,7 @@ struct TermsToggleRow: View {
             Spacer()
 
             if showsViewButton {
-                Button(action: onViewTapped) {
+                Link(destination: URL(string: url)!) {
                     Text(TermsAgreementStrings.viewButton)
                         .pickpleTypography(.body02)
                         .underline()
@@ -41,7 +42,7 @@ struct TermsToggleRow: View {
 #Preview {
     @Previewable @State var isOn = false
     VStack(spacing: 16) {
-        TermsToggleRow(isOn: $isOn, title: TermsAgreementStrings.personalDataTitle)
+        TermsToggleRow(isOn: $isOn, title: TermsAgreementStrings.personalDataTitle, url: "")
         TermsToggleRow(isOn: $isOn, title: TermsAgreementStrings.pushNotificationTitle, showsViewButton: false)
     }
     .pickpleTypography(.body02)
