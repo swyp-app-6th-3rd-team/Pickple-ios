@@ -81,11 +81,7 @@ struct MyPageView: View {
 
                         MyPageExtraView(
                             onTapAccount: {
-                                if myPageViewModel.isLoggedIn {
                                     myPageRouter.push(.account)
-                                } else {
-                                    showsLoginRequired = true
-                                }
                             }
                         )
 
