@@ -54,23 +54,10 @@ struct ABWriteView: View {
                     }
                 }
             }
-
-            // 카테고리·주제와 함께 기본으로 보이는 상품A/B 이름.
+            
             // 수정 모드는 상품명/사진/가격/URL이 PATCH로 반영되지 않아(카테고리/제목(=주제)/설명만
             // 지원) 원래 값을 보여주기만 하고 편집을 막는다 — 순차 공개도 건너뛰고 한꺼번에 보여준다.
-            ProductNameFieldBlock(
-                name: $postViewModel.productA.name,
-                maxLength: postViewModel.productNameMaxLength,
-                label: "\(PostViewStrings.abOptionALabel) \(PostViewStrings.productName)",
-                isDisabled: postViewModel.isEditing
-            )
-
-            ProductNameFieldBlock(
-                name: $postViewModel.productB.name,
-                maxLength: postViewModel.productNameMaxLength,
-                label: "\(PostViewStrings.abOptionBLabel) \(PostViewStrings.productName)",
-                isDisabled: postViewModel.isEditing
-            )
+            ProductNameSectionView(postViewModel: postViewModel)
 
             ComparisonPhotoFieldBlock(photoA: $postViewModel.productA.photos, photoB: $postViewModel.productB.photos, isDisabled: postViewModel.isEditing)
                 .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled))
