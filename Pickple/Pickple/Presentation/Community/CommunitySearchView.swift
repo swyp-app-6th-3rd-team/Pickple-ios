@@ -29,7 +29,7 @@ struct CommunitySearchView: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 8)
 
-            if communitySearchViewModel.searchText.isEmpty {
+            if communitySearchViewModel.submittedSearchText.isEmpty {
                 // 타이틀/"모두 지우기"는 recentSearches 유무와 상관없이 항상 보여준다.
                 // (이전엔 recentSearches.isEmpty 분기 안에 같이 있어서, 모두 지우기를 누르면
                 // 그 즉시 recentSearches가 비면서 타이틀까지 같이 사라지는 문제가 있었다.)
@@ -132,6 +132,11 @@ struct CommunitySearchView: View {
         .task {
             await communitySearchViewModel.loadPosts()
         }
+        .onChange(of: communitySearchViewModel.searchText) { _, newValue in
+            if newValue.isEmpty {
+                communitySearchViewModel.clearSearch()
+            }
+        }
     }
 }
 
@@ -158,6 +163,7 @@ private struct CommunitySearchField: View {
                 TextField("", text: $text)
                     .pickpleTypography(.body01)
                     .foregroundStyle(Color.neutral100)
+                    .submitLabel(.search)
                     .onSubmit(onSubmit)
             }
 
