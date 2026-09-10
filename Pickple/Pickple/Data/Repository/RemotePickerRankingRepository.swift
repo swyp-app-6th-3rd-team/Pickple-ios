@@ -40,6 +40,21 @@ struct RemotePickerRankingRepository: PickerRankingRepository {
         return RankingPage(items: dto.content.map(Self.toDomain), nextCursor: dto.nextCursor)
     }
 
+    // GET /users/me/points — ranking이 null이면 아직 배치가 안 돈 것(가입 직후)이라 nil을 그대로 반환한다.
+    func fetchMyRanking() async throws -> PickerRanking? {
+        let endpoint = APIEndpoint(method: .get, path: "/users/me/points", requiresAuth: true)
+        let dto: UserPointsDTO = try await apiClient.request(endpoint)
+        guard let ranking = dto.ranking else { return nil }
+        return PickerRanking(
+            id: UUID(),
+            rank: ranking,
+            nickname: dto.nickname ?? "",
+            level: 1,
+            profileImageUrl: dto.profileImageUrl.flatMap(URL.init(string:)),
+            points: dto.point
+        )
+    }
+
     // TODO: RankingItem 응답에 등급/레벨 필드가 없어서(userId, nickname, profileImageUrl, ranking, point만 있음)
     // level은 1로 고정한다 — 확인되는 대로 실제 값으로 교체 필요.
     private static func toDomain(_ dto: RankingItemDTO) -> PickerRanking {

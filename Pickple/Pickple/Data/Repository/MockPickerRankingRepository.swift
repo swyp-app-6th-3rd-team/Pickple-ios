@@ -40,4 +40,10 @@ struct MockPickerRankingRepository: PickerRankingRepository {
         let nextCursor = nextOffset < Self.all.count ? String(nextOffset) : nil
         return RankingPage(items: page, nextCursor: nextCursor)
     }
+
+    // 24위를 all 안에 실재하는 값으로 반환해서, 스크롤로 내 순위 행에 닿으면 하단 카드가
+    // 사라지는 동작을 미리보기/Mock에서도 그대로 확인할 수 있게 한다.
+    func fetchMyRanking() async throws -> PickerRanking? {
+        PickerRanking(id: UUID(), rank: 24, nickname: "닉네임", level: 5, profileImageUrl: nil, points: 1000)
+    }
 }
