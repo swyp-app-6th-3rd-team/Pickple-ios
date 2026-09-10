@@ -15,6 +15,7 @@ struct MyAccountView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.appLogout) private var appLogout
     @Environment(\.appDeleteAccount) private var appDeleteAccount
+    @Environment(\.isLoggedIn) private var isLoggedIn
     @State private var showsLogoutConfirm = false
     @State private var showsLeaveConfirm = false
     @State private var deleteAccountErrorMessage: String?
@@ -75,12 +76,19 @@ struct MyAccountView: View {
                         onCancel: { showsLeaveConfirm = false },
                         onConfirm: {
                             showsLeaveConfirm = false
-                            Task {
-                                do {
-                                    try await appDeleteAccount()
-                                } catch {
-                                    deleteAccountErrorMessage = error.localizedDescription
+                            // 게스트는 지울 실제 계정이 없어서, 탈퇴를 로그아웃과 동일하게 처리해
+                            // 게스트 세션만 종료한다(서버 탈퇴 API는 인증된 계정 대상이라 게스트로
+                            // 호출하면 실패한다).
+                            if isLoggedIn {
+                                Task {
+                                    do {
+                                        try await appDeleteAccount()
+                                    } catch {
+                                        deleteAccountErrorMessage = error.localizedDescription
+                                    }
                                 }
+                            } else {
+                                Task { await appLogout() }
                             }
                         }
                     )
