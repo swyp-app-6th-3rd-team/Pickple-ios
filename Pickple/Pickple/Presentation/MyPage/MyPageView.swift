@@ -12,6 +12,7 @@ struct MyPageView: View {
     @Environment(MyPageRouter.self) private var myPageRouter
     @Environment(\.appRequestLogin) private var appRequestLogin
     @State private var showsLoginRequired = false
+    @State private var showsPostLoginRequired = false
 
     var body: some View {
         ZStack {
@@ -36,9 +37,10 @@ struct MyPageView: View {
                             onTapPost: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) },
                             onTapMore: { myPageRouter.push(.activity) },
                             onTapAddPost: {
-                                // 게스트는 명세대로 로그인 유도 모달을 띄운다.
+                                // 게스트는 로그인 유도 모달을 띄운다. 게시글 작성 문구를 써야 해서
+                                // 계정 관리/프로필 헤더가 쓰는 showsLoginRequired와 다이얼로그를 분리한다.
                                 if !myPageViewModel.isLoggedIn {
-                                    showsLoginRequired = true
+                                    showsPostLoginRequired = true
                                 }
                             }
                         )
@@ -58,8 +60,13 @@ struct MyPageView: View {
                             .background(Color.neutral5)
 
                         MyPageExtraView(
-                            isLoggedIn: myPageViewModel.isLoggedIn,
-                            onTapAccount: { myPageRouter.push(.account) }
+                            onTapAccount: {
+                                if myPageViewModel.isLoggedIn {
+                                    myPageRouter.push(.account)
+                                } else {
+                                    showsLoginRequired = true
+                                }
+                            }
                         )
 
                     }
@@ -76,6 +83,22 @@ struct MyPageView: View {
                         onCancel: { showsLoginRequired = false },
                         onConfirm: {
                             showsLoginRequired = false
+                            appRequestLogin()
+                        }
+                    )
+                }
+            }
+
+            if showsPostLoginRequired {
+                PickpleDialogOverlay {
+                    PickpleConfirmDialog(
+                        title: MyPageStrings.postLoginRequiredTitle,
+                        description: MyPageStrings.postLoginRequiredDescription,
+                        cancelTitle: MainStrings.cancel,
+                        confirmTitle: MainStrings.login,
+                        onCancel: { showsPostLoginRequired = false },
+                        onConfirm: {
+                            showsPostLoginRequired = false
                             appRequestLogin()
                         }
                     )

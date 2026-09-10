@@ -21,6 +21,9 @@ enum MyPageStrings {
     static let myPostsTitle = "내가 올린 투표"
     static let viewAll = "전체 보기"
 
+    static let postLoginRequiredTitle = "로그인이 필요해요"
+    static let postLoginRequiredDescription = "간편 로그인 후 게시글을\n작성할 수 있어요"
+
     static let currentPoints = "현재 보유 포인트"
     static let nextLevel = "다음 레벨까지"
 
