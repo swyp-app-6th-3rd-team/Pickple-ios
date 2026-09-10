@@ -62,6 +62,10 @@ class PostViewModel {
     var submitState: PostSubmitState = .idle
     // 게시 성공 후 실제 상세 화면으로 이동하기 위한, 서버가 내려준 진짜 글 ID.
     private(set) var createdPostId: Int?
+    // nil이면 새 글 작성, 값이 있으면 그 글을 수정하는 중 — .editing(_:) 팩토리에서만 채워진다.
+    private(set) var editingPostId: Int?
+
+    var isEditing: Bool { editingPostId != nil }
 
     let topicMaxLength = 30
     let titleMaxLength = 30
@@ -73,10 +77,13 @@ class PostViewModel {
     }
 
     var gnbTitle: String {
-        switch selectedType {
-        case .forAgainst: return PostViewStrings.forAgainstWriteTitle
-        case .ab: return PostViewStrings.abWriteTitle
-        case .text: return PostViewStrings.textWriteTitle
+        switch (selectedType, isEditing) {
+        case (.forAgainst, false): return PostViewStrings.forAgainstWriteTitle
+        case (.forAgainst, true): return PostViewStrings.forAgainstEditTitle
+        case (.ab, false): return PostViewStrings.abWriteTitle
+        case (.ab, true): return PostViewStrings.abEditTitle
+        case (.text, false): return PostViewStrings.textWriteTitle
+        case (.text, true): return PostViewStrings.textEditTitle
         }
     }
 
@@ -93,7 +100,11 @@ class PostViewModel {
     }
 
     // 한 화면에 모든 입력을 합쳤으므로, 이 화면의 필수 항목이 전부 채워졌는지가 곧 게시 가능 여부다.
+    // 수정 모드는 상품 사진/이름이 API로 반영되지도 않고(PATCH는 category/title/description만
+    // 받음) 기존 사진도 다시 채워주지 않아서(PostViewModel.editing(_:) 참고), 상품 정보의
+    // 유효성은 검사하지 않는다.
     var canSubmit: Bool {
+        guard !isEditing else { return isBasicInfoValid }
         switch selectedType {
         case .forAgainst:
             return isBasicInfoValid && product.isValid
@@ -175,13 +186,26 @@ class PostViewModel {
     func submitPost() async {
         submitState = .submitting
         do {
-            createdPostId = try await postWriteRepository.createPost(
-                type: selectedType,
-                category: selectedCategory,
-                title: submittedTitle,
-                description: description.isEmpty ? nil : description,
-                products: submittedProducts
-            )
+            if let editingPostId {
+                // description은 생성 때(nil=선택 입력 안 함)와 달리, 여기선 있는 그대로 보낸다 —
+                // 빈 문자열이면 "지워라"는 뜻이라(API_SPEC 기준), nil로 바꿔 보내면 사용자가 설명을
+                // 실제로 지웠는데도 기존 값이 유지돼버린다.
+                try await postWriteRepository.updatePost(
+                    id: editingPostId,
+                    category: selectedCategory,
+                    title: submittedTitle,
+                    description: description
+                )
+                createdPostId = editingPostId
+            } else {
+                createdPostId = try await postWriteRepository.createPost(
+                    type: selectedType,
+                    category: selectedCategory,
+                    title: submittedTitle,
+                    description: description.isEmpty ? nil : description,
+                    products: submittedProducts
+                )
+            }
             submitState = .succeeded
         } catch {
             submitState = .failed
@@ -193,8 +217,9 @@ extension PostViewModel {
     // 게시글 상세의 "수정하기"에서 기존 내용을 채운 채로 작성 화면을 열기 위한 팩토리.
     // TODO: 기존 상품 사진(URL)을 UIImage로 내려받아 미리 채우는 로직이 아직 없다 — photos는
     // 항상 빈 배열로 시작해서, 수정 화면 진입 시 기존 사진이 안 보인다. 비동기 다운로드 연동 필요.
-    static func editing(_ post: PostDetail) -> PostViewModel {
-        let viewModel = PostViewModel()
+    static func editing(_ post: PostDetail, postWriteRepository: PostWriteRepository) -> PostViewModel {
+        let viewModel = PostViewModel(postWriteRepository: postWriteRepository)
+        viewModel.editingPostId = post.id
         viewModel.selectedType = post.type
         viewModel.selectedCategory = post.category
         viewModel.description = post.description

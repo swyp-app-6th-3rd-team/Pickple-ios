@@ -12,6 +12,7 @@ import SwiftUI
 struct ComparisonPhotoFieldBlock: View {
     @Binding var photoA: [UIImage]
     @Binding var photoB: [UIImage]
+    var isDisabled: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -19,8 +20,8 @@ struct ComparisonPhotoFieldBlock: View {
                 .pickpleTypography(.body01)
 
             HStack(spacing: 8) {
-                ComparisonPhotoSlot(photos: $photoA, label: PostViewStrings.abOptionALabel)
-                ComparisonPhotoSlot(photos: $photoB, label: PostViewStrings.abOptionBLabel)
+                ComparisonPhotoSlot(photos: $photoA, label: PostViewStrings.abOptionALabel, isDisabled: isDisabled)
+                ComparisonPhotoSlot(photos: $photoB, label: PostViewStrings.abOptionBLabel, isDisabled: isDisabled)
             }
         }
     }
@@ -30,6 +31,7 @@ private struct ComparisonPhotoSlot: View {
     // 한 칸에 정확히 한 장만 담기지만, PostProductDraft.photos가 [UIImage]라 타입을 맞춘다.
     @Binding var photos: [UIImage]
     let label: String
+    var isDisabled: Bool = false
 
     @State private var showsPicker = false
 
@@ -79,6 +81,8 @@ private struct ComparisonPhotoSlot: View {
                 photos = [image]
             })
         }
+        .disabled(isDisabled)
+        .opacity(isDisabled ? 0.5 : 1)
     }
 }
 

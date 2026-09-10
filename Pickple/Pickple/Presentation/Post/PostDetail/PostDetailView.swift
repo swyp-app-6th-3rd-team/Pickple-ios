@@ -10,11 +10,13 @@ import SwiftUI
 
 struct PostDetailView: View {
     var showsSuccessToastOnAppear: Bool = false
-    
+    var successToastMessage: String = PostViewStrings.submitSucceededToast
+
     @State private var postDetailViewModel: PostDetailViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.isLoggedIn) private var isLoggedIn
     @Environment(\.appRequestLogin) private var appRequestLogin
+    @Environment(\.apiClient) private var apiClient
     
     @State private var isSortExpanded = false
     @State private var showsSuccessToast = false
@@ -39,9 +41,11 @@ struct PostDetailView: View {
         userInfoRepository: UserInfoRepository = MockUserInfoRepository(),
         voteCardRepository: VoteCardRepository = MockVoteCardRepository(),
         showsSuccessToastOnAppear: Bool = false,
+        successToastMessage: String = PostViewStrings.submitSucceededToast,
         guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
     ) {
         self.showsSuccessToastOnAppear = showsSuccessToastOnAppear
+        self.successToastMessage = successToastMessage
         _postDetailViewModel = State(initialValue: PostDetailViewModel(
             voteType: voteType,
             postDetailRepository: postDetailRepository,
@@ -191,7 +195,7 @@ struct PostDetailView: View {
                 onEdit: {
                     showsMoreMenu = false
                     if let post = postDetailViewModel.post {
-                        editingPostViewModel = .editing(post)
+                        editingPostViewModel = .editing(post, postWriteRepository: RemotePostWriteRepository(apiClient: apiClient))
                         navigatesToEdit = true
                     }
                 },
@@ -235,7 +239,7 @@ struct PostDetailView: View {
         .navigationDestination(isPresented: $navigatesToEdit) {
             PostWriteFlowView(postViewModel: editingPostViewModel)
         }
-        .pickpleToast(isPresented: $showsSuccessToast, message: PostViewStrings.submitSucceededToast)
+        .pickpleToast(isPresented: $showsSuccessToast, message: successToastMessage)
         .pickpleToast(isPresented: $showsDeleteFailureToast, message: PostDetailStrings.deleteFailedToast)
         .navigationBarBackButtonHidden(true)
         .task {

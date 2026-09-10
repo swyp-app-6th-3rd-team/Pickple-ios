@@ -15,6 +15,7 @@ struct PhotoUploadFieldBlock: View {
     @Binding var photos: [UIImage]
     let maxCount: Int
     let hintText: String
+    var isDisabled: Bool = false
 
     @State private var showsPicker = false
 
@@ -77,6 +78,8 @@ struct PhotoUploadFieldBlock: View {
                 onSelect: { images in photos.append(contentsOf: images) }
             )
         }
+        .disabled(isDisabled)
+        .opacity(isDisabled ? 0.5 : 1)
     }
 }
 

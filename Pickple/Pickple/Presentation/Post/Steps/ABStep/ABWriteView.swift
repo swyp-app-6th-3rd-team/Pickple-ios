@@ -56,47 +56,55 @@ struct ABWriteView: View {
             }
 
             // 카테고리·주제와 함께 기본으로 보이는 상품A/B 이름.
+            // 수정 모드는 상품명/사진/가격/URL이 PATCH로 반영되지 않아(카테고리/제목(=주제)/설명만
+            // 지원) 원래 값을 보여주기만 하고 편집을 막는다 — 순차 공개도 건너뛰고 한꺼번에 보여준다.
             ProductNameFieldBlock(
                 name: $postViewModel.productA.name,
                 maxLength: postViewModel.productNameMaxLength,
-                label: "\(PostViewStrings.abOptionALabel) \(PostViewStrings.productName)"
+                label: "\(PostViewStrings.abOptionALabel) \(PostViewStrings.productName)",
+                isDisabled: postViewModel.isEditing
             )
 
             ProductNameFieldBlock(
                 name: $postViewModel.productB.name,
                 maxLength: postViewModel.productNameMaxLength,
-                label: "\(PostViewStrings.abOptionBLabel) \(PostViewStrings.productName)"
+                label: "\(PostViewStrings.abOptionBLabel) \(PostViewStrings.productName)",
+                isDisabled: postViewModel.isEditing
             )
 
-            ComparisonPhotoFieldBlock(photoA: $postViewModel.productA.photos, photoB: $postViewModel.productB.photos)
-                .revealed(isBasicInfoFilled && areNamesFilled)
+            ComparisonPhotoFieldBlock(photoA: $postViewModel.productA.photos, photoB: $postViewModel.productB.photos, isDisabled: postViewModel.isEditing)
+                .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled))
 
             VStack(alignment: .leading, spacing: 20) {
                 ProductPriceFieldBlock(
                     price: $postViewModel.productA.price,
-                    label: "\(PostViewStrings.abOptionALabel) \(PostViewStrings.price)"
+                    label: "\(PostViewStrings.abOptionALabel) \(PostViewStrings.price)",
+                    isDisabled: postViewModel.isEditing
                 )
                 ProductPriceFieldBlock(
                     price: $postViewModel.productB.price,
-                    label: "\(PostViewStrings.abOptionBLabel) \(PostViewStrings.price)"
+                    label: "\(PostViewStrings.abOptionBLabel) \(PostViewStrings.price)",
+                    isDisabled: postViewModel.isEditing
                 )
             }
-            .revealed(isBasicInfoFilled && areNamesFilled && arePhotosFilled)
+            .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled && arePhotosFilled))
 
             VStack(alignment: .leading, spacing: 20) {
                 ProductURLFieldBlock(
                     url: $postViewModel.productA.url,
-                    label: "\(PostViewStrings.abOptionALabel) \(PostViewStrings.url)"
+                    label: "\(PostViewStrings.abOptionALabel) \(PostViewStrings.url)",
+                    isDisabled: postViewModel.isEditing
                 )
                 ProductURLFieldBlock(
                     url: $postViewModel.productB.url,
-                    label: "\(PostViewStrings.abOptionBLabel) \(PostViewStrings.url)"
+                    label: "\(PostViewStrings.abOptionBLabel) \(PostViewStrings.url)",
+                    isDisabled: postViewModel.isEditing
                 )
             }
-            .revealed(isBasicInfoFilled && areNamesFilled && arePhotosFilled && arePricesFilled)
+            .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled && arePhotosFilled && arePricesFilled))
 
             DescriptionFieldBlock(text: $postViewModel.description, maxLength: postViewModel.descriptionMaxLength)
-                .revealed(isBasicInfoFilled && areNamesFilled && arePhotosFilled && arePricesFilled && areUrlsFilled)
+                .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled && arePhotosFilled && arePricesFilled && areUrlsFilled))
         }
         .padding(.horizontal, 20)
         .animation(.easeInOut, value: isBasicInfoFilled)

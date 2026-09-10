@@ -11,6 +11,7 @@ import SwiftUI
 struct ProductURLFieldBlock: View {
     @Binding var url: String
     var label: String = PostViewStrings.url
+    var isDisabled: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -22,7 +23,9 @@ struct ProductURLFieldBlock: View {
                 type: .leading,
                 placeholder: PostViewStrings.urlPlaceholder
             )
+            .disabled(isDisabled)
         }
+        .opacity(isDisabled ? 0.5 : 1)
     }
 }
 

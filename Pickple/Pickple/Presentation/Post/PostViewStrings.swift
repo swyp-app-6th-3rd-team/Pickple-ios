@@ -27,6 +27,11 @@ enum PostViewStrings {
     static let abWriteTitle = "A/B 게시글 작성"
     static let textWriteTitle = "일반 게시글 작성"
 
+    // 글 수정 화면 GNB 타이틀
+    static let forAgainstEditTitle = "찬반 게시글 수정"
+    static let abEditTitle = "A/B 게시글 수정"
+    static let textEditTitle = "일반 게시글 수정"
+
     // 1단계 공통
     static let forAgainstStepOneTitle = "무슨 고민이신가요?"
     static let abStepOneTitle = "무슨 고민이신가요?"
@@ -57,6 +62,7 @@ enum PostViewStrings {
 
     // 버튼
     static let submit = "게시"
+    static let submitEdit = "수정"
 
     // 나가기 확인 모달
     static let leaveConfirmTitle = "작성 중인 내용이 있어요"
@@ -67,4 +73,6 @@ enum PostViewStrings {
     // 토스트
     static let submitFailedToast = "게시글 등록에 실패했습니다. 다시 시도해 주세요."
     static let submitSucceededToast = "게시글이 성공적으로 등록되었습니다"
+    static let submitEditFailedToast = "게시글 수정에 실패했습니다. 다시 시도해 주세요."
+    static let submitEditSucceededToast = "게시글이 성공적으로 수정되었습니다"
 }

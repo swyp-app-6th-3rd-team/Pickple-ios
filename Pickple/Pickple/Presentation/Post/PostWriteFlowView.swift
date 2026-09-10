@@ -31,8 +31,10 @@ struct PostWriteFlowView: View {
                     trailing: .none
                 )
 
-                // 일반 게시글은 필드가 3개뿐이고 전부 기본으로 보이므로, 순차 공개도 게이지도 필요 없다.
-                if postViewModel.selectedType != .text {
+                // 일반 게시글은 필드가 3개뿐이고 전부 기본으로 보이므로, 순차 공개도 게이지도 필요
+                // 없다. 수정 모드도 모든 필드가 이미 채워진 채로 시작해서(일부는 잠긴 채) "채워나가는"
+                // 진행률 개념이 안 맞아 게이지를 숨긴다.
+                if postViewModel.selectedType != .text && !postViewModel.isEditing {
                     ProgressView(value: Double(postViewModel.requiredFieldsFilledCount), total: Double(postViewModel.requiredFieldsTotalCount))
                         .progressViewStyle(LinearProgressViewStyle(tint: Color.yellow60))
                         .padding(.horizontal, 20)
@@ -51,7 +53,7 @@ struct PostWriteFlowView: View {
                 }
 
                 PostWriteFlowButtonRow(
-                    title: PostViewStrings.submit,
+                    title: postViewModel.isEditing ? PostViewStrings.submitEdit : PostViewStrings.submit,
                     isEnabled: postViewModel.canSubmit,
                     onSubmit: handleSubmit
                 )
@@ -66,7 +68,7 @@ struct PostWriteFlowView: View {
                 }
             }
         }
-        .pickpleToast(isPresented: $showsFailureToast, message: PostViewStrings.submitFailedToast)
+        .pickpleToast(isPresented: $showsFailureToast, message: postViewModel.isEditing ? PostViewStrings.submitEditFailedToast : PostViewStrings.submitFailedToast)
         .navigationBarBackButtonHidden(true)
         .navigationDestination(isPresented: $navigatesToDetail) {
             if let postId = postViewModel.createdPostId {
@@ -76,7 +78,8 @@ struct PostWriteFlowView: View {
                     commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
                     userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
                     voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
-                    showsSuccessToastOnAppear: true
+                    showsSuccessToastOnAppear: true,
+                    successToastMessage: postViewModel.isEditing ? PostViewStrings.submitEditSucceededToast : PostViewStrings.submitSucceededToast
                 )
             }
         }

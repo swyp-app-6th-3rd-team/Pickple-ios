@@ -34,6 +34,12 @@ private struct PostCreateResponseDTO: Decodable {
     let postId: Int
 }
 
+private struct PostUpdateRequestDTO: Encodable {
+    let category: String?
+    let title: String?
+    let description: String?
+}
+
 struct RemotePostWriteRepository: PostWriteRepository {
     let apiClient: APIClientProtocol
 
@@ -69,6 +75,17 @@ struct RemotePostWriteRepository: PostWriteRepository {
         let endpoint = APIEndpoint(method: .post, path: "/posts", body: body, requiresAuth: true)
         let response: PostCreateResponseDTO = try await apiClient.request(endpoint)
         return response.postId
+    }
+
+    func updatePost(id: Int, category: String, title: String?, description: String) async throws {
+        let requestBody = PostUpdateRequestDTO(
+            category: Self.categoryCode(for: category),
+            title: title,
+            description: description
+        )
+        let body = try JSONEncoder().encode(requestBody)
+        let endpoint = APIEndpoint(method: .patch, path: "/posts/\(id)", body: body, requiresAuth: true)
+        try await apiClient.requestVoid(endpoint)
     }
 
     private func uploadImages(_ images: [UIImage]) async throws -> Int {

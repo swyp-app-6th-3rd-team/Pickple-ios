@@ -321,8 +321,13 @@ LV.1~LV.5의 승급 필요 조건을 낮은 등급부터 돌려준다.
 
 **(R-33) 상품 정보(상품명·가격·URL·사진)와 유형(type)은 이 API로 바꿀 수 없고, 함께 보내도 무시된다** — 투표 대상이
 게시 후 바뀌면 이미 투표한 사람과 통계 정합성이 깨지기 때문으로 추정. 상품을 바꾸고 싶으면 삭제 후 재작성해야 한다.
-클라이언트 미구현 — 기존 작성 화면(사진/상품명/가격/URL 포함)을 그대로 재사용하면 그 필드들이 조용히 무시돼
-사용자가 혼동하므로, 카테고리/제목/설명만 있는 전용 수정 화면이 필요하다(추후 별도 작업).
+
+`RemotePostWriteRepository.updatePost()`로 실연동됨. 전용 화면을 새로 만들지 않고 기존 작성
+화면(`PostWriteFlowView`)을 그대로 재사용하되, `PostViewModel.isEditing`이 true면 상품명/사진/
+가격/URL 필드를 원래 값으로 채운 채 비활성화한다(`ProductNameFieldBlock` 등 각 필드 블록의
+`isDisabled` 파라미터) — 조용히 무시되는 대신 못 바꾼다는 걸 화면에서 보여준다. 찬반 게시글의
+제목(=상품명)도 서버가 다른 값이면 400을 주므로 같은 이유로 비활성화하고, PATCH 요청에는
+title을 nil로 보내 기존 값을 유지시킨다.
 
 응답 200 — OK(`ApiResponsePostUpdateResponse`): `postId`, `type`, `category`, `title`, `description`
 
@@ -410,6 +415,5 @@ LV.1~LV.5의 승급 필요 조건을 낮은 등급부터 돌려준다.
 
 ## 아직 이 문서에 없는 것 (구현 전 백엔드 팀에 확인 필요)
 
-- 게시글 수정(PATCH)/삭제(DELETE) 요청·응답 상세 스키마 (엔드포인트 존재는 확인됨 — 위 참고)
 - 프로필 이미지 업로드용 attachType(POST /images는 PRODUCT/COMMENT만 있음)
 - 신고/차단 관련 엔드포인트
