@@ -17,4 +17,6 @@ class Router<Route: Hashable> {
     func push(_ route: Route) {
         path.append(route)
     }
+
+    deinit {}
 }
