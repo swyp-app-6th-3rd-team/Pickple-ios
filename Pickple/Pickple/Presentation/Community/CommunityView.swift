@@ -31,14 +31,15 @@ struct CommunityView: View {
                         communityViewModel: communityViewModel,
                         onTapPost: { post in communityRouter.push(.postDetail(postId: post.id, type: post.type)) }
                     )
-                    .overlay {
-                        // 드롭박스가 펼쳐진 동안 목록 쪽을 탭하면(게시글 탭 포함) 드롭박스만 접는다.
-                        if communityViewModel.isSortExpanded {
-                            Color.clear
-                                .contentShape(Rectangle())
-                                .onTapGesture { communityViewModel.isSortExpanded = false }
+                    // 게시글 탭 등 목록 안의 제스처를 막지 않고 같이 받아서, 드롭박스가 펼쳐진 채로
+                    // 게시글을 눌러도 닫기+이동이 한 번의 탭으로 끝나게 한다.
+                    .simultaneousGesture(
+                        TapGesture().onEnded {
+                            if communityViewModel.isSortExpanded {
+                                communityViewModel.isSortExpanded = false
+                            }
                         }
-                    }
+                    )
                 }
 
                 VStack {
@@ -100,6 +101,7 @@ struct CommunityView: View {
                 await communityViewModel.loadPosts()
             }
             .onChange(of: communityViewModel.selectedCategory) { _, _ in
+                communityViewModel.isSortExpanded = false
                 Task { await communityViewModel.loadPosts() }
             }
             .onChange(of: communityViewModel.sortOption) { _, _ in
