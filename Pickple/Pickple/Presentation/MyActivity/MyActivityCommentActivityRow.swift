@@ -21,15 +21,31 @@ struct MyActivityCommentActivityRow: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top, spacing: 12) {
-                Text(activity.content)
-                    .lineLimit(2)
-                    .pickpleTypography(.body01)
-                    .foregroundStyle(Color.black)
-
+        VStack {
+            HStack {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(alignment: .top, spacing: 12) {
+                        Text(activity.content)
+                            .lineLimit(2)
+                            .pickpleTypography(.body01)
+                            .foregroundStyle(Color.black)
+                    }
+                    
+                    HStack(spacing: 4) {
+                        Image(referencedPostTypeIcon)
+                            .resizable()
+                            .frame(width: 14, height: 14)
+                        
+                        Text(activity.referencedPost.title)
+                            .lineLimit(1)
+                    }
+                    .pickpleTypography(.caption)
+                    .foregroundStyle(Color.neutral50)
+                    
+                    
+                }
                 Spacer()
-
+                
                 if let thumbnailUrl = activity.referencedPost.thumbnailUrl {
                     AsyncImage(url: thumbnailUrl) { image in
                         image.resizable().scaledToFill()
@@ -42,18 +58,7 @@ struct MyActivityCommentActivityRow: View {
                     .clipped()
                 }
             }
-
-            HStack(spacing: 4) {
-                Image(referencedPostTypeIcon)
-                    .resizable()
-                    .frame(width: 14, height: 14)
-
-                Text(activity.referencedPost.title)
-                    .lineLimit(1)
-            }
-            .pickpleTypography(.caption)
-            .foregroundStyle(Color.neutral50)
-
+            
             HStack {
                 HStack(spacing: 4) {
                     Image("PickpleOnePick")
@@ -67,13 +72,16 @@ struct MyActivityCommentActivityRow: View {
                 .padding(.vertical, 4)
                 .background(Color.neutral5)
                 .clipShape(Capsule())
-
+                
                 Spacer()
-
+                
                 Text(activity.createdAt.relativeTimeDescription)
                     .pickpleTypography(.caption)
                     .foregroundStyle(Color.neutral40)
             }
+            
+            
+            
         }
     }
 }
