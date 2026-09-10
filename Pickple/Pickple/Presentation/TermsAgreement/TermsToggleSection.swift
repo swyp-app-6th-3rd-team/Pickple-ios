@@ -14,8 +14,8 @@ struct TermsToggleSection: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            TermsToggleRow(isOn: $personalDataOn, title: TermsAgreementStrings.personalDataTitle)
-            TermsToggleRow(isOn: $serviceTermsOn, title: TermsAgreementStrings.serviceTermsTitle)
+            TermsToggleRow(isOn: $personalDataOn, title: TermsAgreementStrings.personalDataTitle, url: TermsAgreementStrings.privacy)
+            TermsToggleRow(isOn: $serviceTermsOn, title: TermsAgreementStrings.serviceTermsTitle, url: TermsAgreementStrings.ToU)
             TermsToggleRow(isOn: $pushNotificationOn, title: TermsAgreementStrings.pushNotificationTitle, showsViewButton: false)
         }
         .pickpleTypography(.body02)
