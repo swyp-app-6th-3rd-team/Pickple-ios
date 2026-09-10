@@ -11,9 +11,11 @@ import Foundation
 // 공통으로 내려주는 code("안정 식별자") → 아이콘 에셋 매핑. 두 API가 각각
 // Off/On 아이콘만 다르게 쓸 뿐 같은 code 규칙을 공유해서 한 곳에 모아둔다.
 //
-// code는 API 문서에 확인된 예시가 "TOTAL_VOTE_10" 하나뿐이라, 나머지는 Mock 데이터의
-// 임계값(10/100/500/1000회, 일 20/30회, 7/30일 연속)과 같은 네이밍 규칙일 거라 추정한 것 —
-// 실제 로그인 응답으로 나머지 code 값을 받아보고 다시 확인 필요.
+// code 네이밍 규칙은 실제 로그인 응답으로 "TOTAL_VOTE_10"·"DAILY_VOTE_20" 두 개가
+// {conditionType}_{임계값} 패턴과 정확히 일치하는 걸 확인했다(2026-09-10). STREAK_7/30은
+// 이 계정이 아직 그 단계(일일투표 20·30개를 먼저 다 채워야 미션 2 사다리에서 그다음
+// 순서로 나타남 — 기능명세서 "미션 2" 참고)에 도달하지 않아서 실제 값을 직접 보지는
+// 못했지만, 같은 패턴일 거라 추정해서 둔다.
 enum BadgeIconFamily: String {
     case firstPick = "FirstPick"
     case sprout = "Sprout"
@@ -34,7 +36,11 @@ enum BadgeIconFamily: String {
         case "DAILY_VOTE_30": return .rampage
         case "STREAK_7": return .attendance
         case "STREAK_30": return .addict
-        default: return .firstPick // 확인 안 된 code — 임시 기본값
+        default:
+            // 정확한 임계값 접미사(_7/_30)까지는 못 맞혀도, code가 STREAK로 시작하면 최소한
+            // isStreakType은 맞게 판정되도록 한다 — 그래야 진행도 바가 뜨는지 자체는 실제
+            // 값과 무관하게 확인할 수 있다.
+            return code.hasPrefix("STREAK") ? .attendance : .firstPick
         }
     }
 
