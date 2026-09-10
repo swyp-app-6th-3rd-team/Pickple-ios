@@ -124,66 +124,15 @@ struct PostDetailView: View {
                 }
             }
 
-            if let loginRequiredDescription {
-                PickpleDialogOverlay {
-                    PickpleConfirmDialog(
-                        title: PostDetailStrings.voteRequiredTitle,
-                        description: loginRequiredDescription,
-                        cancelTitle: PostDetailStrings.cancel,
-                        confirmTitle: PostDetailStrings.login,
-                        onCancel: { self.loginRequiredDescription = nil },
-                        onConfirm: {
-                            self.loginRequiredDescription = nil
-                            appRequestLogin()
-                        }
-                    )
-                }
-            }
-            
-            if let postActionConfirm {
-                PickpleDialogOverlay {
-                    PickpleConfirmDialog(
-                        title: postActionConfirm.title,
-                        description: postActionConfirm.description,
-                        cancelTitle: PostDetailStrings.cancel,
-                        confirmTitle: postActionConfirm.confirmTitle,
-                        onCancel: { self.postActionConfirm = nil },
-                        onConfirm: {
-                            switch postActionConfirm {
-                            case .delete:
-                                Task {
-                                    if await postDetailViewModel.deletePost() {
-                                        dismiss()
-                                    } else {
-                                        showsDeleteFailureToast = true
-                                    }
-                                }
-                            case .report:
-                                break //TODO: 실제 신고 API 연동 필요
-                            case .block:
-                                break //TODO: 기능명세서상 차단은 확인 모달만 있고 실제 동작은 정의되어 있지 않음
-                            }
-                            self.postActionConfirm = nil
-                        }
-                    )
-                }
-            }
-            
-            if let comment = commentToPick {
-                PickpleDialogOverlay {
-                    PickpleConfirmDialog(
-                        title: PostDetailStrings.pickConfirmTitle,
-                        description: PostDetailStrings.pickConfirmDescription,
-                        cancelTitle: PostDetailStrings.cancel,
-                        confirmTitle: PostDetailStrings.pickConfirmButton,
-                        onCancel: { commentToPick = nil },
-                        onConfirm: {
-                            Task { await postDetailViewModel.pickComment(comment.id) }
-                            commentToPick = nil
-                        }
-                    )
-                }
-            }
+            PostDetailDialogsOverlay(
+                loginRequiredDescription: $loginRequiredDescription,
+                postActionConfirm: $postActionConfirm,
+                commentToPick: $commentToPick,
+                showsDeleteFailureToast: $showsDeleteFailureToast,
+                postDetailViewModel: postDetailViewModel,
+                appRequestLogin: appRequestLogin,
+                onDeleted: { dismiss() }
+            )
         }
         .sheet(isPresented: $showsMoreMenu) {
             PostDetailMoreMenuSheet(
