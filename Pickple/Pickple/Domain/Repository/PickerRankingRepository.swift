@@ -10,4 +10,6 @@ protocol PickerRankingRepository {
     func fetchTopRankings() async throws -> [PickerRanking]
     // 전체 랭킹 화면. cursor는 이전 응답의 nextCursor. 없으면(nil) 첫 조각.
     func fetchRankings(cursor: String?) async throws -> RankingPage
+    // 로그인한 유저 본인의 랭킹. 배치가 최대 5분마다 매겨져서 가입 직후엔 아직 순위가 없을 수 있다(nil).
+    func fetchMyRanking() async throws -> PickerRanking?
 }
