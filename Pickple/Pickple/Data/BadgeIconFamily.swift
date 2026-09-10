@@ -11,9 +11,11 @@ import Foundation
 // 공통으로 내려주는 code("안정 식별자") → 아이콘 에셋 매핑. 두 API가 각각
 // Off/On 아이콘만 다르게 쓸 뿐 같은 code 규칙을 공유해서 한 곳에 모아둔다.
 //
-// code는 API 문서에 확인된 예시가 "TOTAL_VOTE_10" 하나뿐이라, 나머지는 Mock 데이터의
-// 임계값(10/100/500/1000회, 일 20/30회, 7/30일 연속)과 같은 네이밍 규칙일 거라 추정한 것 —
-// 실제 로그인 응답으로 나머지 code 값을 받아보고 다시 확인 필요.
+// code 네이밍 규칙은 실제 로그인 응답으로 "TOTAL_VOTE_10"·"DAILY_VOTE_20" 두 개가
+// {conditionType}_{임계값} 패턴과 정확히 일치하는 걸 확인했다(2026-09-10). STREAK_7/30은
+// 이 계정이 아직 그 단계(일일투표 20·30개를 먼저 다 채워야 미션 2 사다리에서 그다음
+// 순서로 나타남 — 기능명세서 "미션 2" 참고)에 도달하지 않아서 실제 값을 직접 보지는
+// 못했지만, 같은 패턴일 거라 추정해서 둔다.
 enum BadgeIconFamily: String {
     case firstPick = "FirstPick"
     case sprout = "Sprout"
@@ -34,17 +36,32 @@ enum BadgeIconFamily: String {
         case "DAILY_VOTE_30": return .rampage
         case "STREAK_7": return .attendance
         case "STREAK_30": return .addict
-        default: return .firstPick // 확인 안 된 code — 임시 기본값
+        default:
+            // 정확한 임계값 접미사(_7/_30)까지는 못 맞혀도, code가 STREAK로 시작하면 최소한
+            // ladderPosition은 값이 나오도록 한다.
+            return code.hasPrefix("STREAK") ? .attendance : .firstPick
         }
     }
 
     var offIconName: String { "PickpleBadge\(rawValue)Off" }
     var onIconName: String { "PickpleBadge\(rawValue)On" }
 
-    // "N일 연속" 진행도 바(BadgeMissionStreakTracker)를 보여줄 대상인지.
-    // description 문자열에 "연속"이 포함되는지로 판별하던 이전 로직은 실제 서버 문구가
-    // 달라서 안 걸렸던 버그가 있어, 이미 안정 식별자로 쓰고 있는 code(→ family) 기준으로 바꿨다.
-    var isStreakType: Bool {
-        self == .attendance || self == .addict
+    // 이 계열(누적 또는 일일+연속) 안에서 지금 활성 단계가 몇 번째인지(1부터) — 그 계열에서
+    // 이미 완료된 단계 수는 이 값 - 1이다. 두 계열이 나란히 4단계씩이라 위치가 그대로 대응된다.
+    var ladderPosition: Int {
+        switch self {
+        case .firstPick, .hunter: return 1
+        case .sprout, .rampage: return 2
+        case .pro, .attendance: return 3
+        case .master, .addict: return 4
+        }
+    }
+
+    // 누적(미션 1) 계열인지, 일일투표+연속출석(미션 2) 계열인지.
+    var isCumulativeFamily: Bool {
+        switch self {
+        case .firstPick, .sprout, .pro, .master: return true
+        case .hunter, .rampage, .attendance, .addict: return false
+        }
     }
 }

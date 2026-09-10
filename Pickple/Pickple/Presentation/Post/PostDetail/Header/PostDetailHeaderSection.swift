@@ -23,7 +23,7 @@ struct PostDetailHeaderSection: View {
                         .foregroundStyle(Color.black)
                 }
 
-                PostDetailAuthorRow(nickname: post.authorNickname, level: post.authorLevel, profileImageName: post.authorProfileImageName, createdAt: post.createdAt)
+                PostDetailAuthorRow(nickname: post.authorNickname, level: post.authorGradeLevel, profileImageUrl: post.authorProfileImageUrl, createdAt: post.createdAt)
             }
 
             Text(post.description)
@@ -36,20 +36,21 @@ struct PostDetailHeaderSection: View {
 #Preview {
     PostDetailHeaderSection(
         post: PostDetail(
-            id: UUID(),
+            id: 1,
             type: .forAgainst,
             category: "패션/잡화",
             title: "나이키 에어포스 흰색",
             description: "데일리로 신을건데 나이키 에어포스 흰색 어때?",
-            images: [],
-            authorNickname: "닉네임",
-            authorLevel: 5,
-            authorProfileImageName: "PickpleProfileSample",
-            isMine: true,
             createdAt: Date(),
-            participantCount: 3,
-            firstProduct: nil,
-            secondProduct: nil
+            commentCount: 3,
+            authorId: 1,
+            authorNickname: "닉네임",
+            authorProfileImageUrl: nil,
+            authorGradeLevel: 5,
+            authorGradeName: "LV.5",
+            authorRanking: nil,
+            isMine: true,
+            vote: nil
         ),
         onMoreTapped: {}
     )

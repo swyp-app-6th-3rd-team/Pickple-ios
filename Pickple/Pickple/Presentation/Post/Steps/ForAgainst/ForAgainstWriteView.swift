@@ -29,19 +29,21 @@ struct ForAgainstWriteView: View {
                     CategoryFieldBlock(postViewModel: postViewModel, isExpanded: $isCategoryExpanded, options: categoryOptions)
                 }
 
-            ProductNameFieldBlock(name: $postViewModel.product.name, maxLength: postViewModel.productNameMaxLength)
+            // 수정 모드는 상품명/사진/가격/URL이 PATCH로 반영되지 않아(카테고리/제목/설명만
+            // 지원) 원래 값을 보여주기만 하고 편집을 막는다 — 순차 공개도 건너뛰고 한꺼번에 보여준다.
+            ProductNameFieldBlock(name: $postViewModel.product.name, maxLength: postViewModel.productNameMaxLength, isDisabled: postViewModel.isEditing)
 
-            PhotoUploadFieldBlock(photos: $postViewModel.product.photos, maxCount: 3, hintText: PostViewStrings.photoHintUpToThree)
-                .revealed(postViewModel.isCategorySelected && isNameFilled)
+            PhotoUploadFieldBlock(photos: $postViewModel.product.photos, maxCount: 3, hintText: PostViewStrings.photoHintUpToThree, isDisabled: postViewModel.isEditing)
+                .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled))
 
-            ProductPriceFieldBlock(price: $postViewModel.product.price)
-                .revealed(postViewModel.isCategorySelected && isNameFilled && isPhotoFilled)
+            ProductPriceFieldBlock(price: $postViewModel.product.price, isDisabled: postViewModel.isEditing)
+                .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled && isPhotoFilled))
 
-            ProductURLFieldBlock(url: $postViewModel.product.url)
-                .revealed(postViewModel.isCategorySelected && isNameFilled && isPhotoFilled && isPriceFilled)
+            ProductURLFieldBlock(url: $postViewModel.product.url, isDisabled: postViewModel.isEditing)
+                .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled && isPhotoFilled && isPriceFilled))
 
             DescriptionFieldBlock(text: $postViewModel.description, maxLength: postViewModel.descriptionMaxLength)
-                .revealed(postViewModel.isCategorySelected && isNameFilled && isPhotoFilled && isPriceFilled && isUrlFilled)
+                .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled && isPhotoFilled && isPriceFilled && isUrlFilled))
         }
         .padding(.horizontal, 20)
         .animation(.easeInOut, value: postViewModel.isCategorySelected)

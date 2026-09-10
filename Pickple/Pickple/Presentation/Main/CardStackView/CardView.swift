@@ -10,7 +10,8 @@ import SwiftUI
 
 struct CardView: View {
     let data: VoteCard
-    let onVote: (VoteCardSide) -> Void
+    let myProfileImageUrl: URL?
+    let onVote: (PostDetailVoteSide) -> Void
     let onTapBody: () -> Void
     
     private var firstLabel: String {
@@ -64,21 +65,17 @@ struct CardView: View {
                         .contentShape(Rectangle())
                         .onTapGesture(perform: onTapBody)
                         
-                        if data.isVoted {
-                            VoteCardGaugeBar(
-                                firstLabel: firstLabel,
-                                secondLabel: secondLabel,
-                                firstPercentage: data.firstPercentage ?? 0,
-                                secondPercentage: data.secondPercentage ?? 0
-                            )
-                            .padding(.horizontal, 20)
-                        } else {
-                            HStack(spacing: 8) {
-                                voteButton(label: firstLabel, side: .first)
-                                voteButton(label: secondLabel, side: .second)
-                            }
-                            .padding(.horizontal, 20)
-                        }
+                        PostDetailVoteButtons(
+                            firstLabel: firstLabel,
+                            secondLabel: secondLabel,
+                            votedSide: data.votedSide,
+                            firstPercentage: data.firstPercentage ?? 0,
+                            secondPercentage: data.secondPercentage ?? 0,
+                            myProfileImageUrl: myProfileImageUrl,
+                            onVote: onVote
+                        )
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 20)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -130,54 +127,6 @@ struct CardView: View {
         }
     }
 
-    private func voteButton(label: String, side: VoteCardSide) -> some View {
-        Button {
-            onVote(side)
-        } label: {
-            Text(label)
-                .pickpleTypography(.body01)
-                .foregroundStyle(Color.black)
-                .frame(maxWidth: .infinity, minHeight: 48)
-                .background(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .padding(.bottom, 20)
-        }
-    }
-}
-
-
-// 투표 완료 후 두 항목의 비율을 하나의 막대로 채워서 보여준다.
-private struct VoteCardGaugeBar: View {
-    let firstLabel: String
-    let secondLabel: String
-    let firstPercentage: Int
-    let secondPercentage: Int
-
-    var body: some View {
-        GeometryReader { proxy in
-            HStack(spacing: 2) {
-                gaugeSegment(label: firstLabel, percentage: firstPercentage)
-                    .frame(width: proxy.size.width * CGFloat(firstPercentage) / 100)
-
-                gaugeSegment(label: secondLabel, percentage: secondPercentage)
-                    .frame(width: proxy.size.width * CGFloat(secondPercentage) / 100)
-            }
-        }
-        .frame(height: 48)
-    }
-
-    private func gaugeSegment(label: String, percentage: Int) -> some View {
-        HStack(spacing: 4) {
-            Text(label)
-            Text("\(percentage)%")
-        }
-        .pickpleTypography(.body02)
-        .foregroundStyle(Color.white)
-        .frame(maxWidth: .infinity)
-        .frame(height: 48)
-        .background(Color.navy60)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
 }
 
 #Preview("찬반 픽") {
@@ -195,6 +144,7 @@ private struct VoteCardGaugeBar: View {
             firstPercentage: nil,
             secondPercentage: nil
         ),
+        myProfileImageUrl: nil,
         onVote: { _ in },
         onTapBody: {}
     )
@@ -215,6 +165,7 @@ private struct VoteCardGaugeBar: View {
             firstPercentage: nil,
             secondPercentage: nil
         ),
+        myProfileImageUrl: nil,
         onVote: { _ in },
         onTapBody: {}
     )
@@ -233,8 +184,10 @@ private struct VoteCardGaugeBar: View {
             firstOptionId: 0,
             secondOptionId: 1,
             firstPercentage: 62,
-            secondPercentage: 38
+            secondPercentage: 38,
+            votedSide: .first
         ),
+        myProfileImageUrl: nil,
         onVote: { _ in },
         onTapBody: {}
     )

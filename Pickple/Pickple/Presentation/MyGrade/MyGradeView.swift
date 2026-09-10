@@ -69,6 +69,7 @@ struct MyGradeView: View {
             await gradeViewModel.loadGrades()
         }
         .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
     }
 }
 

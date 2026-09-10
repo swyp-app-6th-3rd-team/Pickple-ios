@@ -76,9 +76,19 @@ class AppSessionViewModel {
     }
 
     // 앱 시작 시 Keychain에 남아있는 refreshToken으로 accessToken을 재발급받아 자동 로그인한다.
+    // 토큰이 없으면 이 작업이 거의 즉시 끝나서 스플래시가 한 프레임만 스치듯 지나가 버리므로,
+    // 최소 노출 시간(SplashView 참고, 임시값)을 실제 복원 작업과 동시에 기다렸다가 더 늦게
+    // 끝나는 쪽에 맞춰 스플래시를 내린다.
     @MainActor
     func restoreSession() async {
-        defer { isRestoringSession = false }
+        async let minimumSplashDuration = try? await Task.sleep(for: .seconds(1.2))
+        await performTokenRestore()
+        _ = await minimumSplashDuration
+        isRestoringSession = false
+    }
+
+    @MainActor
+    private func performTokenRestore() async {
         guard let refreshToken = refreshTokenStore.load() else { return }
         do {
             let tokens = try await authRepository.refreshAccessToken(refreshToken: refreshToken)

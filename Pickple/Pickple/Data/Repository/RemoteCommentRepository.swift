@@ -34,7 +34,9 @@ struct RemoteCommentRepository: CommentRepository {
     let postId: Int
 
     func fetchComments() async throws -> [Comment] {
-        let endpoint = APIEndpoint(method: .get, path: "/posts/\(postId)/comments", requiresAuth: false)
+        // requiresAuth: false로 토큰 없이 요청했더니 서버가 401을 돌려줬다 — 이 엔드포인트는
+        // 실제로 인증을 요구한다. 로그인 상태면 토큰을 붙이고, 게스트는 그대로 시도한다.
+        let endpoint = APIEndpoint(method: .get, path: "/posts/\(postId)/comments", attachesAuthIfAvailable: true)
         let dto: CommentListDTO = try await apiClient.request(endpoint)
         return dto.comments.map(Self.toDomain)
     }

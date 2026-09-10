@@ -13,4 +13,6 @@ struct PostVoteResult: Equatable {
     let secondLabel: String
     let firstPercentage: Int
     let secondPercentage: Int
+    // 이 탭은 "내가 투표한 글"만 보여주므로 항상 값이 있다(미투표 상태 없음).
+    let votedSide: PostDetailVoteSide
 }

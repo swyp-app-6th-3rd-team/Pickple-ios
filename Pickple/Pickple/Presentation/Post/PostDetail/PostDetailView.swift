@@ -9,15 +9,15 @@
 import SwiftUI
 
 struct PostDetailView: View {
-    var showsSuccessToastOnAppear: Bool = false
-    
     @State private var postDetailViewModel: PostDetailViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.isLoggedIn) private var isLoggedIn
     @Environment(\.appRequestLogin) private var appRequestLogin
+    @Environment(\.apiClient) private var apiClient
     
     @State private var isSortExpanded = false
     @State private var showsSuccessToast = false
+    @State private var showsDeleteFailureToast = false
     @State private var showsMoreMenu = false
     @State private var postActionConfirm: PostDetailConfirmAction?
     @State private var loginRequiredDescription: String?
@@ -33,13 +33,20 @@ struct PostDetailView: View {
     
     init(
         voteType: VoteType = .text,
+        postDetailRepository: PostDetailRepository? = nil,
         commentRepository: CommentRepository = MockCommentRepository(),
         userInfoRepository: UserInfoRepository = MockUserInfoRepository(),
-        showsSuccessToastOnAppear: Bool = false,
+        voteCardRepository: VoteCardRepository = MockVoteCardRepository(),
         guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
     ) {
-        self.showsSuccessToastOnAppear = showsSuccessToastOnAppear
-        _postDetailViewModel = State(initialValue: PostDetailViewModel(voteType: voteType, commentRepository: commentRepository, userInfoRepository: userInfoRepository, guestVoteTracker: guestVoteTracker))
+        _postDetailViewModel = State(initialValue: PostDetailViewModel(
+            voteType: voteType,
+            postDetailRepository: postDetailRepository,
+            commentRepository: commentRepository,
+            userInfoRepository: userInfoRepository,
+            voteCardRepository: voteCardRepository,
+            guestVoteTracker: guestVoteTracker
+        ))
     }
     
     var body: some View {
@@ -60,8 +67,10 @@ struct PostDetailView: View {
                             postDetailViewModel: postDetailViewModel,
                             onMoreTapped: { showsMoreMenu = true },
                             onVote: { side in
-                                if postDetailViewModel.vote(side) {
-                                    loginRequiredDescription = PostDetailStrings.voteRequiredDescription
+                                Task {
+                                    if await postDetailViewModel.vote(side) {
+                                        loginRequiredDescription = PostDetailStrings.voteRequiredDescription
+                                    }
                                 }
                             },
                             onPickTapped: { comment in
@@ -139,8 +148,13 @@ struct PostDetailView: View {
                         onConfirm: {
                             switch postActionConfirm {
                             case .delete:
-                                //TODO: 실제 게시글 삭제 API 연동 필요
-                                dismiss()
+                                Task {
+                                    if await postDetailViewModel.deletePost() {
+                                        dismiss()
+                                    } else {
+                                        showsDeleteFailureToast = true
+                                    }
+                                }
                             case .report:
                                 break //TODO: 실제 신고 API 연동 필요
                             case .block:
@@ -174,7 +188,7 @@ struct PostDetailView: View {
                 onEdit: {
                     showsMoreMenu = false
                     if let post = postDetailViewModel.post {
-                        editingPostViewModel = .editing(post)
+                        editingPostViewModel = .editing(post, postWriteRepository: RemotePostWriteRepository(apiClient: apiClient))
                         navigatesToEdit = true
                     }
                 },
@@ -216,24 +230,28 @@ struct PostDetailView: View {
             )
         }
         .navigationDestination(isPresented: $navigatesToEdit) {
-            PostWriteFlowView(postViewModel: editingPostViewModel)
+            // 수정 성공 후 새 상세 화면을 push하는 대신, 이 화면(이미 스택에 있던 원본)으로
+            // 그냥 돌아와서 데이터만 새로 불러온다 — 그래야 뒤로가기가 작성 화면으로 되돌아가지 않는다.
+            PostWriteFlowView(postViewModel: editingPostViewModel, onPostSaved: { _, _ in
+                Task { await postDetailViewModel.loadPostDetail() }
+                showsSuccessToast = true
+            })
         }
-        .pickpleToast(isPresented: $showsSuccessToast, message: PostViewStrings.submitSucceededToast)
+        .pickpleToast(isPresented: $showsSuccessToast, message: PostViewStrings.submitEditSucceededToast)
+        .pickpleToast(isPresented: $showsDeleteFailureToast, message: PostDetailStrings.deleteFailedToast)
         .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
         .task {
             postDetailViewModel.isLoggedIn = isLoggedIn
             await postDetailViewModel.loadPostDetail()
             await postDetailViewModel.loadComments()
             await postDetailViewModel.loadMyProfileImage()
-            if showsSuccessToastOnAppear {
-                showsSuccessToast = true
-            }
         }
     }
 }
 
 #Preview {
     NavigationStack {
-        PostDetailView(voteType: .ab, showsSuccessToastOnAppear: false)
+        PostDetailView(voteType: .ab)
     }
 }

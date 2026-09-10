@@ -24,9 +24,11 @@ struct CommunitySearchResultCardView: View {
                 Spacer()
 
                     
-                    HStack(spacing: 16) {
-                        PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount, groupSpacing: 8)
+                    HStack(spacing: 6) {
+                        PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount)
 
+                        Text("·")
+                        
                         Text(post.createdAt.relativeTimeDescription)
                             .pickpleTypography(.caption)
                             .foregroundStyle(Color.neutral40)

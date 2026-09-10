@@ -11,6 +11,7 @@ class PostDetailViewModel {
     private let postDetailRepository: PostDetailRepository
     private let commentRepository: CommentRepository
     private let userInfoRepository: UserInfoRepository
+    private let voteCardRepository: VoteCardRepository
 
     var post: PostDetail?
     var comments: [Comment] = []
@@ -18,7 +19,6 @@ class PostDetailViewModel {
     var sortOption: String = PostDetailViewModel.sortOptions[0]
     var currentImageIndex = 0
     var selectedProductTab: PostDetailVoteSide = .first
-    var votedSide: PostDetailVoteSide?
     var myProfileImageUrl: URL?
     // 한 게시글에 원픽은 하나만 가능하고 취소할 수 없다.
     var pickedCommentID: Int?
@@ -30,9 +30,6 @@ class PostDetailViewModel {
     private let guestVoteTracker: GuestVoteTracker
 
     static let sortOptions = ["최신순", "오래된 순"]
-    // TODO: 실제 투표 결과 API 연동 필요 — 지금은 고정된 Mock 비율
-    static let firstVotePercentage = 70
-    static let secondVotePercentage = 30
 
     var firstLabel: String {
         post?.type == .ab ? PostDetailStrings.productAFallback : PostDetailStrings.voteSideFor
@@ -71,18 +68,35 @@ class PostDetailViewModel {
         postDetailRepository: PostDetailRepository? = nil,
         commentRepository: CommentRepository = MockCommentRepository(),
         userInfoRepository: UserInfoRepository = MockUserInfoRepository(),
+        voteCardRepository: VoteCardRepository = MockVoteCardRepository(),
         isLoggedIn: Bool = true,
         guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
     ) {
         self.postDetailRepository = postDetailRepository ?? MockPostDetailRepository(type: voteType)
         self.commentRepository = commentRepository
         self.userInfoRepository = userInfoRepository
+        self.voteCardRepository = voteCardRepository
         self.isLoggedIn = isLoggedIn
         self.guestVoteTracker = guestVoteTracker
     }
 
     func loadPostDetail() async {
-        post = await postDetailRepository.fetchPostDetail()
+        do {
+            post = try await postDetailRepository.fetchPostDetail()
+        } catch {
+            print("[PostDetail] 로드 실패: \(error)")
+        }
+    }
+
+    // 성공하면 true — 화면 쪽에서 이 값을 보고 뒤로 나갈지 실패 토스트를 띄울지 정한다.
+    func deletePost() async -> Bool {
+        do {
+            try await postDetailRepository.deletePost()
+            return true
+        } catch {
+            print("[PostDetail] 삭제 실패: \(error)")
+            return false
+        }
     }
 
     // 게스트는 로그인 계정이 없어서 서버에 프로필 사진을 물어볼 수 없다 — 그 경우
@@ -93,7 +107,11 @@ class PostDetailViewModel {
     }
 
     func loadComments() async {
-        comments = (try? await commentRepository.fetchComments()) ?? []
+        do {
+            comments = try await commentRepository.fetchComments()
+        } catch {
+            print("[Comment] 목록 로드 실패: \(error)")
+        }
     }
 
     func submitComment() async {
@@ -112,6 +130,7 @@ class PostDetailViewModel {
             commentInput = ""
         } catch {
             // TODO: 실패 시 사용자 안내(토스트 등) 필요 — 지금은 입력값을 유지만 한다.
+            print("[Comment] 작성/수정 실패: \(error)")
         }
     }
 
@@ -126,29 +145,53 @@ class PostDetailViewModel {
     }
 
     func deleteComment(_ commentID: Int) async {
-        guard (try? await commentRepository.deleteComment(id: commentID)) != nil else { return }
+        do {
+            try await commentRepository.deleteComment(id: commentID)
+        } catch {
+            print("[Comment] 삭제 실패: \(error)")
+            return
+        }
         comments.removeAll { $0.id == commentID }
         if editingCommentID == commentID {
             cancelEditingComment()
         }
     }
 
-    // TODO: 실제 투표 API 연동 필요 — 지금은 로컬 상태만 변경
     // 게스트는 홈 카드스택과 공유하는 무료 투표 3회까지만 허용한다(기능명세서 6.3).
     // 반환값 true = 로그인 유도 모달을 띄워야 함(게스트 한도 초과). false = 투표 적용됐거나 이미 투표한 상태.
+    @MainActor
     @discardableResult
-    func vote(_ side: PostDetailVoteSide) -> Bool {
-        guard votedSide == nil else { return false }
+    func vote(_ side: PostDetailVoteSide) async -> Bool {
+        guard let post, post.votedSide == nil else { return false }
+        guard let optionId = side == .first ? post.firstOptionId : post.secondOptionId else { return false }
+
         if !isLoggedIn {
             guard guestVoteTracker.registerVote() else { return true }
+            // 게스트는 토큰이 없어서 서버에 실제로 투표할 방법이 없다 — 로컬에서만 결과를 흉내낸다.
+            let firstPercentage = side == .first ? Int.random(in: 55...80) : Int.random(in: 20...45)
+            self.post = post.votingApplied(selectedOptionId: optionId, firstPercentage: firstPercentage, secondPercentage: 100 - firstPercentage)
+            return false
         }
-        votedSide = side
+
+        guard let result = try? await voteCardRepository.castVote(postId: post.id, optionId: optionId) else { return false }
+        self.post = post.votingApplied(selectedOptionId: optionId, firstPercentage: result.firstPercentage, secondPercentage: result.secondPercentage)
         return false
     }
 
     func pickComment(_ commentID: Int) async {
-        guard canPickAnyComment, let index = comments.firstIndex(where: { $0.id == commentID }) else { return }
-        guard (try? await commentRepository.pickComment(id: commentID)) != nil else { return }
+        guard canPickAnyComment,
+              let index = comments.firstIndex(where: { $0.id == commentID }),
+              !comments[index].mine
+        else {
+            print("[Pick] canPickAnyComment=\(canPickAnyComment), commentID=\(commentID) 로컬에서 막힘")
+            return
+        }
+        do {
+            try await commentRepository.pickComment(id: commentID)
+        } catch {
+            print("[Pick] 원픽 요청 실패: \(error)")
+            return
+        }
         comments[index].pickCount += 1
         pickedCommentID = commentID
     }

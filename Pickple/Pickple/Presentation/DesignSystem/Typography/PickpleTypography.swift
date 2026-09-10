@@ -9,6 +9,9 @@
 //
 
 import SwiftUI
+// UIFont: 텍스트 폭을 GeometryReader 없이 동기적으로 측정하려면 NSString 측정 API가
+// 필요한데, 그건 UIKit의 UIFont를 요구한다.
+import UIKit
 
 enum PickpleFontWeight: String {
     case bold = "Pretendard-Bold"
@@ -74,6 +77,24 @@ enum PickpleTypography {
     // 폰트 자체 줄간격을 뺀 근사치로 계산.
     var lineSpacing: CGFloat {
         size * (lineHeightPercent - 1)
+    }
+
+    // GeometryReader로 렌더링된 텍스트 폭을 측정해 상태에 반영하는 방식은 SwiftUI
+    // 렌더링 타이밍에 따라 결과가 들쭉날쭉했다. NSString 기반으로 같은 폰트를 동기적으로
+    // 측정하면 매 렌더링마다 항상 같은 값이 나와 그런 문제가 없다.
+    var uiFont: UIFont {
+        UIFont(name: weight.rawValue, size: size) ?? .systemFont(ofSize: size, weight: weight.uiFontWeight)
+    }
+}
+
+private extension PickpleFontWeight {
+    var uiFontWeight: UIFont.Weight {
+        switch self {
+        case .bold: return .bold
+        case .semibold: return .semibold
+        case .medium: return .medium
+        case .regular: return .regular
+        }
     }
 }
 

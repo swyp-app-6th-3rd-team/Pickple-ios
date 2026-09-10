@@ -42,13 +42,20 @@ struct PickpleBottomNav: View {
                         pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient),
                         isLoggedIn: isLoggedIn
                     ),
-                    cardStackViewModel: CardStackViewModel(voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient), isLoggedIn: isLoggedIn, guestVoteTracker: guestVoteTracker),
+                    cardStackViewModel: CardStackViewModel(voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), isLoggedIn: isLoggedIn, guestVoteTracker: guestVoteTracker),
                     onRequestCommunityTab: { selectedTab = 1 }
                 )
                     .navigationDestination(for: MainRoute.self) { route in
                         switch route {
                         case .postDetail(let postId, let type):
-                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), guestVoteTracker: guestVoteTracker)
+                            PostDetailView(
+                                voteType: type,
+                                postDetailRepository: RemotePostDetailRepository(apiClient: apiClient, postId: postId),
+                                commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
+                                userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
+                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
+                                guestVoteTracker: guestVoteTracker
+                            )
                         case .ranking:
                             MainRankingView(mainRankingViewModel: MainRankingViewModel(pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient), isLoggedIn: isLoggedIn))
                         }
@@ -63,7 +70,14 @@ struct PickpleBottomNav: View {
                     .navigationDestination(for: CommunityRoute.self) { route in
                         switch route {
                         case .postDetail(let postId, let type):
-                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), guestVoteTracker: guestVoteTracker)
+                            PostDetailView(
+                                voteType: type,
+                                postDetailRepository: RemotePostDetailRepository(apiClient: apiClient, postId: postId),
+                                commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
+                                userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
+                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
+                                guestVoteTracker: guestVoteTracker
+                            )
                         case .search:
                             CommunitySearchView(communitySearchViewModel: CommunitySearchViewModel(communityRepository: RemoteCommunityRepository(apiClient: apiClient)))
                         }
@@ -78,7 +92,7 @@ struct PickpleBottomNav: View {
                     .navigationDestination(for: MyPageRoute.self) { route in
                         switch route {
                         case .profile:
-                            MyPageProfileEditView()
+                            MyPageProfileEditView(profileViewModel: ProfileSetupViewModel(profileRepository: RemoteProfileRepository(apiClient: apiClient)))
                         case .grade:
                             MyGradeView(myPageViewModel: myPageViewModel, gradeViewModel: MyGradeViewModel(gradeRepository: RemoteGradeRepository(apiClient: apiClient)))
                         case .badge:
@@ -88,7 +102,14 @@ struct PickpleBottomNav: View {
                         case .activity:
                             MyActivityView(myActivityViewModel: MyActivityViewModel(userPostRepository: RemoteUserPostRepository(apiClient: apiClient)))
                         case .postDetail(let postId, let type):
-                            PostDetailView(voteType: type, commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), guestVoteTracker: guestVoteTracker)
+                            PostDetailView(
+                                voteType: type,
+                                postDetailRepository: RemotePostDetailRepository(apiClient: apiClient, postId: postId),
+                                commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
+                                userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
+                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
+                                guestVoteTracker: guestVoteTracker
+                            )
                         }
                     }
             }
@@ -97,6 +118,23 @@ struct PickpleBottomNav: View {
             .tag(2)
         }
         .tint(Color.navy60)
+        // 탭을 떠날 때 그 탭의 네비게이션 스택을 비워둔다 — 그래야 다른 탭에 갔다가 다시
+        // 돌아왔을 때 마지막에 보던 상세 화면이 아니라 항상 목록(루트)부터 보인다.
+        .onChange(of: selectedTab) { oldValue, _ in
+            // 애니메이션을 꺼도 안 됐다 — 문제는 우리 쪽 애니메이션이 아니라, 탭 전환
+            // 트랜지션이 아직 화면에 보이는 도중에 리셋이 일어나 그 전환 중에 상세→목록
+            // 전환이 그대로 보이는 것이었다. 탭 전환이 끝날 시간을 준 뒤(그 탭이 안 보이게
+            // 된 뒤) 리셋하면 안 보이게 된다.
+            Task {
+                try? await Task.sleep(for: .milliseconds(400))
+                switch oldValue {
+                case 0: mainRouter.path.removeAll()
+                case 1: communityRouter.path.removeAll()
+                case 2: myPageRouter.path.removeAll()
+                default: break
+                }
+            }
+        }
     }
 
     // 탭 3개가 제목/아이콘만 다르고 나머지(선택 시 renderingMode 전환)는 동일해서 뽑았다.

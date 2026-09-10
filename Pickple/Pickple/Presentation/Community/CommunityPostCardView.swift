@@ -45,18 +45,22 @@ struct CommunityPostCardView: View {
                 Spacer()
 
                 HStack(spacing: 8) {
-                    HStack(spacing: 2) {
-                        Text(post.authorNickname)
-                            .pickpleTypography(.caption)
-                            .foregroundStyle(Color.neutral40)
+                    if let authorNickname = post.authorNickname {
+                        HStack(spacing: 2) {
+                            Text(authorNickname)
+                                .pickpleTypography(.caption)
+                                .foregroundStyle(Color.neutral40)
 
-                        Image("PickpleLevelBadge\(post.authorLevel)")
-                            .resizable()
-                            .frame(width: 14, height: 14)
+                            if let authorLevel = post.authorLevel {
+                                Image("PickpleLevelBadge\(authorLevel)")
+                                    .resizable()
+                                    .frame(width: 14, height: 14)
+                            }
+                        }
+
+                        Divider()
+                            .frame(height: 12)
                     }
-
-                    Divider()
-                        .frame(height: 12)
 
                     Text(post.createdAt.relativeTimeDescription)
                         .pickpleTypography(.caption)

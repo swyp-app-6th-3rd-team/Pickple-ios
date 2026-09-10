@@ -37,7 +37,10 @@ struct PickpleProfile: View {
             profileCircle
         }
         .sheet(isPresented: $showsPicker) {
-            CustomPhotoPickerView(onSelect: onSelect)
+            CustomPhotoPickerView(onSelect: { images in
+                guard let image = images.first else { return }
+                onSelect(image)
+            })
         }
     }
 

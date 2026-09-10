@@ -31,10 +31,17 @@ struct PostScrollDTO: Decodable {
 struct RemoteCommunityRepository: CommunityRepository {
     let apiClient: APIClientProtocol
 
-    func fetchPosts() async throws -> [PostSummary] {
-        let endpoint = APIEndpoint(method: .get, path: "/posts", requiresAuth: false)
+    func fetchPosts(category: String?, cursor: String?) async throws -> PostPage {
+        var queryItems: [URLQueryItem] = []
+        if let category {
+            queryItems.append(URLQueryItem(name: "category", value: category))
+        }
+        if let cursor {
+            queryItems.append(URLQueryItem(name: "cursor", value: cursor))
+        }
+        let endpoint = APIEndpoint(method: .get, path: "/posts", queryItems: queryItems, requiresAuth: false)
         let dto: PostScrollDTO = try await apiClient.request(endpoint)
-        return dto.content.map(Self.toDomain)
+        return PostPage(items: dto.content.map(Self.toDomain), nextCursor: dto.nextCursor, hasNext: dto.hasNext)
     }
 
     func fetchPopularPosts() async throws -> [PostSummary] {
@@ -46,19 +53,18 @@ struct RemoteCommunityRepository: CommunityRepository {
     // TODO: 게시글 목록 응답에 작성자 등급(1~5)이 없어서(authorRanking은 전체 순위라 별개 개념)
     // authorLevel은 1로 고정한다 — RemotePickerRankingRepository와 동일한 임시 처리.
     static func toDomain(_ dto: PostListItemDTO) -> PostSummary {
-        PostSummary(
+        .fromServerFields(
             id: dto.id,
-            type: VoteType(serverType: dto.type),
-            category: PostCategoryLabel.label(for: dto.category),
+            type: dto.type,
+            category: dto.category,
             title: dto.title,
-            description: dto.description ?? "",
-            thumbnailUrl: dto.thumbnailUrl.flatMap(URL.init(string:)),
-            authorNickname: dto.authorNickname,
-            authorLevel: 1,
-            authorProfileImageUrl: nil,
-            voteCount: dto.voteCount ?? 0,
+            description: dto.description,
+            thumbnailUrl: dto.thumbnailUrl,
+            voteCount: dto.voteCount,
             commentCount: dto.commentCount,
-            createdAt: dto.createdAt
+            createdAt: dto.createdAt,
+            authorNickname: dto.authorNickname,
+            authorLevel: 1
         )
     }
 }

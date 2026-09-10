@@ -43,16 +43,24 @@ class CustomPhotoPickerViewModel {
         guard thumbnails[asset.localIdentifier] == nil else { return }
 
         let options = PHImageRequestOptions()
-        options.deliveryMode = .fastFormat
+        // .fastFormat은 미리 캐시된 빠른 썸네일이 없으면 nil을 반환한다 — 시뮬레이터에
+        // 드래그로 추가한 사진처럼 그 캐시가 아직 없는 경우 썸네일이 영영 안 뜨는
+        // 원인이었다. .highQualityFormat은 캐시가 없어도 직접 렌더링해서 반환한다.
+        options.deliveryMode = .highQualityFormat
         options.isNetworkAccessAllowed = true
 
         let image = await withCheckedContinuation { continuation in
+            var didResume = false
             imageManager.requestImage(
                 for: asset,
                 targetSize: CGSize(width: 150, height: 150),
                 contentMode: .aspectFill,
                 options: options
             ) { image, _ in
+                // requestImage의 콜백은 문서상 여러 번 불릴 수 있어서, continuation을
+                // 두 번 resume하면 런타임이 크래시한다 — 첫 호출만 반영한다.
+                guard !didResume else { return }
+                didResume = true
                 continuation.resume(returning: image)
             }
         }
@@ -74,6 +82,15 @@ class CustomPhotoPickerViewModel {
             options: options
         ) { image, _ in
             completion(image)
+        }
+    }
+
+    // 여러 장을 순서대로 원본 화질로 가져올 때 쓰는 async 버전.
+    func requestFullImage(for asset: PHAsset) async -> UIImage? {
+        await withCheckedContinuation { continuation in
+            requestFullImage(for: asset) { image in
+                continuation.resume(returning: image)
+            }
         }
     }
 }

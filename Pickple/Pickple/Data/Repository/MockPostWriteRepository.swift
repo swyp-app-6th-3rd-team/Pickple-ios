@@ -18,4 +18,8 @@ struct MockPostWriteRepository: PostWriteRepository {
         try? await Task.sleep(nanoseconds: 500_000_000)
         return Int.random(in: 1...9999)
     }
+
+    func updatePost(id: Int, category: String, title: String?, description: String) async throws {
+        try? await Task.sleep(nanoseconds: 500_000_000)
+    }
 }

@@ -12,12 +12,15 @@ import SwiftUI
 // 상단 게이지가 필수 항목 채움 정도를 보여준다.
 struct PostWriteFlowView: View {
     let postViewModel: PostViewModel
+    // 게시/수정 성공 시 호출 — 호출부가 이 화면을 어떻게 닫고 어디로 보여줄지 결정한다
+    // (여기서 직접 상세 화면을 push하면, 그 화면에서 뒤로가기를 눌렀을 때 이 작성 화면으로
+    // 되돌아와버리는 문제가 있었다).
+    var onPostSaved: (Int, VoteType) -> Void = { _, _ in }
     @Environment(\.dismiss) private var dismiss
 
     @State private var isCategoryExpanded = false
     @State private var showsLeaveConfirm = false
     @State private var showsFailureToast = false
-    @State private var navigatesToDetail = false
 
     private let categoryOptions = PostViewStrings.categoryOptions
 
@@ -30,8 +33,10 @@ struct PostWriteFlowView: View {
                     trailing: .none
                 )
 
-                // 일반 게시글은 필드가 3개뿐이고 전부 기본으로 보이므로, 순차 공개도 게이지도 필요 없다.
-                if postViewModel.selectedType != .text {
+                // 일반 게시글은 필드가 3개뿐이고 전부 기본으로 보이므로, 순차 공개도 게이지도 필요
+                // 없다. 수정 모드도 모든 필드가 이미 채워진 채로 시작해서(일부는 잠긴 채) "채워나가는"
+                // 진행률 개념이 안 맞아 게이지를 숨긴다.
+                if postViewModel.selectedType != .text && !postViewModel.isEditing {
                     ProgressView(value: Double(postViewModel.requiredFieldsFilledCount), total: Double(postViewModel.requiredFieldsTotalCount))
                         .progressViewStyle(LinearProgressViewStyle(tint: Color.yellow60))
                         .padding(.horizontal, 20)
@@ -50,7 +55,7 @@ struct PostWriteFlowView: View {
                 }
 
                 PostWriteFlowButtonRow(
-                    title: PostViewStrings.submit,
+                    title: postViewModel.isEditing ? PostViewStrings.submitEdit : PostViewStrings.submit,
                     isEnabled: postViewModel.canSubmit,
                     onSubmit: handleSubmit
                 )
@@ -65,12 +70,9 @@ struct PostWriteFlowView: View {
                 }
             }
         }
-        .pickpleToast(isPresented: $showsFailureToast, message: PostViewStrings.submitFailedToast)
+        .pickpleToast(isPresented: $showsFailureToast, message: postViewModel.isEditing ? PostViewStrings.submitEditFailedToast : PostViewStrings.submitFailedToast)
         .navigationBarBackButtonHidden(true)
-        .navigationDestination(isPresented: $navigatesToDetail) {
-            // TODO: 방금 게시한 글을 바로 보여주려면 실제 등록된 게시글 정보 연동 필요 — 지금은 유형에 맞는 Mock 상세로 이동
-            PostDetailView(voteType: postViewModel.selectedType, showsSuccessToastOnAppear: true)
-        }
+        .toolbar(.hidden, for: .tabBar)
     }
 
     private func handleBack() {
@@ -84,8 +86,9 @@ struct PostWriteFlowView: View {
     private func handleSubmit() {
         Task {
             await postViewModel.submitPost()
-            if postViewModel.submitState == .succeeded {
-                navigatesToDetail = true
+            if postViewModel.submitState == .succeeded, let postId = postViewModel.createdPostId {
+                onPostSaved(postId, postViewModel.selectedType)
+                dismiss()
             } else {
                 showsFailureToast = true
             }

@@ -34,9 +34,9 @@ struct PostDetailProductVoteSection: View {
                 PostDetailVoteButtons(
                     firstLabel: postDetailViewModel.firstLabel,
                     secondLabel: postDetailViewModel.secondLabel,
-                    votedSide: postDetailViewModel.votedSide,
-                    firstPercentage: PostDetailViewModel.firstVotePercentage,
-                    secondPercentage: PostDetailViewModel.secondVotePercentage,
+                    votedSide: post.votedSide,
+                    firstPercentage: post.firstPercentage ?? 0,
+                    secondPercentage: post.secondPercentage ?? 0,
                     myProfileImageUrl: postDetailViewModel.myProfileImageUrl,
                     onVote: onVote
                 )
@@ -48,20 +48,33 @@ struct PostDetailProductVoteSection: View {
 #Preview {
     PostDetailProductVoteSection(
         post: PostDetail(
-            id: UUID(),
+            id: 1,
             type: .ab,
             category: "패션/잡화",
             title: "이거 흰색? 검은색?",
             description: "",
-            images: [],
-            authorNickname: "닉네임",
-            authorLevel: 5,
-            authorProfileImageName: "PickpleProfileSample",
-            isMine: true,
             createdAt: Date(),
-            participantCount: 3,
-            firstProduct: PostDetailProduct(name: "나이키 에어포스 흰색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/..."),
-            secondProduct: PostDetailProduct(name: "나이키 에어포스 검은색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/...")
+            commentCount: 0,
+            authorId: 1,
+            authorNickname: "닉네임",
+            authorProfileImageUrl: nil,
+            authorGradeLevel: 5,
+            authorGradeName: "LV.5",
+            authorRanking: nil,
+            isMine: true,
+            vote: PostDetailVote(
+                voted: false,
+                selectedOptionId: nil,
+                voterCount: 3,
+                products: [
+                    PostDetailProduct(id: 1, name: "나이키 에어포스 흰색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/...", imageUrl: nil, displayOrder: 1),
+                    PostDetailProduct(id: 2, name: "나이키 에어포스 검은색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/...", imageUrl: nil, displayOrder: 2)
+                ],
+                options: [
+                    PostDetailVoteOption(optionId: 1, label: nil, productId: 1, displayOrder: 1, voteCount: nil, percentage: nil),
+                    PostDetailVoteOption(optionId: 2, label: nil, productId: 2, displayOrder: 2, voteCount: nil, percentage: nil)
+                ]
+            )
         ),
         postDetailViewModel: PostDetailViewModel(voteType: .ab),
         onVote: { _ in }

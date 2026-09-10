@@ -13,8 +13,11 @@ struct PostSummary: Identifiable {
     let title: String
     let description: String     // 본문 미리보기 (커뮤니티 목록 카드용)
     let thumbnailUrl: URL?       // 대표 사진 1장. 일반 게시글은 null(API_SPEC 기준)
-    let authorNickname: String  // 나의 활동(투표/댓글) 목록에서는 남의 글일 수 있어 필요
-    let authorLevel: Int        // 뱃지 아이콘(PickpleLevelBadge1~5) 매핑용, 1~5 범위 가정 — 스펙 확정 후 조정
+    // 커뮤니티 목록은 서버가 작성자 정보를 준다. 나의 활동 목록은 "항상 본인 글"이라 서버가
+    // 아예 안 내려줘서(API_SPEC 기준) nil — 나의 활동 카드(MyActivityVotedPostCardView,
+    // MyActivityWrittenPostCardView)는 애초에 작성자 정보를 그리지 않는다.
+    let authorNickname: String?
+    let authorLevel: Int?        // 뱃지 아이콘(PickpleLevelBadge1~5) 매핑용, 1~5 범위 가정 — 스펙 확정 후 조정
     let authorProfileImageUrl: URL?
     let voteCount: Int
     let commentCount: Int
@@ -30,8 +33,8 @@ struct PostSummary: Identifiable {
         title: String,
         description: String,
         thumbnailUrl: URL?,
-        authorNickname: String,
-        authorLevel: Int,
+        authorNickname: String? = nil,
+        authorLevel: Int? = nil,
         authorProfileImageUrl: URL?,
         voteCount: Int,
         commentCount: Int,
@@ -51,5 +54,42 @@ struct PostSummary: Identifiable {
         self.commentCount = commentCount
         self.createdAt = createdAt
         self.voteResult = voteResult
+    }
+}
+
+extension PostSummary {
+    // GET /posts, GET /users/me/posts/recent, GET /users/me/activities 응답이 공통으로 갖는
+    // 필드(카테고리 라벨 변환, 타입 변환, 썸네일 URL 파싱, voteCount 기본값 처리)를 한 곳에 모은다 —
+    // 세 Repository가 각자 거의 같은 매핑 코드를 중복해서 갖고 있던 걸 정리한 것.
+    static func fromServerFields(
+        id: Int,
+        type: String,
+        category: String,
+        title: String,
+        description: String?,
+        thumbnailUrl: String?,
+        voteCount: Int?,
+        commentCount: Int,
+        createdAt: Date,
+        authorNickname: String? = nil,
+        authorLevel: Int? = nil,
+        authorProfileImageUrl: URL? = nil,
+        voteResult: PostVoteResult? = nil
+    ) -> PostSummary {
+        PostSummary(
+            id: id,
+            type: VoteType(serverType: type),
+            category: PostCategoryLabel.label(for: category),
+            title: title,
+            description: description ?? "",
+            thumbnailUrl: thumbnailUrl.flatMap(URL.init(string:)),
+            authorNickname: authorNickname,
+            authorLevel: authorLevel,
+            authorProfileImageUrl: authorProfileImageUrl,
+            voteCount: voteCount ?? 0,
+            commentCount: commentCount,
+            createdAt: createdAt,
+            voteResult: voteResult
+        )
     }
 }

@@ -11,6 +11,7 @@ import SwiftUI
 struct ProductPriceFieldBlock: View {
     @Binding var price: String
     var label: String = PostViewStrings.price
+    var isDisabled: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -29,7 +30,9 @@ struct ProductPriceFieldBlock: View {
                 let capped = min(Int(digitsOnly) ?? 0, 999_999_999)
                 price = digitsOnly.isEmpty ? "" : String(capped)
             }
+            .disabled(isDisabled)
         }
+        .opacity(isDisabled ? 0.5 : 1)
     }
 }
 

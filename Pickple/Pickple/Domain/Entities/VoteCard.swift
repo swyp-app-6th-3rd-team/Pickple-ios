@@ -23,6 +23,8 @@ struct VoteCard: Identifiable {
     // 투표 전엔 nil로 블라인드 처리(투표 UI), 투표 후엔 값이 채워지며 결과 게이지로 전환.
     var firstPercentage: Int?
     var secondPercentage: Int?
+    // 내가 탭한 쪽 — 게시글 상세 투표 버튼과 동일하게 강조 표시에 쓰인다.
+    var votedSide: PostDetailVoteSide? = nil
 
     var isVoted: Bool { firstPercentage != nil }
 

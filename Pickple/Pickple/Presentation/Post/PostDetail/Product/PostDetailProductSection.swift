@@ -36,30 +36,35 @@ struct PostDetailProductInfo: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             PostDetailProductInfoRow(label: PostDetailStrings.productNameLabel, value: product.name)
-            PostDetailProductInfoRow(label: PostDetailStrings.priceLabel, value: "\(product.price.formatted())원")
 
-            HStack(spacing: 8) {
-                Text(PostDetailStrings.purchaseLinkLabel)
-                    .pickpleTypography(.body02)
-                    .foregroundStyle(Color.neutral30)
-                    .frame(width: 36, alignment: .leading)
+            if let price = product.price {
+                PostDetailProductInfoRow(label: PostDetailStrings.priceLabel, value: "\(price.formatted())원")
+            }
 
-                if let purchaseLink = product.purchaseLink {
-                    Link(destination: purchaseLink) {
-                        Text(product.purchaseURL)
+            if let purchaseURL = product.purchaseURL {
+                HStack(spacing: 8) {
+                    Text(PostDetailStrings.purchaseLinkLabel)
+                        .pickpleTypography(.body02)
+                        .foregroundStyle(Color.neutral30)
+                        .frame(width: 36, alignment: .leading)
+
+                    if let purchaseLink = product.purchaseLink {
+                        Link(destination: purchaseLink) {
+                            Text(purchaseURL)
+                                .pickpleTypography(.body02)
+                                .foregroundStyle(Color.blue60)
+                                .underline()
+                                .lineLimit(1)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    } else {
+                        Text(purchaseURL)
                             .pickpleTypography(.body02)
-                            .foregroundStyle(Color.blue60)
+                            .foregroundStyle(Color.neutral100)
                             .underline()
                             .lineLimit(1)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                } else {
-                    Text(product.purchaseURL)
-                        .pickpleTypography(.body02)
-                        .foregroundStyle(Color.neutral100)
-                        .underline()
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
         }
@@ -87,7 +92,7 @@ private struct PostDetailProductInfoRow: View {
 #Preview {
     VStack(alignment: .leading, spacing: 20) {
         PostDetailProductTabPicker(firstLabel: "상품A", secondLabel: "상품B", selectedTab: .constant(.first))
-        PostDetailProductInfo(product: PostDetailProduct(name: "나이키 에어포스 흰색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/..."))
+        PostDetailProductInfo(product: PostDetailProduct(id: 1, name: "나이키 에어포스 흰색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/...", imageUrl: nil, displayOrder: 1))
     }
     .padding()
 }

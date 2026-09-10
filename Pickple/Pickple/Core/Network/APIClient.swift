@@ -33,7 +33,7 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
         self.tokenProvider = tokenProvider
 
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
+        decoder.dateDecodingStrategy = .custom(Self.decodeFlexibleDate)
         self.decoder = decoder
     }
 
@@ -79,6 +79,8 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
                 throw APIError.unauthorized
             }
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else if endpoint.attachesAuthIfAvailable, let token = await tokenProvider.accessToken() {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
         let data: Data
@@ -104,6 +106,63 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
         }
 
         return (data, httpResponse)
+    }
+
+    // 서버 응답의 날짜 형식이 밀리초 유무·타임존 유무로 섞여 있어서(예: 스프링 부트가 흔히
+    // 쓰는 타임존 없는 LocalDateTime 직렬화 "yyyy-MM-ddTHH:mm:ss"), 여러 형식을 순서대로
+    // 시도한다. 타임존이 없는 형식은 UTC가 아니라 KST(Asia/Seoul)로 간주한다 — 한국 서비스라
+    // 서버 로컬 시간이 KST일 가능성이 높고, UTC로 잘못 간주하면 표시 시각이 9시간 밀린다.
+    // JSONDecoder.dateDecodingStrategy(.custom)가 기대하는 클로저 타입은 격리가 없는 동기
+    // 함수라, -default-isolation=MainActor 기본값과 안 맞아 격리를 명시적으로 꺼야 한다.
+    // 아래 포매터들은 설정 후 값이 안 바뀌는 불변 객체라 여러 컨텍스트에서 읽기만 해도 안전하다.
+    nonisolated(unsafe) private static let iso8601WithFractional: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+
+    nonisolated(unsafe) private static let iso8601Plain: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+        return formatter
+    }()
+
+    nonisolated(unsafe) private static let noTimezoneWithFractional: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
+        return formatter
+    }()
+
+    nonisolated(unsafe) private static let noTimezonePlain: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return formatter
+    }()
+
+    // 이 함수 자체도 nonisolated여야 위 .custom(Self.decodeFlexibleDate) 대입이 성립한다 —
+    // 격리 없는 함수 4개를 읽기만 해서 안전하다.
+    nonisolated private static func decodeFlexibleDate(from decoder: Decoder) throws -> Date {
+        let container = try decoder.singleValueContainer()
+        let dateString = try container.decode(String.self)
+
+        if let date = iso8601WithFractional.date(from: dateString) { return date }
+        if let date = iso8601Plain.date(from: dateString) { return date }
+        if let date = noTimezoneWithFractional.date(from: dateString) { return date }
+        if let date = noTimezonePlain.date(from: dateString) { return date }
+        // 소수점 초 자릿수가 위 어느 것과도 안 맞으면, 앞 19자("yyyy-MM-ddTHH:mm:ss")만
+        // 잘라서 마지막으로 시도한다.
+        if dateString.count > 19, let date = noTimezonePlain.date(from: String(dateString.prefix(19))) {
+            return date
+        }
+
+        throw DecodingError.dataCorruptedError(
+            in: container,
+            debugDescription: "Expected date string to be ISO8601-formatted."
+        )
     }
 
     private static func multipartBody(files: [MultipartFile], boundary: String) -> Data {

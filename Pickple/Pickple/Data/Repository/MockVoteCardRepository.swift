@@ -7,8 +7,9 @@
 import Foundation
 
 struct MockVoteCardRepository: VoteCardRepository {
-    func fetchCards(type: VoteType) async -> [VoteCard] {
-        type == .forAgainst ? forAgainstCards : abCards
+    func fetchCards(type: VoteType, cursor: String?) async -> VoteCardPage {
+        let items = type == .forAgainst ? forAgainstCards : abCards
+        return VoteCardPage(items: items, nextCursor: nil, hasNext: false)
     }
 
     // 실제 API처럼 선택한 쪽이 우세하도록 임의 비율을 만들어 돌려준다.

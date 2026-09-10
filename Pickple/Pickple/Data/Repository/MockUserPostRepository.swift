@@ -54,7 +54,11 @@ struct MockUserPostRepository: UserPostRepository {
         ]
     }
 
-    func fetchVotedPosts() async -> [PostSummary] {
+    func fetchVotedPosts(cursor: String?) async -> UserPostPage {
+        UserPostPage(items: votedPosts, nextCursor: nil, hasNext: false)
+    }
+
+    private var votedPosts: [PostSummary] {
         [
             PostSummary(
                 id: 101,
@@ -69,7 +73,7 @@ struct MockUserPostRepository: UserPostRepository {
                 voteCount: 24,
                 commentCount: 9,
                 createdAt: Date().addingTimeInterval(-60 * 30),
-                voteResult: PostVoteResult(firstLabel: MyActivityStrings.voteSideFor, secondLabel: MyActivityStrings.voteSideAgainst, firstPercentage: 70, secondPercentage: 30)
+                voteResult: PostVoteResult(firstLabel: MyActivityStrings.voteSideFor, secondLabel: MyActivityStrings.voteSideAgainst, firstPercentage: 70, secondPercentage: 30, votedSide: .first)
             ),
             PostSummary(
                 id: 102,
@@ -84,7 +88,7 @@ struct MockUserPostRepository: UserPostRepository {
                 voteCount: 15,
                 commentCount: 3,
                 createdAt: Date().addingTimeInterval(-60 * 60 * 6),
-                voteResult: PostVoteResult(firstLabel: MyActivityStrings.abFirstLabel, secondLabel: MyActivityStrings.abSecondLabel, firstPercentage: 40, secondPercentage: 60)
+                voteResult: PostVoteResult(firstLabel: MyActivityStrings.abFirstLabel, secondLabel: MyActivityStrings.abSecondLabel, firstPercentage: 40, secondPercentage: 60, votedSide: .second)
             ),
             PostSummary(
                 id: 103,
@@ -99,7 +103,7 @@ struct MockUserPostRepository: UserPostRepository {
                 voteCount: 6,
                 commentCount: 2,
                 createdAt: Date().addingTimeInterval(-60 * 60 * 12),
-                voteResult: PostVoteResult(firstLabel: MyActivityStrings.voteSideFor, secondLabel: MyActivityStrings.voteSideAgainst, firstPercentage: 30, secondPercentage: 70)
+                voteResult: PostVoteResult(firstLabel: MyActivityStrings.voteSideFor, secondLabel: MyActivityStrings.voteSideAgainst, firstPercentage: 30, secondPercentage: 70, votedSide: .second)
             ),
             PostSummary(
                 id: 104,
@@ -114,7 +118,7 @@ struct MockUserPostRepository: UserPostRepository {
                 voteCount: 20,
                 commentCount: 5,
                 createdAt: Date().addingTimeInterval(-60 * 60 * 30),
-                voteResult: PostVoteResult(firstLabel: MyActivityStrings.abFirstLabel, secondLabel: MyActivityStrings.abSecondLabel, firstPercentage: 90, secondPercentage: 10)
+                voteResult: PostVoteResult(firstLabel: MyActivityStrings.abFirstLabel, secondLabel: MyActivityStrings.abSecondLabel, firstPercentage: 90, secondPercentage: 10, votedSide: .first)
             ),
         ]
     }
@@ -160,7 +164,7 @@ struct MockUserPostRepository: UserPostRepository {
         ]
     }
 
-    func fetchWrittenPosts() async -> [PostSummary] {
-        await fetchMyPosts()
+    func fetchWrittenPosts(cursor: String?) async -> UserPostPage {
+        UserPostPage(items: await fetchMyPosts(), nextCursor: nil, hasNext: false)
     }
 }

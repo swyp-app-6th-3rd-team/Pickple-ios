@@ -12,6 +12,9 @@ struct ProductNameFieldBlock: View {
     @Binding var name: String
     let maxLength: Int
     var label: String = PostViewStrings.productName
+    // 게시글 수정 모드에서는 상품명이 API로 반영되지 않아(PATCH는 category/title/description만
+    // 받음) 원래 값을 보여주기만 하고 편집은 막는다 — 디자인 확정 전까지는 투명도로만 표시.
+    var isDisabled: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -29,7 +32,9 @@ struct ProductNameFieldBlock: View {
                     name = String(newValue.prefix(maxLength))
                 }
             }
+            .disabled(isDisabled)
         }
+        .opacity(isDisabled ? 0.5 : 1)
     }
 }
 

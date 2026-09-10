@@ -9,7 +9,7 @@ import SwiftUI
 struct PostDetailAuthorRow: View {
     let nickname: String
     let level: Int
-    let profileImageName: String?
+    let profileImageUrl: URL?
     let createdAt: Date
 
     private static let dateFormatter: DateFormatter = {
@@ -20,18 +20,13 @@ struct PostDetailAuthorRow: View {
 
     var body: some View {
             HStack(spacing: 12) {
-                if let profileImageName {
-                    Image(profileImageName)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 32, height: 32)
-                        .clipShape(Circle())
-                } else {
-                    Image(systemName: "person.circle.fill")
-                        .resizable()
-                        .frame(width: 32, height: 32)
-                        .foregroundStyle(Color.neutral20)
+                AsyncImage(url: profileImageUrl) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    Image("PickpleCharacter").resizable().scaledToFill()
                 }
+                .frame(width: 32, height: 32)
+                .clipShape(Circle())
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 2) {
                         Text(nickname)
@@ -62,6 +57,6 @@ struct PostDetailAuthorRow: View {
 }
 
 #Preview {
-    PostDetailAuthorRow(nickname: "닉네임", level: 5, profileImageName: "PickpleProfileSample", createdAt: Date())
+    PostDetailAuthorRow(nickname: "닉네임", level: 5, profileImageUrl: nil, createdAt: Date())
         .padding()
 }
