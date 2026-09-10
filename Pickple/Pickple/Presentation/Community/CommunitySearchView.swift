@@ -127,6 +127,7 @@ struct CommunitySearchView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
         .task {
             await communitySearchViewModel.loadPosts()
         }

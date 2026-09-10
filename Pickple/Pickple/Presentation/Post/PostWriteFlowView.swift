@@ -70,6 +70,7 @@ struct PostWriteFlowView: View {
         }
         .pickpleToast(isPresented: $showsFailureToast, message: postViewModel.isEditing ? PostViewStrings.submitEditFailedToast : PostViewStrings.submitFailedToast)
         .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
         .navigationDestination(isPresented: $navigatesToDetail) {
             if let postId = postViewModel.createdPostId {
                 PostDetailView(

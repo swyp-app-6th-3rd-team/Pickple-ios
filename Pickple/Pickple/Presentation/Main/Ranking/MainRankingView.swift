@@ -121,6 +121,7 @@ struct MainRankingView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
         .task {
             await mainRankingViewModel.loadInitial()
         }
