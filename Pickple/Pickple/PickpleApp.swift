@@ -54,7 +54,7 @@ struct PickpleApp: App {
         WindowGroup {
             Group {
                 if sessionViewModel.isRestoringSession {
-                    Color.clear
+                    SplashView()
                 } else {
                     switch sessionViewModel.sessionState {
                     case .needsProfileSetup:
