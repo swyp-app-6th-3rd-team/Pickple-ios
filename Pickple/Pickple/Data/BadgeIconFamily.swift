@@ -38,7 +38,7 @@ enum BadgeIconFamily: String {
         case "STREAK_30": return .addict
         default:
             // 정확한 임계값 접미사(_7/_30)까지는 못 맞혀도, code가 STREAK로 시작하면 최소한
-            // isMissionTwoType은 맞게 판정되도록 한다.
+            // missionTwoDayNumber는 값이 나오도록 한다.
             return code.hasPrefix("STREAK") ? .attendance : .firstPick
         }
     }
@@ -46,14 +46,18 @@ enum BadgeIconFamily: String {
     var offIconName: String { "PickpleBadge\(rawValue)Off" }
     var onIconName: String { "PickpleBadge\(rawValue)On" }
 
-    // 진행도 바(BadgeMissionStreakTracker)를 보여줄 대상인지. 기능명세서의 "미션 2"
-    // (하루 투표 20개 → 30개 → 7일 연속 → 30일 연속 사다리) 전체에 해당하면 true다 —
-    // 연속출석 단계에 도달하기 전, 일일투표 단계일 때도 이 진행도 바가 떠야 한다
-    // (미션 완주 여부와 무관하게 "미션 2"인 동안은 기본으로 떠 있어야 함).
-    var isMissionTwoType: Bool {
+    // 진행도 바(BadgeMissionStreakTracker)에서 "며칠차"로 표시할 순번. 기능명세서의
+    // "미션 2"(하루 투표 20개 → 30개 → 7일 연속 → 30일 연속) 사다리에서 지금 활성 단계가
+    // 몇 번째인지를 뜻한다 — API가 주는 current/goal(예: 오늘 투표 3/20)이 아니라, 이
+    // 사다리를 몇 단계 깼는지가 "며칠차"다. 트래커는 항상 7칸이고(나머지 3칸은 이후 단계가
+    // 추가될 자리로 잠긴 채 남아있음), 누적 계열(firstPick 등)은 이 트래커 대상이 아니라 nil.
+    var missionTwoDayNumber: Int? {
         switch self {
-        case .hunter, .rampage, .attendance, .addict: return true
-        case .firstPick, .sprout, .pro, .master: return false
+        case .hunter: return 1
+        case .rampage: return 2
+        case .attendance: return 3
+        case .addict: return 4
+        case .firstPick, .sprout, .pro, .master: return nil
         }
     }
 }

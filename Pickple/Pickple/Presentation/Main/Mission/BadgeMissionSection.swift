@@ -50,8 +50,11 @@ struct BadgeMissionSection: View {
                             BadgeMissionProgressRow(mission: mission)
                         }
 
-                        if let mission2 = missions.first(where: { $0.iconFamily.isMissionTwoType }) {
-                            BadgeMissionStreakTracker(current: mission2.current, target: mission2.target)
+                        // 7칸 고정 — API의 current/goal(예: 오늘 투표 3/20)이 아니라, "미션 2"
+                        // 사다리를 몇 단계째 깨고 있는지가 며칠차다. 나머지 칸은 이후 추가될
+                        // 단계를 위해 잠긴 채로 남는다(기획 확정 전까지 임시).
+                        if let day = missions.compactMap({ $0.iconFamily.missionTwoDayNumber }).first {
+                            BadgeMissionStreakTracker(current: day, target: 7)
                         }
                     }
                     .padding(.horizontal, 16)
