@@ -44,7 +44,6 @@ struct CommunityHeaderView: View {
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
-            .zIndex(1)
         }
     }
 }
