@@ -16,4 +16,7 @@ enum TermsAgreementStrings {
     static let pushNotificationTitle = "[선택] 앱 내 광고 및 정보성 수신 동의"
     static let viewButton = "보기"
     static let startButton = "시작하기"
+    
+    static let privacy = "https://super-albatross-219.notion.site/PickPle-3c8eab9bfff480a5810deaa3a8d902f8?source=copy_link"
+    static let ToU = "https://super-albatross-219.notion.site/PickPle-3c8eab9bfff480b1ad6ef0fe62c21b42?source=copy_link"
 }
