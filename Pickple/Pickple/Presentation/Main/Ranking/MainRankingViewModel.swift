@@ -16,8 +16,8 @@ class MainRankingViewModel {
     private var nextCursor: String?
 
     private(set) var isLoggedIn: Bool
-    // TODO: 실제로는 로그인한 유저 본인의 랭킹 데이터로 대체 필요
-    let myRanking = PickerRanking(id: UUID(), rank: 24, nickname: "닉네임", level: 5, profileImageUrl: nil, points: 1000)
+    // 배치가 최대 5분마다 순위를 매기므로, 가입 직후엔 아직 순위가 없어(nil) 하단 카드 자체를 숨긴다.
+    var myRanking: PickerRanking?
 
     init(pickerRankingRepository: PickerRankingRepository = MockPickerRankingRepository(), isLoggedIn: Bool = true) {
         self.pickerRankingRepository = pickerRankingRepository
@@ -32,6 +32,11 @@ class MainRankingViewModel {
         guard let page = try? await pickerRankingRepository.fetchRankings(cursor: nil) else { return }
         rankings = page.items
         nextCursor = page.nextCursor
+    }
+
+    @MainActor
+    func loadMyRanking() async {
+        myRanking = try? await pickerRankingRepository.fetchMyRanking()
     }
 
     // 스크롤이 목록 하단 근접(마지막 항목 노출)했을 때 다음 페이지를 이어붙인다.
