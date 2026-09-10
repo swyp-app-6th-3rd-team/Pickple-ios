@@ -92,7 +92,7 @@ struct PickpleBottomNav: View {
                     .navigationDestination(for: MyPageRoute.self) { route in
                         switch route {
                         case .profile:
-                            MyPageProfileEditView()
+                            MyPageProfileEditView(profileViewModel: ProfileSetupViewModel(profileRepository: RemoteProfileRepository(apiClient: apiClient)))
                         case .grade:
                             MyGradeView(myPageViewModel: myPageViewModel, gradeViewModel: MyGradeViewModel(gradeRepository: RemoteGradeRepository(apiClient: apiClient)))
                         case .badge:
