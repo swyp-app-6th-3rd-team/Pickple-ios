@@ -39,6 +39,7 @@ struct MyPageProfileEditView: View {
             await profileViewModel.loadCurrentProfile()
         }
         .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
     }
 }
 
