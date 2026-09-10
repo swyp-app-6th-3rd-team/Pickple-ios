@@ -14,11 +14,9 @@ struct PostDetailCommentListView: View {
     let onLoginRequired: () -> Void
     
     var body: some View {
-        if postDetailViewModel.comments.isEmpty {
-            PostDetailCommentEmptyView()
-        } else if postDetailViewModel.isLoggedIn {
-            commentRows
-        } else {
+        // 게스트는 댓글 목록 조회 자체가 인증을 요구해서 항상 comments == []다 — isLoggedIn을
+        // 먼저 체크해야, 게스트가 "댓글 없음" 빈 화면이 아니라 블러+로그인 화면을 본다.
+        if !postDetailViewModel.isLoggedIn {
             commentRows
                 .blur(radius: 6) // TODO: 디자인 확정 필요 - 임시 블러 값
                 .disabled(true)
@@ -52,6 +50,10 @@ struct PostDetailCommentListView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
                 }
+        } else if postDetailViewModel.comments.isEmpty {
+            PostDetailCommentEmptyView()
+        } else {
+            commentRows
         }
     }
     
