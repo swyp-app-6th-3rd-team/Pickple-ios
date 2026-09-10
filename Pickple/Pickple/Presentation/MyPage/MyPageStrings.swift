@@ -42,4 +42,8 @@ enum MyPageStrings {
     static let voteCount = "투표"
     static let commentCount = "댓글"
     static let postCount = "게시글"
+
+    static let versionInfoURL = "https://super-albatross-219.notion.site/3c8eab9bfff480fa8cc6f5e127d72d15?source=copy_link"
+    static let ToU = "https://super-albatross-219.notion.site/PickPle-3c8eab9bfff480b1ad6ef0fe62c21b42?source=copy_link"
+
 }
