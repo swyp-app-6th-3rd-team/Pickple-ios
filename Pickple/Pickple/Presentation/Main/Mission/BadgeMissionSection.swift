@@ -50,8 +50,8 @@ struct BadgeMissionSection: View {
                             BadgeMissionProgressRow(mission: mission)
                         }
 
-                        if let streakMission = missions.first(where: { $0.iconFamily.isStreakType }) {
-                            BadgeMissionStreakTracker(current: streakMission.current, target: streakMission.target)
+                        if let mission2 = missions.first(where: { $0.iconFamily.isMissionTwoType }) {
+                            BadgeMissionStreakTracker(current: mission2.current, target: mission2.target)
                         }
                     }
                     .padding(.horizontal, 16)

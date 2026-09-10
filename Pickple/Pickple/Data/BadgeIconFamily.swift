@@ -38,8 +38,7 @@ enum BadgeIconFamily: String {
         case "STREAK_30": return .addict
         default:
             // 정확한 임계값 접미사(_7/_30)까지는 못 맞혀도, code가 STREAK로 시작하면 최소한
-            // isStreakType은 맞게 판정되도록 한다 — 그래야 진행도 바가 뜨는지 자체는 실제
-            // 값과 무관하게 확인할 수 있다.
+            // isMissionTwoType은 맞게 판정되도록 한다.
             return code.hasPrefix("STREAK") ? .attendance : .firstPick
         }
     }
@@ -47,10 +46,14 @@ enum BadgeIconFamily: String {
     var offIconName: String { "PickpleBadge\(rawValue)Off" }
     var onIconName: String { "PickpleBadge\(rawValue)On" }
 
-    // "N일 연속" 진행도 바(BadgeMissionStreakTracker)를 보여줄 대상인지.
-    // description 문자열에 "연속"이 포함되는지로 판별하던 이전 로직은 실제 서버 문구가
-    // 달라서 안 걸렸던 버그가 있어, 이미 안정 식별자로 쓰고 있는 code(→ family) 기준으로 바꿨다.
-    var isStreakType: Bool {
-        self == .attendance || self == .addict
+    // 진행도 바(BadgeMissionStreakTracker)를 보여줄 대상인지. 기능명세서의 "미션 2"
+    // (하루 투표 20개 → 30개 → 7일 연속 → 30일 연속 사다리) 전체에 해당하면 true다 —
+    // 연속출석 단계에 도달하기 전, 일일투표 단계일 때도 이 진행도 바가 떠야 한다
+    // (미션 완주 여부와 무관하게 "미션 2"인 동안은 기본으로 떠 있어야 함).
+    var isMissionTwoType: Bool {
+        switch self {
+        case .hunter, .rampage, .attendance, .addict: return true
+        case .firstPick, .sprout, .pro, .master: return false
+        }
     }
 }
