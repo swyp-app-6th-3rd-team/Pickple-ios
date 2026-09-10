@@ -88,6 +88,12 @@ struct CommunityView: View {
             .task {
                 await communityViewModel.loadPosts()
             }
+            .onChange(of: communityViewModel.selectedCategory) { _, _ in
+                Task { await communityViewModel.loadPosts() }
+            }
+            .onChange(of: communityViewModel.sortOption) { _, _ in
+                Task { await communityViewModel.loadPosts() }
+            }
             .sheet(isPresented: $showsTypeSelection) {
                 PostTypeSelectionSheet { type in
                     composePostViewModel.selectedType = type

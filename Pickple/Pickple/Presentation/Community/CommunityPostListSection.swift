@@ -25,6 +25,7 @@ struct CommunityPostListSection: View {
                     ForEach(communityViewModel.displayedPosts) { post in
                         CommunityPostCardView(post: post)
                             .onTapGesture { onTapPost(post) }
+                            .task { await communityViewModel.loadMoreIfNeeded(currentPost: post) }
 
                         Divider()
                     }

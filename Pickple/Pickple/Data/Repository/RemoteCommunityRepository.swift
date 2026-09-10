@@ -31,10 +31,17 @@ struct PostScrollDTO: Decodable {
 struct RemoteCommunityRepository: CommunityRepository {
     let apiClient: APIClientProtocol
 
-    func fetchPosts() async throws -> [PostSummary] {
-        let endpoint = APIEndpoint(method: .get, path: "/posts", requiresAuth: false)
+    func fetchPosts(category: String?, cursor: String?) async throws -> PostPage {
+        var queryItems: [URLQueryItem] = []
+        if let category {
+            queryItems.append(URLQueryItem(name: "category", value: category))
+        }
+        if let cursor {
+            queryItems.append(URLQueryItem(name: "cursor", value: cursor))
+        }
+        let endpoint = APIEndpoint(method: .get, path: "/posts", queryItems: queryItems, requiresAuth: false)
         let dto: PostScrollDTO = try await apiClient.request(endpoint)
-        return dto.content.map(Self.toDomain)
+        return PostPage(items: dto.content.map(Self.toDomain), nextCursor: dto.nextCursor, hasNext: dto.hasNext)
     }
 
     func fetchPopularPosts() async throws -> [PostSummary] {

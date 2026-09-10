@@ -7,7 +7,11 @@
 import Foundation
 
 struct MockCommunityRepository: CommunityRepository {
-    func fetchPosts() async -> [PostSummary] {
+    func fetchPosts(category: String?, cursor: String?) async -> PostPage {
+        PostPage(items: allPosts, nextCursor: nil, hasNext: false)
+    }
+
+    private var allPosts: [PostSummary] {
         [
             PostSummary(
                 id: 1,
@@ -83,6 +87,6 @@ struct MockCommunityRepository: CommunityRepository {
     }
 
     func fetchPopularPosts() async -> [PostSummary] {
-        await fetchPosts().sorted { ($0.voteCount + $0.commentCount) > ($1.voteCount + $1.commentCount) }
+        allPosts.sorted { ($0.voteCount + $0.commentCount) > ($1.voteCount + $1.commentCount) }
     }
 }

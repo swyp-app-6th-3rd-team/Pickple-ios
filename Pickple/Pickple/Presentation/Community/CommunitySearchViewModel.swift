@@ -31,8 +31,23 @@ class CommunitySearchViewModel {
         self.recentSearches = userDefaults.stringArray(forKey: Self.recentSearchesKey) ?? []
     }
 
+    // 검색 대상은 전체 게시글이어야 하므로, 서버가 커서로 나눠주는 페이지를 hasNext가
+    // 끝날 때까지 모두 받아온다(첫 페이지만 받으면 뒤쪽 게시글은 검색에서 빠진다).
     func loadPosts() async {
-        posts = (try? await communityRepository.fetchPosts()) ?? []
+        var all: [PostSummary] = []
+        var cursor: String?
+        do {
+            while true {
+                let page = try await communityRepository.fetchPosts(category: nil, cursor: cursor)
+                all += page.items
+                guard page.hasNext, let next = page.nextCursor else { break }
+                cursor = next
+            }
+            posts = all
+        } catch {
+            posts = all
+            print("[CommunitySearch] 게시글 로드 실패: \(error)")
+        }
     }
 
     // 검색을 실행(제출)할 때만 기록한다 — 타이핑 중간중간이 아니라 실제로 찾아본 검색어만 남긴다.
