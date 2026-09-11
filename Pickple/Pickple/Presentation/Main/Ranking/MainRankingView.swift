@@ -101,7 +101,13 @@ struct MainRankingView: View {
                                 .onChange(of: containerGeo.size.height) { _, newValue in scrollContainerHeight = newValue }
                         }
                     }
-                    .onPreferenceChange(MyRankRowFramePreferenceKey.self) { myRankRowFrame = $0 }
+                    // 내 순위 행이 스크롤 가상화(LazyVStack)로 화면 밖에서 잠깐 렌더링 트리에서
+                    // 빠지면(오버스크롤 바운스 때 특히) preference가 기본값(.zero)으로 되돌아온다.
+                    // 이걸 그대로 반영하면 "아직 측정 안 됨"과 "화면 밖으로 스크롤됨"을 구분 못 해서
+                    // 카드가 잘못 떠버리므로, .zero는 무시하고 마지막 실측값을 유지한다.
+                    .onPreferenceChange(MyRankRowFramePreferenceKey.self) { newValue in
+                        if newValue != .zero { myRankRowFrame = newValue }
+                    }
 
                     if mainRankingViewModel.isLoggedIn {
                         // 가입 직후처럼 아직 배치로 순위가 매겨지지 않았으면(myRanking == nil) 보여줄 순위가 없다.
