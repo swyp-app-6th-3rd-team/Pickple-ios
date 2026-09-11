@@ -29,15 +29,18 @@ struct MainHotPostCardView: View {
                     .padding(10)
             }
             VStack(spacing: 8) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(post.category)
-                        .pickpleTypography(.caption)
-                        .foregroundStyle(Color.neutral50)
-                    
-                    Text(post.title)
-                        .pickpleTypography(.body01)
-                        .foregroundStyle(Color.black)
-                        .lineLimit(1)
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(post.category)
+                            .pickpleTypography(.caption)
+                            .foregroundStyle(Color.neutral50)
+                        
+                        Text(post.title)
+                            .pickpleTypography(.body01)
+                            .foregroundStyle(Color.black)
+                            .lineLimit(1)
+                    }
+                    Spacer()
                 }
                 
                 HStack(spacing: 8) {
