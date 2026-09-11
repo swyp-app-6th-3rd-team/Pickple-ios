@@ -21,13 +21,15 @@ struct MyActivityCommentActivityRow: View {
     }
 
     var body: some View {
-        VStack {
+        VStack(spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 6) {
                         Text(activity.content)
                             .lineLimit(2)
                             .pickpleTypography(.body02)
                             .foregroundStyle(Color.black)
+                    
+                    Spacer()
                     
                     HStack(spacing: 4) {
                         Image(referencedPostTypeIcon)
@@ -43,17 +45,7 @@ struct MyActivityCommentActivityRow: View {
                 
                 Spacer()
                 
-                if let thumbnailUrl = activity.referencedPost.thumbnailUrl {
-                    AsyncImage(url: thumbnailUrl) { image in
-                        image.resizable().scaledToFill()
-                    } placeholder: {
-                        Image("McokMyPostPicture")
-                            .resizable().scaledToFill()
-                    }
-                    .frame(width: 72, height: 72)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .clipped()
-                }
+                MyActivityPostCardImage(url: activity.referencedPost.thumbnailUrl, type: activity.referencedPost.type)
             }
             
             HStack {
