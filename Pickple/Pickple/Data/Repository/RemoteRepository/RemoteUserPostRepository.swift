@@ -73,7 +73,9 @@ struct RemoteUserPostRepository: UserPostRepository {
                         id: post.id,
                         type: post.type,
                         title: post.title,
-                        thumbnailUrl: post.thumbnailUrl
+                        thumbnailUrl: post.thumbnailUrl,
+                        voteCount: post.voteCount,
+                        commentCount: post.commentCount
                     )
                 ))
             }
