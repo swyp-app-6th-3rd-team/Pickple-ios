@@ -33,14 +33,7 @@ struct MyActivityWrittenPostCardView: View {
 
                 Spacer()
 
-                AsyncImage(url: post.thumbnailUrl) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    Image("McokMyPostPicture").resizable().scaledToFill()
-                }
-                .frame(width: 72, height: 72)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .clipped()
+                MyActivityPostCardImage(url: post.thumbnailUrl, type: post.type)
             }        
     }
 }
