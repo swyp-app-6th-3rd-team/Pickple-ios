@@ -126,7 +126,10 @@ struct MainRankingView: View {
                         }
                     } else {
                         MainRankingGuestRow(onLoginTapped: { showsLoginRequired = true })
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, myRankCardVerticalPadding)
                             .rankingFloatingCardStyle()
+                            
                     }
                 }
             }
