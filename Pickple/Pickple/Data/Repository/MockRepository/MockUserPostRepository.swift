@@ -134,7 +134,9 @@ struct MockUserPostRepository: UserPostRepository {
                     id: 201,
                     type: .forAgainst,
                     title: "나이키 에어포스 흰색으로 살까?",
-                    thumbnailUrl: nil
+                    thumbnailUrl: nil,
+                    voteCount: 12,
+                    commentCount: 4
                 )
             ),
             MyCommentActivity(
@@ -146,7 +148,9 @@ struct MockUserPostRepository: UserPostRepository {
                     id: 202,
                     type: .ab,
                     title: "OOTD 몇 번 룩이 가장 좋아요?",
-                    thumbnailUrl: nil
+                    thumbnailUrl: nil,
+                    voteCount: 8,
+                    commentCount: 2
                 )
             ),
             MyCommentActivity(
@@ -158,7 +162,9 @@ struct MockUserPostRepository: UserPostRepository {
                     id: 201,
                     type: .forAgainst,
                     title: "나이키 에어포스 흰색으로 살까?",
-                    thumbnailUrl: nil
+                    thumbnailUrl: nil,
+                    voteCount: 12,
+                    commentCount: 4
                 )
             ),
         ]
