@@ -4,13 +4,15 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 카드 폭/여백은 임시값
+// 1차 점검 완료 - 9월 12일
+// 투표 수, 댓글 수 폰트 미지정
+
 
 import SwiftUI
 
 struct MainHotPostCardView: View {
     let post: PostSummary
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ZStack(alignment: .topLeading) {
@@ -19,36 +21,42 @@ struct MainHotPostCardView: View {
                 } placeholder: {
                     Image("McokMyPostPicture").resizable().scaledToFill()
                 }
-                .frame(width: 150, height: 150)
+                .frame(width: 160, height: 160)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .clipped()
-
-                PostTypeBadge(type: post.type, iconSize: 14, typography: .caption, horizontalPadding: 8)
-                    .padding(8)
+                
+                PostTypeBadge(type: post.type, iconSize: 16, typography: .label, horizontalPadding: 10)
+                    .padding(10)
             }
-
-            Text(post.category)
-                .pickpleTypography(.caption)
-                .foregroundStyle(Color.neutral50)
-
-            Text(post.title)
-                .pickpleTypography(.body02)
-                .foregroundStyle(Color.black)
-                .lineLimit(1)
-
-            HStack(spacing: 8) {
-                PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount)
-                    .layoutPriority(1)
-
-                // 투표수/댓글수 자릿수가 늘어나 카드 폭(150pt)이 빠듯해지면, 상대적으로
-                // 덜 중요한 "n분 전" 쪽이 먼저 줄어들도록 우선순위를 낮춘다.
-                Text(post.createdAt.relativeTimeDescription)
-                    .lineLimit(1)
+            VStack(spacing: 8) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(post.category)
+                        .pickpleTypography(.caption)
+                        .foregroundStyle(Color.neutral50)
+                    
+                    Text(post.title)
+                        .pickpleTypography(.body01)
+                        .foregroundStyle(Color.black)
+                        .lineLimit(1)
+                }
+                
+                HStack(spacing: 8) {
+                    PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount)
+                        .pickpleTypography(.caption) //폰트 미지정
+                        .foregroundStyle(Color.neutral20)
+                    
+                    Spacer()
+                    
+                    Text(post.createdAt.relativeTimeDescription)
+                        .lineLimit(1)
+                        .pickpleTypography(.caption)
+                        .foregroundStyle(Color.neutral20)
+                }
+                
+                .padding(.horizontal, 2)
             }
-            .pickpleTypography(.caption)
-            .foregroundStyle(Color.neutral30)
         }
-        .frame(width: 150)
+        .frame(width: 160) //하단 정보들의 넓이를 사진 넓이와 맞춤
     }
 }
 
