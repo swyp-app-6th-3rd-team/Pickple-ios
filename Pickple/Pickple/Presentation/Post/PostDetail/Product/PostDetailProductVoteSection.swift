@@ -40,6 +40,7 @@ struct PostDetailProductVoteSection: View {
                     myProfileImageUrl: postDetailViewModel.myProfileImageUrl,
                     onVote: onVote
                 )
+                .frame(height: 48)
             }
         }
     }
