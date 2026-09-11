@@ -11,7 +11,7 @@ import SwiftUI
 
 struct PickerRankingRow: View {
     let ranking: PickerRanking
-
+    
     private var medalImageName: String? {
         switch ranking.rank {
         case 1: return "PickpleFirst"
@@ -20,46 +20,47 @@ struct PickerRankingRow: View {
         default: return nil
         }
     }
-
+    
     var body: some View {
-        HStack(spacing: 6) {
-            if let medalImageName {
-                Image(medalImageName)
-                    .resizable()
-                    .frame(width: 28, height: 28)
-            } else {
-                Text("\(ranking.rank)")
-                    .pickpleTypography(.title02)
-                    .foregroundStyle(Color.neutral40) //폰트 색상 미정
-                    .frame(width: 28, height: 28)
-            }
-
-            AsyncImage(url: ranking.profileImageUrl) { image in
-                image.resizable().scaledToFill()
-            } placeholder: {
-                Image("PickpleCharacter").resizable().scaledToFill()
-            }
-            .frame(width: 48, height: 48)
-            .clipShape(Circle())
-
             HStack(spacing: 6) {
-                Text(ranking.nickname)
+                if let medalImageName {
+                    Image(medalImageName)
+                        .resizable()
+                        .frame(width: 28, height: 28)
+                } else {
+                    Text("\(ranking.rank)")
+                        .pickpleTypography(.title02)
+                        .foregroundStyle(Color.neutral40) //폰트 색상 미정
+                        .frame(width: 28, height: 28)
+                }
+                
+                AsyncImage(url: ranking.profileImageUrl) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    Image("PickpleCharacter").resizable().scaledToFill()
+                }
+                .frame(width: 48, height: 48)
+                .clipShape(Circle())
+                
+                HStack(spacing: 6) {
+                    Text(ranking.nickname)
+                        .pickpleTypography(.body01)
+                        .foregroundStyle(Color.black)
+                    
+                    Image("PickpleLevelBadge\(ranking.level)")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                }
+                
+                Spacer()
+                
+                Text("\(ranking.points)P")
                     .pickpleTypography(.body01)
                     .foregroundStyle(Color.black)
-
-                Image("PickpleLevelBadge\(ranking.level)")
-                    .resizable()
-                    .frame(width: 20, height: 20)
             }
-
-            Spacer()
-
-            Text("\(ranking.points)P")
-                .pickpleTypography(.body01)
-                .foregroundStyle(Color.black)
         }
     }
-}
+
 
 #Preview {
     VStack(spacing: 16) {
