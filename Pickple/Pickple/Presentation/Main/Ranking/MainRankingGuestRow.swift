@@ -4,8 +4,8 @@
 //
 //  Created by 박윤수 on 9/7/26.
 //
-//  게스트가 랭킹 화면에서 보는 자리표시자 행. 일반 랭킹 행과 같은 레이아웃(순위/프로필/닉네임)을
-//  쓰되, 게스트는 실제 순위가 없으니 그 자리는 "-"로 채우고 포인트 자리만 로그인 유도 버튼으로 바꾼다.
+// 1차 점검 완료 - 9월 12일
+// "-" 폰트 미지정(폰트가 맞는지도 확인 필요)
 
 import SwiftUI
 
@@ -16,18 +16,19 @@ struct MainRankingGuestRow: View {
         HStack(spacing: 6) {
             HStack(spacing: 6) {
                 Text("-")
-                    .pickpleTypography(.title02)
+                    .pickpleTypography(.title02) // 폰트 미지정(폰트가 맞나?)
                     .foregroundStyle(Color.neutral40)
                     .frame(width: 28, height: 28)
 
-                Image(systemName: "person.circle.fill")
+                Image("PickpleCharacter")
                     .resizable()
+                    .scaledToFill()
                     .frame(width: 48, height: 48)
-                    .foregroundStyle(Color.neutral20)
+                    .clipShape(Circle())
 
                 Text(MainStrings.rankingGuestNickname)
                     .pickpleTypography(.body01)
-                    .foregroundStyle(Color.neutral100)
+                    .foregroundStyle(Color.black)
             }
 
             Spacer()
@@ -40,11 +41,10 @@ struct MainRankingGuestRow: View {
                     .padding(.vertical, 8)
                     .background(
                         RoundedRectangle(cornerRadius: 8)
-                            .foregroundStyle(Color.neutral100))
+                            .foregroundStyle(Color.black))
             }
         }
         .padding(.horizontal, 20)
-        .padding(.vertical, 16)
     }
 }
 
