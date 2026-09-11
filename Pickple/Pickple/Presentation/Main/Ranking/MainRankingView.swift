@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -28,7 +29,7 @@ private extension View {
                 UnevenRoundedRectangle(
                     topLeadingRadius: 24,
                     topTrailingRadius: 24
-                )
+                ) //모서리 수치 몇?
                     .fill(Color.white)
                     .shadow(color: Color.black.opacity(0.08), radius: 8, y: -4)
                     .ignoresSafeArea(edges: .bottom)
@@ -72,14 +73,15 @@ struct MainRankingView: View {
                 Spacer()
                 Text(MainStrings.rankingEmptyMessage)
                     .pickpleTypography(.body01)
-                    .foregroundStyle(Color.neutral40)
+                    .foregroundStyle(Color.neutral30)
                 Spacer()
             } else {
                 ZStack(alignment: .bottom) {
                     ScrollView {
-                        LazyVStack(spacing: 20) {
+                        LazyVStack(spacing: 0) {
                             ForEach(mainRankingViewModel.rankings) { ranking in
                                 PickerRankingRow(ranking: ranking)
+                                    .padding(.vertical, 16)
                                     .task { await mainRankingViewModel.loadMoreIfNeeded(currentItem: ranking) }
                                     .background {
                                         if mainRankingViewModel.isLoggedIn, let myRanking = mainRankingViewModel.myRanking, ranking.rank == myRanking.rank {
@@ -89,9 +91,11 @@ struct MainRankingView: View {
                                             }
                                         }
                                     }
+                                Divider()
                             }
                         }
-                        .padding(20)
+                        .padding(.vertical, 16)
+                        .padding(.horizontal, 20)
                     }
                     .coordinateSpace(name: "rankingScroll")
                     .background {
