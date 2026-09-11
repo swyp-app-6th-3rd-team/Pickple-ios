@@ -54,7 +54,6 @@ struct BadgeMissionStreakTracker: View {
         return LinearGradient(
             stops: [
                 .init(color: .blue60, location: 0),
-                .init(color: .blue60, location: todayStart),
                 .init(color: Color(red: 0xAC / 255, green: 0xD3 / 255, blue: 0xFF / 255), location: todayStart),
                 .init(color: Color(red: 0xD7 / 255, green: 0xE9 / 255, blue: 0xFF / 255).opacity(0), location: todayEnd),
                 .init(color: .neutral5, location: todayEnd),
