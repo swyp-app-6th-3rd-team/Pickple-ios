@@ -34,9 +34,9 @@ struct PostDetailView: View {
     init(
         voteType: VoteType = .text,
         postDetailRepository: PostDetailRepository? = nil,
-        commentRepository: CommentRepository = MockCommentRepository(),
-        userInfoRepository: UserInfoRepository = MockUserInfoRepository(),
-        voteCardRepository: VoteCardRepository = MockVoteCardRepository(),
+        commentRepository: CommentRepository,
+        userInfoRepository: UserInfoRepository,
+        voteCardRepository: VoteCardRepository,
         guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
     ) {
         _postDetailViewModel = State(initialValue: PostDetailViewModel(
@@ -204,6 +204,11 @@ struct PostDetailView: View {
 
 #Preview {
     NavigationStack {
-        PostDetailView(voteType: .ab)
+        PostDetailView(
+            voteType: .ab,
+            commentRepository: MockCommentRepository(),
+            userInfoRepository: MockUserInfoRepository(),
+            voteCardRepository: MockVoteCardRepository()
+        )
     }
 }
