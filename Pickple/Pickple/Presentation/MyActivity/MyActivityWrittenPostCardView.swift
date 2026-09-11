@@ -13,18 +13,22 @@ struct MyActivityWrittenPostCardView: View {
     let post: PostSummary
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top, spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(post.title)
-                        .lineLimit(1)
-                        .pickpleTypography(.body01)
-                        .foregroundStyle(Color.black)
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 8) {
+                    MyActivityPostCardTitle(title: post.title, decription: post.description)
+                    
+                    HStack(spacing: 6) {
+                        MyActivityPostVoteCommentStats(type: post.type, voteCount: post.voteCount, commentCount: post.commentCount)
 
-                    Text(post.description)
-                        .lineLimit(1)
-                        .pickpleTypography(.body02)
-                        .foregroundStyle(Color.neutral50)
+                        Text("·")
+
+                        Text(post.createdAt.relativeTimeDescription)
+                            .pickpleTypography(.label) //폰트 미정
+                            .foregroundStyle(Color.neutral30)
+                    }
+                    .pickpleTypography(.label)
+                    //폰트 미정
+                    .foregroundStyle(Color.neutral30)
                 }
 
                 Spacer()
@@ -34,23 +38,10 @@ struct MyActivityWrittenPostCardView: View {
                 } placeholder: {
                     Image("McokMyPostPicture").resizable().scaledToFill()
                 }
-                .frame(width: 64, height: 64)
+                .frame(width: 72, height: 72)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .clipped()
-            }
-
-            HStack(spacing: 12) {
-                PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount)
-
-                Spacer()
-
-                Text(post.createdAt.relativeTimeDescription)
-                    .pickpleTypography(.caption)
-                    .foregroundStyle(Color.neutral40)
-            }
-            .pickpleTypography(.label)
-            .foregroundStyle(Color.neutral30)
-        }
+            }        
     }
 }
 
@@ -69,5 +60,4 @@ struct MyActivityWrittenPostCardView: View {
             createdAt: Date().addingTimeInterval(-60 * 60 * 24)
         )
     )
-    .padding()
 }
