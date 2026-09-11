@@ -239,8 +239,9 @@ private struct PostDetailVoteSegment: View {
                     myProfileImageUrl: nil,
                     onVote: { votedSide = $0 }
                 )
+                .frame(height: 58)
+                .border(Color.black)
             }
-            .padding()
         }
     }
     return PreviewWrapper()
@@ -257,7 +258,8 @@ private struct PostDetailVoteSegment: View {
         myProfileImageUrl: nil,
         onVote: { _ in }
     )
-    .padding()
+    .frame(height: 58)
+    .border(Color.black)
 }
 
 #Preview("좁은 영역 - 2번 선택 5/95") {
@@ -270,5 +272,6 @@ private struct PostDetailVoteSegment: View {
         myProfileImageUrl: nil,
         onVote: { _ in }
     )
-    .padding()
+    .frame(height: 58)
+    .border(Color.black)
 }
