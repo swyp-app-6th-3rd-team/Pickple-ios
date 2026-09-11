@@ -44,11 +44,9 @@ struct MainRankingGuestRow: View {
                             .foregroundStyle(Color.black))
             }
         }
-        .padding(.horizontal, 20)
     }
 }
 
 #Preview {
     MainRankingGuestRow(onLoginTapped: {})
-        .padding()
 }
