@@ -8,27 +8,18 @@
 
 import SwiftUI
 
-struct MainTitleView: View {
+struct MainTitle: View {
     @Binding var isOn: Bool
     var hasUnreadNotification: Bool = true
-
+    
     var body: some View {
         ZStack(alignment: .center) {
-            HStack(spacing: 8) {
-                Image("PickpleTitle")
-                
-                Spacer()
-                
-                Button(action: {}) {
-                    ZStack(alignment: .topTrailing) {
-                        Image("PickpleAlertOff")
-                            .foregroundStyle(Color.neutral100)
-                        
-                    }
-                }
-                
-                
-            }
+            
+            PickpleGNB(leading: .image(Image("PickpleTitle")),
+                       center: .none,
+                       trailing: .button(icon: Image("PickpleAlertOff"), action: { /* 알림 기능 미구현 */ })
+            )
+            
             MainToggleButton(isOn: $isOn, onTitle: MainStrings.abToggleOnTitle, offTitle: MainStrings.abToggleOffTitle)
         }
         .frame(maxWidth: .infinity, minHeight: 56)
@@ -37,5 +28,5 @@ struct MainTitleView: View {
 
 #Preview {
     @Previewable @State var isOn = false
-    MainTitleView(isOn: $isOn)
+    MainTitle(isOn: $isOn)
 }
