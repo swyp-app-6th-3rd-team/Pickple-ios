@@ -4,6 +4,8 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
+// 1차 점검 완료 - 9월 12일
+// 순위 번호 폰트 색상 미지정
 
 import SwiftUI
 
@@ -12,9 +14,9 @@ struct PickerRankingRow: View {
 
     private var medalImageName: String? {
         switch ranking.rank {
-        case 1: return "Name=1st"
-        case 2: return "Name=2st"
-        case 3: return "Name=3st"
+        case 1: return "PickpleFirst"
+        case 2: return "PickpleSecond"
+        case 3: return "PickpleThird"
         default: return nil
         }
     }
@@ -28,7 +30,7 @@ struct PickerRankingRow: View {
             } else {
                 Text("\(ranking.rank)")
                     .pickpleTypography(.title02)
-                    .foregroundStyle(Color.neutral40) //임시
+                    .foregroundStyle(Color.neutral40) //폰트 색상 미정
                     .frame(width: 28, height: 28)
             }
 
@@ -40,10 +42,10 @@ struct PickerRankingRow: View {
             .frame(width: 48, height: 48)
             .clipShape(Circle())
 
-            HStack(spacing: 4) {
+            HStack(spacing: 6) {
                 Text(ranking.nickname)
                     .pickpleTypography(.body01)
-                    .foregroundStyle(Color.neutral100)
+                    .foregroundStyle(Color.black)
 
                 Image("PickpleLevelBadge\(ranking.level)")
                     .resizable()
@@ -54,7 +56,7 @@ struct PickerRankingRow: View {
 
             Text("\(ranking.points)P")
                 .pickpleTypography(.body01)
-                .foregroundStyle(Color.neutral100)
+                .foregroundStyle(Color.black)
         }
     }
 }
@@ -64,5 +66,4 @@ struct PickerRankingRow: View {
         PickerRankingRow(ranking: PickerRanking(id: UUID(), rank: 1, nickname: "닉네임", level: 5, profileImageUrl: nil, points: 1000))
         PickerRankingRow(ranking: PickerRanking(id: UUID(), rank: 4, nickname: "닉네임", level: 5, profileImageUrl: nil, points: 1000))
     }
-    .padding()
 }
