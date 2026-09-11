@@ -3,7 +3,7 @@
 //  Pickple
 //
 //  Created by 박윤수 on 9/5/26.
-// 1차 수정 완료 9월 12일
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
