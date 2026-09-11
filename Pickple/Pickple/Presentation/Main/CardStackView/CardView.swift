@@ -74,8 +74,10 @@ struct CardView: View {
                             myProfileImageUrl: myProfileImageUrl,
                             onVote: onVote
                         )
+                        .frame(height:48)
                         .padding(.horizontal, 20)
                         .padding(.bottom, 20)
+                        
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
