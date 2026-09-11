@@ -23,27 +23,24 @@ struct MyActivityCommentActivityRow: View {
     var body: some View {
         VStack {
             HStack {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
                         Text(activity.content)
                             .lineLimit(2)
-                            .pickpleTypography(.body01)
+                            .pickpleTypography(.body02)
                             .foregroundStyle(Color.black)
-                    }
                     
                     HStack(spacing: 4) {
                         Image(referencedPostTypeIcon)
                             .resizable()
-                            .frame(width: 14, height: 14)
+                            .frame(width: 16, height: 16)
                         
                         Text(activity.referencedPost.title)
                             .lineLimit(1)
                     }
-                    .pickpleTypography(.caption)
-                    .foregroundStyle(Color.neutral50)
-                    
-                    
+                    .pickpleTypography(.label)
+                    .foregroundStyle(Color.neutral30)
                 }
+                
                 Spacer()
                 
                 if let thumbnailUrl = activity.referencedPost.thumbnailUrl {
@@ -63,7 +60,7 @@ struct MyActivityCommentActivityRow: View {
                 HStack(spacing: 4) {
                     Image("PickpleOnePick")
                         .resizable()
-                        .frame(width: 16, height: 16)
+                        .frame(width: 20, height: 20)
                     Text(PostDetailStrings.pickCount(activity.pickCount))
                 }
                 .pickpleTypography(.label)
@@ -72,16 +69,21 @@ struct MyActivityCommentActivityRow: View {
                 .padding(.vertical, 4)
                 .background(Color.neutral5)
                 .clipShape(Capsule())
-                
+
                 Spacer()
-                
+
+                MyActivityPostVoteCommentStats(
+                    type: activity.referencedPost.type,
+                    voteCount: activity.referencedPost.voteCount,
+                    commentCount: activity.referencedPost.commentCount
+                )
+                .pickpleTypography(.label)
+                .foregroundStyle(Color.neutral30)
+
                 Text(activity.createdAt.relativeTimeDescription)
-                    .pickpleTypography(.caption)
-                    .foregroundStyle(Color.neutral40)
+                    .pickpleTypography(.label) //폰트 미정
+                    .foregroundStyle(Color.neutral30)
             }
-            
-            
-            
         }
     }
 }
@@ -93,10 +95,9 @@ struct MyActivityCommentActivityRow: View {
             content: "그것도 괜찮아보이지만 차라리 같은 흰 색으로 두 켤레 살거면 다른 모델로 사는편이 좋지 않을까?",
             pickCount: 3,
             createdAt: Date().addingTimeInterval(-60 * 5),
-            referencedPost: MyCommentActivityPostReference(id: 201, type: .forAgainst, title: "나이키 에어포스 흰색으로 살까?", thumbnailUrl: nil)
+            referencedPost: MyCommentActivityPostReference(id: 201, type: .forAgainst, title: "나이키 에어포스 흰색으로 살까?", thumbnailUrl: nil, voteCount: 12, commentCount: 4)
         )
     )
-    .padding()
 }
 
 #Preview("원픽 0") {
@@ -106,10 +107,9 @@ struct MyActivityCommentActivityRow: View {
             content: "○○ 그거 맞음",
             pickCount: 0,
             createdAt: Date().addingTimeInterval(-60 * 5),
-            referencedPost: MyCommentActivityPostReference(id: 202, type: .ab, title: "OOTD 몇 번 룩이 가장 좋아요?", thumbnailUrl: nil)
+            referencedPost: MyCommentActivityPostReference(id: 202, type: .ab, title: "OOTD 몇 번 룩이 가장 좋아요?", thumbnailUrl: nil, voteCount: 8, commentCount: 2)
         )
     )
-    .padding()
 }
 
 #Preview("참조글 썸네일 없음(text 타입)") {
@@ -119,8 +119,7 @@ struct MyActivityCommentActivityRow: View {
             content: "저도 궁금했던 내용이네요, 좋은 정보 감사합니다.",
             pickCount: 1,
             createdAt: Date().addingTimeInterval(-60 * 60),
-            referencedPost: MyCommentActivityPostReference(id: 203, type: .text, title: "가습기 추천 좀요", thumbnailUrl: nil)
+            referencedPost: MyCommentActivityPostReference(id: 203, type: .text, title: "가습기 추천 좀요", thumbnailUrl: nil, voteCount: 0, commentCount: 5)
         )
     )
-    .padding()
 }
