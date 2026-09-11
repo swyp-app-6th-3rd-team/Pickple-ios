@@ -33,16 +33,16 @@ struct MyActivityListView<Item: Identifiable, RowContent: View>: View {
                                 .multilineTextAlignment(.leading)
 
                         }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 20)
                         .task {
                             if item.id == items.last?.id {
                                 onReachEnd(item)
                             }
                         }
                         Divider()
-                            .padding(.vertical, 20)
                     }
                 }
-                .padding(.horizontal, 20)
             }
         }
     }
@@ -94,7 +94,7 @@ struct MyActivityListView<Item: Identifiable, RowContent: View>: View {
                 content: "그것도 괜찮아보이지만 차라리 같은 흰 색으로 두 켤레 살거면 다른 모델로 사는편이 좋지 않을까?",
                 pickCount: 3,
                 createdAt: Date().addingTimeInterval(-60 * 5),
-                referencedPost: MyCommentActivityPostReference(id: 201, type: .forAgainst, title: "나이키 에어포스 흰색으로 살까?", thumbnailUrl: nil)
+                referencedPost: MyCommentActivityPostReference(id: 201, type: .forAgainst, title: "나이키 에어포스 흰색으로 살까?", thumbnailUrl: nil, voteCount: 12, commentCount: 4)
             ),
         ]
     ) { activity in

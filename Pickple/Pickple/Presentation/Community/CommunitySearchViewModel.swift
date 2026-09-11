@@ -15,14 +15,17 @@ class CommunitySearchViewModel {
     private static let recentSearchesLimit = 10
 
     var searchText: String = ""
+    // 실시간 검색이 아니라 제출(키보드 검색 버튼)해야 반영되는 실제 조회 대상.
+    // results/화면 분기 모두 searchText가 아니라 이 값을 기준으로 삼는다.
+    private(set) var submittedSearchText: String = ""
     private(set) var recentSearches: [String] = []
     private var posts: [PostSummary] = []
 
-    // 검색어가 비어있으면 아무 결과도 보여주지 않는다(전체 목록을 다시 보여주는 화면이 아니라
-    // 검색 전용 화면이라, 빈 검색어에는 빈 상태가 자연스럽다).
+    // 제출된 검색어가 비어있으면 아무 결과도 보여주지 않는다(전체 목록을 다시 보여주는 화면이
+    // 아니라 검색 전용 화면이라, 빈 검색어에는 빈 상태가 자연스럽다).
     var results: [PostSummary] {
-        guard !searchText.isEmpty else { return [] }
-        return posts.filter { $0.title.localizedCaseInsensitiveContains(searchText) }
+        guard !submittedSearchText.isEmpty else { return [] }
+        return posts.filter { $0.title.localizedCaseInsensitiveContains(submittedSearchText) }
     }
 
     init(communityRepository: CommunityRepository = MockCommunityRepository(), userDefaults: UserDefaults = .standard) {
@@ -51,10 +54,12 @@ class CommunitySearchViewModel {
     }
 
     // 검색을 실행(제출)할 때만 기록한다 — 타이핑 중간중간이 아니라 실제로 찾아본 검색어만 남긴다.
+    // 동시에 submittedSearchText를 갱신해 그 시점의 검색어로만 results가 필터링되게 한다.
     func recordSearch() {
         let term = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !term.isEmpty else { return }
 
+        submittedSearchText = term
         recentSearches.removeAll { $0 == term }
         recentSearches.insert(term, at: 0)
         if recentSearches.count > Self.recentSearchesLimit {
@@ -66,6 +71,11 @@ class CommunitySearchViewModel {
     func selectRecentSearch(_ term: String) {
         searchText = term
         recordSearch()
+    }
+
+    // 검색창을 비우면(X 버튼) 결과 화면이 아니라 최근 검색어 화면으로 돌아가야 한다.
+    func clearSearch() {
+        submittedSearchText = ""
     }
 
     func removeRecentSearch(_ term: String) {

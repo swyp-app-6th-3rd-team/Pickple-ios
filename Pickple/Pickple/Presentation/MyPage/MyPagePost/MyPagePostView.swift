@@ -16,7 +16,7 @@ struct MyPagePostView: View {
     var body: some View {
         VStack(spacing: 12){
 
-            MyPagePostTitleView(isLoggedIn: myPageViewModel.isLoggedIn, onTapMore: onTapMore)
+            MyPagePostTitleView(onTapMore: onTapMore)
                 .padding(.horizontal, 20)
 
             //MARK: - Post

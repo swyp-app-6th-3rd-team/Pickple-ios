@@ -42,7 +42,6 @@ struct PostWriteFlowView: View {
                 if postViewModel.selectedType != .text && !postViewModel.isEditing {
                     ProgressView(value: Double(postViewModel.requiredFieldsFilledCount), total: Double(postViewModel.requiredFieldsTotalCount))
                         .progressViewStyle(LinearProgressViewStyle(tint: Color.yellow60))
-                        .padding(.horizontal, 20)
                         .padding(.vertical, 12)
                         .animation(.easeInOut, value: postViewModel.requiredFieldsFilledCount)
                 }
@@ -63,6 +62,7 @@ struct PostWriteFlowView: View {
                     onSubmit: handleSubmit
                 )
             }
+            
 
             if showsLeaveConfirm {
                 PickpleDialogOverlay(onTapDismiss: { showsLeaveConfirm = false }) {

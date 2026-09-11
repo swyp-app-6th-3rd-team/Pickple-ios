@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct MyPageInfoView: View {
-    var isLoggedIn: Bool = true
     var onTapGrade: () -> Void = {}
     var onTapBadge: () -> Void = {}
 
@@ -30,8 +29,6 @@ struct MyPageInfoView: View {
 
                 MyPageInfoRow(iconName: "PickpleMyBadge", title: MyPageStrings.badge, action: onTapBadge)
             }
-            // 게스트는 명세대로 나의 등급/나의 뱃지 진입점 클릭을 제한한다.
-            .disabled(!isLoggedIn)
             .padding(.horizontal, 20)
             .padding(.vertical, 16)
 

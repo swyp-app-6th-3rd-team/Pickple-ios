@@ -25,7 +25,7 @@ struct ProductInfoFieldBlock: View {
                 .pickpleTypography(.heading02)
                 .foregroundStyle(Color.neutral100)
 
-            PhotoUploadFieldBlock(photos: $product.photos, maxCount: maxPhotoCount, hintText: photoHint)
+            PhotoUploadSectionView(photos: $product.photos, maxCount: maxPhotoCount, hintText: photoHint)
 
             ProductNameFieldBlock(name: $product.name, maxLength: productNameMaxLength)
                 .revealed(isPhotoFilled)

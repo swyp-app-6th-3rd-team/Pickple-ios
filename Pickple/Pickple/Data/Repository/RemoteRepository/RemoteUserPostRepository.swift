@@ -39,8 +39,40 @@ struct RemoteUserPostRepository: UserPostRepository {
         return dtos.map(Self.toDomain)
     }
 
+    // GET /users/me/activities(type=VOTE)엔 득표율/내 선택 필드가 없어서(목록 공용 스키마라
+    // GET /posts와 동일), 게시글마다 GET /posts/{id} 상세를 추가로 불러 채운다(N+1) — 댓글 탭
+    // (fetchCommentedPosts)과 같은 이유로 감당하기로 한 비용이다. "투표한 글" 목록이라 상세엔
+    // 항상 vote.selectedOptionId/percentage가 채워져 있다(투표 전 블라인드 규칙은 미투표자에게만
+    // 적용됨).
     func fetchVotedPosts(cursor: String?) async -> UserPostPage {
-        await fetchActivities(type: "VOTE", cursor: cursor)
+        let page = await fetchActivities(type: "VOTE", cursor: cursor)
+        var items: [PostSummary] = []
+        for post in page.items {
+            let detailRepository = RemotePostDetailRepository(apiClient: apiClient, postId: post.id)
+            guard let detail = try? await detailRepository.fetchPostDetail(),
+                  let votedSide = detail.votedSide,
+                  let firstPercentage = detail.firstPercentage,
+                  let secondPercentage = detail.secondPercentage
+            else {
+                items.append(post)
+                continue
+            }
+            let (firstLabel, secondLabel) = Self.voteResultLabels(for: post.type)
+            items.append(post.withVoteResult(PostVoteResult(
+                firstLabel: firstLabel,
+                secondLabel: secondLabel,
+                firstPercentage: firstPercentage,
+                secondPercentage: secondPercentage,
+                votedSide: votedSide
+            )))
+        }
+        return UserPostPage(items: items, nextCursor: page.nextCursor, hasNext: page.hasNext)
+    }
+
+    private static func voteResultLabels(for type: VoteType) -> (String, String) {
+        type == .ab
+            ? (MyActivityStrings.abFirstLabel, MyActivityStrings.abSecondLabel)
+            : (MyActivityStrings.voteSideFor, MyActivityStrings.voteSideAgainst)
     }
 
     // GET /users/me/activities(type=COMMENT)는 "게시글 카드"만 주고 내가 쓴 댓글의 실제 내용은
@@ -73,7 +105,9 @@ struct RemoteUserPostRepository: UserPostRepository {
                         id: post.id,
                         type: post.type,
                         title: post.title,
-                        thumbnailUrl: post.thumbnailUrl
+                        thumbnailUrl: post.thumbnailUrl,
+                        voteCount: post.voteCount,
+                        commentCount: post.commentCount
                     )
                 ))
             }

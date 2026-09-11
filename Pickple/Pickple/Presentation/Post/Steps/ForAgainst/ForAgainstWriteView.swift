@@ -13,44 +13,28 @@ struct ForAgainstWriteView: View {
     @Bindable var postViewModel: PostViewModel
     @Binding var isCategoryExpanded: Bool
     let categoryOptions: [String]
-
+    
     private var isNameFilled: Bool { postViewModel.product.hasName }
     private var isPhotoFilled: Bool { postViewModel.product.hasPhoto }
     private var isPriceFilled: Bool { !postViewModel.product.price.isEmpty }
     private var isUrlFilled: Bool { !postViewModel.product.url.isEmpty }
-
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 32) {
             Text(PostViewStrings.forAgainstStepOneTitle)
                 .pickpleTypography(.heading02)
-
-            CategoryFieldBlock(postViewModel: postViewModel, isExpanded: .constant(false), options: categoryOptions)
-                .floatingOverSiblings {
-                    CategoryFieldBlock(postViewModel: postViewModel, isExpanded: $isCategoryExpanded, options: categoryOptions)
-                }
-
-            // 수정 모드는 상품명/사진/가격/URL이 PATCH로 반영되지 않아(카테고리/제목/설명만
-            // 지원) 원래 값을 보여주기만 하고 편집을 막는다 — 순차 공개도 건너뛰고 한꺼번에 보여준다.
-            ProductNameFieldBlock(name: $postViewModel.product.name, maxLength: postViewModel.productNameMaxLength, isDisabled: postViewModel.isEditing)
-
-            PhotoUploadFieldBlock(photos: $postViewModel.product.photos, maxCount: 3, hintText: PostViewStrings.photoHintUpToThree, isDisabled: postViewModel.isEditing)
-                .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled))
-
-            ProductPriceFieldBlock(price: $postViewModel.product.price, isDisabled: postViewModel.isEditing)
-                .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled && isPhotoFilled))
-
-            ProductURLFieldBlock(url: $postViewModel.product.url, isDisabled: postViewModel.isEditing)
-                .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled && isPhotoFilled && isPriceFilled))
-
-            DescriptionFieldBlock(text: $postViewModel.description, maxLength: postViewModel.descriptionMaxLength)
-                .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled && isPhotoFilled && isPriceFilled && isUrlFilled))
+                .foregroundStyle(Color.black)
+            
+            
+            
+            ForAgainstPostFieldSectionView(
+                postViewModel: postViewModel,
+                isCategoryExpanded: $isCategoryExpanded,
+                categoryOptions: categoryOptions
+            )
         }
         .padding(.horizontal, 20)
-        .animation(.easeInOut, value: postViewModel.isCategorySelected)
-        .animation(.easeInOut, value: isNameFilled)
-        .animation(.easeInOut, value: isPhotoFilled)
-        .animation(.easeInOut, value: isPriceFilled)
-        .animation(.easeInOut, value: isUrlFilled)
+        .padding(.top, 28)
     }
 }
 
@@ -61,6 +45,6 @@ struct ForAgainstWriteView: View {
             isCategoryExpanded: .constant(false),
             categoryOptions: PostViewStrings.categoryOptions
         )
-        .padding(.top, 32)
+        .padding(.top, 28)
     }
 }

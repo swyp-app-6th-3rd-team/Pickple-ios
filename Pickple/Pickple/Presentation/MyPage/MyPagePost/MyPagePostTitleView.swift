@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct MyPagePostTitleView: View {
-    var isLoggedIn: Bool = true
     var onTapMore: () -> Void = {}
 
     var body: some View {
@@ -30,8 +29,6 @@ struct MyPagePostTitleView: View {
                 }
 
             }
-            // 게스트는 명세대로 [전체보기] 클릭을 제한한다.
-            .disabled(!isLoggedIn)
             .pickpleTypography(.body02)
             .foregroundStyle(Color.neutral40)
         }

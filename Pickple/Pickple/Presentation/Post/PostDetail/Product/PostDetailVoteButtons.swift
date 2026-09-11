@@ -104,7 +104,6 @@ struct PostDetailVoteButtons: View {
                 .allowsHitTesting(false)
             }
         }
-        .frame(height: 52)
         .animation(.easeInOut(duration: 0.35), value: votedSide)
     }
 
@@ -205,8 +204,9 @@ private struct PostDetailVoteSegment: View {
     }
 
     private var backgroundColor: Color {
-        guard isVoted else { return Color.neutral10 }
-        return isSelected ? Color.neutral100 : Color.neutral10
+        // neutral15 = #F1F1F5
+        guard isVoted else { return Color.neutral15 }
+        return isSelected ? Color.neutral100 : Color.neutral15
     }
 
     // 투표 전엔 두 버튼이 각자 독립된 알약 모양이고, 투표 후엔 하나의 바로 합쳐지므로

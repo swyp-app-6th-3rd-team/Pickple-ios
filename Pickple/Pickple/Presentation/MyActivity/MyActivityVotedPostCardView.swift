@@ -14,78 +14,31 @@ import SwiftUI
 
 struct MyActivityVotedPostCardView: View {
     let post: PostSummary
-    
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top, spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(post.title)
-                        .lineLimit(1)
-                        .pickpleTypography(.body01)
-                        .foregroundStyle(Color.black)
-                    
-                    Text(post.description)
-                        .lineLimit(1)
-                        .pickpleTypography(.body02)
-                        .foregroundStyle(Color.neutral50)
-                    
-                    Spacer()
-                    
+        VStack(spacing: 12) {
+            HStack {
+                VStack(alignment: .leading, spacing: 8) {
+                    MyActivityPostCardTitle(title: post.title, decription: post.description)
+
                     HStack(spacing: 6) {
                         PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount)
-                        
+
                         Text("·")
-                        
+
                         Text(post.createdAt.relativeTimeDescription)
                             .pickpleTypography(.caption)
-                            .foregroundStyle(Color.neutral40)
+                        //폰트 미정
                     }
                     .pickpleTypography(.label)
                     .foregroundStyle(Color.neutral30)
                 }
-                .frame(height: 72)
                 
                 Spacer()
-                
-                ZStack(alignment: .topLeading) {
-                    AsyncImage(url: post.thumbnailUrl) { image in
-                        image.resizable().scaledToFill()
-                    } placeholder: {
-                        Image("McokMyPostPicture").resizable().scaledToFill()
-                    }
-                    .frame(width: 72, height: 72)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .clipped()
-                    
-                    ZStack(alignment: .center) {
-                        UnevenRoundedRectangle(
-                            topLeadingRadius: 8,
-                            bottomTrailingRadius: 8
-                        )
-                        .frame(width: 24 ,height: 24)
-                        .foregroundStyle(Color.black.opacity(0.4))
-                        
-                        switch post.type {
-                        case .text:
-                            Image("PickpleText")
-                                .resizable()
-                                .frame(width: 16, height: 16)
-                        case .forAgainst:
-                            Image("PickpleAgainst")
-                                .resizable()
-                                .frame(width: 16, height: 16)
-                        case .ab:
-                            Image("PickpleAB")
-                                .resizable()
-                                .frame(width: 16, height: 16)
-                        }
-                    }
-                }
+
+                MyActivityPostCardImage(url: post.thumbnailUrl, type: post.type)
             }
-            
-            
-            
-            
+
             if let voteResult = post.voteResult {
                 PostDetailVoteButtons(
                     firstLabel: voteResult.firstLabel,
@@ -96,6 +49,7 @@ struct MyActivityVotedPostCardView: View {
                     myProfileImageUrl: nil,
                     onVote: { _ in }
                 )
+                .frame(height: 48)
             }
         }
     }
@@ -117,7 +71,6 @@ struct MyActivityVotedPostCardView: View {
             voteResult: PostVoteResult(firstLabel: "사자", secondLabel: "말자", firstPercentage: 70, secondPercentage: 30, votedSide: .first)
         )
     )
-    .padding()
 }
 
 #Preview("비교픽 40/60") {
@@ -136,5 +89,4 @@ struct MyActivityVotedPostCardView: View {
             voteResult: PostVoteResult(firstLabel: "A", secondLabel: "B", firstPercentage: 40, secondPercentage: 60, votedSide: .second)
         )
     )
-    .padding()
 }

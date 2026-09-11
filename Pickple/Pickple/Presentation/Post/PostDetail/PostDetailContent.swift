@@ -41,8 +41,13 @@ struct PostDetailContent: View {
 
             VStack(spacing: 16) {
                 PostDetailHeaderSection(post: post, onMoreTapped: onMoreTapped)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+
 
                 PostDetailProductVoteSection(post: post, postDetailViewModel: postDetailViewModel, onVote: onVote)
+                    .padding(.horizontal, 20)
+
 
                 Rectangle()
                     .frame(height: 8)
@@ -53,6 +58,8 @@ struct PostDetailContent: View {
                     sortOption: $postDetailViewModel.sortOption,
                     isSortExpanded: $isSortExpanded
                 )
+                .padding(.horizontal, 20)
+
 
                 PostDetailCommentListView(
                     postDetailViewModel: postDetailViewModel,
@@ -60,8 +67,59 @@ struct PostDetailContent: View {
                     onCommentMoreTapped: onCommentMoreTapped,
                     onLoginRequired: onLoginRequired
                 )
+                .padding(.horizontal, 20)
+
             }
-            .padding(20)
         }
     }
+}
+
+#Preview {
+    struct PreviewWrapper: View {
+        @State private var isSortExpanded = false
+
+        var body: some View {
+            ScrollView {
+                PostDetailContent(
+                    post: PostDetail(
+                        id: 1,
+                        type: .ab,
+                        category: "패션/잡화",
+                        title: "이거 흰색? 검은색?",
+                        description: "데일리로 신을건데 어떤 색이 더 무난할까요?",
+                        createdAt: Date(),
+                        commentCount: 2,
+                        authorId: 1,
+                        authorNickname: "닉네임",
+                        authorProfileImageUrl: nil,
+                        authorGradeLevel: 5,
+                        authorGradeName: "LV.5",
+                        authorRanking: nil,
+                        isMine: true,
+                        vote: PostDetailVote(
+                            voted: false,
+                            selectedOptionId: nil,
+                            voterCount: 3,
+                            products: [
+                                PostDetailProduct(id: 1, name: "나이키 에어포스 흰색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/...", imageUrl: nil, displayOrder: 1),
+                                PostDetailProduct(id: 2, name: "나이키 에어포스 검은색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/...", imageUrl: nil, displayOrder: 2)
+                            ],
+                            options: [
+                                PostDetailVoteOption(optionId: 1, label: nil, productId: 1, displayOrder: 1, voteCount: nil, percentage: nil),
+                                PostDetailVoteOption(optionId: 2, label: nil, productId: 2, displayOrder: 2, voteCount: nil, percentage: nil)
+                            ]
+                        )
+                    ),
+                    postDetailViewModel: PostDetailViewModel(voteType: .ab),
+                    onMoreTapped: {},
+                    onVote: { _ in },
+                    onPickTapped: { _ in },
+                    onCommentMoreTapped: { _ in },
+                    onLoginRequired: {},
+                    isSortExpanded: $isSortExpanded
+                )
+            }
+        }
+    }
+    return PreviewWrapper()
 }

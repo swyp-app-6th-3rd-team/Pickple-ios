@@ -27,9 +27,9 @@ struct MyPageExtraView: View {
                 MyPageInfoRow(iconName: "PickpleUser", title: MyPageStrings.account, action: onTapAccount)
 
                 // TODO: 약관 및 정책·버전 정보 화면 미정 — 화면 나오면 연결
-                MyPageInfoRow(iconName: "PickpleNote", title: MyPageStrings.terms, action: {})
+                MyPageInfoRow(iconName: "PickpleNote", title: MyPageStrings.terms, url: MyPageStrings.ToU, action: {})
 
-                MyPageInfoRow(iconName: "PickpleInfo", title: MyPageStrings.version, action: {})
+                MyPageInfoRow(iconName: "PickpleInfo", title: MyPageStrings.version, url: MyPageStrings.versionInfoURL)
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 16)
