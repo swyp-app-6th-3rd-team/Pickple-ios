@@ -4,8 +4,8 @@
 //
 //  Created by 박윤수 on 9/1/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — AB 유형 두 번째 사진/버튼 라벨은 임시값(전용 디자인 없음)
-
+// 투표 버튼의 기본 색상 확인 필요
+// 1차 점검 완료 - 9월 12일
 import SwiftUI
 
 struct CardView: View {
@@ -39,14 +39,14 @@ struct CardView: View {
                             .frame(width: 16, height: 16)
                         
                         Text("\(data.participantCount)명 투표중")
-                            .pickpleTypography(.body02)
+                            .pickpleTypography(.label)
                             .foregroundStyle(Color.white)
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
                     .background(Color.black.opacity(0.4))
                     .clipShape(Capsule())
-                    .padding(12)
+                    .padding(16)
                     
                     Spacer()
                     
@@ -61,7 +61,6 @@ struct CardView: View {
                                 .foregroundStyle(Color.neutral10)
                         }
                         .padding(.horizontal, 20)
-                        .padding(.bottom, 22)
                         .contentShape(Rectangle())
                         .onTapGesture(perform: onTapBody)
                         
@@ -80,10 +79,9 @@ struct CardView: View {
                         
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
 
                 }
-            .frame(width: 333, height: 455)
+            .frame(width: 333, height: 455) //카드 뷰의 크기는 고정
 
                 .contentShape(Rectangle())
                 .onTapGesture(perform: onTapBody)
