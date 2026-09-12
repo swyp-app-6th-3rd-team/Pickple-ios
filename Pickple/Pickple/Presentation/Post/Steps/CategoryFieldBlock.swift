@@ -4,6 +4,8 @@
 //
 //  Created by 박윤수 on 8/29/26.
 //
+// 1차 점검 완료 - 9월 12일
+// 글자 색상 미정인듯?
 
 import SwiftUI
 
@@ -21,4 +23,14 @@ struct CategoryFieldBlock: View {
             PickpleDropdownView(isExpanded: $isExpanded, selectedValue: $postViewModel.selectedCategory, options: options)
         }
     }
+}
+
+#Preview {
+    @Previewable @State var isExpanded = false
+
+    CategoryFieldBlock(
+        postViewModel: PostViewModel(),
+        isExpanded: $isExpanded,
+        options: PostViewStrings.categoryOptions
+    )
 }
