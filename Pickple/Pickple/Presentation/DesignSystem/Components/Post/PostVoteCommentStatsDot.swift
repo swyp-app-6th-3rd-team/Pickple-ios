@@ -4,11 +4,7 @@
 //
 //  Created by 박윤수 on 9/7/26.
 //
-//  게시글 카드들이 각자 구현하던 "투표수 아이콘+숫자 / 댓글수 아이콘+숫자" 한 쌍을 공용화했다.
-//  타이포그래피/색상은 호출부에서 이 뷰 위에 얹은 modifier가 environment로 전파되어 적용된다.
-//  text 타입은 투표 기능이 없는 게시글이라 투표수를 아예 숨기고 댓글수만 보여준다.
-//  showsTrailingDot: 통계 뒤에 "·"만 붙이는 옵션 — 시간 텍스트는 컴포넌트 책임이 아니라
-//  호출부가 이 점 바로 뒤에 자기가 원하는 시간 텍스트를 이어붙인다.
+//
 // 1차 점검 완료 - 9월 12일
 
 import SwiftUI
@@ -30,10 +26,10 @@ struct PostVoteCommentStatsDot: View {
                         .lineLimit(1)
                         .fixedSize()
                 }
+
+                Text("·")
             }
-            
-            Text("·")
-            
+
             HStack(spacing: 4) {
                 Image("PickpleComment")
                     .resizable()
