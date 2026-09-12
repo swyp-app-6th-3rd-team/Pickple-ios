@@ -13,6 +13,9 @@ struct RankingItemDTO: Decodable {
     let profileImageUrl: String?
     let ranking: Int
     let point: Int
+    // 2026-09-13 신규. 저장된 값을 그대로 받는다(포인트로 재계산하지 않음, 등급은 안 내려감).
+    let gradeLevel: Int?
+    let gradeName: String?
 }
 
 struct RankingScrollDTO: Decodable {
@@ -49,20 +52,18 @@ struct RemotePickerRankingRepository: PickerRankingRepository {
             id: UUID(),
             rank: ranking,
             nickname: dto.nickname ?? "",
-            level: 1,
+            level: dto.gradeLevel ?? 1,
             profileImageUrl: dto.profileImageUrl.flatMap(URL.init(string:)),
             points: dto.point
         )
     }
 
-    // TODO: RankingItem 응답에 등급/레벨 필드가 없어서(userId, nickname, profileImageUrl, ranking, point만 있음)
-    // level은 1로 고정한다 — 확인되는 대로 실제 값으로 교체 필요.
     private static func toDomain(_ dto: RankingItemDTO) -> PickerRanking {
         PickerRanking(
             id: UUID(),
             rank: dto.ranking,
             nickname: dto.nickname,
-            level: 1,
+            level: dto.gradeLevel ?? 1,
             profileImageUrl: dto.profileImageUrl.flatMap(URL.init(string:)),
             points: dto.point
         )
