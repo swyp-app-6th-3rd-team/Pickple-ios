@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -25,19 +26,10 @@ struct PostDetailMoreMenuSheet: View {
                 PostDetailMenuRow(icon: "PickpleAlert", title: PostDetailStrings.menuReport, tint: Color.red60, action: onReport)
                 PostDetailMenuRow(icon: "PickpleBlock", title: PostDetailStrings.menuBlock, tint: Color.neutral100, action: onBlock)
             }
-
-            Button(action: onClose) {
-                Text(PostDetailStrings.menuClose)
-                    .pickpleTypography(.body01)
-                    .foregroundStyle(Color.neutral70)
-                    .frame(maxWidth: .infinity, minHeight: 52)
-                    .background(Color.neutral5)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-            .padding(.top, 12)
         }
-        .padding(20)
-        .presentationDetents([.height(273)])
+        .padding(.horizontal, 20)
+        .padding(.top, 16)
+        .presentationDetents([.height(202)])
         .presentationDragIndicator(.visible)
     }
 }
