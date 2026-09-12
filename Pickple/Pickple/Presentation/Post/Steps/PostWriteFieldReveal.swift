@@ -15,16 +15,20 @@ import SwiftUI
 // 다시 false가 되면서 필드가 사라지므로, "한 번이라도 true였는지"를 별도로 기억한다.
 private struct FieldRevealModifier: ViewModifier {
     let isVisible: Bool
-    @State private var hasBeenRevealed = false
+    // .onAppear로 초기값을 잡으면 타이밍에 따라 첫 렌더에서 안 잡힐 수 있어서,
+    // init 시점에 바로 isVisible로 초기화한다(이미 채워진 상태로 시작하는 경우 대비).
+    @State private var hasBeenRevealed: Bool
+
+    init(isVisible: Bool) {
+        self.isVisible = isVisible
+        _hasBeenRevealed = State(initialValue: isVisible)
+    }
 
     func body(content: Content) -> some View {
         Group {
             if hasBeenRevealed {
                 content.transition(.opacity.combined(with: .move(edge: .top)))
             }
-        }
-        .onAppear {
-            if isVisible { hasBeenRevealed = true }
         }
         .onChange(of: isVisible) { _, newValue in
             if newValue { hasBeenRevealed = true }
