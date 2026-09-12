@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -18,8 +19,6 @@ struct CommunityHeaderView: View {
                 center: .none,
                 trailing: .button(icon: Image("PickpleSearch"), action: { communityRouter.push(.search) })
             )
-
-            Divider()
 
             CommunityCategoryRow(selectedCategory: $communityViewModel.selectedCategory)
                 .padding(.horizontal, 20)
