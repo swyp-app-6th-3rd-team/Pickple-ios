@@ -30,7 +30,7 @@ struct ProductInfoFieldBlock: View {
             ProductNameFieldBlock(name: $product.name, maxLength: productNameMaxLength)
                 .revealed(isPhotoFilled)
 
-            ProductPriceFieldBlock(price: $product.price)
+            ProductPriceFieldBlock(price: $product.price, AB: "A")
                 .revealed(isPhotoFilled && isNameFilled)
 
             ProductURLFieldBlock(url: $product.url)

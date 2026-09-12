@@ -4,9 +4,7 @@
 //
 //  Created by 박윤수 on 9/7/26.
 //
-//  A/B 픽 작성 순서: 카테고리·주제·상품A/B명(전부 필수, 처음부터 같이 보임) → 사진(필수,
-//  한 섹션에 A/B 두 칸 나란히) → 가격(A/B) → URL(A/B) → 설명(선택). 각 단계는 그 앞
-//  단계가 다 채워져야 나타난다.
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -62,38 +60,15 @@ struct ABWriteView: View {
             ComparisonPhotoFieldBlock(photoA: $postViewModel.productA.photos, photoB: $postViewModel.productB.photos, isDisabled: postViewModel.isEditing)
                 .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled))
 
-            VStack(alignment: .leading, spacing: 20) {
-                ProductPriceFieldBlock(
-                    price: $postViewModel.productA.price,
-                    label: "\(PostViewStrings.abOptionALabel) \(PostViewStrings.price)",
-                    isDisabled: postViewModel.isEditing
-                )
-                ProductPriceFieldBlock(
-                    price: $postViewModel.productB.price,
-                    label: "\(PostViewStrings.abOptionBLabel) \(PostViewStrings.price)",
-                    isDisabled: postViewModel.isEditing
-                )
-            }
-            .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled && arePhotosFilled))
+            ProductPriceSectionView(postViewModel: postViewModel)
+                .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled && arePhotosFilled))
 
-            VStack(alignment: .leading, spacing: 20) {
-                ProductURLFieldBlock(
-                    url: $postViewModel.productA.url,
-                    label: "\(PostViewStrings.abOptionALabel) \(PostViewStrings.url)",
-                    isDisabled: postViewModel.isEditing
-                )
-                ProductURLFieldBlock(
-                    url: $postViewModel.productB.url,
-                    label: "\(PostViewStrings.abOptionBLabel) \(PostViewStrings.url)",
-                    isDisabled: postViewModel.isEditing
-                )
-            }
-            .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled && arePhotosFilled && arePricesFilled))
+            ProductURLSectionView(postViewModel: postViewModel)
+                .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled && arePhotosFilled && arePricesFilled))
 
             DescriptionFieldBlock(text: $postViewModel.description, maxLength: postViewModel.descriptionMaxLength)
                 .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled && arePhotosFilled && arePricesFilled && areUrlsFilled))
         }
-        .padding(.horizontal, 20)
         .animation(.easeInOut, value: isBasicInfoFilled)
         .animation(.easeInOut, value: areNamesFilled)
         .animation(.easeInOut, value: arePhotosFilled)
@@ -102,7 +77,7 @@ struct ABWriteView: View {
     }
 }
 
-#Preview {
+#Preview("빈 상태") {
     let viewModel = PostViewModel()
     viewModel.selectedType = .ab
 
@@ -112,6 +87,33 @@ struct ABWriteView: View {
             isCategoryExpanded: .constant(false),
             categoryOptions: PostViewStrings.categoryOptions
         )
-        .padding(.top, 32)
+    }
+}
+
+#Preview("전부 채워짐") {
+    let viewModel = PostViewModel()
+    viewModel.selectedType = .ab
+    viewModel.selectedCategory = "패션/잡화"
+    viewModel.topic = "나이키 에어포스 흰색 vs 검정색, 뭐가 더 나을까?"
+    viewModel.productA = PostProductDraft(
+        photos: [UIImage(systemName: "photo")!],
+        name: "나이키 에어포스 화이트",
+        price: "129000",
+        url: "https://example.com/a"
+    )
+    viewModel.productB = PostProductDraft(
+        photos: [UIImage(systemName: "photo")!],
+        name: "나이키 에어포스 블랙",
+        price: "129000",
+        url: "https://example.com/b"
+    )
+    viewModel.description = "둘 다 예뻐서 고민되는데 데일리로 신을 거라 관리 편한 쪽으로 고르고 싶어요."
+
+    return ScrollView {
+        ABWriteView(
+            postViewModel: viewModel,
+            isCategoryExpanded: .constant(false),
+            categoryOptions: PostViewStrings.categoryOptions
+        )
     }
 }
