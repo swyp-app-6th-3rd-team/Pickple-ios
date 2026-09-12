@@ -4,7 +4,8 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 박스 높이/여백은 임시값
+//  1차 점검 완료 - 9월 12일
+// 작성되는 텍스트의 폰트와 색 확인 필요
 
 import SwiftUI
 
@@ -17,36 +18,30 @@ struct DescriptionFieldBlock: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(PostViewStrings.description)
                 .pickpleTypography(.body01)
-                .foregroundStyle(Color.black)
             
-            ZStack(alignment: .bottomTrailing) {
-                if text.isEmpty {
+            TextEditor(text: $text)
+                .pickpleTypography(.body01)
+                .foregroundStyle(Color.neutral100)
+                .scrollContentBackground(.hidden)
+                .frame(maxWidth: .infinity, minHeight: 180)
+                .onChange(of: text) { _, newValue in
+                    if newValue.count > maxLength {
+                        text = String(newValue.prefix(maxLength))
+                    }
+                }
+                .overlay(alignment: .top) {
+                    if text.isEmpty {
                         Text(PostViewStrings.descriptionPlaceholder)
                             .pickpleTypography(.body01)
                             .foregroundStyle(Color.neutral40)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-
-                }
-                
-                TextEditor(text: $text)
-                    .pickpleTypography(.body01)
-                    .foregroundStyle(Color.neutral100)
-                    .scrollContentBackground(.hidden)
-                    .frame(height: 160)
-                    .onChange(of: text) { _, newValue in
-                        if newValue.count > maxLength {
-                            text = String(newValue.prefix(maxLength))
-                        }
+                            .allowsHitTesting(false)
                     }
-                
-                HStack {
-                    Spacer()
+                }
+                .overlay(alignment: .bottomTrailing) {
                     Text("\(text.count)/\(maxLength)")
                         .pickpleTypography(.body02)
                         .foregroundStyle(Color.neutral40)
                 }
-                
-            }
             .padding(.vertical, 15)
             .padding(.horizontal, 20)
             .overlay {
