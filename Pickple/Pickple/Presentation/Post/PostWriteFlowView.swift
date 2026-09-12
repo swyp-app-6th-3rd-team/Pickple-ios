@@ -65,14 +65,19 @@ struct PostWriteFlowView: View {
                     isEnabled: postViewModel.canSubmit,
                     onSubmit: handleSubmit
                 )
+                .padding(.horizontal, 20)
             }
             
 
             if showsLeaveConfirm {
                 PickpleDialogOverlay(onTapDismiss: { showsLeaveConfirm = false }) {
-                    PostLeaveConfirmDialog(
+                    PickpleConfirmDialog(
+                        title: PostViewStrings.leaveConfirmTitle,
+                        description: PostViewStrings.leaveConfirmDescription,
+                        cancelTitle: PostViewStrings.leaveConfirmCancel,
+                        confirmTitle: PostViewStrings.leaveConfirmConfirm,
                         onCancel: { showsLeaveConfirm = false },
-                        onLeave: { dismiss() }
+                        onConfirm: { dismiss() }
                     )
                 }
             }
