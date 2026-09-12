@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/1/26.
 //
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -17,10 +18,10 @@ struct MyPageStatsView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            VStack {
+            VStack(spacing: 2) {
                 Text(MyPageStrings.voteCount)
                     .pickpleTypography(.label)
-                    .foregroundStyle(Color.navy40)
+                    .foregroundStyle(Color.neutral40)
 
                 Text("\(voteCount)")
                     .pickpleTypography(.title02)
@@ -31,10 +32,10 @@ struct MyPageStatsView: View {
             Divider()
                 .frame(height: 30)
 
-            VStack {
+            VStack(spacing: 2) {
                 Text(MyPageStrings.commentCount)
                     .pickpleTypography(.label)
-                    .foregroundStyle(Color.navy40)
+                    .foregroundStyle(Color.neutral40)
 
                 Text("\(commentCount)")
                     .pickpleTypography(.title02)
@@ -45,10 +46,10 @@ struct MyPageStatsView: View {
             Divider()
                 .frame(height: 30)
 
-            VStack {
+            VStack(spacing: 2) {
                 Text(MyPageStrings.postCount)
                     .pickpleTypography(.label)
-                    .foregroundStyle(Color.navy40)
+                    .foregroundStyle(Color.neutral40)
 
                 Text("\(postCount)")
                     .pickpleTypography(.title02)
