@@ -73,12 +73,6 @@ enum PickpleTypography {
         size * letterSpacingPercent
     }
 
-    // SwiftUI lineSpacing은 줄 사이 "추가" 간격이라 CSS line-height와 1:1 대응은 아님.
-    // 폰트 자체 줄간격을 뺀 근사치로 계산.
-    var lineSpacing: CGFloat {
-        size * (lineHeightPercent - 1)
-    }
-
     // GeometryReader로 렌더링된 텍스트 폭을 측정해 상태에 반영하는 방식은 SwiftUI
     // 렌더링 타이밍에 따라 결과가 들쭉날쭉했다. NSString 기반으로 같은 폰트를 동기적으로
     // 측정하면 매 렌더링마다 항상 같은 값이 나와 그런 문제가 없다.
@@ -103,6 +97,5 @@ extension View {
         self
             .font(style.font)
             .tracking(style.tracking)
-            .lineSpacing(style.lineSpacing)
     }
 }
