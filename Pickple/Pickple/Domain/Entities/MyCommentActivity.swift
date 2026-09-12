@@ -6,8 +6,8 @@
 //
 //  '나의 활동 > 댓글' 탭 전용. Comment(단일 게시글 스레드 안의 댓글)와 달리
 //  여러 게시글에 걸친 내 댓글 목록이라 참조 게시글 정보를 함께 들고 있어야 한다.
-//  내가 댓글 단 게시글 목록(GET /users/me/activities?type=COMMENT) + 게시글별 댓글 목록
-//  (GET /posts/{id}/comments, mine==true 필터)을 조합해서 채운다 — RemoteUserPostRepository 참고.
+//  GET /users/me/activities/comments가 게시글당 대표 댓글(원픽 최다순) 하나를 그대로 줘서,
+//  한 게시글에 내 댓글이 여러 개여도 한 줄로만 표시된다 — RemoteUserPostRepository 참고.
 
 import Foundation
 

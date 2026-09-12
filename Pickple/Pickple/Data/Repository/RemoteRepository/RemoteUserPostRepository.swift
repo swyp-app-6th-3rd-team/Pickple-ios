@@ -7,10 +7,10 @@
 
 import Foundation
 
-// GET /users/me/posts/recent와 GET /users/me/activities(type=VOTE|COMMENT|POST) 둘 다
-// GET /posts의 content 항목과 같은 필드를 준다. 후자만 activityAt(내가 이 게시글에 활동한
-// 시각)을 추가로 주는데, 전자엔 그 키 자체가 없어서 Optional로 두면 자연히 nil로 디코딩된다
-// — 두 응답이 같은 구조라 DTO 하나로 공유한다.
+// GET /users/me/posts/recent와 GET /users/me/activities/posts 둘 다 GET /posts의 content
+// 항목과 같은 필드를 준다. 후자만 activityAt(내가 이 게시글에 활동한 시각)을 추가로 주는데,
+// 전자엔 그 키 자체가 없어서 Optional로 두면 자연히 nil로 디코딩된다 — 두 응답이 같은
+// 구조라 DTO 하나로 공유한다.
 struct ActivityItemDTO: Decodable {
     let id: Int
     let type: String
@@ -30,6 +30,58 @@ private struct ActivityListResponseDTO: Decodable {
     let hasNext: Bool
 }
 
+// GET /users/me/activities/votes 전용. 기본 필드(ActivityItemDTO와 동일 셋) + 투표 결과.
+private struct VoteActivityOptionDTO: Decodable {
+    let optionId: Int
+    let displayOrder: Int
+    let voteCount: Int
+    let percentage: Int
+}
+
+private struct VoteActivityItemDTO: Decodable {
+    let id: Int
+    let type: String
+    let category: String
+    let title: String
+    let description: String?
+    let commentCount: Int
+    let voteCount: Int?
+    let thumbnailUrl: String?
+    let createdAt: Date
+    let activityAt: Date?
+    let selectedOptionId: Int?
+    let options: [VoteActivityOptionDTO]?
+}
+
+private struct VoteActivityListResponseDTO: Decodable {
+    let content: [VoteActivityItemDTO]
+    let nextCursor: String?
+    let hasNext: Bool
+}
+
+// GET /users/me/activities/comments 전용. 기본 필드 + 대표 댓글(원픽 최다, 동률이면 최신 —
+// 삭제된 댓글은 대표 후보에서 제외되는 걸 서버가 보장).
+private struct CommentActivityItemDTO: Decodable {
+    let id: Int
+    let type: String
+    let category: String
+    let title: String
+    let description: String?
+    let commentCount: Int
+    let voteCount: Int?
+    let thumbnailUrl: String?
+    let createdAt: Date
+    let activityAt: Date?
+    let myComment: String?
+    let myCommentOnePickCount: Int?
+}
+
+private struct CommentActivityListResponseDTO: Decodable {
+    let content: [CommentActivityItemDTO]
+    let nextCursor: String?
+    let hasNext: Bool
+}
+
 struct RemoteUserPostRepository: UserPostRepository {
     let apiClient: APIClientProtocol
 
@@ -39,34 +91,18 @@ struct RemoteUserPostRepository: UserPostRepository {
         return dtos.map(Self.toDomain)
     }
 
-    // GET /users/me/activities(type=VOTE)엔 득표율/내 선택 필드가 없어서(목록 공용 스키마라
-    // GET /posts와 동일), 게시글마다 GET /posts/{id} 상세를 추가로 불러 채운다(N+1) — 댓글 탭
-    // (fetchCommentedPosts)과 같은 이유로 감당하기로 한 비용이다. "투표한 글" 목록이라 상세엔
-    // 항상 vote.selectedOptionId/percentage가 채워져 있다(투표 전 블라인드 규칙은 미투표자에게만
-    // 적용됨).
+    // 2026-09-13부터 GET /users/me/activities/votes가 selectedOptionId/options를 직접 줘서,
+    // 게시글마다 상세를 따로 불러 채우던 N+1 워크어라운드가 필요 없어졌다.
     func fetchVotedPosts(cursor: String?) async -> UserPostPage {
-        let page = await fetchActivities(type: "VOTE", cursor: cursor)
-        var items: [PostSummary] = []
-        for post in page.items {
-            let detailRepository = RemotePostDetailRepository(apiClient: apiClient, postId: post.id)
-            guard let detail = try? await detailRepository.fetchPostDetail(),
-                  let votedSide = detail.votedSide,
-                  let firstPercentage = detail.firstPercentage,
-                  let secondPercentage = detail.secondPercentage
-            else {
-                items.append(post)
-                continue
-            }
-            let (firstLabel, secondLabel) = Self.voteResultLabels(for: post.type)
-            items.append(post.withVoteResult(PostVoteResult(
-                firstLabel: firstLabel,
-                secondLabel: secondLabel,
-                firstPercentage: firstPercentage,
-                secondPercentage: secondPercentage,
-                votedSide: votedSide
-            )))
+        var queryItems: [URLQueryItem] = []
+        if let cursor {
+            queryItems.append(URLQueryItem(name: "cursor", value: cursor))
         }
-        return UserPostPage(items: items, nextCursor: page.nextCursor, hasNext: page.hasNext)
+        let endpoint = APIEndpoint(method: .get, path: "/users/me/activities/votes", queryItems: queryItems, requiresAuth: true)
+        guard let response: VoteActivityListResponseDTO = try? await apiClient.request(endpoint) else {
+            return UserPostPage(items: [], nextCursor: nil, hasNext: false)
+        }
+        return UserPostPage(items: response.content.map(Self.toDomain), nextCursor: response.nextCursor, hasNext: response.hasNext)
     }
 
     private static func voteResultLabels(for type: VoteType) -> (String, String) {
@@ -75,56 +111,33 @@ struct RemoteUserPostRepository: UserPostRepository {
             : (MyActivityStrings.voteSideFor, MyActivityStrings.voteSideAgainst)
     }
 
-    // GET /users/me/activities(type=COMMENT)는 "게시글 카드"만 주고 내가 쓴 댓글의 실제 내용은
-    // 안 내려줘서(2026-09-06 OAS 확인), 댓글 내용을 채우려면 게시글마다 GET /posts/{id}/comments를
-    // 추가로 불러 mine==true인 댓글을 걸러야 한다(N+1). "나의 활동" 탭은 개인 활동 내역이라
-    // 대상 게시글 수가 자연히 작아서(전체 피드처럼 반복적으로 많이 불러오는 화면이 아님) 이
-    // 비용을 감당하기로 함. 한 게시글에 내 댓글이 여러 개면 게시글당 한 줄이 아니라 댓글마다
-    // 한 줄씩 보여준다(활동 목록의 "참여 게시글 수" 집계와는 다른 기준).
+    // 2026-09-13부터 GET /users/me/activities/comments가 대표 댓글(myComment)을 직접 줘서,
+    // 게시글마다 댓글 목록을 따로 불러 mine==true를 거르던 N+1 워크어라운드가 필요 없어졌다.
+    // 서버가 게시글당 대표 댓글 하나만 주므로(§3 동작 변경), 한 게시글에 내 댓글이 여러 개여도
+    // 이제 한 줄로만 보인다 — 예전(댓글마다 한 줄)과 달라진 표시 단위다.
     func fetchCommentedPosts() async -> [MyCommentActivity] {
-        var commentedPosts: [PostSummary] = []
+        var items: [MyCommentActivity] = []
         var cursor: String?
         while true {
-            let page = await fetchActivities(type: "COMMENT", cursor: cursor)
-            commentedPosts += page.items
-            guard page.hasNext, let next = page.nextCursor else { break }
+            var queryItems: [URLQueryItem] = []
+            if let cursor {
+                queryItems.append(URLQueryItem(name: "cursor", value: cursor))
+            }
+            let endpoint = APIEndpoint(method: .get, path: "/users/me/activities/comments", queryItems: queryItems, requiresAuth: true)
+            guard let response: CommentActivityListResponseDTO = try? await apiClient.request(endpoint) else { break }
+            items += response.content.map(Self.toDomain)
+            guard response.hasNext, let next = response.nextCursor else { break }
             cursor = next
         }
-
-        var activities: [MyCommentActivity] = []
-        for post in commentedPosts {
-            let commentRepository = RemoteCommentRepository(apiClient: apiClient, postId: post.id)
-            guard let comments = try? await commentRepository.fetchComments() else { continue }
-            for comment in comments where comment.mine {
-                activities.append(MyCommentActivity(
-                    id: comment.id,
-                    content: comment.content,
-                    pickCount: comment.pickCount,
-                    createdAt: comment.createdAt,
-                    referencedPost: MyCommentActivityPostReference(
-                        id: post.id,
-                        type: post.type,
-                        title: post.title,
-                        thumbnailUrl: post.thumbnailUrl,
-                        voteCount: post.voteCount,
-                        commentCount: post.commentCount
-                    )
-                ))
-            }
-        }
-        return activities.sorted { $0.createdAt > $1.createdAt }
+        return items
     }
 
     func fetchWrittenPosts(cursor: String?) async -> UserPostPage {
-        await fetchActivities(type: "POST", cursor: cursor)
-    }
-
-    private func fetchActivities(type: String, cursor: String?) async -> UserPostPage {
-        var queryItems = [URLQueryItem(name: "type", value: type)]
+        var queryItems: [URLQueryItem] = []
         if let cursor {
             queryItems.append(URLQueryItem(name: "cursor", value: cursor))
         }
-        let endpoint = APIEndpoint(method: .get, path: "/users/me/activities", queryItems: queryItems, requiresAuth: true)
+        let endpoint = APIEndpoint(method: .get, path: "/users/me/activities/posts", queryItems: queryItems, requiresAuth: true)
         guard let response: ActivityListResponseDTO = try? await apiClient.request(endpoint) else {
             return UserPostPage(items: [], nextCursor: nil, hasNext: false)
         }
@@ -145,6 +158,54 @@ struct RemoteUserPostRepository: UserPostRepository {
             voteCount: dto.voteCount,
             commentCount: dto.commentCount,
             createdAt: dto.activityAt ?? dto.createdAt
+        )
+    }
+
+    // options는 항상 2개(displayOrder 1/2)라 R-04와 동일 전제. label은 A/B에서 null이라
+    // 서버 값 대신 voteResultLabels(post.type 기준)로 클라이언트가 정한다(게시글 상세와 동일 관례).
+    private static func toDomain(_ dto: VoteActivityItemDTO) -> PostSummary {
+        var voteResult: PostVoteResult?
+        if let selectedOptionId = dto.selectedOptionId,
+           let options = dto.options,
+           let first = options.first(where: { $0.displayOrder == 1 }),
+           let second = options.first(where: { $0.displayOrder == 2 }) {
+            let (firstLabel, secondLabel) = voteResultLabels(for: VoteType(serverType: dto.type))
+            voteResult = PostVoteResult(
+                firstLabel: firstLabel,
+                secondLabel: secondLabel,
+                firstPercentage: first.percentage,
+                secondPercentage: second.percentage,
+                votedSide: selectedOptionId == first.optionId ? .first : .second
+            )
+        }
+        return .fromServerFields(
+            id: dto.id,
+            type: dto.type,
+            category: dto.category,
+            title: dto.title,
+            description: dto.description,
+            thumbnailUrl: dto.thumbnailUrl,
+            voteCount: dto.voteCount,
+            commentCount: dto.commentCount,
+            createdAt: dto.activityAt ?? dto.createdAt,
+            voteResult: voteResult
+        )
+    }
+
+    private static func toDomain(_ dto: CommentActivityItemDTO) -> MyCommentActivity {
+        MyCommentActivity(
+            id: dto.id,
+            content: dto.myComment ?? "",
+            pickCount: dto.myCommentOnePickCount ?? 0,
+            createdAt: dto.activityAt ?? dto.createdAt,
+            referencedPost: MyCommentActivityPostReference(
+                id: dto.id,
+                type: VoteType(serverType: dto.type),
+                title: dto.title,
+                thumbnailUrl: dto.thumbnailUrl.flatMap(URL.init(string:)),
+                voteCount: dto.voteCount ?? 0,
+                commentCount: dto.commentCount
+            )
         )
     }
 }
