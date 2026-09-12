@@ -44,7 +44,7 @@ struct MainHotPostCardView: View {
                 }
                 
                 HStack(spacing: 8) {
-                    PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount)
+                    PostVoteCommentStats(type: post.type, voteCount: post.voteCount, commentCount: post.commentCount)
                         .pickpleTypography(.caption) //폰트 미지정
                         .foregroundStyle(Color.neutral20)
                     
