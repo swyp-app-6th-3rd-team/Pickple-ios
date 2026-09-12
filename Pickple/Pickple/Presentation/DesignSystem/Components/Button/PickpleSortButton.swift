@@ -4,7 +4,7 @@
 //
 //  Created by 박윤수 on 9/2/26.
 //
-//  TODO: 기능(실제 정렬 적용) 미구현 — UI만 우선 작업
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -29,7 +29,7 @@ struct PickpleSortButton: View {
 
                     Image("PickpleArrowFill")
                         .resizable()
-                        .frame(width: 16, height: 16)
+                        .frame(width: 20, height: 20)
                         .foregroundStyle(Color.neutral30)
                         .rotationEffect(.degrees(isExpanded ? 180 : 0))
                 }
@@ -72,7 +72,7 @@ struct PickpleSortButton: View {
                         .stroke(Color.navy10, lineWidth: 1)
                     
                 }
-                .shadow(color: Color.white, radius: 10)
+                .shadow(color: Color.black.opacity(0.1), radius: 10)
                 
             }
         }
