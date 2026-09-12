@@ -4,6 +4,8 @@
 //
 //  Created by 박윤수 on 9/2/26.
 //
+// 1차 점검 완료 - 9월 13일
+
 
 import SwiftUI
 
@@ -28,7 +30,7 @@ struct MyPagePostView: View {
                     else {
                         ForEach(myPageViewModel.posts) { post in
                             Button(action: { onTapPost(post) }) {
-                                PostSummaryCardView(post: post)
+                                PostThumbnailCardView(post: post)
                             }
                             .frame(width: 160, height: 238)
 

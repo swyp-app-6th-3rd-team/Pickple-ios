@@ -46,7 +46,7 @@ struct MainHotPostSection: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(posts) { post in
-                            MainHotPostCardView(post: post)
+                            PostThumbnailCardView(post: post)
                                 .onTapGesture { onTapPost(post) }
                         }
                     }
