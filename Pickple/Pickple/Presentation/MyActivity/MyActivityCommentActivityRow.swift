@@ -6,6 +6,7 @@
 //
 //  나의 활동 '댓글' 탭 전용 행. 다른 두 탭과 달리 게시글 카드가 아니라 내가 쓴 댓글 내용이
 //  주인공이고, 그 댓글이 달린 원본 게시글은 참조(제목+타입 아이콘)로만 붙는다.
+// 1차 점검 완료
 
 import SwiftUI
 
@@ -22,15 +23,14 @@ struct MyActivityCommentActivityRow: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            HStack {
+            HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 6) {
-                        Text(activity.content)
+                        //댓글 공백 대비 — 2줄 높이를 항상 확보해서 아래 참조글 줄 위치가 안 흔들리게 한다.
+                        Text(activity.content.isEmpty ? " \n " : activity.content)
                             .lineLimit(2)
                             .pickpleTypography(.body02)
                             .foregroundStyle(Color.black)
-                    
-                    Spacer()
-                    
+                                        
                     HStack(spacing: 4) {
                         Image(referencedPostTypeIcon)
                             .resizable()
@@ -42,6 +42,7 @@ struct MyActivityCommentActivityRow: View {
                     .pickpleTypography(.label)
                     .foregroundStyle(Color.neutral30)
                 }
+                .padding(.bottom, 6)
                 
                 Spacer()
                 
