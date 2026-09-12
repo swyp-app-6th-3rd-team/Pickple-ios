@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/1/26.
 //
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -83,6 +84,8 @@ private struct MyPagePointsLevelFooter: View {
                 HStack(spacing: 8) {
                     if let level {
                         Image("PickpleBadge\(level)")
+                            .resizable()
+                            .frame(width: 20, height: 20)
                     } else {
                         Image("badge")
                     }
@@ -105,11 +108,11 @@ private struct MyPagePointsLevelFooter: View {
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.top, 14)
+            .padding(.vertical, 14)
 
             if let pointsToNextLevel, let currentPoints {
                 ProgressView(value: Double(currentPoints), total: Double(currentPoints + pointsToNextLevel))
-                    .progressViewStyle(LinearProgressViewStyle(tint: Color.green60))
+                    .progressViewStyle(LinearProgressViewStyle(tint: Color.yellow60))
                     .padding(.horizontal, 16)
                     .padding(.bottom, 14)
                     .frame(maxWidth: .infinity, minHeight: 8, maxHeight: 8)
