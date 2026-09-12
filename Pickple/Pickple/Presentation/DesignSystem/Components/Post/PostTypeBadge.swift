@@ -16,6 +16,8 @@ struct PostTypeBadge: View {
     var verticalPadding: CGFloat = 4
     var textColor: Color = .white
     var backgroundColor: Color = .black
+    var stroke: Bool = false
+    var strokeColor: Color = .clear
 
     private var iconName: String {
         switch type {
@@ -37,7 +39,15 @@ struct PostTypeBadge: View {
         }
         .padding(.horizontal, horizontalPadding)
         .padding(.vertical, verticalPadding)
-        .background(Capsule().foregroundStyle(backgroundColor))
+        .background(
+            Capsule()
+                .foregroundStyle(backgroundColor)
+                .overlay {
+                    if stroke {
+                        Capsule().stroke(strokeColor)
+                    }
+                }
+        )
     }
 }
 
