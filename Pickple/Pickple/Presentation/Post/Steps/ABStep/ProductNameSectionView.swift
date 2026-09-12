@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/11/26.
 //
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -32,7 +33,6 @@ struct ProductNameSectionView: View {
                 isDisabled: postViewModel.isEditing
             )
         }
-        .opacity(postViewModel.isEditing ? 0.5 : 1)
     }
 }
 
