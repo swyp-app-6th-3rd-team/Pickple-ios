@@ -88,7 +88,6 @@ class PostViewModel {
     }
 
     // 설명은 모든 유형에서 선택 입력이라 필수값 체크에 포함하지 않는다.
-    // TODO: description은 trim 체크가 없어서 공백만 입력해도 그대로 제출/전송된다 — 조회 화면에서 빈 줄로 보이는 문제 있음.
     private var isBasicInfoValid: Bool {
         switch selectedType {
         case .forAgainst:
@@ -171,6 +170,12 @@ class PostViewModel {
         }
     }
 
+    // 공백/줄바꿈만 입력한 설명은 빈 값과 같게 취급한다 — 여기서 한 번만 정리해서
+    // 보내면, 조회하는 쪽(PostDetailHeaderSection 등)은 매번 trim할 필요 없이 그냥 빈 문자열만 확인하면 된다.
+    private var normalizedDescription: String {
+        description.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     private var submittedProducts: [PostWriteProductDraft] {
         switch selectedType {
         case .forAgainst: return [product.writeDraft]
@@ -195,7 +200,7 @@ class PostViewModel {
                     id: editingPostId,
                     category: selectedCategory,
                     title: submittedTitle,
-                    description: description
+                    description: normalizedDescription
                 )
                 createdPostId = editingPostId
             } else {
@@ -203,7 +208,7 @@ class PostViewModel {
                     type: selectedType,
                     category: selectedCategory,
                     title: submittedTitle,
-                    description: description.isEmpty ? nil : description,
+                    description: normalizedDescription.isEmpty ? nil : normalizedDescription,
                     products: submittedProducts
                 )
             }
