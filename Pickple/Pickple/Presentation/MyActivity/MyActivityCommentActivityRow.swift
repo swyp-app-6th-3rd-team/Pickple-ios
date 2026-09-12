@@ -64,7 +64,7 @@ struct MyActivityCommentActivityRow: View {
 
                 Spacer()
 
-                MyActivityPostVoteCommentStats(
+                PostVoteCommentStats(
                     type: activity.referencedPost.type,
                     voteCount: activity.referencedPost.voteCount,
                     commentCount: activity.referencedPost.commentCount
