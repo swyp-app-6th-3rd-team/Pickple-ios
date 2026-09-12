@@ -17,12 +17,10 @@ struct MyActivityPostCardTitle: View {
                 .pickpleTypography(.body01)
                 .foregroundStyle(Color.black)
             
-            if !decription.isEmpty {
-                Text(decription)
-                    .lineLimit(1)
-                    .pickpleTypography(.body02)
-                    .foregroundStyle(Color.neutral40)
-            }
+            Text(decription)
+                .lineLimit(1)
+                .pickpleTypography(.body02)
+                .foregroundStyle(Color.neutral40)
         }
     }
 }
