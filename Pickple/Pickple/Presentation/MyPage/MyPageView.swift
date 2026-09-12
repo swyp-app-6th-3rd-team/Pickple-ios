@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/1/26.
 //
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -31,9 +32,9 @@ struct MyPageView: View {
 
                         MyPageStatusView(myPageViewModel: myPageViewModel)
 
-                        Divider()
+                        Rectangle()
+                            .foregroundStyle(Color.neutral5)
                             .frame(height: 4)
-                            .background(Color.neutral5)
 
                         MyPagePostView(
                             myPageViewModel: myPageViewModel,
@@ -54,9 +55,9 @@ struct MyPageView: View {
                             }
                         )
 
-                        Divider()
+                        Rectangle()
+                            .foregroundStyle(Color.neutral5)
                             .frame(height: 4)
-                            .background(Color.neutral5)
 
                         MyPageInfoView(
                             onTapGrade: {
@@ -75,9 +76,9 @@ struct MyPageView: View {
                             }
                         )
 
-                        Divider()
+                        Rectangle()
+                            .foregroundStyle(Color.neutral5)
                             .frame(height: 4)
-                            .background(Color.neutral5)
 
                         MyPageExtraView(
                             onTapAccount: {
