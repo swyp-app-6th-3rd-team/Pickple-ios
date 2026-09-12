@@ -4,7 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 여백/시트 높이는 임시값
+//  1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -18,10 +18,11 @@ struct PostTypeSelectionSheet: View {
             PostTypeRow(icon: "PickpleAB", title: PostViewStrings.abPickRowTitle) { onSelect(.ab) }
             PostTypeRow(icon: "PickpleText", title: PostViewStrings.textPickRowTitle) { onSelect(.text) }
         }
-        .padding(.horizontal, 4)
+        .padding(.horizontal, 20)
         .presentationDetents([.height(260)])
         .presentationDragIndicator(.visible)
     }
+        
 }
 
 #Preview {

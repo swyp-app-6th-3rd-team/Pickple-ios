@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -27,11 +28,13 @@ struct PostTypeRow: View {
                 Spacer()
             }
             .padding(.vertical, 16)
+            .padding(.horizontal, 4)
+
         }
     }
 }
 
 #Preview {
     PostTypeRow(icon: "PickpleAgainst", title: PostViewStrings.forAgainstPickRowTitle, action: {})
-        .padding(.horizontal, 20)
+
 }
