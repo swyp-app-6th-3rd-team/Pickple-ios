@@ -4,7 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 여백/폰트 크기는 임시값
+//  1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -202,10 +202,21 @@ struct PostDetailView: View {
     }
 }
 
-#Preview {
+#Preview("찬반/AB") {
     NavigationStack {
         PostDetailView(
             voteType: .ab,
+            commentRepository: MockCommentRepository(),
+            userInfoRepository: MockUserInfoRepository(),
+            voteCardRepository: MockVoteCardRepository()
+        )
+    }
+}
+
+#Preview("일반(텍스트) 게시글") {
+    NavigationStack {
+        PostDetailView(
+            voteType: .text,
             commentRepository: MockCommentRepository(),
             userInfoRepository: MockUserInfoRepository(),
             voteCardRepository: MockVoteCardRepository()
