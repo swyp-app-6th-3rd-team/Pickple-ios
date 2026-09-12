@@ -23,7 +23,7 @@ struct MyActivityCommentActivityRow: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            HStack(alignment: .top) {
+            HStack() {
                 VStack(alignment: .leading, spacing: 6) {
                         // 줄 수(0~2줄)와 상관없이 항상 2줄 높이를 예약해서 아래 참조글 줄 위치가 안 흔들리게 한다.
                         Text(activity.content)
@@ -41,8 +41,9 @@ struct MyActivityCommentActivityRow: View {
                     }
                     .pickpleTypography(.label)
                     .foregroundStyle(Color.neutral30)
+                    .padding(.bottom, 6)
+
                 }
-                .padding(.bottom, 6)
                 
                 Spacer()
                 
@@ -65,17 +66,12 @@ struct MyActivityCommentActivityRow: View {
 
                 Spacer()
 
-                PostVoteCommentStats(
+                MyActivityStatsRow(
                     type: activity.referencedPost.type,
                     voteCount: activity.referencedPost.voteCount,
-                    commentCount: activity.referencedPost.commentCount
+                    commentCount: activity.referencedPost.commentCount,
+                    createdAt: activity.createdAt
                 )
-                .pickpleTypography(.label)
-                .foregroundStyle(Color.neutral30)
-
-                Text(activity.createdAt.relativeTimeDescription)
-                    .pickpleTypography(.label) //폰트 미정
-                    .foregroundStyle(Color.neutral30)
             }
         }
     }

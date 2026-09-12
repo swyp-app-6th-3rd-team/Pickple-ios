@@ -17,20 +17,7 @@ struct MyActivityWrittenPostCardView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     MyActivityPostCardTitle(title: post.title, decription: post.description)
                     
-                    HStack(spacing: 6) {
-                        PostVoteCommentStats(
-                            type: post.type,
-                            voteCount: post.voteCount,
-                            commentCount: post.commentCount
-                            )
-
-                        Text(post.createdAt.relativeTimeDescription)
-                            .pickpleTypography(.label) //폰트 미정
-                            .foregroundStyle(Color.neutral30)
-                    }
-                    .pickpleTypography(.label)
-                    //폰트 미정
-                    .foregroundStyle(Color.neutral30)
+                    MyActivityStatsRow(type: post.type, voteCount: post.voteCount, commentCount: post.commentCount, createdAt: post.createdAt)
                 }
 
                 Spacer()
