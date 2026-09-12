@@ -46,7 +46,7 @@ struct PostSummaryCardView: View {
             
             //MARK: - Stats
             HStack {
-                PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount)
+                PostVoteCommentStats(type: post.type, voteCount: post.voteCount, commentCount: post.commentCount)
                     .pickpleTypography(.label)
                     .foregroundStyle(Color.neutral30)
 
