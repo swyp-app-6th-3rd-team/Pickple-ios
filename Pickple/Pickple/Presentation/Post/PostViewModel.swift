@@ -88,6 +88,7 @@ class PostViewModel {
     }
 
     // 설명은 모든 유형에서 선택 입력이라 필수값 체크에 포함하지 않는다.
+    // TODO: description은 trim 체크가 없어서 공백만 입력해도 그대로 제출/전송된다 — 조회 화면에서 빈 줄로 보이는 문제 있음.
     private var isBasicInfoValid: Bool {
         switch selectedType {
         case .forAgainst:
