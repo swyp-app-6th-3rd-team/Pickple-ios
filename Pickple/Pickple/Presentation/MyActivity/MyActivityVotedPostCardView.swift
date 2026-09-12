@@ -24,7 +24,7 @@ struct MyActivityVotedPostCardView: View {
                 
                 Spacer()
 
-                MyActivityPostCardImage(url: post.thumbnailUrl, type: post.type)
+                PostCardImage(url: post.thumbnailUrl, type: post.type)
             }
 
             if let voteResult = post.voteResult {

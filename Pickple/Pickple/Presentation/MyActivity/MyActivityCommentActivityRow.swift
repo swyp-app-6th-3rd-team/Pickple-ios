@@ -4,8 +4,6 @@
 //
 //  Created by 박윤수 on 9/7/26.
 //
-//  나의 활동 '댓글' 탭 전용 행. 다른 두 탭과 달리 게시글 카드가 아니라 내가 쓴 댓글 내용이
-//  주인공이고, 그 댓글이 달린 원본 게시글은 참조(제목+타입 아이콘)로만 붙는다.
 // 1차 점검 완료
 
 import SwiftUI
@@ -47,7 +45,7 @@ struct MyActivityCommentActivityRow: View {
                 
                 Spacer()
                 
-                MyActivityPostCardImage(url: activity.referencedPost.thumbnailUrl, type: activity.referencedPost.type)
+                PostCardImage(url: activity.referencedPost.thumbnailUrl, type: activity.referencedPost.type)
             }
             
             HStack {
