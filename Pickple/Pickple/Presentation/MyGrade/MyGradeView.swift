@@ -19,7 +19,8 @@ struct MyGradeView: View {
             PickpleGNB(
                 leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
                 center: .text(MyGradeStrings.title),
-                trailing: .none
+                trailing: .none,
+                bar: false
             )
 
             ScrollView {
@@ -28,6 +29,7 @@ struct MyGradeView: View {
                         Image("PickpleGradeCharacter\(myPageViewModel.userInfo?.level ?? 1)")
                             .resizable()
                             .frame(width: 120, height: 120)
+
 
                         HStack(spacing: 4) {
                             if let voteCount = myPageViewModel.userInfo?.voteCount {
@@ -56,6 +58,8 @@ struct MyGradeView: View {
                     VStack(spacing: 0) {
                         ForEach(gradeViewModel.grades) { grade in
                             MyGradeRow(grade: grade)
+                            Divider()
+
                         }
                     }
                     .padding(.horizontal, 20)
