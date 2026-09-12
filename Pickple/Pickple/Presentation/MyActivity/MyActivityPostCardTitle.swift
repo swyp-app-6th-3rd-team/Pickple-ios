@@ -17,7 +17,8 @@ struct MyActivityPostCardTitle: View {
                 .pickpleTypography(.body01)
                 .foregroundStyle(Color.black)
             
-            Text(decription)
+            //설명 공백 대비
+            Text(decription.isEmpty ? " " : decription)
                 .lineLimit(1)
                 .pickpleTypography(.body02)
                 .foregroundStyle(Color.neutral40)
