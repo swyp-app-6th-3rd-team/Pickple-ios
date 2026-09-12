@@ -7,6 +7,7 @@
 //  PostDetailView 본문에 그대로 박혀있던 로그인 유도/게시글 액션 확인/댓글 픽 확인
 //  다이얼로그 3개를 모은 오버레이. 각 다이얼로그는 서로 다른 상태 타입(String?/
 //  PostDetailConfirmAction?/Comment?)에 반응해서 뜨고, 셋 다 동시에 뜨는 일은 없다.
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
