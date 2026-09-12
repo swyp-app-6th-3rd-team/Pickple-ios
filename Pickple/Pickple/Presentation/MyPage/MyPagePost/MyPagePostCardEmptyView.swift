@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/2/26.
 //
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -17,7 +18,7 @@ struct MyPagePostCardEmptyView: View {
                     .frame(width: 160, height: 238) //Fixed
                     .foregroundStyle(Color.neutral5)
                 
-                VStack {
+                VStack(spacing: 12) {
                     ZStack {
                         Circle()
                             .frame(width: 60, height: 60)
