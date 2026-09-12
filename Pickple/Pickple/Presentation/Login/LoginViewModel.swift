@@ -39,7 +39,6 @@ class LoginViewModel {
                 rawNonce: result.rawNonce,
                 name: result.fullName.map { PersonNameComponentsFormatter().string(from: $0) }
             )
-            print("[임시 디버그] accessToken: \(tokens.accessToken)") // TODO: 테스트 끝나면 제거
             try await SessionTokenPersistence.save(tokens, tokenStore: tokenStore, refreshTokenStore: refreshTokenStore)
             onLoginSuccess()
         } catch let error as ASAuthorizationError where error.code == .canceled {
@@ -59,7 +58,6 @@ class LoginViewModel {
                 identityToken: result.identityToken,
                 rawNonce: result.rawNonce
             )
-            print("[임시 디버그] accessToken: \(tokens.accessToken)") // TODO: 테스트 끝나면 제거
             try await SessionTokenPersistence.save(tokens, tokenStore: tokenStore, refreshTokenStore: refreshTokenStore)
             onLoginSuccess()
         } catch SdkError.ClientFailed(reason: .Cancelled, errorMessage: _) {
