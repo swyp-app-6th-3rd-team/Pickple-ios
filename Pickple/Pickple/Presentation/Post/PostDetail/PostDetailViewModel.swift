@@ -111,7 +111,11 @@ class PostDetailViewModel {
     func loadComments() async {
         guard isLoggedIn else { return }
         do {
-            comments = try await commentRepository.fetchComments()
+            let result = try await commentRepository.fetchComments()
+            comments = result.comments
+            // 서버가 원픽 상태를 그대로 주므로(화면 재진입·다른 기기 복원용), 로컬 pickedCommentID를
+            // 덮어써서 canPickAnyComment/isPicked가 처음부터 정확하게 동작하게 한다.
+            pickedCommentID = result.myOnePickCommentId
         } catch {
             print("[Comment] 목록 로드 실패: \(error)")
         }

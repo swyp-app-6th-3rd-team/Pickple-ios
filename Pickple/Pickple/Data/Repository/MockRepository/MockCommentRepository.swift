@@ -7,12 +7,15 @@
 import Foundation
 
 struct MockCommentRepository: CommentRepository {
-    func fetchComments() async -> [Comment] {
-        [
-            Comment(id: 1, authorNickname: "픽플고인물", authorLevel: 5, authorProfileImageUrl: nil, content: "이거 너무 좋아요 제가 뭐뭐 써봤는데 좋습니다", createdAt: Date().addingTimeInterval(-60 * 23), pickCount: 3, mine: false),
-            Comment(id: 2, authorNickname: "픽플고인물", authorLevel: 1, authorProfileImageUrl: nil, content: "이거 너무 좋아요 제가 뭐뭐 써봤는데 좋습니다", createdAt: Date().addingTimeInterval(-60 * 23), pickCount: 3, mine: false),
-            Comment(id: 3, authorNickname: "나", authorLevel: 2, authorProfileImageUrl: nil, content: "이거 너무 좋아요 제가 뭐뭐 써봤는데 좋습니다", createdAt: Date().addingTimeInterval(-60 * 23), pickCount: 3, mine: true),
-        ]
+    func fetchComments() async -> CommentListResult {
+        CommentListResult(
+            comments: [
+                Comment(id: 1, authorNickname: "픽플고인물", authorLevel: 5, authorProfileImageUrl: nil, content: "이거 너무 좋아요 제가 뭐뭐 써봤는데 좋습니다", createdAt: Date().addingTimeInterval(-60 * 23), pickCount: 3, mine: false),
+                Comment(id: 2, authorNickname: "픽플고인물", authorLevel: 1, authorProfileImageUrl: nil, content: "이거 너무 좋아요 제가 뭐뭐 써봤는데 좋습니다", createdAt: Date().addingTimeInterval(-60 * 23), pickCount: 3, mine: false),
+                Comment(id: 3, authorNickname: "나", authorLevel: 2, authorProfileImageUrl: nil, content: "이거 너무 좋아요 제가 뭐뭐 써봤는데 좋습니다", createdAt: Date().addingTimeInterval(-60 * 23), pickCount: 3, mine: true),
+            ],
+            myOnePickCommentId: nil
+        )
     }
 
     func postComment(content: String) async {}
