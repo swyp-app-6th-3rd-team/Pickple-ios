@@ -27,11 +27,9 @@ struct PostDetailHeaderSection: View {
                 PostDetailAuthorRow(nickname: post.authorNickname, level: post.authorGradeLevel, profileImageUrl: post.authorProfileImageUrl, createdAt: post.createdAt)
             }
 
-            if !post.description.isEmpty {
-                Text(post.description)
-                    .pickpleTypography(.body01)
-                    .foregroundStyle(Color.neutral50)
-            }
+            Text(post.description)
+                .pickpleTypography(.body01)
+                .foregroundStyle(Color.neutral50)
         }
     }
 }
