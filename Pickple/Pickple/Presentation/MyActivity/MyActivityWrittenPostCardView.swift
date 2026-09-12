@@ -18,9 +18,11 @@ struct MyActivityWrittenPostCardView: View {
                     MyActivityPostCardTitle(title: post.title, decription: post.description)
                     
                     HStack(spacing: 6) {
-                        MyActivityPostVoteCommentStats(type: post.type, voteCount: post.voteCount, commentCount: post.commentCount)
-
-                        Text("·")
+                        PostVoteCommentStats(
+                            type: post.type,
+                            voteCount: post.voteCount,
+                            commentCount: post.commentCount
+                            )
 
                         Text(post.createdAt.relativeTimeDescription)
                             .pickpleTypography(.label) //폰트 미정
