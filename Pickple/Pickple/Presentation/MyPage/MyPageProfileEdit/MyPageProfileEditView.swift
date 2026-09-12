@@ -4,6 +4,8 @@
 //
 //  Created by 박윤수 on 9/8/26.
 //
+// 1차 점검 완료 - 9월 13일
+
 import SwiftUI
 
 struct MyPageProfileEditView: View {
@@ -14,12 +16,21 @@ struct MyPageProfileEditView: View {
         VStack(spacing: 16) {
             PickpleGNB(leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
                        center: .text("프로필 수정"),
-                       trailing: .none)
+                       trailing: .none,
+                       bar: false)
             VStack(spacing: 12) {
                 ProfileImageView(profileViewModel: profileViewModel)
 
-                ProfileTextFieldView(profileViewModel: profileViewModel)
-                    .padding(.horizontal, 20)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("닉네임")
+                        .pickpleTypography(.body01)
+                        .foregroundStyle(Color.black)
+                        .padding(.horizontal, 4)
+                    
+                    ProfileTextFieldView(profileViewModel: profileViewModel)
+                }
+                .padding(.horizontal, 20)
+
             }
 
             Spacer()
