@@ -4,8 +4,7 @@
 //
 //  Created by 박윤수 on 9/7/26.
 //
-//  A/B 비교 픽 전용 사진 섹션 — 상품A/B 사진을 한 칸씩, 나란히 두 칸으로 보여준다.
-//  시스템 PhotosPicker 대신 커스텀 포토피커(CustomPhotoPickerView, PickpleProfile과 동일 패턴)를 쓴다.
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -15,9 +14,16 @@ struct ComparisonPhotoFieldBlock: View {
     var isDisabled: Bool = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            (Text(PostViewStrings.photo) + Text(" ") + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
-                .pickpleTypography(.body01)
+        VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 0) {
+                (Text(PostViewStrings.photo) + Text(" ") + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
+                    .pickpleTypography(.body01)
+                
+                Text("각각 1장씩 업로드")
+                    .pickpleTypography(.body02)
+                    .foregroundStyle(Color.neutral40)
+            }
+            .padding(.horizontal, 4)
 
             HStack(spacing: 8) {
                 ComparisonPhotoSlot(photos: $photoA, label: PostViewStrings.abOptionALabel, isDisabled: isDisabled)
