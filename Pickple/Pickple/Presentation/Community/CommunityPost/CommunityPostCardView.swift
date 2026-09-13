@@ -15,19 +15,26 @@ struct CommunityPostCardView: View {
     
     var body: some View {
         VStack(spacing: 8) {
-            ZStack(alignment: .topLeading) {
-                AsyncImage(url: post.thumbnailUrl) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    Image("McokMyPostPicture").resizable().scaledToFill()
-                }
-                .frame(height: 150)
-                .frame(maxWidth: .infinity)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .clipped()
-                
+            // 일반 게시글은 서버가 애초에 thumbnailUrl을 안 준다 — 그런데도
+            // AsyncImage의 placeholder가 목업 사진을 채워서 없는 이미지가 있는 것처럼 보였다.
+            // 유형 배지는 이미지 유무와 무관하게 항상 보여야 하므로 이미지만 조건부로 뺀다.
+            if post.type == .text {
                 PostTypeBadge(type: post.type)
-                    .padding(10)
+            } else {
+                ZStack(alignment: .topLeading) {
+                    AsyncImage(url: post.thumbnailUrl) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        Image("McokMyPostPicture").resizable().scaledToFill()
+                    }
+                    .frame(height: 150)
+                    .frame(maxWidth: .infinity)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipped()
+
+                    PostTypeBadge(type: post.type)
+                        .padding(10)
+                }
             }
             
             VStack(spacing: 0) {
