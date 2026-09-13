@@ -4,10 +4,7 @@
 //
 //  Created by 박윤수 on 8/27/26.
 //
-//  TODO: 디자인 확정 후 변경 필요
-//  - 폰트: "Nunito-ExtraBold" 하드코딩 → 폰트명/크기 확정 후 상수로 교체
-//  - caption 문구("error", "success", "description") → 실제 문구로 교체
-//
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 

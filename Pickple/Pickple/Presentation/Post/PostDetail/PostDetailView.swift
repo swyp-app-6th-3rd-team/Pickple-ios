@@ -59,7 +59,8 @@ struct PostDetailView: View {
                     PickpleGNB(
                         leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
                         center: .text(PostDetailStrings.navTitle),
-                        trailing: .none
+                        trailing: .none,
+                        
                     )
                 }
                 
@@ -105,6 +106,7 @@ struct PostDetailView: View {
                         loginRequiredDescription = PostDetailStrings.commentRequiredDescription
                     }
                 }
+                .frame(height: 89)
             }
             
             // 찬반/A-B는 캐러셀 이미지 위에 GNB가 떠 있다가, 스크롤로 이미지를 지나치면
@@ -117,7 +119,8 @@ struct PostDetailView: View {
                         center: isScrolledPastImage ? .text(PostDetailStrings.navTitle) : .none,
                         trailing: .none,
                         tint: isScrolledPastImage ? .black : .white,
-                        background: Color.white.opacity(isScrolledPastImage ? 1 : 0)
+                        background: Color.white.opacity(isScrolledPastImage ? 1 : 0),
+                        bar: isScrolledPastImage
                     )
                     .animation(.easeInOut(duration: 0.2), value: isScrolledPastImage)
                     Spacer()

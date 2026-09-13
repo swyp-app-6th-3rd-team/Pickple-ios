@@ -4,7 +4,9 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 여백/폰트 크기는 임시값
+//  1차 점검 완료 - 9월 13일
+// 토스트 시간 물어봐야함
+// 토스트 뜨는 위치는 어캐해야함
 
 import SwiftUI
 
@@ -15,9 +17,9 @@ struct PickpleToast: View {
         Text(message)
             .pickpleTypography(.body02)
             .foregroundStyle(Color.white)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(Color.black.opacity(0.85))
+            .padding(.horizontal, 24)
+            .padding(.vertical, 10)
+            .background(Color.black.opacity(0.6))
             .clipShape(Capsule())
     }
 }
@@ -33,7 +35,7 @@ struct PickpleToastModifier: ViewModifier {
         content.overlay(alignment: .bottom) {
             if isPresented {
                 PickpleToast(message: message)
-                    .padding(.bottom, 24)
+                    .padding(.bottom, 125)
                     .transition(.opacity.combined(with: .move(edge: .bottom)))
                     .task {
                         try? await Task.sleep(nanoseconds: UInt64(durationSeconds * 1_000_000_000))
