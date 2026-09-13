@@ -119,7 +119,8 @@ struct PostDetailView: View {
                         center: isScrolledPastImage ? .text(PostDetailStrings.navTitle) : .none,
                         trailing: .none,
                         tint: isScrolledPastImage ? .black : .white,
-                        background: Color.white.opacity(isScrolledPastImage ? 1 : 0)
+                        background: Color.white.opacity(isScrolledPastImage ? 1 : 0),
+                        bar: false
                     )
                     .animation(.easeInOut(duration: 0.2), value: isScrolledPastImage)
                     Spacer()
