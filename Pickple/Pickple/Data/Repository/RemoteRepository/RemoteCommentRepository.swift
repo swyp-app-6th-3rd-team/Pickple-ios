@@ -64,7 +64,9 @@ struct RemoteCommentRepository: CommentRepository {
         try await apiClient.requestVoid(endpoint)
     }
 
-    // TODO: 댓글 작성자 등급(1~5)이 응답에 없어서 1로 고정 — 다른 화면과 동일한 임시 처리.
+    // TODO: 댓글 작성자 등급(1~5)이 응답에 없어서 1로 고정 — 게시글 목록(RemoteCommunityRepository)과
+    // 같은 상황. 랭킹 화면(RemotePickerRankingRepository)은 2026-09-13에 gradeLevel이 추가돼서
+    // 해결됐지만, 여기는 아직 API에 필드가 없다.
     private static func toDomain(_ dto: CommentDTO) -> Comment {
         Comment(
             id: dto.id,

@@ -60,7 +60,8 @@ struct RemoteCommunityRepository: CommunityRepository {
     }
 
     // TODO: 게시글 목록 응답에 작성자 등급(1~5)이 없어서(authorRanking은 전체 순위라 별개 개념)
-    // authorLevel은 1로 고정한다 — RemotePickerRankingRepository와 동일한 임시 처리.
+    // authorLevel은 1로 고정한다. RemotePickerRankingRepository는 2026-09-13에 gradeLevel
+    // 필드가 추가돼서 이미 해결됐는데, 여기(/posts, /posts/popular)와 댓글 목록은 아직 안 내려온다.
     static func toDomain(_ dto: PostListItemDTO) -> PostSummary {
         .fromServerFields(
             id: dto.id,
