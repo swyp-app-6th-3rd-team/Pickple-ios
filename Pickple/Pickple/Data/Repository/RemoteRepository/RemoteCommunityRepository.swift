@@ -7,6 +7,12 @@
 
 import Foundation
 
+// GET /posts/popular 전용 상품 사진. displayOrder 1=A(찬반은 유일한 상품), 2=B.
+struct PostListProductDTO: Decodable {
+    let displayOrder: Int
+    let imageUrl: String?
+}
+
 struct PostListItemDTO: Decodable {
     let id: Int
     let type: String
@@ -20,6 +26,9 @@ struct PostListItemDTO: Decodable {
     let authorId: Int
     let authorNickname: String
     let authorRanking: Int?
+    // 아래 둘은 GET /posts/popular에만 있다. GET /posts는 이 키 자체가 없어서 자연히 nil로 디코딩된다.
+    let products: [PostListProductDTO]?
+    let commenterCount: Int?
 }
 
 struct PostScrollDTO: Decodable {
@@ -64,7 +73,11 @@ struct RemoteCommunityRepository: CommunityRepository {
             commentCount: dto.commentCount,
             createdAt: dto.createdAt,
             authorNickname: dto.authorNickname,
-            authorLevel: 1
+            authorLevel: 1,
+            products: (dto.products ?? []).map {
+                PostSummaryProduct(displayOrder: $0.displayOrder, imageUrl: $0.imageUrl.flatMap(URL.init(string:)))
+            },
+            commenterCount: dto.commenterCount
         )
     }
 }
