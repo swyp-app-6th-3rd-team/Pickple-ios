@@ -17,10 +17,16 @@ struct PostTypeSelectionSheet: View {
             PostTypeRow(icon: "PickpleAgainst", title: PostViewStrings.forAgainstPickRowTitle) { onSelect(.forAgainst) }
             PostTypeRow(icon: "PickpleAB", title: PostViewStrings.abPickRowTitle) { onSelect(.ab) }
             PostTypeRow(icon: "PickpleText", title: PostViewStrings.textPickRowTitle) { onSelect(.text) }
+            
+            Spacer()
+            
         }
+        .padding(.horizontal, 4)
         .padding(.horizontal, 20)
-        .presentationDetents([.height(260)])
-        .presentationDragIndicator(.visible)
+        .padding(.top, 42)
+        .padding(.bottom, 48)
+        .background(Color.white)
+
     }
         
 }

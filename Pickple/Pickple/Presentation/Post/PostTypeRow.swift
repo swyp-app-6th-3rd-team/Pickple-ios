@@ -28,7 +28,6 @@ struct PostTypeRow: View {
                 Spacer()
             }
             .padding(.vertical, 16)
-            .padding(.horizontal, 4)
 
         }
     }
