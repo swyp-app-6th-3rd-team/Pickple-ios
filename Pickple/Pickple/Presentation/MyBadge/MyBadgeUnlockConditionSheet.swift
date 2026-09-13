@@ -4,8 +4,8 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 여백/폰트 크기는 임시값
 //
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -18,7 +18,7 @@ struct MyBadgeUnlockConditionSheet: View {
             VStack(spacing: 12) {
                 Text(badge.title)
                     .pickpleTypography(.title01)
-                    .foregroundStyle(Color.neutral100)
+                    .foregroundStyle(Color.black)
                 
                 Image(badge.iconOffName)
                     .resizable()
@@ -26,7 +26,7 @@ struct MyBadgeUnlockConditionSheet: View {
                 
                 Text(badge.unlockCondition)
                     .pickpleTypography(.body01)
-                    .foregroundStyle(Color.neutral100)
+                    .foregroundStyle(Color.black)
                     .multilineTextAlignment(.center)
             }
             
@@ -39,9 +39,10 @@ struct MyBadgeUnlockConditionSheet: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
             }
         }
+        .padding(.top, 16)
         .padding(.horizontal, 20)
         .padding(.bottom, 36)
-        .presentationDetents([.medium])
+        .presentationDetents([.height(324)])
         .presentationDragIndicator(.visible)
     }
 }
