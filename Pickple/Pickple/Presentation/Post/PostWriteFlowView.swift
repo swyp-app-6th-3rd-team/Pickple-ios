@@ -4,7 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 여백/간격은 임시값
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -33,7 +33,8 @@ struct PostWriteFlowView: View {
                 PickpleGNB(
                     leading: .button(icon: Image("PickpleArrowLeft"), action: handleBack),
                     center: .text(postViewModel.gnbTitle),
-                    trailing: .none
+                    trailing: .none,
+                    bar: false
                 )
 
                 // 일반 게시글은 필드가 3개뿐이고 전부 기본으로 보이므로, 순차 공개도 게이지도 필요
@@ -43,6 +44,8 @@ struct PostWriteFlowView: View {
                     ProgressView(value: Double(postViewModel.requiredFieldsFilledCount), total: Double(postViewModel.requiredFieldsTotalCount))
                         .progressViewStyle(LinearProgressViewStyle(tint: Color.yellow60))
                         .padding(.vertical, 12)
+                        .padding(.horizontal, 20)
+
                         .animation(.easeInOut, value: postViewModel.requiredFieldsFilledCount)
                 }
 
@@ -52,23 +55,29 @@ struct PostWriteFlowView: View {
                         isCategoryExpanded: $isCategoryExpanded,
                         categoryOptions: categoryOptions
                     )
-                    .padding(.top, 32)
+                    .padding(.top, 28)
                     .zIndex(isCategoryExpanded ? 1 : 0)
                 }
+                .padding(.horizontal, 20)
 
                 PostWriteFlowButtonRow(
                     title: postViewModel.isEditing ? PostViewStrings.submitEdit : PostViewStrings.submit,
                     isEnabled: postViewModel.canSubmit,
                     onSubmit: handleSubmit
                 )
+                .padding(.horizontal, 20)
             }
             
 
             if showsLeaveConfirm {
                 PickpleDialogOverlay(onTapDismiss: { showsLeaveConfirm = false }) {
-                    PostLeaveConfirmDialog(
+                    PickpleConfirmDialog(
+                        title: PostViewStrings.leaveConfirmTitle,
+                        description: PostViewStrings.leaveConfirmDescription,
+                        cancelTitle: PostViewStrings.leaveConfirmCancel,
+                        confirmTitle: PostViewStrings.leaveConfirmConfirm,
                         onCancel: { showsLeaveConfirm = false },
-                        onLeave: { dismiss() }
+                        onConfirm: { dismiss() }
                     )
                 }
             }

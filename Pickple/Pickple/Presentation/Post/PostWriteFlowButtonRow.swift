@@ -6,6 +6,7 @@
 //
 //  하단 게시 버튼. 예전엔 이전/다음 버튼이 있었지만, 작성 화면이 한 화면으로
 //  합쳐지면서 더 이상 단계를 오갈 필요가 없어 게시 버튼 하나만 남았다.
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -20,7 +21,7 @@ struct PostWriteFlowButtonRow: View {
         }
         .buttonStyle(.pickple(isEnabled ? .enabled : .disabled, 52))
         .disabled(!isEnabled)
-        .padding(.horizontal, 20)
-        .padding(.bottom, 20)
+        .padding(.top ,50)
+        .padding(.bottom, 24)
     }
 }

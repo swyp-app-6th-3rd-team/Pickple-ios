@@ -4,8 +4,7 @@
 //
 //  Created by 박윤수 on 9/7/26.
 //
-//  게시글 카드들이 각자 구현하던 "유형 아이콘 + 이름 + 검은 캡슐 배경" 배지를 공용화했다.
-//  이미지 위에 겹쳐 그리는 카드는 호출부에서 .padding(...)으로 가장자리 여백을 더해서 쓴다.
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -17,6 +16,8 @@ struct PostTypeBadge: View {
     var verticalPadding: CGFloat = 4
     var textColor: Color = .white
     var backgroundColor: Color = .black
+    var stroke: Bool = false
+    var strokeColor: Color = .clear
 
     private var iconName: String {
         switch type {
@@ -38,7 +39,15 @@ struct PostTypeBadge: View {
         }
         .padding(.horizontal, horizontalPadding)
         .padding(.vertical, verticalPadding)
-        .background(Capsule().foregroundStyle(backgroundColor))
+        .background(
+            Capsule()
+                .foregroundStyle(backgroundColor)
+                .overlay {
+                    if stroke {
+                        Capsule().stroke(strokeColor)
+                    }
+                }
+        )
     }
 }
 

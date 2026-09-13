@@ -3,7 +3,7 @@
 //  Pickple
 //
 //  Created by 박윤수 on 9/3/26.
-//
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -13,27 +13,39 @@ struct PostDetailCommentInputBar: View {
     let onSubmit: () -> Void
 
     var body: some View {
-        HStack(spacing: 8) {
-            TextField(PostDetailStrings.commentPlaceholder, text: $text)
-                .focused(isFocused)
-                .pickpleTypography(.body02)
-                .padding(.horizontal, 16)
-                .frame(height: 44)
-                .background(Color.neutral5)
-                .clipShape(Capsule())
+        ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .foregroundStyle(Color.clear)
+                .frame(maxWidth: .infinity, minHeight: 56)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.navy10)
+                        .frame(maxWidth: .infinity, minHeight: 56)
+                        
+                )
+            
+            HStack{
+                TextField(PostDetailStrings.commentPlaceholder, text: $text)
+                    .focused(isFocused)
+                    .pickpleTypography(.body01)
+                    .foregroundStyle(Color.neutral40)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical,15)
 
-            Button(action: onSubmit) {
-                Text(PostDetailStrings.commentSubmit)
-                    .pickpleTypography(.body02)
-                    .foregroundStyle(Color.white)
-                    .padding(.horizontal, 16)
-                    .frame(height: 44)
-                    .background(Color.black)
-                    .clipShape(Capsule())
+                Button(action: onSubmit) {
+                    Text(PostDetailStrings.commentSubmit)
+                        .pickpleTypography(.body01)
+                        .foregroundStyle(Color.white)
+                        .padding(.horizontal, 18)
+                        .padding(.vertical, 8)
+                        .background(Color.black)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
             }
+            .padding(.leading, 21)
+            .padding(.trailing, 11)
+            .padding(.vertical, 15)
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
     }
 }
 

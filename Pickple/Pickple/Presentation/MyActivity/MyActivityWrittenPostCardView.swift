@@ -4,8 +4,7 @@
 //
 //  Created by 박윤수 on 9/9/26.
 //
-//  나의 활동 '작성글' 탭 전용 카드. 내가 올린 글이라 투표 결과 바는 항상 필요 없어서
-//  투표 탭 카드(MyActivityVotedPostCardView)와 레이아웃은 같지만 그 부분만 뺐다.
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -13,27 +12,16 @@ struct MyActivityWrittenPostCardView: View {
     let post: PostSummary
 
     var body: some View {
-            HStack(spacing: 12) {
+            HStack {
                 VStack(alignment: .leading, spacing: 8) {
                     MyActivityPostCardTitle(title: post.title, decription: post.description)
                     
-                    HStack(spacing: 6) {
-                        MyActivityPostVoteCommentStats(type: post.type, voteCount: post.voteCount, commentCount: post.commentCount)
-
-                        Text("·")
-
-                        Text(post.createdAt.relativeTimeDescription)
-                            .pickpleTypography(.label) //폰트 미정
-                            .foregroundStyle(Color.neutral30)
-                    }
-                    .pickpleTypography(.label)
-                    //폰트 미정
-                    .foregroundStyle(Color.neutral30)
+                    MyActivityStatsRow(type: post.type, voteCount: post.voteCount, commentCount: post.commentCount, createdAt: post.createdAt)
                 }
 
                 Spacer()
 
-                MyActivityPostCardImage(url: post.thumbnailUrl, type: post.type)
+                PostCardImage(url: post.thumbnailUrl, type: post.type)
             }        
     }
 }

@@ -5,7 +5,7 @@
 - OAS(Scalar, 인터랙티브 문서): https://dev-api.pickple.app/scalar
 - 원본(LLM용 마크다운): https://dev-api.pickple.app/llms.md
 - 버전: v1
-- 마지막 확인: 2026-09-06
+- 마지막 확인: 2026-09-13
 
 ## 공통 규약
 
@@ -97,6 +97,10 @@
   - `content` 문자열 선택
   - `onePickCount` 정수(int64) 선택 — 이 댓글이 받은 원픽 수
   - `mine` 불리언 선택 — 현재 요청자가 쓴 댓글인지. 게스트 요청은 항상 false
+- `myOnePickCommentId` 정수(int64) 선택 — 내가 이 게시글에서 원픽한 댓글 id (2026-09-13 신규). 원픽한 적 없으면 null
+  - `mine`(내가 쓴 댓글인지)과는 무관한 별개 필드 — 헷갈리지 말 것
+  - 원픽한 댓글이 이후 삭제돼도 이 값은 유지된다 — `comments` 배열에 없는 id가 올 수 있음. 원픽은 취소·변경이 안 되므로(R-05·R-06) "이 글에서는 이미 원픽을 썼다"로 해석하면 된다
+  - 화면 재진입·다른 기기에서도 원픽 상태 복원 용도
 
 ### POST /posts/{postId}/comments — 댓글 작성
 파라미터: `postId` (path) 정수(int64) 필수
@@ -200,7 +204,7 @@ Apple 사용자는 저장된 provider refresh token으로 Apple 연결을 해제
 
 ### GET /users/me/points — 내 포인트와 순위
 인증 필요. 순위가 아직 산정되지 않았으면 `ranking`이 null이다 — 배치가 최대 5분마다 매기므로 가입 직후가 그렇다.
-응답 200 — OK: `userId`, `nickname`, `profileImageUrl`, `ranking`(int32, 선택), `point`(int64)
+응답 200 — OK: `userId`, `nickname`, `profileImageUrl`, `ranking`(int32, 선택), `point`(int64), `gradeLevel`(int32, 1~5, 2026-09-13 신규), `gradeName`(문자열, 예: "LV.1", 2026-09-13 신규)
 
 ### GET /rankings — 전체 피커 랭킹
 포인트가 높은 순서대로 노출한다. 무한 스크롤(10개 단위)이며 게스트도 볼 수 있다. 순위가 아직 산정되지 않은 회원은 목록에 오르지 않는다.
@@ -210,7 +214,7 @@ Apple 사용자는 저장된 provider refresh token으로 Apple 연결을 해제
 - `size` (query) 정수(int32) 선택 — 조각 크기. 기본 10
 
 응답 200 — OK:
-- `content` 배열 선택 — `userId`, `nickname`, `profileImageUrl`, `ranking`(1위가 가장 앞), `point`
+- `content` 배열 선택 — `userId`, `nickname`, `profileImageUrl`, `ranking`(1위가 가장 앞), `point`, `gradeLevel`(int32, 1~5, 2026-09-13 신규), `gradeName`(문자열, 2026-09-13 신규)
 - `nextCursor` 문자열 선택 — null이면 마지막
 - `hasNext` 불리언 선택
 
@@ -218,7 +222,9 @@ Apple 사용자는 저장된 provider refresh token으로 Apple 연결을 해제
 포인트가 높은 상위 피커를 노출한다. 게스트도 볼 수 있다. 포인트 보유자가 없으면 빈 배열이다 — 화면은 이때 "아직 TOP 피커가 존재하지 않아요"를 표시한다.
 
 파라미터: `size` (query) 정수(int32) 선택 — 기본 5
-응답 200 — OK: 배열 `userId`, `nickname`, `profileImageUrl`, `ranking`, `point`
+응답 200 — OK: 배열 `userId`, `nickname`, `profileImageUrl`, `ranking`, `point`, `gradeLevel`(int32, 1~5, 2026-09-13 신규), `gradeName`(문자열, 2026-09-13 신규)
+
+> `gradeLevel`/`gradeName`은 저장된 값을 그대로 내려준다(포인트로 재계산하지 않음) — 포인트가 같아도 사람마다 등급이 다를 수 있고, 한 번 오른 등급은 내려가지 않는다(R-16과 동일 원칙).
 
 ---
 
@@ -379,7 +385,9 @@ title을 nil로 보내 기존 값을 유지시킨다.
 ### GET /users/me/posts/recent — 최근 7일 투표 게시글
 인증 필요. 최근 7일 내 투표한 게시글을 최신순 최대 10개 반환한다. 응답 필드는 GET /posts의 `content` 항목과 동일 셋(`id`/`type`/`category`/`title`/`description`/`commentCount`/`voteCount`/`thumbnailUrl`/`createdAt`) + `authorId`/`authorNickname`/`authorRanking` 없음.
 
-### GET /users/me/activities — 내 활동 목록 조회
+### GET /users/me/activities — 내 활동 목록 조회 (deprecated, 2026-09-13)
+⚠️ **deprecated** — 아래 세 경로(`/users/me/activities/votes`·`/comments`·`/posts`)로 대체됐다. 구 경로는 당분간 그대로 200을 주지만(제거 시점 미정, 전환 확인 후 별도 이슈), 새로 붙일 코드는 아래 세 경로를 쓸 것.
+
 인증 필요. 활동 유형 필터와 정렬, 커서 기반 무한 스크롤. 세 유형 모두 결과는 게시글 카드다 — 내가 투표한 글, 댓글 단 글, 올린 글. 활동이 없으면 빈 배열.
 
 파라미터:
@@ -393,7 +401,43 @@ title을 nil로 보내 기존 값을 유지시킨다.
 - `nextCursor` 문자열 선택
 - `hasNext` 불리언 선택
 
-> `UserPostRepository.fetchVotedPosts/fetchCommentedPosts/fetchWrittenPosts`가 아직 Mock인데, 이 엔드포인트로 실연동 가능해졌다(2026-09-06 OAS 확인). `type=VOTE`/`COMMENT`/`POST`로 각각 호출하면 된다.
+### GET /users/me/activities/votes — 내가 투표한 글 (2026-09-13 신규)
+인증 필요. `GET /users/me/activities?type=VOTE`를 대체하는 전용 경로. 정렬·커서 규약은 구 경로와 동일.
+
+파라미터:
+- `sort` (query) 문자열 선택 — `LATEST`(기본) | `OLDEST` | `POPULAR`
+- `cursor` (query) 문자열 선택
+- `size` (query) 정수(int32) 선택 — 기본 10
+
+응답 200 — OK:
+- `content` 배열 — GET /posts의 `content` 항목 필드(`authorId`/`authorNickname`/`authorRanking` 없음) + `activityAt` + 아래 신규 필드
+  - `selectedOptionId` 정수(int64) 선택 — 내가 고른 선택지. 재투표했으면 최신 선택
+  - `options` 배열 — 항상 2개. `optionId`, `label`(찬반만, A/B는 null), `displayOrder`, `voteCount`, `percentage`(정수 반올림이라 두 값 합이 99·101일 수 있음 — 게시글 상세와 계산 로직이 같아서 두 화면 값은 항상 일치)
+  - `products` 배열 — `displayOrder`(1=A, 2=B), `imageUrl`. A/B는 두 장, 찬반은 한 장
+- `nextCursor` 문자열 선택, `hasNext` 불리언 선택
+
+### GET /users/me/activities/comments — 내가 댓글 단 글 (2026-09-13 신규)
+인증 필요. `GET /users/me/activities?type=COMMENT`를 대체하는 전용 경로.
+
+파라미터: 위 `/votes`와 동일(`sort`/`cursor`/`size`)
+
+응답 200 — OK:
+- `content` 배열 — GET /posts의 `content` 항목 필드 + `activityAt` + 아래 신규 필드
+  - `myComment` 문자열 선택 — 내가 이 글에 남긴 대표 댓글 원문. 대표는 원픽이 가장 많은 댓글이고, 원픽 수가 같으면 최신 댓글. 삭제한 댓글은 원픽을 아무리 받았어도 대표가 되지 않는다. 원문 그대로 오므로 한 줄 줄임표 처리는 클라이언트 책임
+  - `myCommentOnePickCount` 정수 선택 — 그 대표 댓글이 받은 원픽 수
+- `nextCursor` 문자열 선택, `hasNext` 불리언 선택
+
+**동작 변경**: 한 글에서 내 댓글을 전부 지우면 그 글이 이 목록에서 사라진다. 일부만 지워서 살아있는 댓글이 남아 있으면 목록에 그대로 있고, 대표도 살아있는 댓글 중에서 재선정된다. `GET /users/me/activities/summary`의 `commentCount`도 같은 기준으로 센다.
+
+### GET /users/me/activities/posts — 내가 올린 글 (2026-09-13 신규)
+인증 필요. `GET /users/me/activities?type=POST`를 대체하는 전용 경로. 추가 필드 없음 — GET /posts의 `content` 항목 필드 + `activityAt`만.
+
+파라미터: 위 `/votes`와 동일(`sort`/`cursor`/`size`)
+응답 200 — OK: `content`(위 필드 셋), `nextCursor`, `hasNext`
+
+> ⚠️ **커서는 경로마다 다르다** — `/votes`에서 받은 `nextCursor`를 `/posts`나 `/comments`에 넣으면 400. 예전에 `type`만 바꿔도 커서를 버려야 했던 규칙이, 이제 경로 자체에도 그대로 적용된다고 보면 된다. 탭 전환 시 커서를 초기화하는 흐름이면 기존 로직 그대로 동작한다.
+>
+> `UserPostRepository.fetchVotedPosts/fetchCommentedPosts/fetchWrittenPosts`가 아직 Mock인데, 이 세 엔드포인트로 각각 실연동할 것 — 기존 `GET /users/me/activities?type=`는 deprecated.
 
 ### GET /users/me/activities/summary — 내 활동 갯수 요약
 인증 필요. 투표·댓글·작성 게시글 수를 한 번에 준다. 투표·댓글은 게시글 기준 참여 건수라 재투표하거나 한 글에 여러 댓글을 달아도 늘지 않는다(R-22·R-25).

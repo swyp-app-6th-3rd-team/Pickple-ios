@@ -4,11 +4,12 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 여백/폰트 크기는 임시값
+// 1차 점검 완료 - 9월 12일
+// 미활성 버튼 색상 미지정 f1f1f5
 
 import SwiftUI
 
-// 타이틀 + 설명 + 취소/확인 버튼 두 개짜리 중앙 모달. 화면마다 좌우 여백은 호출부에서 준다.
+// 타이틀 + 설명 + 취소/확인 버튼 두 개짜리 중앙 모달.
 struct PickpleConfirmDialog: View {
     let title: String
     var description: String? = nil
@@ -22,7 +23,7 @@ struct PickpleConfirmDialog: View {
             VStack(spacing: 8) {
                 Text(title)
                     .pickpleTypography(.title01)
-                    .foregroundStyle(Color.neutral100)
+                    .foregroundStyle(Color.black)
 
                 if let description {
                     Text(description)
@@ -38,7 +39,7 @@ struct PickpleConfirmDialog: View {
                         .pickpleTypography(.body01)
                         .foregroundStyle(Color.neutral50)
                         .frame(maxWidth: .infinity, minHeight: 52)
-                        .background(Color.neutral5)
+                        .background(Color.neutral5) //버튼 색 미정
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
 
@@ -47,12 +48,14 @@ struct PickpleConfirmDialog: View {
                         .pickpleTypography(.body01)
                         .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity, minHeight: 52)
-                        .background(Color.neutral100)
+                        .background(Color.black)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
             }
         }
-        .padding(24)
+        .padding(.horizontal, 24)
+        .padding(.top, 32)
+        .padding(.bottom, 24)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }

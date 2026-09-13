@@ -4,8 +4,7 @@
 //
 //  Created by 박윤수 on 9/7/26.
 //
-//  찬반 픽 작성 순서: 카테고리·상품명(둘 다 필수, 처음부터 같이 보임) → 사진(필수) →
-//  가격 → URL → 설명(선택, 하나씩 순차 공개). 다른 유형과 달리 상품명이 사진보다 먼저 온다.
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -26,25 +25,42 @@ struct ForAgainstWriteView: View {
                 .foregroundStyle(Color.black)
             
             
-            
             ForAgainstPostFieldSectionView(
                 postViewModel: postViewModel,
                 isCategoryExpanded: $isCategoryExpanded,
                 categoryOptions: categoryOptions
             )
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 28)
     }
 }
 
-#Preview {
+#Preview("빈 상태") {
     ScrollView {
         ForAgainstWriteView(
             postViewModel: PostViewModel(),
             isCategoryExpanded: .constant(false),
             categoryOptions: PostViewStrings.categoryOptions
         )
-        .padding(.top, 28)
+    }
+}
+
+#Preview("전부 채워짐") {
+    let viewModel = PostViewModel()
+    viewModel.selectedType = .forAgainst
+    viewModel.selectedCategory = "패션/잡화"
+    viewModel.product = PostProductDraft(
+        photos: [UIImage(systemName: "photo")!],
+        name: "나이키 에어포스 화이트",
+        price: "129000",
+        url: "https://example.com/product"
+    )
+    viewModel.description = "데일리로 신을 건데 흰색이 때 잘 타려나 고민돼요."
+
+    return ScrollView {
+        ForAgainstWriteView(
+            postViewModel: viewModel,
+            isCategoryExpanded: .constant(false),
+            categoryOptions: PostViewStrings.categoryOptions
+        )
     }
 }

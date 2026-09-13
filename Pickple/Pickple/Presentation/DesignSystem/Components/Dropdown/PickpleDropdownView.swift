@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 8/29/26.
 //
+// 1차 점검 완료 9월 12일
 
 import SwiftUI
 
@@ -23,9 +24,14 @@ struct PickpleDropdownView: View {
             }) {
                 HStack {
                     Text(selectedValue)
+                        .pickpleTypography(.body01)
                         .foregroundStyle(selectedValue == PostViewStrings.categoryPlaceholder ? Color.neutral40 : Color.black)
+                        
                     Spacer()
                     Image("PickpleArrowDown")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(Color.neutral40)
                         .rotationEffect(.degrees(isExpanded ? 180 : 0))
                 }
                 .padding(.horizontal, 21)
@@ -46,15 +52,16 @@ struct PickpleDropdownView: View {
                         }) {
                             Text(option)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(16)
+                                .padding(.vertical, 14)
                         }
                         .foregroundColor(.neutral80)
 
                         if option != options.last {
                             Divider()
-                                .padding(.horizontal, 16)
                         }
                     }
+                    .padding(.horizontal, 16)
+
                 }
             }
         }

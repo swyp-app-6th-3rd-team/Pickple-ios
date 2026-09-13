@@ -3,7 +3,7 @@
 //  Pickple
 //
 //  Created by 박윤수 on 9/3/26.
-//
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -30,7 +30,7 @@ struct ProductInfoFieldBlock: View {
             ProductNameFieldBlock(name: $product.name, maxLength: productNameMaxLength)
                 .revealed(isPhotoFilled)
 
-            ProductPriceFieldBlock(price: $product.price)
+            ProductPriceFieldBlock(price: $product.price, AB: "A")
                 .revealed(isPhotoFilled && isNameFilled)
 
             ProductURLFieldBlock(url: $product.url)

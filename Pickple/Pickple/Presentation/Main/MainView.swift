@@ -4,7 +4,7 @@
 //
 //  Created by 박윤수 on 8/28/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 카드/핫한 투표 탭 시 상세 화면 진입은 보류(연결 로직 미정)
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -16,7 +16,7 @@ struct MainView: View {
     @State private var isMissionExpanded = false
     @State private var showsBadgeLoginRequired = false
     var onRequestCommunityTab: (() -> Void)? = nil
-
+    
     init(
         mainViewModel: MainViewModel = MainViewModel(),
         cardStackViewModel: CardStackViewModel = CardStackViewModel(),
@@ -26,68 +26,71 @@ struct MainView: View {
         _cardStackViewModel = State(initialValue: cardStackViewModel)
         self.onRequestCommunityTab = onRequestCommunityTab
     }
-
+    
     var body: some View {
         ZStack {
             VStack {
                 Color.white
                     .ignoresSafeArea()
             }
-
+            
             ScrollView {
-                VStack {
+                VStack(spacing: 0) {
                     VStack {
-                        MainTitleView(isOn: mainViewModel.isABSelected)
-                            .padding(.horizontal, 20)
+                        MainTitle(isOn: mainViewModel.isABSelected)
                     }
                     .onChange(of: mainViewModel.selectedType) { _, newValue in
                         cardStackViewModel.filterCards(by: newValue)
                     }
                     
                     Divider()
-
-                    VStack(spacing: 50) {
-                        VStack(spacing: 30) {
-                            CardStackView(
-                                cardStackViewModel: cardStackViewModel,
-                                onTapCard: { card in
-                                    mainRouter.push(.postDetail(postId: card.id, type: card.type))
-                                },
-                                onVoteCompleted: {
-                                    Task { await mainViewModel.reloadMissions() }
-                                }
-                            )
-                            .padding(.top, 30)
-                            
-                            BadgeMissionSection(
-                                isLoggedIn: mainViewModel.isLoggedIn,
-                                missions: mainViewModel.missions,
-                                isExpanded: $isMissionExpanded,
-                                onLoginTapped: { showsBadgeLoginRequired = true }
-                            )
+                    
+                    CardStackView(
+                        cardStackViewModel: cardStackViewModel,
+                        onTapCard: { card in
+                            mainRouter.push(.postDetail(postId: card.id, type: card.type))
+                        },
+                        onVoteCompleted: {
+                            Task { await mainViewModel.reloadMissions() }
                         }
-
-                        MainHotPostSection(
-                            posts: mainViewModel.hotPosts,
-                            onTapPost: { post in
-                                mainRouter.push(.postDetail(postId: post.id, type: post.type))
-                            },
-                            onTapMore: {
-                                onRequestCommunityTab?()
-                            }
-                        )
-
-                        TopPickerRankingSection(
-                            rankings: mainViewModel.topRankings,
-                            onTapMore: { mainRouter.push(.ranking) }
-                        )
-                    }
+                    )
+                    .padding(.top, 30) //윗 간격
                     .padding(.horizontal, 20)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.white)
+                    
+                    BadgeMissionSection(
+                        isLoggedIn: mainViewModel.isLoggedIn,
+                        missions: mainViewModel.missions,
+                        isExpanded: $isMissionExpanded,
+                        onLoginTapped: { showsBadgeLoginRequired = true }
+                    )
+                    .padding(.top, 30) //카드 + 미션 간격
+                    .padding(.horizontal, 20)
+
+                    
+                    
+                    MainHotPostSection(
+                        posts: mainViewModel.hotPosts,
+                        onTapPost: { post in
+                            mainRouter.push(.postDetail(postId: post.id, type: post.type))
+                        },
+                        onTapMore: {
+                            onRequestCommunityTab?()
+                        }
+                    )
+                    .padding(.top, 50) //미션 + 핫투표 간격
+                    .padding(.horizontal, 20)
+                    
+                    TopPickerRankingSection(
+                        rankings: mainViewModel.topRankings,
+                        onTapMore: { mainRouter.push(.ranking) }
+                    )
+                    .padding(.top, 50) //핫투표 + 랭킹 간격
+                    .padding(.horizontal, 20)
+
+                    
                 }
             }
-
+            
             if cardStackViewModel.showsLoginRequired {
                 PickpleDialogOverlay {
                     PickpleConfirmDialog(
@@ -103,7 +106,7 @@ struct MainView: View {
                     )
                 }
             }
-
+            
             if showsBadgeLoginRequired {
                 PickpleDialogOverlay {
                     PickpleConfirmDialog(

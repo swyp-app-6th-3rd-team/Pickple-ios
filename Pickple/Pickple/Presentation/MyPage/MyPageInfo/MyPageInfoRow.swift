@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/2/26.
 //
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -31,7 +32,7 @@ struct MyPageInfoRow: View {
                 Image(iconName)
                     .resizable()
                     .frame(width: 24, height: 24)
-                    .foregroundStyle(Color.neutral40)
+                    .foregroundStyle(Color.neutral30)
 
                 Text(title)
                     .pickpleTypography(.body01)
@@ -43,7 +44,7 @@ struct MyPageInfoRow: View {
             Image("PickpleArrowRight")
                 .resizable()
                 .frame(width: 16, height: 16)
-                .foregroundStyle(Color.neutral40)
+                .foregroundStyle(Color.neutral30)
         }
         .padding(.vertical, 16)
     }

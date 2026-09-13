@@ -6,6 +6,7 @@
 //
 //  TermsAgreementView의 약관 항목 3개(필수 2 + 선택 1)가 거의 동일한 형태라 공용화했다.
 //  "보기" 버튼은 필수 약관 2개에만 있고 선택 항목엔 없어서 showsViewButton으로 껐다 켰다 한다.
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 

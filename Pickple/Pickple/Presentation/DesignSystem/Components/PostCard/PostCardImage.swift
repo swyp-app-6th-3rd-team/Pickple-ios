@@ -1,17 +1,16 @@
 //
-//  MyActivityPostCardImage.swift
+//  PostCardImage.swift
 //  Pickple
 //
-//  Created by 박윤수 on 9/11/26.
+//  Created by 박윤수 on 9/12/26.
 //
 
 import SwiftUI
 
-struct MyActivityPostCardImage: View {
+struct PostCardImage: View {
     var url: URL?
     var type: VoteType
-    
-    
+
     var body: some View {
         ZStack(alignment: .topLeading) {
             AsyncImage(url: url) { image in
@@ -22,15 +21,15 @@ struct MyActivityPostCardImage: View {
             .frame(width: 72, height: 72)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .clipped()
-            
+
             ZStack(alignment: .center) {
                 UnevenRoundedRectangle(
                     topLeadingRadius: 8,
                     bottomTrailingRadius: 8
                 )
-                .frame(width: 24 ,height: 24)
+                .frame(width: 24, height: 24)
                 .foregroundStyle(Color.black.opacity(0.4))
-                
+
                 switch type {
                 case .text:
                     Image("PickpleText")
@@ -52,6 +51,6 @@ struct MyActivityPostCardImage: View {
 
 #Preview {
     if let url = URL(string: "https://picsum.photos/72") {
-        MyActivityPostCardImage(url: url, type: .forAgainst)
+        PostCardImage(url: url, type: .forAgainst)
     }
 }

@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -16,26 +17,11 @@ struct PostDetailCommentSectionHeader: View {
         HStack {
             Text(PostDetailStrings.commentCount(count))
                 .pickpleTypography(.body01)
-                .foregroundStyle(Color.neutral100)
+                .foregroundStyle(Color.black)
 
             Spacer()
-
-            PickpleSortButton(
-                isExpanded: .constant(false),
-                selectedValue: $sortOption,
-                options: PostDetailViewModel.sortOptions,
-                alignment: .trailing
-            )
-            .floatingOverSiblings(alignment: .topTrailing) {
-                PickpleSortButton(
-                    isExpanded: $isSortExpanded,
-                    selectedValue: $sortOption,
-                    options: PostDetailViewModel.sortOptions,
-                    alignment: .trailing
-                )
-            }
         }
-        .zIndex(1)
+        .padding(.horizontal, 4)
     }
 }
 

@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 8/29/26.
 //
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -15,13 +16,15 @@ struct TextStepOneView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text(PostViewStrings.textStepOneTitle)
-                .pickpleTypography(.heading02)
-
-            CategoryFieldBlock(postViewModel: postViewModel, isExpanded: .constant(false), options: categoryOptions)
-                .floatingOverSiblings {
-                    CategoryFieldBlock(postViewModel: postViewModel, isExpanded: $isCategoryExpanded, options: categoryOptions)
-                }
+            VStack(alignment: .leading, spacing: 32) {
+                Text(PostViewStrings.textStepOneTitle)
+                    .pickpleTypography(.heading02)
+                
+                CategoryFieldBlock(postViewModel: postViewModel, isExpanded: .constant(false), options: categoryOptions)
+                    .floatingOverSiblings {
+                        CategoryFieldBlock(postViewModel: postViewModel, isExpanded: $isCategoryExpanded, options: categoryOptions)
+                    }
+            }
 
             VStack(alignment: .leading, spacing: 8) {
                 (Text(PostViewStrings.title) + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
@@ -42,7 +45,6 @@ struct TextStepOneView: View {
 
             DescriptionFieldBlock(text: $postViewModel.description, maxLength: postViewModel.descriptionMaxLength)
         }
-        .padding(.horizontal, 20)
     }
 }
 
@@ -56,6 +58,5 @@ struct TextStepOneView: View {
             isCategoryExpanded: .constant(false),
             categoryOptions: PostViewStrings.categoryOptions
         )
-        .padding(.top, 32)
     }
 }

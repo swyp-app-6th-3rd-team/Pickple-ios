@@ -4,7 +4,7 @@
 //
 //  Created by 박윤수 on 9/7/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 여백/빈 상태 문구는 임시값
+//  1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -14,7 +14,7 @@ struct CommunitySearchView: View {
     @Environment(CommunityRouter.self) private var communityRouter
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 0) {
             HStack(spacing: 9) {
                 Button(action: { dismiss() }) {
                     Image("PickpleArrowLeft")
@@ -25,15 +25,13 @@ struct CommunitySearchView: View {
                     text: $communitySearchViewModel.searchText,
                     onSubmit: { communitySearchViewModel.recordSearch() }
                 )
+                
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 8)
 
             if communitySearchViewModel.submittedSearchText.isEmpty {
-                // 타이틀/"모두 지우기"는 recentSearches 유무와 상관없이 항상 보여준다.
-                // (이전엔 recentSearches.isEmpty 분기 안에 같이 있어서, 모두 지우기를 누르면
-                // 그 즉시 recentSearches가 비면서 타이틀까지 같이 사라지는 문제가 있었다.)
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 0) {
                     HStack {
                         Text(CommunityStrings.recentSearchesTitle)
                             .pickpleTypography(.body01)
@@ -44,9 +42,10 @@ struct CommunitySearchView: View {
                         Button(action: { communitySearchViewModel.clearAllRecentSearches() }) {
                             Text("모두 지우기")
                                 .pickpleTypography(.body02)
-                                .foregroundStyle(Color.neutral30)
+                                .foregroundStyle(Color.neutral40)
                         }
                     }
+                    .padding(.vertical, 12)
 
                     if !communitySearchViewModel.recentSearches.isEmpty {
                         HStack {
@@ -56,7 +55,7 @@ struct CommunitySearchView: View {
                                     Button(action: { communitySearchViewModel.selectRecentSearch(term) }) {
                                         Text(term)
                                             .pickpleTypography(.body02)
-                                            .foregroundStyle(Color.neutral60)
+                                            .foregroundStyle(Color.neutral70)
                                     }
                                     Button(action: { communitySearchViewModel.removeRecentSearch(term) }) {
                                         Image("PickpleX")
@@ -65,7 +64,8 @@ struct CommunitySearchView: View {
                                             .foregroundStyle(Color.neutral30)
                                     }
                                 }
-                                .padding(.horizontal, 16)
+                                .padding(.leading, 16)
+                                .padding(.trailing, 12)
                                 .padding(.vertical, 6)
                             }
                             .background(
@@ -76,11 +76,13 @@ struct CommunitySearchView: View {
                                             .stroke(Color.navy10)
                             })
                         }
+                        .padding(.vertical, 6)
                     }
 
                     Spacer()
                 }
-                .padding(20)
+                .padding(.horizontal,20)
+                .padding(.vertical, 6)
             } else if communitySearchViewModel.results.isEmpty {
                 VStack {
                     Spacer()
@@ -104,22 +106,25 @@ struct CommunitySearchView: View {
                 }
             } else {
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 8) {
+                    LazyVStack(alignment: .leading, spacing: 6) {
                         (Text(CommunityStrings.searchResultPrefix)
-                            .foregroundStyle(Color.neutral100)
+                            .foregroundStyle(Color.neutral80)
                          + Text("\(communitySearchViewModel.results.count)")
-                            .foregroundStyle(Color.yellow60)
+                            .foregroundStyle(Color.yellow70)
                          + Text(CommunityStrings.searchResultSuffix)
-                            .foregroundStyle(Color.neutral100))
+                            .foregroundStyle(Color.neutral80))
                             .pickpleTypography(.body01)
+                            .padding(.vertical, 12)
 
                         ForEach(communitySearchViewModel.results) { post in
-                            CommunitySearchResultCardView(post: post)
-                                .onTapGesture {
-                                    communityRouter.push(.postDetail(postId: post.id, type: post.type))
-                                }
-
-                            Divider()
+                            VStack(spacing: 0) {
+                                CommunitySearchResultCardView(post: post)
+                                    .onTapGesture {
+                                        communityRouter.push(.postDetail(postId: post.id, type: post.type))
+                                    }
+                                
+                                Divider()
+                            }
                         }
                     }
                     .padding(.horizontal, 20)
@@ -187,6 +192,7 @@ private struct CommunitySearchField: View {
     viewModel.searchText = "청소기"
     viewModel.recordSearch()
     viewModel.searchText = ""
+    viewModel.clearSearch()
 
     return NavigationStack {
         CommunitySearchView(communitySearchViewModel: viewModel)
@@ -197,6 +203,7 @@ private struct CommunitySearchField: View {
 #Preview("검색 결과") {
     let viewModel = CommunitySearchViewModel(userDefaults: UserDefaults(suiteName: "preview.communitySearch.results")!)
     viewModel.searchText = "나이키"
+    viewModel.recordSearch()
 
     return NavigationStack {
         CommunitySearchView(communitySearchViewModel: viewModel)
@@ -208,6 +215,7 @@ private struct CommunitySearchField: View {
 #Preview("검색 결과 없음") {
     let viewModel = CommunitySearchViewModel(userDefaults: UserDefaults(suiteName: "preview.communitySearch.empty")!)
     viewModel.searchText = "존재하지않는검색어"
+    viewModel.recordSearch()
 
     return NavigationStack {
         CommunitySearchView(communitySearchViewModel: viewModel)

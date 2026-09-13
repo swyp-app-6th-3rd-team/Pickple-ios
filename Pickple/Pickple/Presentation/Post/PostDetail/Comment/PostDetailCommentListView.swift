@@ -4,6 +4,9 @@
 //
 //  Created by 박윤수 on 9/7/26.
 //
+// 1차 점검 완료 - 9월 12일
+// 로그인 안내 문구 폰트 미지정
+
 
 import SwiftUI
 
@@ -20,36 +23,28 @@ struct PostDetailCommentListView: View {
             // 게스트는 실제 댓글을 절대 못 받아오므로(항상 []), 블러 뒤에 보여줄 내용이 없다.
             // 실제 목록처럼 보이도록 자리만 차지하는 가짜 댓글을 대신 그린다.
             placeholderCommentRows
-                .blur(radius: 6) // TODO: 디자인 확정 필요 - 임시 블러 값
+                .blur(radius: 15)
                 .disabled(true)
                 .overlay {
-                    Button(action: onLoginRequired) {
-                        VStack(spacing: 20) {
-                            
-                            Text(PostDetailStrings.commentViewRequiredDescription)
-                                .pickpleTypography(.body02)
-                                .foregroundStyle(Color.neutral70)
-                            
-                            Button(action: {}) {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .foregroundStyle(Color.white)
-                                        .overlay {
-                                            RoundedRectangle(cornerRadius: 8)
-                                            
-                                                .stroke(Color.neutral100)
-                                        }
-                                        .frame(width: 113, height: 48)
-                                    Text("로그인하기")
-                                        .pickpleTypography(.body01)
-                                        .foregroundStyle(Color.neutral100)
-                                }
+                    VStack(spacing: 16) {
+                        Text(PostDetailStrings.commentViewRequiredDescription)
+                            .pickpleTypography(.body02) //폰트 미지정
+                            .foregroundStyle(Color.neutral70)
+
+                        Button(action: onLoginRequired) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .foregroundStyle(Color.white)
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Color.black)
+                                    }
+                                    .frame(width: 113, height: 48)
+                                Text("로그인하기")
+                                    .pickpleTypography(.body01)
+                                    .foregroundStyle(Color.black)
                             }
-                            
                         }
-                        .padding(20)
-                        
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
                 }
         } else if postDetailViewModel.comments.isEmpty {
@@ -60,7 +55,7 @@ struct PostDetailCommentListView: View {
     }
     
     private var commentRows: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 0) {
             ForEach(postDetailViewModel.sortedComments) { comment in
                 PostDetailCommentRow(
                     comment: comment,
@@ -71,6 +66,9 @@ struct PostDetailCommentListView: View {
                     onMoreTapped: { onCommentMoreTapped(comment) },
                     onPickTapped: { onPickTapped(comment) }
                 )
+                .padding(.vertical, 20)
+                
+                Divider()
             }
         }
     }

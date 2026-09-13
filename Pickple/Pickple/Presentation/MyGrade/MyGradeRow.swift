@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -24,7 +25,7 @@ struct MyGradeRow: View {
                 HStack(spacing: 2) {
                     Image("PickpleLevelBadge\(grade.level)")
                         .resizable()
-                        .frame(width: 16, height: 16)
+                        .frame(width: 20, height: 20)
 
                     Text("LV.\(grade.level)")
                         .pickpleTypography(.label)

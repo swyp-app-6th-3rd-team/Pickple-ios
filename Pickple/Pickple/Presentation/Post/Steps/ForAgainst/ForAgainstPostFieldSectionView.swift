@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/11/26.
 //
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -37,16 +38,25 @@ struct ForAgainstPostFieldSectionView: View {
 
                 ProductNameFieldBlock(name: $postViewModel.product.name, maxLength: postViewModel.productNameMaxLength, isDisabled: postViewModel.isEditing)
             }
-            .opacity(postViewModel.isEditing ? 0.5 : 1)
             
             PhotoUploadSectionView(photos: $postViewModel.product.photos, maxCount: 3, hintText: PostViewStrings.photoHintUpToThree, isDisabled: postViewModel.isEditing)
                 .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled))
             
-            ProductPriceFieldBlock(price: $postViewModel.product.price, isDisabled: postViewModel.isEditing)
-                .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled && isPhotoFilled))
-            
-            ProductURLFieldBlock(url: $postViewModel.product.url, isDisabled: postViewModel.isEditing)
-                .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled && isPhotoFilled && isPriceFilled))
+            VStack(alignment: .leading, spacing: 8) {
+                Text(PostViewStrings.price)
+                    .pickpleTypography(.body01)
+
+                ProductPriceFieldBlock(price: $postViewModel.product.price, isDisabled: postViewModel.isEditing, AB: "A")
+            }
+            .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled && isPhotoFilled))
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text(PostViewStrings.url)
+                    .pickpleTypography(.body01)
+
+                ProductURLFieldBlock(url: $postViewModel.product.url, isDisabled: postViewModel.isEditing)
+            }
+            .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled && isPhotoFilled && isPriceFilled))
             
             DescriptionFieldBlock(text: $postViewModel.description, maxLength: postViewModel.descriptionMaxLength)
                 .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled && isPhotoFilled && isPriceFilled && isUrlFilled))

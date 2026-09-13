@@ -14,8 +14,8 @@ import SwiftUI
 struct PickpleTabBar: View {
     let tabs: [String]
     @Binding var selectedIndex: Int
-    var selectedColor: Color = .neutral100
-    var unselectedColor: Color = .neutral20
+    
+    var color: Color = .yellow60
 
     var body: some View {
         HStack(spacing: 0) {
@@ -26,10 +26,10 @@ struct PickpleTabBar: View {
                     VStack(spacing: 8) {
                         Text(tabs[index])
                             .pickpleTypography(.title02)
-                            .foregroundStyle(index == selectedIndex ? selectedColor : unselectedColor)
+                            .foregroundStyle(index == selectedIndex ? .black : .neutral20)
 
                         Rectangle()
-                            .fill(index == selectedIndex ? Color.yellow60 : Color.clear)
+                            .fill(index == selectedIndex ? color : Color.clear)
                             .frame(height: 2)
                     }
                 }

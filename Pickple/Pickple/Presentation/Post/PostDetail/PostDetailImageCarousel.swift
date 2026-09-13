@@ -4,7 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 캐러셀 높이/실시간 배지 아이콘(불꽃)은 임시값(전용 에셋 없음)
+//  1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -65,6 +65,7 @@ struct PostDetailImageCarousel: View {
                         .frame(width: 6, height: 6)
                 }
             }
+            .padding(.bottom)
         }
         .ignoresSafeArea(edges: .top)
     }

@@ -4,11 +4,13 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
 // 댓글 더보기(⋮) 바텀시트. 내 댓글이면 수정/삭제, 남의 댓글이면 신고/차단을 보여준다.
 // 신고/차단은 게시글 쪽과 달리 별도 확인 모달 없이 탭하면 바로 시트가 닫힌다.
+
 struct PostDetailCommentMoreMenuSheet: View {
     let isMine: Bool
     let onEdit: () -> Void
@@ -26,15 +28,23 @@ struct PostDetailCommentMoreMenuSheet: View {
                 PostDetailMenuRow(icon: "PickpleBlock", title: PostDetailStrings.menuBlock, tint: Color.neutral100, action: onBlock)
             }
         }
-        .padding(20)
-        .presentationDetents([.height(273)])
+        .padding(.horizontal, 20)
+        .padding(.top, 16)
+        .presentationDetents([.height(202)])
         .presentationDragIndicator(.visible)
     }
 }
 
-#Preview {
+#Preview("내 댓글") {
     Color.clear
         .sheet(isPresented: .constant(true)) {
             PostDetailCommentMoreMenuSheet(isMine: true, onEdit: {}, onDelete: {}, onReport: {}, onBlock: {})
+        }
+}
+
+#Preview("남의 댓글") {
+    Color.clear
+        .sheet(isPresented: .constant(true)) {
+            PostDetailCommentMoreMenuSheet(isMine: false, onEdit: {}, onDelete: {}, onReport: {}, onBlock: {})
         }
 }

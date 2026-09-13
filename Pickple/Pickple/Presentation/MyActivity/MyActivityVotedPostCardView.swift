@@ -4,11 +4,9 @@
 //
 //  Created by 박윤수 on 9/9/26.
 //
-//  나의 활동 '투표' 탭 전용 카드. 작성글 탭과 레이아웃은 같지만 투표 결과를 항상 함께 보여준다.
-//  결과 바는 게시글 상세와 같은 PostDetailVoteButtons를 그대로 재사용한다(따로 만들면 계속
-//  따로 관리하다 서로 어긋난다) — 이미 투표한 상태로 넘겨서 읽기 전용처럼 보이게 한다.
-//  TODO: 실제 API(GET /users/me/activities?type=VOTE)엔 득표율 필드가 없어서, voteResult는
-//  아직 Mock에서만 채워진다 — 실 서버 데이터로는 결과 바가 안 보인다.
+// 1차 점검 완료 - 9월 13일
+// 시간 폰트 미정
+
 
 import SwiftUI
 
@@ -17,26 +15,16 @@ struct MyActivityVotedPostCardView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            HStack {
+            HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 8) {
                     MyActivityPostCardTitle(title: post.title, decription: post.description)
 
-                    HStack(spacing: 6) {
-                        PostVoteCommentStats(voteCount: post.voteCount, commentCount: post.commentCount)
-
-                        Text("·")
-
-                        Text(post.createdAt.relativeTimeDescription)
-                            .pickpleTypography(.caption)
-                        //폰트 미정
-                    }
-                    .pickpleTypography(.label)
-                    .foregroundStyle(Color.neutral30)
+                    MyActivityStatsRow(type: post.type, voteCount: post.voteCount, commentCount: post.commentCount, createdAt: post.createdAt)
                 }
                 
                 Spacer()
 
-                MyActivityPostCardImage(url: post.thumbnailUrl, type: post.type)
+                PostCardImage(url: post.thumbnailUrl, type: post.type)
             }
 
             if let voteResult = post.voteResult {

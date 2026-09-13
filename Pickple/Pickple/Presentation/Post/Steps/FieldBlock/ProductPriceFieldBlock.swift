@@ -3,26 +3,24 @@
 //  Pickple
 //
 //  Created by 박윤수 on 9/7/26.
+// 1차 점검 완료 - 9월 12일
 //
-//  상품 정보 입력에서 공통으로 쓰는 "가격" 라벨 + 숫자 입력창(선택 입력).
+//  상품 정보 입력에서 공통으로 쓰는 숫자 입력창(선택 입력). 라벨은 안 그린다 — 호출부(섹션)가
+//  공용 헤더로 붙인다.
 
 import SwiftUI
 
 struct ProductPriceFieldBlock: View {
     @Binding var price: String
-    var label: String = PostViewStrings.price
     var isDisabled: Bool = false
+    var AB: String = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(label)
-                .pickpleTypography(.body01)
-            //4c4c4c 색상 미정
-
             PickpleTextField(
                 text: $price,
                 type: .trailing,
-                placeholder: "0",
+                placeholder: "\(AB) 가격을 입력해 주세요",
                 trailingAccessory: .text(PostViewStrings.priceUnit)
             )
             .keyboardType(.numberPad)
@@ -33,15 +31,13 @@ struct ProductPriceFieldBlock: View {
             }
             .disabled(isDisabled)
         }
-        .opacity(isDisabled ? 0.5 : 1)
     }
 }
 
 #Preview {
     VStack(spacing: 20) {
-        ProductPriceFieldBlock(price: .constant(""))
-        ProductPriceFieldBlock(price: .constant("120000"))
-        ProductPriceFieldBlock(price: .constant(""), label: "A 가격")
+        ProductPriceFieldBlock(price: .constant(""), AB: "A")
+        ProductPriceFieldBlock(price: .constant("120000"), AB: "A")
     }
     .padding()
 }

@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -19,14 +20,15 @@ struct PostDetailHeaderSection: View {
                     PostDetailHeaderRow(type: post.type, onMoreTapped: onMoreTapped)
 
                     Text(post.title)
-                        .pickpleTypography(.title01)
+                        .pickpleTypography(.heading02)
                         .foregroundStyle(Color.black)
                 }
 
                 PostDetailAuthorRow(nickname: post.authorNickname, level: post.authorGradeLevel, profileImageUrl: post.authorProfileImageUrl, createdAt: post.createdAt)
             }
 
-            Text(post.description)
+            //설명 공백 대비
+            Text(post.description.isEmpty ? " " : post.description)
                 .pickpleTypography(.body01)
                 .foregroundStyle(Color.neutral50)
         }

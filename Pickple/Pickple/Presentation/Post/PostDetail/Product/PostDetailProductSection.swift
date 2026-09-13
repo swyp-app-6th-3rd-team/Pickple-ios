@@ -4,7 +4,8 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
-//  TODO: 디자인 확정 후 변경 필요 — 여백은 임시값
+//  1차 점검 완료
+// 링크 폰트도 body01로 통일하면 안되려나
 
 import SwiftUI
 
@@ -23,7 +24,7 @@ struct PostDetailProductTabPicker: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            PickpleTabBar(tabs: [firstLabel, secondLabel], selectedIndex: selectedIndex)
+            PickpleTabBar(tabs: [firstLabel, secondLabel], selectedIndex: selectedIndex, color: .black)
 
         }
     }

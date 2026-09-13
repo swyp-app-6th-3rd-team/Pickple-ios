@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/3/26.
 //
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -14,12 +15,15 @@ struct PostDetailHeaderRow: View {
 
     var body: some View {
         HStack {
-            PostTypeBadge(type: type, iconSize: 14, typography: .caption, textColor: .green80, backgroundColor: .green20)
+            PostTypeBadge(type: type, iconSize: 16, typography: .label, textColor: Color.neutral40, backgroundColor: .white)
+                .background(
+                    PostTypeBadge(type: type, iconSize: 16, typography: .label, textColor: Color.neutral40, backgroundColor: .white, stroke: true, strokeColor: .navy10)
+                )
 
             Spacer()
 
             Button(action: onMoreTapped) {
-                Image(systemName: "ellipsis")
+                Image("PickpleMenu")
                     .foregroundStyle(Color.neutral50)
             }
         }

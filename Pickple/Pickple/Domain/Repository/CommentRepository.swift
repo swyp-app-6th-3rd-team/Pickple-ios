@@ -5,8 +5,16 @@
 //  Created by 박윤수 on 9/3/26.
 //
 
+// GET /posts/{postId}/comments 응답 전체. myOnePickCommentId는 댓글 배열과 별개로 최상위에
+// 오는 값이고(원픽한 댓글이 이후 삭제돼도 유지됨, comments엔 없는 id가 올 수 있음), 댓글
+// 목록과 함께 한 응답이라 같이 묶어서 반환한다.
+struct CommentListResult {
+    let comments: [Comment]
+    let myOnePickCommentId: Int?
+}
+
 protocol CommentRepository {
-    func fetchComments() async throws -> [Comment]
+    func fetchComments() async throws -> CommentListResult
     // 작성/수정 응답은 서버가 {id, content}만 줘서 다른 필드(작성자/mine 등)를 채울 수 없다 —
     // 성공하면 호출부가 fetchComments()로 목록을 다시 받아 반영한다.
     func postComment(content: String) async throws

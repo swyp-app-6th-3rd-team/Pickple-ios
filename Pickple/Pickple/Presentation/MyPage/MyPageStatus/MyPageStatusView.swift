@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/1/26.
 //
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -11,7 +12,7 @@ struct MyPageStatusView: View {
     let myPageViewModel: MyPageViewModel
     
     var body: some View {
-        VStack {
+        VStack(spacing: 8) {
             MyPageStatsView(myPageViewModel: myPageViewModel)
             
             MyPagePointsView(myPageViewModel: myPageViewModel)

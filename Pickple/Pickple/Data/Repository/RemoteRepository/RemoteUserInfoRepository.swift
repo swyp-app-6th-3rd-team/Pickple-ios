@@ -13,6 +13,9 @@ struct UserPointsDTO: Decodable {
     let profileImageUrl: String?
     let ranking: Int?
     let point: Int
+    // 2026-09-13 신규. 저장된 값을 그대로 받는다(포인트로 재계산하지 않음, 등급은 안 내려감).
+    let gradeLevel: Int?
+    let gradeName: String?
 }
 
 struct NextGradeDTO: Decodable {
