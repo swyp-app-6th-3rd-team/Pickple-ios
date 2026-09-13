@@ -27,9 +27,10 @@ struct MyPageExtraView: View {
             VStack(spacing: 0) {
                 // 게스트는 계정 관리 진입 시 로그인 유도 다이얼로그로 연결한다(onTapAccount에서 분기).
                 MyPageInfoRow(iconName: "PickpleUser", title: MyPageStrings.account, action: onTapAccount)
+                
+                MyPageInfoRow(iconName: "PickplePrivate", title: MyPageStrings.privatePolicy, url: MyPageStrings.privacy)
 
-                // TODO: 약관 및 정책·버전 정보 화면 미정 — 화면 나오면 연결
-                MyPageInfoRow(iconName: "PickpleNote", title: MyPageStrings.terms, url: MyPageStrings.ToU, action: {})
+                MyPageInfoRow(iconName: "PickpleNote", title: MyPageStrings.terms, url: MyPageStrings.ToU)
 
                 MyPageInfoRow(iconName: "PickpleInfo", title: MyPageStrings.version, url: MyPageStrings.versionInfoURL)
             }

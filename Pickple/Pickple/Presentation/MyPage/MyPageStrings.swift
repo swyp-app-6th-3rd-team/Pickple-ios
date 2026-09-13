@@ -10,7 +10,8 @@ import Foundation
 enum MyPageStrings {
     static let extraSectionTitle = "기타"
     static let account = "계정 관리"
-    static let terms = "약관 및 정책"
+    static let privatePolicy = "개인정보처리방침"
+    static let terms = "이용 약관"
     static let version = "버전 정보"
 
     static let infoSectionTitle = "마이페이지"
@@ -21,20 +22,11 @@ enum MyPageStrings {
     static let myPostsTitle = "내가 올린 투표"
     static let viewAll = "전체 보기"
 
-    static let postLoginRequiredTitle = "로그인이 필요해요"
-    static let postLoginRequiredDescription = "간편 로그인 후 게시글을\n작성할 수 있어요"
+    static let myPostsLoginRequiredTitle = "로그인이 필요해요"
+    static let myPostsLoginRequiredDescription = "간편 로그인 후 자유롭게\n투표와 댓글에 참여해 보세요"
 
-    // TODO: 문구 확정 필요 — 지금은 postLoginRequired와 동일한 임시 문구
-    static let gradeLoginRequiredTitle = "로그인이 필요해요"
-    static let gradeLoginRequiredDescription = "간편 로그인 후 나의 등급을\n확인할 수 있어요"
-
-    // TODO: 문구 확정 필요 — 지금은 postLoginRequired와 동일한 임시 문구
-    static let badgeLoginRequiredTitle = "로그인이 필요해요"
-    static let badgeLoginRequiredDescription = "간편 로그인 후 나의 뱃지를\n확인할 수 있어요"
-
-    // TODO: 문구 확정 필요 — 지금은 postLoginRequired와 동일한 임시 문구
-    static let viewAllLoginRequiredTitle = "로그인이 필요해요"
-    static let viewAllLoginRequiredDescription = "간편 로그인 후 작성한 투표를\n모두 확인할 수 있어요"
+    static let infoLoginRequiredTitle = "로그인이 필요해요"
+    static let infoLoginRequiredDescription = "간편 로그인으로\n더 많은 기능을 만나보세요"
 
     static let currentPoints = "현재 보유 포인트"
     static let nextLevel = "다음 레벨까지"
@@ -45,5 +37,6 @@ enum MyPageStrings {
 
     static let versionInfoURL = "https://super-albatross-219.notion.site/3c8eab9bfff480fa8cc6f5e127d72d15?source=copy_link"
     static let ToU = "https://super-albatross-219.notion.site/PickPle-3c8eab9bfff480b1ad6ef0fe62c21b42?source=copy_link"
+    static let privacy = "https://super-albatross-219.notion.site/PickPle-3c8eab9bfff480a5810deaa3a8d902f8?source=copy_link"
 
 }

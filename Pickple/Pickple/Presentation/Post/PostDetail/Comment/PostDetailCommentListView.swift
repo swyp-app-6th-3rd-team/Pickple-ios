@@ -63,6 +63,7 @@ struct PostDetailCommentListView: View {
                     // 본인 댓글은 원픽 대상이 아니다(API_SPEC.md: 자기 댓글이면 400) — 서버가
                     // 거부하기 전에 클라이언트에서부터 막는다.
                     canPick: postDetailViewModel.canPickAnyComment && !comment.mine,
+                    isEditing: comment.id == postDetailViewModel.editingCommentID,
                     onMoreTapped: { onCommentMoreTapped(comment) },
                     onPickTapped: { onPickTapped(comment) }
                 )
@@ -90,6 +91,7 @@ struct PostDetailCommentListView: View {
                     comment: comment,
                     isPicked: false,
                     canPick: false,
+                    isEditing: false,
                     onMoreTapped: {},
                     onPickTapped: {}
                 )

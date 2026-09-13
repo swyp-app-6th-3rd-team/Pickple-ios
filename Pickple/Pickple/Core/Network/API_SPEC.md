@@ -298,6 +298,15 @@ LV.1~LV.5의 승급 필요 조건을 낮은 등급부터 돌려준다.
 - `nextCursor` 문자열 선택
 - `hasNext` 불리언 선택
 
+### GET /posts/popular — 인기 게시글 상위 10개 (필드 보강, 2026-09-13 PR #171 — Scalar 스키마 `PopularPostItem`/`PopularProductItem`)
+게스트도 조회 가능. 인기순 상위 최대 10개를 배열 하나(`returnObject[]`)로 준다 — `content`/커서/`hasNext` 없음. 10개보다 적으면 있는 만큼, 없으면 빈 배열.
+
+응답 200 — OK: GET /posts의 `content` 항목과 같은 필드(`id`/`type`/`category`/`title`/`description`/`commentCount`/`voteCount`/`thumbnailUrl`/`createdAt`/`authorId`/`authorNickname`/`authorRanking`, 일반 게시글은 `voteCount`/`thumbnailUrl` null) + 아래 신규 필드
+- `commenterCount` 정수(int64) — 댓글을 남긴 서로 다른 사용자 수. 기존 `commentCount`(댓글 건수)와 다른 값이다. 댓글을 지워도 줄지 않는 누적 고유 인원 집계라 현재 남은 댓글 작성자 수와 다를 수 있다. 일반 게시글도 포함되며 댓글이 없으면 0
+- `products` 배열 — `displayOrder`(A/B는 1=A·2=B, 찬반은 1 하나), `imageUrl`(해당 상품에 가장 먼저 등록한 사진 1장, 선택 — 없으면 null). 찬반 1개, A/B는 A·B 순서로 2개, 일반 게시글은 빈 배열. 찬반 상품에 사진 여러 장이어도 첫 장만 옴. 기존 `thumbnailUrl`도 그대로 오며 찬반=첫 사진/A·B=A 상품 사진과 동일 — B 사진까지 쓰려면 `products`를 읽어야 한다
+
+이 경로는 `commenterCount`만 추가되고, 최근 투표 카드(`GET /users/me/posts/recent`)는 기존처럼 `commentCount`로 댓글 건수를 표시한다.
+
 ### GET /posts/{id} — 게시글 상세 조회 (신규 확인, 2026-09-09 — dev-api.pickple.app/scalar OAS)
 작성자 정보와 게시물 정보를 유형별로 준다. 일반 게시글은 `vote`가 null이다(R-04). 투표한 사용자에게만 선택지별 득표 수와 득표율을 준다 — 미투표자와 게스트에게는 두 필드가 응답에서 빠진다(투표 전 통계 블라인드 규칙이 서버에서부터 지켜짐). 없거나 삭제된 게시글은 404.
 
@@ -382,8 +391,15 @@ title을 nil로 보내 기존 값을 유지시킨다.
 
 ## Activity — 내 활동(투표·댓글·게시글) 조회
 
-### GET /users/me/posts/recent — 최근 7일 투표 게시글
-인증 필요. 최근 7일 내 투표한 게시글을 최신순 최대 10개 반환한다. 응답 필드는 GET /posts의 `content` 항목과 동일 셋(`id`/`type`/`category`/`title`/`description`/`commentCount`/`voteCount`/`thumbnailUrl`/`createdAt`) + `authorId`/`authorNickname`/`authorRanking` 없음.
+### GET /users/me/posts/recent — 내가 최근 7일 안에 작성한 찬반·A/B 게시글 (필드 보강, 2026-09-13 PR #172 — Scalar 스키마 `RecentVotePostItem`/`VoteActivityProduct`/`VoteActivityOption`)
+인증 필요. **"내가 투표한 글"이 아니라 "내가 올린(작성한) 글"이다** — 내가 투표한 글 목록은 `GET /users/me/activities/votes`를 쓸 것. 요청 시각 기준 최근 7일 안에 본인이 작성한 찬반·A/B 게시글을 최신순 최대 10개 반환한다(작성 시각이 같으면 게시글 id가 큰 순). 정확히 7일 지난 글, 일반 게시글, 삭제된 글, 다른 사람 글은 제외되며 없으면 빈 배열. 배열 하나(`returnObject[]`)로 오며 `content`/커서/`hasNext` 없음.
+
+응답 200 — OK: GET /posts의 `content` 항목 필드 중 `id`/`type`/`category`/`title`/`description`/`commentCount`/`voteCount`/`thumbnailUrl`/`createdAt`(`authorId`/`authorNickname`/`authorRanking`은 없음, 항상 본인 글) + `activityAt`(작성 시각과 동일) + 아래 신규 필드
+- `products` 배열 — `displayOrder`(1=A, 2=B), `imageUrl`(선택 — 사진 없는 상품도 빠지지 않고 `imageUrl: null`로 온다. A 사진이 없어도 B 사진을 대신 채워주지 않으므로 화면에서 빈 이미지로 처리). 찬반 1개, A/B 2개. 기존 `thumbnailUrl`도 유지(찬반=첫 사진, A/B=A 상품 사진)
+- `options` 배열 — 표시 순서대로 항상 2개. `optionId`, `label`(찬반만, A/B는 null), `displayOrder`(1 또는 2), `voteCount`(해당 선택지 득표 수), `percentage`(정수 반올림 — 두 값 합이 항상 100은 아님, 상세·투표 직후 응답과 계산 방식 동일). **카드 최상위 `voteCount`는 총 투표수, `options[].voteCount`는 선택지별 득표 수로 서로 다른 값이다** — 재투표해도 총 투표수는 안 늘고 선택지별 득표 수만 바뀐다
+- `selectedOptionId`는 이 경로에 없음 — 내 선택 표시가 필요하면 `GET /users/me/activities/votes`를 쓸 것
+
+**(중요) 이 경로는 작성자가 해당 글에 직접 투표하지 않았어도 `options`의 득표 수·투표율을 내려준다** — "내가 쓴 글" 결과 확인 화면이라, 상세(`GET /posts/{id}`)·랜덤 카드에 적용되는 미투표자 결과 블라인드 정책(R-04 등)이 이 경로에는 적용되지 않는다. 같은 글이어도 상세로 들어가서 작성자가 미투표 상태면 상세에서는 결과가 다시 숨겨지므로, 화면마다 해당 API 응답을 그대로 따라야 한다.
 
 ### GET /users/me/activities — 내 활동 목록 조회 (deprecated, 2026-09-13)
 ⚠️ **deprecated** — 아래 세 경로(`/users/me/activities/votes`·`/comments`·`/posts`)로 대체됐다. 구 경로는 당분간 그대로 200을 주지만(제거 시점 미정, 전환 확인 후 별도 이슈), 새로 붙일 코드는 아래 세 경로를 쓸 것.

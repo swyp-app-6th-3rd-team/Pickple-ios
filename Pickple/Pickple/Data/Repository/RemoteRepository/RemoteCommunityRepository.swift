@@ -7,6 +7,12 @@
 
 import Foundation
 
+// GET /posts/popular 전용 상품 사진. displayOrder 1=A(찬반은 유일한 상품), 2=B.
+struct PostListProductDTO: Decodable {
+    let displayOrder: Int
+    let imageUrl: String?
+}
+
 struct PostListItemDTO: Decodable {
     let id: Int
     let type: String
@@ -20,6 +26,9 @@ struct PostListItemDTO: Decodable {
     let authorId: Int
     let authorNickname: String
     let authorRanking: Int?
+    // 아래 둘은 GET /posts/popular에만 있다. GET /posts는 이 키 자체가 없어서 자연히 nil로 디코딩된다.
+    let products: [PostListProductDTO]?
+    let commenterCount: Int?
 }
 
 struct PostScrollDTO: Decodable {
@@ -51,7 +60,8 @@ struct RemoteCommunityRepository: CommunityRepository {
     }
 
     // TODO: 게시글 목록 응답에 작성자 등급(1~5)이 없어서(authorRanking은 전체 순위라 별개 개념)
-    // authorLevel은 1로 고정한다 — RemotePickerRankingRepository와 동일한 임시 처리.
+    // authorLevel은 1로 고정한다. RemotePickerRankingRepository는 2026-09-13에 gradeLevel
+    // 필드가 추가돼서 이미 해결됐는데, 여기(/posts, /posts/popular)와 댓글 목록은 아직 안 내려온다.
     static func toDomain(_ dto: PostListItemDTO) -> PostSummary {
         .fromServerFields(
             id: dto.id,
@@ -64,7 +74,11 @@ struct RemoteCommunityRepository: CommunityRepository {
             commentCount: dto.commentCount,
             createdAt: dto.createdAt,
             authorNickname: dto.authorNickname,
-            authorLevel: 1
+            authorLevel: 1,
+            products: (dto.products ?? []).map {
+                PostSummaryProduct(displayOrder: $0.displayOrder, imageUrl: $0.imageUrl.flatMap(URL.init(string:)))
+            },
+            commenterCount: dto.commenterCount
         )
     }
 }

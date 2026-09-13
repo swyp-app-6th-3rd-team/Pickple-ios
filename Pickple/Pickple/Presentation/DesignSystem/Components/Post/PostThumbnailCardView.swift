@@ -16,14 +16,10 @@ struct PostThumbnailCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             ZStack(alignment: .topLeading) {
-                AsyncImage(url: post.thumbnailUrl) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    Image("McokMyPostPicture").resizable().scaledToFill()
-                }
-                .frame(width: 160, height: 160)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .clipped()
+                thumbnailImage(url: post.thumbnailUrl)
+                    .frame(width: 160, height: 160)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipped()
 
                 PostTypeBadge(type: post.type, iconSize: 16, typography: .label, horizontalPadding: 10)
                     .padding(10)
@@ -45,7 +41,8 @@ struct PostThumbnailCardView: View {
                 }
 
                 HStack(spacing: 8) {
-                    PostVoteCommentStats(type: post.type, voteCount: post.voteCount, commentCount: post.commentCount)
+                    // 인기 게시글(commenterCount 있음)은 댓글 남긴 인원으로, 그 외엔 기존 댓글 건수로 표시.
+                    PostVoteCommentStats(type: post.type, voteCount: post.voteCount, commentCount: post.commenterCount ?? post.commentCount)
                         .pickpleTypography(.caption)
                         .foregroundStyle(Color.neutral20)
 
@@ -78,6 +75,14 @@ struct PostThumbnailCardView: View {
             }
         }
         .frame(width: 160)
+    }
+
+    private func thumbnailImage(url: URL?) -> some View {
+        AsyncImage(url: url) { image in
+            image.resizable().scaledToFill()
+        } placeholder: {
+            Image("McokMyPostPicture").resizable().scaledToFill()
+        }
     }
 }
 

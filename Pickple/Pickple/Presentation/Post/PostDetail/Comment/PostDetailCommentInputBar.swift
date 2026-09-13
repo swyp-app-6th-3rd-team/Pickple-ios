@@ -10,59 +10,119 @@ import SwiftUI
 struct PostDetailCommentInputBar: View {
     @Binding var text: String
     var isFocused: FocusState<Bool>.Binding
+    var isEditingComment: Bool
     let onSubmit: () -> Void
+    
 
     var body: some View {
-        ZStack {
-            ZStack(alignment: .trailing) {
-                RoundedRectangle(cornerRadius: 8)
-                    .foregroundStyle(Color.clear)
-                    .frame(maxWidth: .infinity, minHeight: 56)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.navy10)
-                            .frame(maxWidth: .infinity, minHeight: 56)
-                        
-                    )
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 16)
+        if !isEditingComment {
+            HStack {
+                TextField(
+                    "",
+                    text: $text,
+                    prompt: Text(PostDetailStrings.commentPlaceholder)
+                        .foregroundStyle(Color.neutral40),
+                    axis: .vertical
+                )
+                .focused(isFocused)
+                .pickpleTypography(.body01)
+                .foregroundStyle(Color.neutral100)
+                .padding(.leading, 16)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .foregroundStyle(Color.neutral5)
+                )
                 
-                Button(action: onSubmit) {
-                    Text(PostDetailStrings.commentSubmit)
-                        .pickpleTypography(.body01)
-                        .foregroundStyle(Color.white)
-                        .padding(.horizontal, 18)
-                        .padding(.vertical, 8)
-                        .background(Color.black)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                
+                Spacer()
+                
+                ZStack {
+                    Circle()
+                        .frame(width: 40, height: 40)
+                        .foregroundStyle(Color.yellow60)
+                    
+                    
+                    Image("PickpleSubmit")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(Color.navy60)
                 }
-                .padding(.trailing, 31)
+                .onTapGesture(perform: onSubmit)
             }
-            
-            HStack{
-                TextField(PostDetailStrings.commentPlaceholder, text: $text)
-                    .focused(isFocused)
-                    .pickpleTypography(.body01)
-                    .foregroundStyle(Color.neutral40)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical,15)
 
+        } else {
+            VStack(alignment:.leading, spacing: 8) {
+                HStack(spacing: 4) {
+                    Image("PickpleEditComment")
+                        .resizable()
+                        .frame(width: 16, height: 16)
+                        .foregroundStyle(Color.neutral40)
+                    
+                    Text("댓글 수정 중...")
+                        .pickpleTypography(.body02)
+                        .foregroundStyle(Color.neutral40)
+                }
+                .padding(.leading, 4)
+            HStack {
+                TextField(
+                    "",
+                    text: $text,
+                    prompt: Text(PostDetailStrings.commentPlaceholder)
+                        .foregroundStyle(Color.neutral40),
+                    axis: .vertical
+                )
+                .focused(isFocused)
+                .pickpleTypography(.body01)
+                .foregroundStyle(Color.neutral100)
+                .padding(.leading, 16)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .foregroundStyle(Color.neutral5)
+                )
                 
+                
+                Spacer()
+                
+                ZStack {
+                    Circle()
+                        .frame(width: 40, height: 40)
+                        .foregroundStyle(Color.yellow60)
+                    
+                    
+                    Image("PickpleSubmit")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(Color.navy60)
+                }
+                .onTapGesture(perform: onSubmit)
             }
-            .padding(.leading, 21)
-            .padding(.trailing, 11)
-            .padding(.vertical, 15)
         }
+        }
+
     }
 }
 
-#Preview {
+#Preview("작성 중") {
     struct PreviewWrapper: View {
         @State private var text = ""
         @FocusState private var isFocused: Bool
 
         var body: some View {
-            PostDetailCommentInputBar(text: $text, isFocused: $isFocused) {}
+            PostDetailCommentInputBar(text: $text, isFocused: $isFocused, isEditingComment: false) {}
+        }
+    }
+    return PreviewWrapper()
+}
+
+#Preview("수정 중") {
+    struct PreviewWrapper: View {
+        @State private var text = "수정할 댓글 내용"
+        @FocusState private var isFocused: Bool
+
+        var body: some View {
+            PostDetailCommentInputBar(text: $text, isFocused: $isFocused, isEditingComment: true) {}
         }
     }
     return PreviewWrapper()

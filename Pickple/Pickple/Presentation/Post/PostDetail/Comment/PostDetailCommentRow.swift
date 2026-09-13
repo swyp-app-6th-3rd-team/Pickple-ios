@@ -13,6 +13,7 @@ struct PostDetailCommentRow: View {
     let comment: Comment
     let isPicked: Bool
     let canPick: Bool
+    let isEditing: Bool
     let onMoreTapped: () -> Void
     let onPickTapped: () -> Void
 
@@ -82,6 +83,11 @@ struct PostDetailCommentRow: View {
                     .foregroundStyle(Color.neutral30)
             }
         }
+        .padding(8)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .foregroundStyle(isEditing ? Color.neutral15 : Color.clear)
+        )
     }
 }
 
@@ -90,6 +96,7 @@ struct PostDetailCommentRow: View {
         comment: Comment(id: 1, authorNickname: "픽플고인물", authorLevel: 5, authorProfileImageUrl: nil, content: "이거 너무 좋아요", createdAt: Date(), pickCount: 3, mine: false),
         isPicked: false,
         canPick: true,
+        isEditing: false,
         onMoreTapped: {},
         onPickTapped: {}
     )

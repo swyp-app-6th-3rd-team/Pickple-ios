@@ -23,25 +23,25 @@ struct TermsAgreementView: View {
     var onCompleted: () -> Void = {}
 
     var body: some View {
+            
         VStack(alignment: .leading, spacing: 40) {
             TermsAgreementTitle()
-
+            
             VStack(alignment: .leading, spacing: 20) {
                 TermsToggleAllSection(
                     personalDataOn: $personalDataOn,
                     serviceTermsOn: $serviceTermsOn,
                     pushNotificationOn: $pushNotificationOn
                 )
-
+                
                 TermsToggleSection(
                     personalDataOn: $personalDataOn,
                     serviceTermsOn: $serviceTermsOn,
                     pushNotificationOn: $pushNotificationOn
                 )
             }
-
-            Spacer()
-
+            
+            
             Button(action: {
                 Task {
                     if await profileViewModel.submitProfile() {
@@ -54,10 +54,12 @@ struct TermsAgreementView: View {
             .frame(maxWidth: .infinity)
             .buttonStyle(.pickple(isRequiredAgreed ? .enabled : .disabled, 56))
             .disabled(!isRequiredAgreed)
+            
+            Spacer()
         }
         .padding(.horizontal, 20)
-        .padding(.top, 45)
-        .background(Color.white.ignoresSafeArea())
+        .padding(.top, 46)
+        .background(Color.white)
     }
 }
 

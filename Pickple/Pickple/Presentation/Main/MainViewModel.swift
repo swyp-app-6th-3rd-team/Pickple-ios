@@ -58,7 +58,10 @@ class MainViewModel {
         async let rankingsResult = try? pickerRankingRepository.fetchTopRankings()
 
         missions = await missionsResult ?? []
-        hotPosts = Array((await popularPostsResult ?? []).prefix(10))
+        // "지금 핫한 투표" 섹션 — 이름 그대로 투표 가능한 게시글(찬반/AB)만 대상이다.
+        // GET /posts/popular는 일반 게시글도 인기점수(투표+댓글수)에 포함해서 주므로,
+        // 일반 게시글은 여기서 걸러낸 뒤 상위 10개를 자른다.
+        hotPosts = Array((await popularPostsResult ?? []).filter { $0.type != .text }.prefix(10))
         topRankings = await rankingsResult ?? []
     }
 

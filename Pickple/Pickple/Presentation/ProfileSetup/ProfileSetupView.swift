@@ -57,9 +57,10 @@ struct ProfileSetupView: View {
                 showsTermsAgreement = false
                 onCompleted()
             })
+            
                 .interactiveDismissDisabled()
                 .presentationDragIndicator(.visible)
-                .presentationDetents([.height(517)])
+                .presentationDetents([.height(482)])
         }
     }
 }
