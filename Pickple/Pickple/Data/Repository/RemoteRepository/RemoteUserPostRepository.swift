@@ -22,6 +22,9 @@ struct ActivityItemDTO: Decodable {
     let thumbnailUrl: String?
     let createdAt: Date
     let activityAt: Date?
+    // GET /users/me/posts/recent에만 있다(2026-09-13 PR #172). GET /users/me/activities/posts는
+    // 이 키 자체가 없어서 자연히 nil로 디코딩된다.
+    let products: [PostListProductDTO]?
 }
 
 private struct ActivityListResponseDTO: Decodable {
@@ -157,7 +160,10 @@ struct RemoteUserPostRepository: UserPostRepository {
             thumbnailUrl: dto.thumbnailUrl,
             voteCount: dto.voteCount,
             commentCount: dto.commentCount,
-            createdAt: dto.activityAt ?? dto.createdAt
+            createdAt: dto.activityAt ?? dto.createdAt,
+            products: (dto.products ?? []).map {
+                PostSummaryProduct(displayOrder: $0.displayOrder, imageUrl: $0.imageUrl.flatMap(URL.init(string:)))
+            }
         )
     }
 
