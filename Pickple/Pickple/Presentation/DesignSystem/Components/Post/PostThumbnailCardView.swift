@@ -78,7 +78,6 @@ struct PostThumbnailCardView: View {
             }
         }
         .frame(width: 160)
-        .contentShape(Rectangle())
     }
 }
 
