@@ -21,7 +21,7 @@ struct PostDetailCommentSectionHeader: View {
 
             Spacer()
         }
-        .padding(.horizontal, 4)
+        .padding(4)
     }
 }
 
