@@ -13,10 +13,8 @@ struct MyPageView: View {
     @Environment(MyPageRouter.self) private var myPageRouter
     @Environment(\.appRequestLogin) private var appRequestLogin
     @State private var showsLoginRequired = false
-    @State private var showsPostLoginRequired = false
-    @State private var showsGradeLoginRequired = false
-    @State private var showsBadgeLoginRequired = false
-    @State private var showsViewAllLoginRequired = false
+    @State private var showsMyPostsLoginRequired = false
+    @State private var showsInfoLoginRequired = false
 
     var body: some View {
         ZStack {
@@ -43,14 +41,14 @@ struct MyPageView: View {
                                 if myPageViewModel.isLoggedIn {
                                     myPageRouter.push(.activity)
                                 } else {
-                                    showsViewAllLoginRequired = true
+                                    showsMyPostsLoginRequired = true
                                 }
                             },
                             onTapAddPost: {
-                                // 게스트는 로그인 유도 모달을 띄운다. 게시글 작성 문구를 써야 해서
+                                // 게스트는 로그인 유도 모달을 띄운다. "내가 올린 투표" 영역 문구를 써야 해서
                                 // 계정 관리/프로필 헤더가 쓰는 showsLoginRequired와 다이얼로그를 분리한다.
                                 if !myPageViewModel.isLoggedIn {
-                                    showsPostLoginRequired = true
+                                    showsMyPostsLoginRequired = true
                                 }
                             }
                         )
@@ -64,14 +62,14 @@ struct MyPageView: View {
                                 if myPageViewModel.isLoggedIn {
                                     myPageRouter.push(.grade)
                                 } else {
-                                    showsGradeLoginRequired = true
+                                    showsInfoLoginRequired = true
                                 }
                             },
                             onTapBadge: {
                                 if myPageViewModel.isLoggedIn {
                                     myPageRouter.push(.badge)
                                 } else {
-                                    showsBadgeLoginRequired = true
+                                    showsInfoLoginRequired = true
                                 }
                             }
                         )
@@ -106,64 +104,32 @@ struct MyPageView: View {
                 }
             }
 
-            if showsPostLoginRequired {
+            if showsMyPostsLoginRequired {
                 PickpleDialogOverlay {
                     PickpleConfirmDialog(
-                        title: MyPageStrings.postLoginRequiredTitle,
-                        description: MyPageStrings.postLoginRequiredDescription,
+                        title: MyPageStrings.myPostsLoginRequiredTitle,
+                        description: MyPageStrings.myPostsLoginRequiredDescription,
                         cancelTitle: MainStrings.cancel,
                         confirmTitle: MainStrings.login,
-                        onCancel: { showsPostLoginRequired = false },
+                        onCancel: { showsMyPostsLoginRequired = false },
                         onConfirm: {
-                            showsPostLoginRequired = false
+                            showsMyPostsLoginRequired = false
                             appRequestLogin()
                         }
                     )
                 }
             }
 
-            if showsGradeLoginRequired {
+            if showsInfoLoginRequired {
                 PickpleDialogOverlay {
                     PickpleConfirmDialog(
-                        title: MyPageStrings.gradeLoginRequiredTitle,
-                        description: MyPageStrings.gradeLoginRequiredDescription,
+                        title: MyPageStrings.infoLoginRequiredTitle,
+                        description: MyPageStrings.infoLoginRequiredDescription,
                         cancelTitle: MainStrings.cancel,
                         confirmTitle: MainStrings.login,
-                        onCancel: { showsGradeLoginRequired = false },
+                        onCancel: { showsInfoLoginRequired = false },
                         onConfirm: {
-                            showsGradeLoginRequired = false
-                            appRequestLogin()
-                        }
-                    )
-                }
-            }
-
-            if showsBadgeLoginRequired {
-                PickpleDialogOverlay {
-                    PickpleConfirmDialog(
-                        title: MyPageStrings.badgeLoginRequiredTitle,
-                        description: MyPageStrings.badgeLoginRequiredDescription,
-                        cancelTitle: MainStrings.cancel,
-                        confirmTitle: MainStrings.login,
-                        onCancel: { showsBadgeLoginRequired = false },
-                        onConfirm: {
-                            showsBadgeLoginRequired = false
-                            appRequestLogin()
-                        }
-                    )
-                }
-            }
-
-            if showsViewAllLoginRequired {
-                PickpleDialogOverlay {
-                    PickpleConfirmDialog(
-                        title: MyPageStrings.viewAllLoginRequiredTitle,
-                        description: MyPageStrings.viewAllLoginRequiredDescription,
-                        cancelTitle: MainStrings.cancel,
-                        confirmTitle: MainStrings.login,
-                        onCancel: { showsViewAllLoginRequired = false },
-                        onConfirm: {
-                            showsViewAllLoginRequired = false
+                            showsInfoLoginRequired = false
                             appRequestLogin()
                         }
                     )
