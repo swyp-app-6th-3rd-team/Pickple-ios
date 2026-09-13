@@ -4,10 +4,7 @@
 //
 //  Created by 박윤수 on 8/28/26.
 //
-//  TODO: 디자인 확정 후 변경 필요
-//  - 색상: Color.black/gray → Asset Catalog 컬러셋으로 교체
-//  - 폰트: "Nunito-ExtraBold" 하드코딩 → 폰트명/크기 확정 후 상수로 교체
-//
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
