@@ -99,14 +99,17 @@ struct PostDetailView: View {
                     .ignoresSafeArea(edges: post.type == .text ? [] : .top)
                 }
                 
-                PostDetailCommentInputBar(text: $postDetailViewModel.commentInput, isFocused: $isCommentFieldFocused) {
+                PostDetailCommentInputBar(text: $postDetailViewModel.commentInput, isFocused: $isCommentFieldFocused, isEditingComment: postDetailViewModel.isEditingComment) {
                     if postDetailViewModel.isLoggedIn {
                         Task { await postDetailViewModel.submitComment() }
                     } else {
                         loginRequiredDescription = PostDetailStrings.commentRequiredDescription
                     }
                 }
-                .frame(height: 89)
+                .padding(.top, 16)
+                .padding(.bottom, 42)
+                .padding(.horizontal, 20)
+                .shadow(color: Color.black.opacity(0.05), radius: 20, y: -2)
             }
             
             // 찬반/A-B는 캐러셀 이미지 위에 GNB가 떠 있다가, 스크롤로 이미지를 지나치면
