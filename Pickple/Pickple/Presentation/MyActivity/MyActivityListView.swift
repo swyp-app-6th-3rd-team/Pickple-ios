@@ -6,6 +6,7 @@
 //
 //  나의 활동 세 탭이 각자 다른 아이템 타입(PostSummary/MyCommentActivity)을 쓰게 되면서,
 //  빈 상태 처리를 매번 복붙하지 않도록 아이템/행 뷰를 제네릭으로 받는다.
+// 1차 점검 완료 - 9월 13일
 
 import SwiftUI
 
@@ -34,7 +35,7 @@ struct MyActivityListView<Item: Identifiable, RowContent: View>: View {
 
                         }
                         .padding(.horizontal, 20)
-                        .padding(.vertical, 20)
+                        .padding(.vertical, 16)
                         .task {
                             if item.id == items.last?.id {
                                 onReachEnd(item)
