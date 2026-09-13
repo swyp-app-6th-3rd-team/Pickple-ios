@@ -6,6 +6,12 @@
 //
 import Foundation
 
+// 인기 게시글(GET /posts/popular) 전용 상품 사진. 찬반은 1개, A/B는 A·B 순서로 2개 온다.
+struct PostSummaryProduct {
+    let displayOrder: Int
+    let imageUrl: URL?
+}
+
 struct PostSummary: Identifiable {
     let id: Int                 // 서버 게시글 id (상세조회/투표 연동에 필요)
     let type: VoteType
@@ -23,6 +29,8 @@ struct PostSummary: Identifiable {
     let commentCount: Int
     let createdAt: Date
     let voteResult: PostVoteResult?   // 나의 활동 > 투표 탭 전용 임시 필드. 실제 API 없어서 Mock에서만 채움.
+    let products: [PostSummaryProduct]   // 인기 게시글(GET /posts/popular) 전용, 그 외엔 빈 배열
+    let commenterCount: Int?   // 인기 게시글 전용(댓글 남긴 서로 다른 사용자 수). 그 외엔 nil — 화면에서 commentCount로 대체
 
     //추후 API 스펙에 맞게 수정
 
@@ -39,7 +47,9 @@ struct PostSummary: Identifiable {
         voteCount: Int,
         commentCount: Int,
         createdAt: Date,
-        voteResult: PostVoteResult? = nil
+        voteResult: PostVoteResult? = nil,
+        products: [PostSummaryProduct] = [],
+        commenterCount: Int? = nil
     ) {
         self.id = id
         self.type = type
@@ -54,6 +64,8 @@ struct PostSummary: Identifiable {
         self.commentCount = commentCount
         self.createdAt = createdAt
         self.voteResult = voteResult
+        self.products = products
+        self.commenterCount = commenterCount
     }
 }
 
@@ -74,7 +86,9 @@ extension PostSummary {
         authorNickname: String? = nil,
         authorLevel: Int? = nil,
         authorProfileImageUrl: URL? = nil,
-        voteResult: PostVoteResult? = nil
+        voteResult: PostVoteResult? = nil,
+        products: [PostSummaryProduct] = [],
+        commenterCount: Int? = nil
     ) -> PostSummary {
         PostSummary(
             id: id,
@@ -89,7 +103,9 @@ extension PostSummary {
             voteCount: voteCount ?? 0,
             commentCount: commentCount,
             createdAt: createdAt,
-            voteResult: voteResult
+            voteResult: voteResult,
+            products: products,
+            commenterCount: commenterCount
         )
     }
 
@@ -109,7 +125,9 @@ extension PostSummary {
             voteCount: voteCount,
             commentCount: commentCount,
             createdAt: createdAt,
-            voteResult: voteResult
+            voteResult: voteResult,
+            products: products,
+            commenterCount: commenterCount
         )
     }
 }
