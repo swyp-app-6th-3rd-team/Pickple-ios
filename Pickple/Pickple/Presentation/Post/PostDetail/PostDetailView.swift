@@ -60,7 +60,7 @@ struct PostDetailView: View {
                         leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
                         center: .text(PostDetailStrings.navTitle),
                         trailing: .none,
-                        bar: false
+                        
                     )
                 }
                 
