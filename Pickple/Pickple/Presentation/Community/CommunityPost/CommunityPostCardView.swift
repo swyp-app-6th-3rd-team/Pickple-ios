@@ -19,7 +19,10 @@ struct CommunityPostCardView: View {
             // AsyncImage의 placeholder가 목업 사진을 채워서 없는 이미지가 있는 것처럼 보였다.
             // 유형 배지는 이미지 유무와 무관하게 항상 보여야 하므로 이미지만 조건부로 뺀다.
             if post.type == .text {
-                PostTypeBadge(type: post.type)
+                HStack {
+                    PostTypeBadge(type: post.type)
+                    Spacer()
+                }
             } else {
                 ZStack(alignment: .topLeading) {
                     AsyncImage(url: post.thumbnailUrl) { image in
