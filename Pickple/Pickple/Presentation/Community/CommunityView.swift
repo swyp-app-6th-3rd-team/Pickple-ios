@@ -116,7 +116,8 @@ struct CommunityView: View {
                     showsTypeSelection = false
                     writeFlowType = type
                 }
-                .padding(.horizontal, 20)
+                .presentationDetents([.height(224)])
+                .presentationDragIndicator(.visible)
             }
             .fullScreenCover(item: $writeFlowType) { _ in
                 NavigationStack {
@@ -132,7 +133,14 @@ struct CommunityView: View {
     }
 }
 
-#Preview {
+#Preview("게스트") {
     CommunityView(communityViewModel: CommunityViewModel())
         .environment(CommunityRouter())
+        .environment(\.isLoggedIn, false)
+}
+
+#Preview("로그인") {
+    CommunityView(communityViewModel: CommunityViewModel())
+        .environment(CommunityRouter())
+        .environment(\.isLoggedIn, true)
 }
