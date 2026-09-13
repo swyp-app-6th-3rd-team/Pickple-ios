@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/2/26.
 //
+// 1차 점검 완료 - 9월 12일
 
 import SwiftUI
 
@@ -17,15 +18,15 @@ struct MyActivityView: View {
     @State private var selectedValue = MyActivityStrings.latestSortOption
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             PickpleGNB(
                 leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
                 center: .text(MyActivityStrings.title),
-                trailing: .none
+                trailing: .none,
+                bar: false
             )
 
             PickpleTabBar(tabs: MyActivityStrings.tabs, selectedIndex: $selectedIndexTwo)
-                .padding(.horizontal, 20)
 
             HStack {
                 PickpleSortButton(isExpanded: .constant(false), selectedValue: $selectedValue, options: MyActivityStrings.sortOptions)
