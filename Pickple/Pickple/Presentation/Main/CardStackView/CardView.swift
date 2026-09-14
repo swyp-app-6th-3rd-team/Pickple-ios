@@ -59,6 +59,7 @@ struct CardView: View {
                             Text(data.concernText)
                                 .pickpleTypography(.body02)
                                 .foregroundStyle(Color.neutral10)
+                                .lineLimit(1)
                         }
                         .padding(.horizontal, 20)
                         .contentShape(Rectangle())
@@ -81,7 +82,7 @@ struct CardView: View {
                 }
 
                 }
-            .frame(width: 333, height: 455) //카드 뷰의 크기는 고정
+            .frame(width: 333, height: 526) //카드 뷰의 크기는 고정
 
                 .contentShape(Rectangle())
                 .onTapGesture(perform: onTapBody)

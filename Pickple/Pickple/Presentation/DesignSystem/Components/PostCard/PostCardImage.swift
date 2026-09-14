@@ -31,6 +31,7 @@ struct PostCardImage: View {
                 )
                 .frame(width: 24, height: 24)
                 .foregroundStyle(Color.black.opacity(0.4))
+                .blur(radius: 4)
 
                 switch type {
                 case .text:
