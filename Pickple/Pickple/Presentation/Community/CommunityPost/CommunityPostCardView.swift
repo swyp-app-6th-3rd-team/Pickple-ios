@@ -122,18 +122,19 @@ struct CommunityPostCardView: View {
     // 서버 원본 사진이 리사이징 없이 그대로 오는 경우(수천 px대)가 있어서, AsyncImage를
     // .frame(maxWidth: .infinity)로만 제약하면 실기기에서 레이아웃이 원본 크기에 끌려가
     // 셀 밖으로 삐져나오는 문제가 있었다(프리뷰의 작은 목업 사진으로는 재현 안 됐음).
-    // GeometryReader로 셀의 실제 크기를 숫자로 먼저 확정해 그 값으로 frame을 주면,
-    // 원본이 아무리 커도 이 숫자를 벗어날 수 없다.
+    // Color는 고유 크기 주장이 없어 부모가 주는 프레임을 그대로 따라간다 — 그 Color를
+    // 주인공으로 두고 사진은 .overlay로 얹으면, overlay 콘텐츠는 주인공 크기에 맞춰질 뿐
+    // 거꾸로 원본 크기가 바깥 레이아웃에 영향을 줄 수 없다.
     private func thumbnailImage(url: URL?) -> some View {
-        GeometryReader { geo in
-            AsyncImage(url: url) { image in
-                image.resizable().scaledToFill()
-            } placeholder: {
-                Image("McokMyPostPicture").resizable().scaledToFill()
+        Color.neutral10
+            .overlay {
+                AsyncImage(url: url) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    Image("McokMyPostPicture").resizable().scaledToFill()
+                }
             }
-            .frame(width: geo.size.width, height: geo.size.height)
             .clipped()
-        }
     }
 }
 
