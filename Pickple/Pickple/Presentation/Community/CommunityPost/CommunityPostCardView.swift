@@ -108,28 +108,32 @@ struct CommunityPostCardView: View {
     }
 
     // 사진이 없는 상품 자리는 목업 사진 대신 빈 배경으로 둔다 — 없는 사진이 있는 것처럼 보이면 안 된다(API_SPEC 기준).
-    // HStack은 자식을 자동으로 안 잘라내서, scaledToFill한 이미지가 자기 절반 폭을 넘어 옆칸을
-    // 침범해 보일 수 있다 — 절반씩 정확히 반반으로 보이도록 각 자리에서 직접 clipped() 한다.
     @ViewBuilder
     private func productThumbnail(url: URL?) -> some View {
-        Group {
-            if let url {
-                thumbnailImage(url: url)
-            } else {
-                Color.neutral10
-            }
+        if let url {
+            thumbnailImage(url: url)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+            Color.neutral10
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .clipped()
     }
 
+    // 서버 원본 사진이 리사이징 없이 그대로 오는 경우(수천 px대)가 있어서, AsyncImage를
+    // .frame(maxWidth: .infinity)로만 제약하면 실기기에서 레이아웃이 원본 크기에 끌려가
+    // 셀 밖으로 삐져나오는 문제가 있었다(프리뷰의 작은 목업 사진으로는 재현 안 됐음).
+    // GeometryReader로 셀의 실제 크기를 숫자로 먼저 확정해 그 값으로 frame을 주면,
+    // 원본이 아무리 커도 이 숫자를 벗어날 수 없다.
     private func thumbnailImage(url: URL?) -> some View {
-        AsyncImage(url: url) { image in
-            image.resizable().scaledToFill()
-        } placeholder: {
-            Image("McokMyPostPicture").resizable().scaledToFill()
+        GeometryReader { geo in
+            AsyncImage(url: url) { image in
+                image.resizable().scaledToFill()
+            } placeholder: {
+                Image("McokMyPostPicture").resizable().scaledToFill()
+            }
+            .frame(width: geo.size.width, height: geo.size.height)
+            .clipped()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

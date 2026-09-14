@@ -54,9 +54,12 @@ struct MockCommunityRepository: CommunityRepository {
                 voteCount: 12,
                 commentCount: 4,
                 createdAt: Date().addingTimeInterval(-60 * 60 * 3),
+                // 실기기에서만 재현되던 썸네일 레이아웃 문제(프리뷰-실행 불일치)가 원본 해상도
+                // 때문인지 검증하려고, 실제 서버가 내려주는 대용량 원본(4288x2848, 2MB대)
+                // URL을 그대로 넣어 프리뷰에서도 큰 사진으로 테스트한다(2026-09-15 임시 디버깅용).
                 products: [
-                    PostSummaryProduct(displayOrder: 1, imageUrl: URL(string: "https://picsum.photos/seed/earbudsA/300")),
-                    PostSummaryProduct(displayOrder: 2, imageUrl: URL(string: "https://picsum.photos/seed/earbudsB/300"))
+                    PostSummaryProduct(displayOrder: 1, imageUrl: URL(string: "https://d1rup0a1ke63t3.cloudfront.net/product-images/8/583e9cb3-0ecc-45bb-aac0-c12355f73087.jpg")),
+                    PostSummaryProduct(displayOrder: 2, imageUrl: URL(string: "https://d1rup0a1ke63t3.cloudfront.net/product-images/8/06296d5e-5acf-4c4f-8ec5-1f2c36ffb875.jpg"))
                 ]
             ),
             PostSummary(
