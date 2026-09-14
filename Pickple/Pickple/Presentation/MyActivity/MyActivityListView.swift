@@ -42,6 +42,7 @@ struct MyActivityListView<Item: Identifiable, RowContent: View>: View {
                             }
                         }
                         Divider()
+                            .foregroundStyle(Color.navy10)
                     }
                 }
             }

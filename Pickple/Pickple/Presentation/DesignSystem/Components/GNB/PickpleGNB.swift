@@ -64,6 +64,7 @@ struct PickpleGNB: View {
             .padding(.horizontal, 20)
             if bar {
                 Divider()
+                    .foregroundStyle(Color.navy10)
             }
         }
         .foregroundStyle(tint)

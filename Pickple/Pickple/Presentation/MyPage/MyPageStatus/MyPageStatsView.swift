@@ -31,6 +31,7 @@ struct MyPageStatsView: View {
 
             Divider()
                 .frame(height: 30)
+                .foregroundStyle(Color.navy10)
 
             VStack(spacing: 2) {
                 Text(MyPageStrings.commentCount)
@@ -45,6 +46,7 @@ struct MyPageStatsView: View {
 
             Divider()
                 .frame(height: 30)
+                .foregroundStyle(Color.navy10)
 
             VStack(spacing: 2) {
                 Text(MyPageStrings.postCount)

@@ -48,8 +48,9 @@ struct TopPickerRankingSection: View {
                     ForEach(rankings) { ranking in
                         PickerRankingRow(ranking: ranking)
                             .padding(.vertical, 16)
-                        
+
                         Divider()
+                            .foregroundStyle(Color.navy10)
                     }
                 }
             }
