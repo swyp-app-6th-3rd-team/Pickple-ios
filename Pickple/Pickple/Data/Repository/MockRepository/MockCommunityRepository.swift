@@ -53,7 +53,11 @@ struct MockCommunityRepository: CommunityRepository {
                 authorProfileImageUrl: nil,
                 voteCount: 12,
                 commentCount: 4,
-                createdAt: Date().addingTimeInterval(-60 * 60 * 3)
+                createdAt: Date().addingTimeInterval(-60 * 60 * 3),
+                products: [
+                    PostSummaryProduct(displayOrder: 1, imageUrl: URL(string: "https://picsum.photos/seed/earbudsA/300")),
+                    PostSummaryProduct(displayOrder: 2, imageUrl: URL(string: "https://picsum.photos/seed/earbudsB/300"))
+                ]
             ),
             PostSummary(
                 id: 4,

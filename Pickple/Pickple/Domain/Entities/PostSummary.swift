@@ -23,7 +23,7 @@ struct PostSummary: Identifiable {
     // 아예 안 내려줘서(API_SPEC 기준) nil — 나의 활동 카드(MyActivityVotedPostCardView,
     // MyActivityWrittenPostCardView)는 애초에 작성자 정보를 그리지 않는다.
     let authorNickname: String?
-    let authorLevel: Int?        // 뱃지 아이콘(PickpleLevelBadge1~5) 매핑용, 1~5 범위 가정 — 스펙 확정 후 조정
+    let authorLevel: Int?        // 뱃지 아이콘(PickpleLevelBadge1~5) 매핑용. GET /posts의 authorGradeLevel(2026-09-15 신규), 없으면 1
     let authorProfileImageUrl: URL?
     let voteCount: Int
     let commentCount: Int
@@ -66,6 +66,14 @@ struct PostSummary: Identifiable {
         self.voteResult = voteResult
         self.products = products
         self.commenterCount = commenterCount
+    }
+}
+
+extension PostSummary {
+    // A/B 카드 좌(A)/우(B) 사진 배치용. 해당 displayOrder의 상품이 없거나 사진이 없으면 nil —
+    // 호출부(CommunityPostCardView)가 nil을 "그 자리 비워두기"로 그린다(API_SPEC 기준, B로 대신 채우지 않음).
+    func productImageUrl(displayOrder: Int) -> URL? {
+        products.first(where: { $0.displayOrder == displayOrder })?.imageUrl
     }
 }
 

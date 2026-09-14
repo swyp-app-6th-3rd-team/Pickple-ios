@@ -25,15 +25,15 @@ struct CommunityPostCardView: View {
                 }
             } else {
                 ZStack(alignment: .topLeading) {
-                    AsyncImage(url: post.thumbnailUrl) { image in
-                        image.resizable().scaledToFill()
-                    } placeholder: {
-                        Image("McokMyPostPicture").resizable().scaledToFill()
+                    if post.type == .ab {
+                        abThumbnails
+                    } else {
+                        thumbnailImage(url: post.thumbnailUrl)
+                            .frame(height: 150)
+                            .frame(maxWidth: .infinity)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .clipped()
                     }
-                    .frame(height: 150)
-                    .frame(maxWidth: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .clipped()
 
                     PostTypeBadge(type: post.type)
                         .padding(10)
@@ -91,6 +91,45 @@ struct CommunityPostCardView: View {
             }
             }
         }
+    }
+
+    // A/B 카드 전용 — 기존 단일 사진 프레임(height 150, 전체 너비, radius 8) 하나를 반으로 나눠
+    // displayOrder 1(A)을 왼쪽, 2(B)를 오른쪽에 배치한다. 두 장이 아니라 한 프레임처럼 보여야 해서
+    // 틈 없이(spacing 0) 붙인다.
+    private var abThumbnails: some View {
+        HStack(spacing: 0) {
+            productThumbnail(url: post.productImageUrl(displayOrder: 1))
+            productThumbnail(url: post.productImageUrl(displayOrder: 2))
+        }
+        .frame(height: 150)
+        .frame(maxWidth: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipped()
+    }
+
+    // 사진이 없는 상품 자리는 목업 사진 대신 빈 배경으로 둔다 — 없는 사진이 있는 것처럼 보이면 안 된다(API_SPEC 기준).
+    // HStack은 자식을 자동으로 안 잘라내서, scaledToFill한 이미지가 자기 절반 폭을 넘어 옆칸을
+    // 침범해 보일 수 있다 — 절반씩 정확히 반반으로 보이도록 각 자리에서 직접 clipped() 한다.
+    @ViewBuilder
+    private func productThumbnail(url: URL?) -> some View {
+        Group {
+            if let url {
+                thumbnailImage(url: url)
+            } else {
+                Color.neutral10
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .clipped()
+    }
+
+    private func thumbnailImage(url: URL?) -> some View {
+        AsyncImage(url: url) { image in
+            image.resizable().scaledToFill()
+        } placeholder: {
+            Image("McokMyPostPicture").resizable().scaledToFill()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

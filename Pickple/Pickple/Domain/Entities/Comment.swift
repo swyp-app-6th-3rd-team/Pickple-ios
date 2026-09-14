@@ -9,7 +9,7 @@ import Foundation
 struct Comment: Identifiable {
     let id: Int                  // 서버 댓글 id (수정/삭제/원픽 연동에 필요)
     let authorNickname: String
-    let authorLevel: Int         // 서버가 댓글 작성자 등급은 안 줘서 1로 고정(다른 화면과 동일한 임시 처리)
+    let authorLevel: Int         // 뱃지 아이콘(PickpleLevelBadge1~5) 매핑용. 서버 authorGradeLevel(2026-09-15 신규), 없으면 1
     let authorProfileImageUrl: URL?
     let content: String
     let createdAt: Date
