@@ -90,6 +90,10 @@ struct CardView: View {
         }
 
     // AB 픽은 상품 사진 두 장을 상/하로 나눠서 보여준다. 찬반 픽은 대표 사진 한 장 그대로.
+    // TODO: CommunityPostCardView에서 겪은 것과 같은 위험 — productImage()의 AsyncImage엔
+    // 명시적 frame이 없고 카드 맨 위 .frame(width: 333, height: 526)에만 기대고 있다(특히
+    // .ab일 때 두 장을 세로로 쌓는 구조가 그때와 동일). 서버 원본이 리사이징 없이 큰 사진으로
+    // 오면 레이아웃이 끌려갈 수 있다. 재현되면 CommunityPostCardView처럼 Color+overlay로 감쌀 것.
     @ViewBuilder
     private var cardImage: some View {
         if data.type == .ab {
