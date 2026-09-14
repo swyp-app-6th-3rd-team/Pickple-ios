@@ -124,6 +124,7 @@ struct CommunitySearchView: View {
                                     }
                                 
                                 Divider()
+                                    .foregroundStyle(Color.navy10)
                             }
                         }
                     }

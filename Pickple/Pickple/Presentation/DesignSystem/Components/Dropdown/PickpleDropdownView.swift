@@ -41,6 +41,7 @@ struct PickpleDropdownView: View {
             // 펼쳐지는 리스트 영역
             if isExpanded {
                 Divider()
+                    .foregroundStyle(Color.navy10)
 
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(options, id: \.self) { option in
@@ -58,6 +59,7 @@ struct PickpleDropdownView: View {
 
                         if option != options.last {
                             Divider()
+                                .foregroundStyle(Color.navy10)
                         }
                     }
                     .padding(.horizontal, 16)

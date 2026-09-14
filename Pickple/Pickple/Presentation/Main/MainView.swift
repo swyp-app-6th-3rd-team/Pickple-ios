@@ -44,7 +44,8 @@ struct MainView: View {
                     }
                     
                     Divider()
-                    
+                        .foregroundStyle(Color.navy10)
+
                     CardStackView(
                         cardStackViewModel: cardStackViewModel,
                         onTapCard: { card in

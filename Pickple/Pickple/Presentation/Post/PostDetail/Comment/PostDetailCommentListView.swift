@@ -68,8 +68,9 @@ struct PostDetailCommentListView: View {
                     onPickTapped: { onPickTapped(comment) }
                 )
                 .padding(.vertical, 20)
-                
+
                 Divider()
+                    .foregroundStyle(Color.navy10)
             }
         }
     }

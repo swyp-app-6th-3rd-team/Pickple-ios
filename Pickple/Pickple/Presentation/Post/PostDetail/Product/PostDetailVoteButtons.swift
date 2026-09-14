@@ -205,7 +205,6 @@ private struct PostDetailVoteSegment: View {
     }
 
     private var backgroundColor: Color {
-        // neutral15 = #F1F1F5
         guard isVoted else { return Color.neutral15 }
         return isSelected ? Color.neutral100 : Color.neutral15
     }

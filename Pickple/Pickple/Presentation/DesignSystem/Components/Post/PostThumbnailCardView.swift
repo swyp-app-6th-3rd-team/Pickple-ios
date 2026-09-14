@@ -63,6 +63,7 @@ struct PostThumbnailCardView: View {
                             }
                             Divider()
                                 .frame(height: 12)
+                                .foregroundStyle(Color.navy10)
                         }
                     }
 

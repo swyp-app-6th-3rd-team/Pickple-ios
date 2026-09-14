@@ -92,6 +92,7 @@ struct MainRankingView: View {
                                         }
                                     }
                                 Divider()
+                                    .foregroundStyle(Color.navy10)
                             }
                         }
                         .padding(.vertical, 16)

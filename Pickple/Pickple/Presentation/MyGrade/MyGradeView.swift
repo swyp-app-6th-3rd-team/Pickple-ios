@@ -60,6 +60,7 @@ struct MyGradeView: View {
                         ForEach(gradeViewModel.grades) { grade in
                             MyGradeRow(grade: grade)
                             Divider()
+                                .foregroundStyle(Color.navy10)
 
                         }
                     }

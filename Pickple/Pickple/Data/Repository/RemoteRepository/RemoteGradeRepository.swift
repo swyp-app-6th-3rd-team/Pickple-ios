@@ -18,7 +18,7 @@ struct RemoteGradeRepository: GradeRepository {
     let apiClient: APIClientProtocol
 
     func fetchGrades() async throws -> [GradeCriteria] {
-        let endpoint = APIEndpoint(method: .get, path: "/grades", requiresAuth: false)
+        let endpoint = APIEndpoint(method: .get, path: "/grades", requiresAuth: true)
         let dtos: [GradeCriteriaDTO] = try await apiClient.request(endpoint)
         return dtos.map {
             GradeCriteria(level: $0.level, name: $0.name, requiredPoint: $0.requiredPoint, requiredVoteCount: $0.requiredVoteCount)

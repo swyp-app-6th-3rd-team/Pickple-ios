@@ -243,6 +243,7 @@ Apple 사용자는 저장된 provider refresh token으로 Apple 연결을 해제
 - `achievementRate` 정수(int32) 선택 — 다음 등급까지 달성률 0~100
 
 ### GET /grades — 전체 등급 기준 조회
+인증 필요(2026-09-14 실제 동작 확인 — 문서엔 없었으나 서버가 401 반환).
 LV.1~LV.5의 승급 필요 조건을 낮은 등급부터 돌려준다.
 응답 200 — OK: 배열 `level`, `name`, `requiredPoint`, `requiredVoteCount`
 

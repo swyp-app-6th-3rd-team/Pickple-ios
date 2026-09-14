@@ -77,6 +77,7 @@ struct CommunityPostCardView: View {
                             
                             Divider() //실제 디자인과 맞는지 확인 필요
                                 .frame(height: 12)
+                                .foregroundStyle(Color.navy10)
                         }
                         
                         Text(post.createdAt.relativeTimeDescription)
@@ -86,6 +87,7 @@ struct CommunityPostCardView: View {
                 }
                 .padding(.vertical, 16)
                 Divider()
+                    .foregroundStyle(Color.navy10)
             }
             }
         }
