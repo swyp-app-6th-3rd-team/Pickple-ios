@@ -98,18 +98,27 @@ struct PostDetailView: View {
                     // 찬반/A-B(GNB가 캐러셀 위에 떠 있는 타입)만 ScrollView 자체를 위로 확장한다.
                     .ignoresSafeArea(edges: post.type == .text ? [] : .top)
                 }
-                
-                PostDetailCommentInputBar(text: $postDetailViewModel.commentInput, isFocused: $isCommentFieldFocused, isEditingComment: postDetailViewModel.isEditingComment) {
-                    if postDetailViewModel.isLoggedIn {
-                        Task { await postDetailViewModel.submitComment() }
-                    } else {
-                        loginRequiredDescription = PostDetailStrings.commentRequiredDescription
+                               
+                VStack(spacing: 0) {
+                    
+                    VStack(spacing: 0) {
+                        Divider()
+                            .foregroundStyle(Color.navy10)
+                        
+                        PostDetailCommentInputBar(text: $postDetailViewModel.commentInput, isFocused: $isCommentFieldFocused, isEditingComment: postDetailViewModel.isEditingComment) {
+                            if postDetailViewModel.isLoggedIn {
+                                Task { await postDetailViewModel.submitComment() }
+                            } else {
+                                loginRequiredDescription = PostDetailStrings.commentRequiredDescription
+                            }
+                        }
+                        .padding(.top, 16)
+                        .padding(.horizontal, 20)
+                        .shadow(color: Color.black.opacity(0.05), radius: 20, y: -2)
+                        // 하단 여백은 VStack이 자동으로 넣어주는 safe area(홈 인디케이터) 인셋만 쓴다.
+                        // 예전엔 여기에 .padding(.bottom, 42)를 더 얹어서 이중으로 떠 보였다.
                     }
                 }
-                .padding(.top, 16)
-                .padding(.bottom, 42)
-                .padding(.horizontal, 20)
-                .shadow(color: Color.black.opacity(0.05), radius: 20, y: -2)
             }
             
             // 찬반/A-B는 캐러셀 이미지 위에 GNB가 떠 있다가, 스크롤로 이미지를 지나치면
