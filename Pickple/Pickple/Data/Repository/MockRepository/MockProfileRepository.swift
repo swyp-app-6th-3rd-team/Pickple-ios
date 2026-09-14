@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct MockProfileRepository: ProfileRepository {
     func fetchMyProfile() async throws -> UserProfile {
@@ -16,7 +17,11 @@ struct MockProfileRepository: ProfileRepository {
         NicknameAvailability(isAvailable: true, message: "사용 가능한 닉네임")
     }
 
-    func registerProfile(nickname: String) async throws {}
-    
-    func updateProfile(nickname: String) async throws {}
+    func uploadProfileImage(_ image: UIImage) async throws -> String {
+        "https://mock.pickple.app/defaults/profile-1.png"
+    }
+
+    func registerProfile(nickname: String, profileImageUrl: String?) async throws {}
+
+    func updateProfile(nickname: String, profileImageUrl: String?) async throws {}
 }

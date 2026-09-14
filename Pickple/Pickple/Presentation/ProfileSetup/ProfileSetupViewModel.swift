@@ -56,20 +56,24 @@ class ProfileSetupViewModel {
         }
     }
 
-    // 등록/수정 둘 다 "닉네임 유효성 확인 → 중복 검사 → 실제 저장 호출" 순서가 같고
-    // 마지막 저장 호출(register/update)만 달라서 공용으로 뺐다.
+    // 등록/수정 둘 다 "닉네임 유효성 확인 → 중복 검사 → (새 사진 있으면 업로드) → 실제 저장 호출"
+    // 순서가 같고 마지막 저장 호출(register/update)만 달라서 공용으로 뺐다.
     @MainActor
     func submitProfile() async -> Bool {
-        await save { try await self.profileRepository.registerProfile(nickname: self.nickname) }
+        await save { imageUrl in
+            try await self.profileRepository.registerProfile(nickname: self.nickname, profileImageUrl: imageUrl)
+        }
     }
 
     @MainActor
     func updateProfile() async -> Bool {
-        await save { try await self.profileRepository.updateProfile(nickname: self.nickname) }
+        await save { imageUrl in
+            try await self.profileRepository.updateProfile(nickname: self.nickname, profileImageUrl: imageUrl)
+        }
     }
 
     @MainActor
-    private func save(_ persist: () async throws -> Void) async -> Bool {
+    private func save(_ persist: (String?) async throws -> Void) async -> Bool {
         guard isNicknameValid() else { return false }
         isSubmitting = true
         defer { isSubmitting = false }
@@ -79,7 +83,12 @@ class ProfileSetupViewModel {
                 errorMessage = availability.message
                 return false
             }
-            try await persist()
+            // 새로 고른 사진이 없으면 nil을 보낸다 — 서버가 기존 사진을 그대로 유지한다(API_SPEC 기준).
+            var uploadedImageUrl: String?
+            if let selectedUIImage {
+                uploadedImageUrl = try await profileRepository.uploadProfileImage(selectedUIImage)
+            }
+            try await persist(uploadedImageUrl)
             return true
         } catch {
             errorMessage = error.localizedDescription
