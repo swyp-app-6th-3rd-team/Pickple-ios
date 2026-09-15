@@ -61,6 +61,7 @@ struct CommunityView: View {
                                     .foregroundStyle(Color.black)
                                     .padding(16)
                                     .background(Circle().foregroundStyle(Color.white))
+                                    .shadow(color: Color.black.opacity(0.12), radius: 6)
                             }
 
                             Button(action: {

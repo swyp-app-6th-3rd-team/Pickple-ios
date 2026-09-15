@@ -29,9 +29,13 @@ struct PickpleGNBSlotView: View {
                 .foregroundStyle(Color.black)
         case .image(let image):
             image
+                
+                
         case .button(let icon, let action):
             Button(action: action) {
                 icon
+                    .resizable()
+                    .frame(width: 24, height: 24)
             }
         }
     }

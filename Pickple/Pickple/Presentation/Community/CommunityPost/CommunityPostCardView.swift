@@ -25,15 +25,15 @@ struct CommunityPostCardView: View {
                 }
             } else {
                 ZStack(alignment: .topLeading) {
-                    AsyncImage(url: post.thumbnailUrl) { image in
-                        image.resizable().scaledToFill()
-                    } placeholder: {
-                        Image("McokMyPostPicture").resizable().scaledToFill()
+                    if post.type == .ab {
+                        abThumbnails
+                    } else {
+                        thumbnailImage(url: post.thumbnailUrl)
+                            .frame(height: 150)
+                            .frame(maxWidth: .infinity)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .clipped()
                     }
-                    .frame(height: 150)
-                    .frame(maxWidth: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .clipped()
 
                     PostTypeBadge(type: post.type)
                         .padding(10)
@@ -91,6 +91,50 @@ struct CommunityPostCardView: View {
             }
             }
         }
+    }
+
+    // A/B 카드 전용 — 기존 단일 사진 프레임(height 150, 전체 너비, radius 8) 하나를 반으로 나눠
+    // displayOrder 1(A)을 왼쪽, 2(B)를 오른쪽에 배치한다. 두 장이 아니라 한 프레임처럼 보여야 해서
+    // 틈 없이(spacing 0) 붙인다.
+    private var abThumbnails: some View {
+        HStack(spacing: 0) {
+            productThumbnail(url: post.productImageUrl(displayOrder: 1))
+            productThumbnail(url: post.productImageUrl(displayOrder: 2))
+        }
+        .frame(height: 150)
+        .frame(maxWidth: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipped()
+    }
+
+    // 사진이 없는 상품 자리는 목업 사진 대신 빈 배경으로 둔다 — 없는 사진이 있는 것처럼 보이면 안 된다(API_SPEC 기준).
+    @ViewBuilder
+    private func productThumbnail(url: URL?) -> some View {
+        if let url {
+            thumbnailImage(url: url)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+            Color.neutral10
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    // 서버 원본 사진이 리사이징 없이 그대로 오는 경우(수천 px대)가 있어서, AsyncImage를
+    // .frame(maxWidth: .infinity)로만 제약하면 실기기에서 레이아웃이 원본 크기에 끌려가
+    // 셀 밖으로 삐져나오는 문제가 있었다(프리뷰의 작은 목업 사진으로는 재현 안 됐음).
+    // Color는 고유 크기 주장이 없어 부모가 주는 프레임을 그대로 따라간다 — 그 Color를
+    // 주인공으로 두고 사진은 .overlay로 얹으면, overlay 콘텐츠는 주인공 크기에 맞춰질 뿐
+    // 거꾸로 원본 크기가 바깥 레이아웃에 영향을 줄 수 없다.
+    private func thumbnailImage(url: URL?) -> some View {
+        Color.neutral10
+            .overlay {
+                AsyncImage(url: url) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    Image("McokMyPostPicture").resizable().scaledToFill()
+                }
+            }
+            .clipped()
     }
 }
 

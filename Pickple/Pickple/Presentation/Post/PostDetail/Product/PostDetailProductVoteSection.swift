@@ -16,8 +16,8 @@ struct PostDetailProductVoteSection: View {
     let onVote: (PostDetailVoteSide) -> Void
 
     var body: some View {
-        VStack(spacing: 24) {
-            VStack(spacing: 20) {
+        VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: 20) {
                 if post.type == .ab {
                     PostDetailProductTabPicker(
                         firstLabel: postDetailViewModel.firstLabel,

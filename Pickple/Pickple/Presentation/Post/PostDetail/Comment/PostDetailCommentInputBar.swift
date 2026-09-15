@@ -13,44 +13,49 @@ struct PostDetailCommentInputBar: View {
     var isEditingComment: Bool
     let onSubmit: () -> Void
     
-
+    
     var body: some View {
         if !isEditingComment {
-            HStack {
-                TextField(
-                    "",
-                    text: $text,
-                    prompt: Text(PostDetailStrings.commentPlaceholder)
-                        .foregroundStyle(Color.neutral40),
-                    axis: .vertical
-                )
-                .focused(isFocused)
-                .pickpleTypography(.body01)
-                .foregroundStyle(Color.neutral100)
-                .padding(.leading, 16)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .foregroundStyle(Color.neutral5)
-                )
+ 
                 
-                
-                Spacer()
-                
-                ZStack {
-                    Circle()
-                        .frame(width: 40, height: 40)
-                        .foregroundStyle(Color.yellow60)
+                HStack(spacing: 0) {
+                    TextField(
+                        "",
+                        text: $text,
+                        prompt: Text(PostDetailStrings.commentPlaceholder)
+                            .foregroundStyle(Color.neutral40),
+                        axis: .vertical
+                    )
+                    .focused(isFocused)
+                    .pickpleTypography(.body01)
+                    .foregroundStyle(Color.neutral100)
+                    .padding(.leading, 16)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .foregroundStyle(Color.neutral5)
+                    )
                     
                     
-                    Image("PickpleSubmit")
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .foregroundStyle(Color.navy60)
+                    Spacer()
+                    
+                    ZStack {
+                        Circle()
+                            .frame(width: 40, height: 40)
+                            .foregroundStyle(Color.yellow60)
+                        
+                        
+                        Image("PickpleSubmit")
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(Color.navy60)
+                    }
+                    .onTapGesture(perform: onSubmit)
                 }
-                .onTapGesture(perform: onSubmit)
-            }
-
+            
+            .ignoresSafeArea(edges: .bottom)
+            
+            
         } else {
             VStack(alignment:.leading, spacing: 8) {
                 HStack(spacing: 4) {
@@ -64,43 +69,46 @@ struct PostDetailCommentInputBar: View {
                         .foregroundStyle(Color.neutral40)
                 }
                 .padding(.leading, 4)
-            HStack {
-                TextField(
-                    "",
-                    text: $text,
-                    prompt: Text(PostDetailStrings.commentPlaceholder)
-                        .foregroundStyle(Color.neutral40),
-                    axis: .vertical
-                )
-                .focused(isFocused)
-                .pickpleTypography(.body01)
-                .foregroundStyle(Color.neutral100)
-                .padding(.leading, 16)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .foregroundStyle(Color.neutral5)
-                )
-                
-                
-                Spacer()
-                
-                ZStack {
-                    Circle()
-                        .frame(width: 40, height: 40)
-                        .foregroundStyle(Color.yellow60)
+
                     
-                    
-                    Image("PickpleSubmit")
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .foregroundStyle(Color.navy60)
-                }
-                .onTapGesture(perform: onSubmit)
+                    HStack {
+                        TextField(
+                            "",
+                            text: $text,
+                            prompt: Text(PostDetailStrings.commentPlaceholder)
+                                .foregroundStyle(Color.neutral40),
+                            axis: .vertical
+                        )
+                        .focused(isFocused)
+                        .pickpleTypography(.body01)
+                        .foregroundStyle(Color.neutral100)
+                        .padding(.leading, 16)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .foregroundStyle(Color.neutral5)
+                        )
+                        
+                        
+                        Spacer()
+                        
+                        ZStack {
+                            Circle()
+                                .frame(width: 40, height: 40)
+                                .foregroundStyle(Color.yellow60)
+                            
+                            
+                            Image("PickpleSubmit")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(Color.navy60)
+                        }
+                        .onTapGesture(perform: onSubmit)
+                    }
+                
             }
         }
-        }
-
+        
     }
 }
 
@@ -108,7 +116,7 @@ struct PostDetailCommentInputBar: View {
     struct PreviewWrapper: View {
         @State private var text = ""
         @FocusState private var isFocused: Bool
-
+        
         var body: some View {
             PostDetailCommentInputBar(text: $text, isFocused: $isFocused, isEditingComment: false) {}
         }
@@ -120,7 +128,7 @@ struct PostDetailCommentInputBar: View {
     struct PreviewWrapper: View {
         @State private var text = "수정할 댓글 내용"
         @FocusState private var isFocused: Bool
-
+        
         var body: some View {
             PostDetailCommentInputBar(text: $text, isFocused: $isFocused, isEditingComment: true) {}
         }

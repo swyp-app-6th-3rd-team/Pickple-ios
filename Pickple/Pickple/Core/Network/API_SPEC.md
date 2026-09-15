@@ -5,7 +5,7 @@
 - OAS(Scalar, 인터랙티브 문서): https://dev-api.pickple.app/scalar
 - 원본(LLM용 마크다운): https://dev-api.pickple.app/llms.md
 - 버전: v1
-- 마지막 확인: 2026-09-13
+- 마지막 확인: 2026-09-15
 
 ## 공통 규약
 
@@ -21,20 +21,26 @@
 
 ## User — 닉네임 · 프로필
 
-### POST /users/profile — 프로필 등록
-회원가입 직후 닉네임과 프로필 이미지를 등록한다. 이미지를 주지 않으면 랜덤 기본 프로필이 채워진다.
+### POST /users/profile — 프로필 등록 (요청/응답 갱신, 2026-09-14 PR #179·#180)
+회원가입 직후 닉네임과 프로필 이미지를 등록한다.
 
 요청 본문:
-- `nickname` 문자열 필수 — 5자 이내의 한글·영문·숫자. 유일성은 등록 시점에 판정되므로 409로 실패할 수 있다
-- `profileImageUrl` 문자열 선택 — 주지 않으면 쓰던 이미지를 유지한다
+- `nickname` 문자열 필수 — 5자 이내의 한글·영문·숫자. 유일성은 등록 시점에 판정되므로 409로 실패할 수 있다. 사진만 바꾸는 요청이어도 현재 닉네임을 함께 보내야 한다
+- `profileImageUrl` 문자열 선택 — 생략·`null`·빈 문자열·공백은 "쓰던 이미지 유지"를 뜻한다(사진 삭제나 기본 이미지 초기화가 아니다). 현재 저장된 사진이 없을 때만 서버가 기본 이미지를 고른다. 값을 준다면 본인이 `POST /images?attachType=PROFILE`로 업로드한 1장짜리 이미지의 `accessUrl`과 대소문자까지 정확히 일치해야 한다 — 타인의 사진, `PRODUCT`·`COMMENT` 용도 사진, 업로드한 적 없는 임의 URL은 INVALID_REQUEST(400). 현재 저장된 URL을 그대로 다시 보내는 것은 허용된다. 기본 이미지로 명시적으로 되돌리려면 서버가 허용하는 기본 이미지 URL을 그대로 보내야 하며, 기본 이미지 후보를 조회하는 API는 없다
 
-응답 200 — OK:
+응답 201 — Created:
 - `userId` 정수(int64) 선택 — 사용자 식별자
 - `nickname` 문자열 선택 — 서비스 닉네임. 프로필 등록 전이면 null
-- `profileImageUrl` 문자열 선택 — 프로필 이미지. 등록 때 주지 않았으면 서비스가 고른 기본 이미지다
+- `profileImageUrl` 문자열 선택 — 값을 주지 않았고 기존 사진도 없으면 서버가 고른 기본 이미지
+
+닉네임 중복(409) 또는 이미지 검증 실패(INVALID_REQUEST 400)면 기존 프로필은 그대로 유지된다. 업로드 성공과 프로필 저장 성공을 구분해서 화면을 갱신할 것.
+
+> ⚠️ 응답 코드 정정: 이 문서에 이전엔 200으로 적혀 있었으나 실제로는 등록 201이다.
 
 ### PATCH /users/profile — 프로필 수정
-닉네임과 프로필 이미지를 바꾼다. 이미지를 주지 않으면 쓰던 이미지를 유지한다. 요청/응답은 POST와 동일.
+닉네임과 프로필 이미지를 바꾼다. 요청 본문·`profileImageUrl` 규칙은 POST와 동일. 응답 200 — OK, 필드는 POST와 동일.
+
+> F02 기본 이미지 서버 배포 완료(2026-09-14 23:41 KST 확인) — 최초 배포는 기본 이미지 CDN URL 403으로 중단됐으나, 기본 이미지 4개 객체를 Terraform으로 S3에 배치하고 CDN 응답(HTTPS 200·`Content-Type: image/png`·원본과 해시 일치)을 확인한 뒤 재배포가 성공했다(F01 PR #179·F02 PR #180 모두 배포 성공). 기본 이미지는 `defaults/profile-1.png`~`profile-4.png` 네 경로이며 현재는 넷 다 같은 PNG 한 장 — 화면은 `profileImageUrl`을 그대로 로드하면 되고 경로를 직접 조립하지 않는다. Flyway V17로 기존 회원의 옛 기본 URL 4개도 새 `FILE_PUBLIC_BASE_URL` 기준 주소로 자동 치환됨. **다만 서버 배포 검증과 iOS 앱 실동작 확인은 별개다 — 재진입·재로그인·캐시 초기화 후에도 서버 기본 이미지가 실제로 표시되는지 앱에서 직접 확인한 뒤에 로컬 대체 기본 이미지를 제거할 것.**
 
 ### GET /users/nickname/availability — 닉네임 사용 가능 여부
 입력 중 실시간으로 부른다. 형식 위반은 400. 여기서 사용 가능이 나와도 등록까지의 사이에 선점될 수 있어, 등록은 409로 실패할 수 있다.
@@ -79,7 +85,7 @@
 
 ## Comment — 댓글 · 원픽
 
-### GET /posts/{postId}/comments — 댓글 목록 조회
+### GET /posts/{postId}/comments — 댓글 목록 조회 (필드 보강, 2026-09-15 — 작성자 등급 추가)
 게스트도 부를 수 있다. 토큰을 함께 보내면 각 항목의 `mine`이 채워지고, 게스트면 항상 false다.
 
 파라미터:
@@ -92,6 +98,8 @@
   - `authorId` 정수(int64) 선택
   - `profileImageUrl` 문자열 선택
   - `nickname` 문자열 선택 — 아직 설정하지 않은 사용자는 소셜 이름을 대신 쓴다
+  - `authorGradeLevel` 정수(int32, 1~5, 2026-09-15 신규) — 의미는 GET /posts의 동일 필드와 같다(조회 시점 값, 하향 없음, 탈퇴해도 유지)
+  - `authorGradeName` 문자열(예: "LV.1", 2026-09-15 신규)
   - `createdAt` 문자열(date-time) 선택
   - `createdAgo` 문자열 선택 — 화면용 상대 시각
   - `content` 문자열 선택
@@ -132,18 +140,18 @@
 multipart `images`를 S3에 저장하고 부착에 쓸 `itemContainerId`를 반환한다.
 
 파라미터:
-- `attachType` (query) 문자열 필수 — 이미지 용도. `PRODUCT` | `COMMENT` (PROFILE 값 없음 — 프로필 이미지 업로드 용도는 아직 스펙에 없다)
+- `attachType` (query) 문자열 필수 — 이미지 용도. `PRODUCT` | `COMMENT` | `PROFILE`(2026-09-14 PR #179 신규 — 반드시 대문자 `PROFILE`. `Profile`·`profile`은 불가)
 
 요청 본문:
-- `images` 배열 필수 — 문자열(binary) 배열
+- `images` 배열 필수 — 문자열(binary) 배열. `PROFILE`은 JPEG·PNG만 가능하고 파일당 최대 5MB, 정확히 1장만 허용 — 여러 장을 보내면 400, 이미지 형식이 맞지 않으면 INVALID_IMAGE(400), 용량 초과는 IMAGE_TOO_LARGE(413)
 
 응답 201 — Created:
-- `itemContainerId` 정수(int64) 선택 — 게시글·댓글에 부착할 때 넘기는 컨테이너 식별자
+- `itemContainerId` 정수(int64) 선택 — 게시글·댓글에 부착할 때 넘기는 컨테이너 식별자. `PROFILE` 업로드 시에는 프로필 저장에 사용하지 않는다
 - `images` 배열 선택 — 이번 요청으로 올라간 파일들
   - `resourceId` 정수(int64) 선택
   - `originalFileName` 문자열 선택
   - `size` 정수(int64) 선택 — 파일당 5MB를 넘으면 413
-  - `accessUrl` 문자열 선택 — CloudFront 접근 URL. 만료되지 않는다
+  - `accessUrl` 문자열 선택 — CloudFront 접근 URL. 만료되지 않는다. `PROFILE`은 이 값을 대소문자 변경 없이 그대로 `POST`/`PATCH /users/profile`의 `profileImageUrl`에 넣는다
 
 ---
 
@@ -273,7 +281,7 @@ LV.1~LV.5의 승급 필요 조건을 낮은 등급부터 돌려준다.
 
 ## Post — 게시글 목록 · 상세
 
-### GET /posts — 게시글 목록 조회
+### GET /posts — 게시글 목록 조회 (필드 보강, 2026-09-15 — `products`/작성자 등급 추가)
 카테고리 필터와 정렬(최신순·인기순), 커서 기반 무한 스크롤. 게시글이 없으면 빈 배열이다.
 
 파라미터:
@@ -291,11 +299,14 @@ LV.1~LV.5의 승급 필요 조건을 낮은 등급부터 돌려준다.
   - `description` 문자열 선택
   - `commentCount` 정수(int64) 선택
   - `voteCount` 정수(int64) 선택 — 일반 게시글은 null
-  - `thumbnailUrl` 문자열 선택 — 대표 상품 사진 1장. 일반 게시글은 null
+  - `thumbnailUrl` 문자열 선택 — 대표 상품 사진 1장. A/B는 A 상품 사진, 찬반은 가장 처음 등록한 사진, 일반 게시글은 null. B 사진으로 대신 채우지 않는다
+  - `products` 배열 선택 (2026-09-15 신규) — `displayOrder`(1=A(왼쪽)·2=B(오른쪽), 찬반은 1 하나), `imageUrl`(문자열 선택 — 상품에 등록된 사진 중 가장 처음 것 한 장, 사진이 없으면 항목은 남고 `imageUrl: null`). A/B는 2개, 찬반은 1개, 일반 게시글은 `[]`. `sort=LATEST`/`POPULAR` 모두 동일 형식이며 `GET /posts/popular`(§ 아래)와는 별개 응답
   - `createdAt` 문자열(date-time) 선택
   - `authorId` 정수(int64) 선택
   - `authorNickname` 문자열 선택
-  - `authorRanking` 정수(int32) 선택 — 아직 산정되지 않았으면 null(최대 5분 지연)
+  - `authorRanking` 정수(int32) 선택 — 아직 산정되지 않았으면 null(최대 5분 지연). `authorGradeLevel`과는 다른 값이니 혼동 주의
+  - `authorGradeLevel` 정수(int32, 1~5, 2026-09-15 신규) — 조회 시점 저장값 그대로(작성 당시 고정 아님). 신규 가입자 기본값 1. 등급은 내려가지 않음(R-16). 탈퇴한 작성자도 등급은 유지(이름만 "알 수 없음")
+  - `authorGradeName` 문자열(예: "LV.1"~"LV.5", 2026-09-15 신규) — 서버가 주는 건 이 형식까지이며 한글 등급명·아이콘 URL은 없음. 아이콘은 레벨 번호로 클라이언트에서 매핑
 - `nextCursor` 문자열 선택
 - `hasNext` 불리언 선택
 
@@ -476,5 +487,4 @@ title을 nil로 보내 기존 값을 유지시킨다.
 
 ## 아직 이 문서에 없는 것 (구현 전 백엔드 팀에 확인 필요)
 
-- 프로필 이미지 업로드용 attachType(POST /images는 PRODUCT/COMMENT만 있음)
 - 신고/차단 관련 엔드포인트

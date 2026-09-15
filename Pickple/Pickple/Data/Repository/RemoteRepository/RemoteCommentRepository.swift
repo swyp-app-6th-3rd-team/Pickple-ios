@@ -12,6 +12,8 @@ struct CommentDTO: Decodable {
     let authorId: Int
     let profileImageUrl: String?
     let nickname: String?
+    // 2026-09-15 신규 — 없으면(구버전 응답 등) nil로 디코딩돼 toDomain에서 1로 폴백한다.
+    let authorGradeLevel: Int?
     let createdAt: Date
     let content: String
     let onePickCount: Int
@@ -64,14 +66,11 @@ struct RemoteCommentRepository: CommentRepository {
         try await apiClient.requestVoid(endpoint)
     }
 
-    // TODO: 댓글 작성자 등급(1~5)이 응답에 없어서 1로 고정 — 게시글 목록(RemoteCommunityRepository)과
-    // 같은 상황. 랭킹 화면(RemotePickerRankingRepository)은 2026-09-13에 gradeLevel이 추가돼서
-    // 해결됐지만, 여기는 아직 API에 필드가 없다.
     private static func toDomain(_ dto: CommentDTO) -> Comment {
         Comment(
             id: dto.id,
             authorNickname: dto.nickname ?? "",
-            authorLevel: 1,
+            authorLevel: dto.authorGradeLevel ?? 1,
             authorProfileImageUrl: dto.profileImageUrl.flatMap(URL.init(string:)),
             content: dto.content,
             createdAt: dto.createdAt,
