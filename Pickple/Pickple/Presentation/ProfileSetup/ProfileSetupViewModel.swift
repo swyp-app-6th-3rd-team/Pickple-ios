@@ -20,6 +20,9 @@ class ProfileSetupViewModel {
 
     let nicknameMaxLength = 5
     private let profileRepository: ProfileRepository
+    // 수정 화면 진입 시 loadCurrentProfile()로 불러온 원래 닉네임. save()에서 중복 확인을
+    // 건너뛸지 판단하는 기준으로만 쓴다(신규 등록 플로우에서는 nil로 남아 항상 검사한다).
+    private var originalNickname: String?
 
     init(profileRepository: ProfileRepository = MockProfileRepository()) {
         self.profileRepository = profileRepository
@@ -78,10 +81,15 @@ class ProfileSetupViewModel {
         isSubmitting = true
         defer { isSubmitting = false }
         do {
-            let availability = try await profileRepository.checkNicknameAvailability(nickname)
-            guard availability.isAvailable else {
-                errorMessage = availability.message
-                return false
+            // 닉네임을 안 바꿨으면 중복 확인을 건너뛴다 — GET /users/nickname/availability는 익명 조회라
+            // 서버가 "지금 이 닉네임의 주인이 나"라는 걸 몰라서, 안 바뀐 본인 닉네임도 "이미 사용 중"으로
+            // 판정해버린다. 그러면 사진만 바꾸는 수정조차 매번 중복 에러로 실패하던 문제가 있었다.
+            if nickname != originalNickname {
+                let availability = try await profileRepository.checkNicknameAvailability(nickname)
+                guard availability.isAvailable else {
+                    errorMessage = availability.message
+                    return false
+                }
             }
             // 새로 고른 사진이 없으면 nil을 보낸다 — 서버가 기존 사진을 그대로 유지한다(API_SPEC 기준).
             var uploadedImageUrl: String?
@@ -101,6 +109,7 @@ class ProfileSetupViewModel {
         do {
             let profile = try await profileRepository.fetchMyProfile()
             nickname = profile.nickname ?? ""
+            originalNickname = profile.nickname
             existingImageUrl = profile.profileImageUrl.flatMap(URL.init(string:))
         } catch {
             errorMessage = error.localizedDescription
