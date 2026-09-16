@@ -32,8 +32,12 @@ struct ProfileTextFieldView: View {
         .frame(maxWidth: .infinity) //반응형
         .focused($isFocused)
         .onChange(of: profileViewModel.nickname) { _, newValue in
-            profileViewModel.nickname = profileViewModel.filteredNickname(newValue)
-            profileViewModel.resetNicknameDuplicateState()
+            let filtered = profileViewModel.filteredNickname(newValue)
+            if filtered != newValue {
+                profileViewModel.nickname = filtered
+                return   // 필터링으로 값이 다시 바뀌면 이 onChange가 한 번 더 불려서 그때 확인한다.
+            }
+            profileViewModel.nicknameDidChange()
         }
     }
 }

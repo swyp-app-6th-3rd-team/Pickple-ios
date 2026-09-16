@@ -17,15 +17,24 @@ class ProfileSetupViewModel {
     var nickname: String = ""
     var isSubmitting = false
     var errorMessage: String?
-    // save()에서 서버 중복확인이 실패했을 때만 세팅한다. 닉네임을 다시 입력하면
-    // resetNicknameDuplicateState()로 리셋되어 재확인 전까지 화면에 남지 않는다.
+    // 닉네임을 입력할 때마다(nicknameDidChange) 서버 중복확인이 실패하면 세팅한다.
+    // 닉네임을 다시 입력하면 resetNicknameDuplicateState()로 리셋되어 재확인 전까지
+    // 화면에 남지 않는다.
     var isNicknameDuplicate = false
     var nicknameDuplicateMessage: String?
+    // 서버가 "사용 가능"이라고 확인해준 상태에만 true — 확인 버튼은 이 값을 보고 활성화된다.
+    var isNicknameAvailable = false
+    // 중복확인 요청이 아직 응답을 기다리는 중인지 — 텍스트필드에 "작성중" 상태를 보여주는 데 쓴다.
+    var isCheckingNickname = false
+    // onChange마다 바로 요청을 보내면 타이핑 중에 매 글자마다 서버를 두드리게 되므로,
+    // 이 시간만큼 입력이 멈추길 기다렸다가 확인한다. 테스트에서는 .zero로 낮춰서 바로 검증한다.
+    var nicknameCheckDebounce: Duration = .milliseconds(400)
+    private var nicknameCheckTask: Task<Void, Never>?
 
     let nicknameMaxLength = 5
     private let profileRepository: ProfileRepository
-    // 수정 화면 진입 시 loadCurrentProfile()로 불러온 원래 닉네임. save()에서 중복 확인을
-    // 건너뛸지 판단하는 기준으로만 쓴다(신규 등록 플로우에서는 nil로 남아 항상 검사한다).
+    // 수정 화면 진입 시 loadCurrentProfile()로 불러온 원래 닉네임. 중복 확인을 건너뛸지
+    // 판단하는 기준으로만 쓴다(신규 등록 플로우에서는 nil로 남아 항상 검사한다).
     private var originalNickname: String?
 
     init(profileRepository: ProfileRepository = MockProfileRepository()) {
@@ -48,11 +57,12 @@ class ProfileSetupViewModel {
         !nickname.isEmpty
     }
     
-    func textFieldState(_ isFocused: Bool) -> PickpleTextFieldStateType{
+    func textFieldState(_ isFocused: Bool) -> PickpleTextFieldStateType {
+        if isCheckingNickname { return .ing }
         if isNicknameDuplicate { return .error }
-        else if isFocused && self.nickname.isEmpty { return .select}
-        else if isFocused { return .success}
-        else { return ._default}
+        if isNicknameAvailable { return .success }
+        if isFocused && nickname.isEmpty { return .select }
+        return ._default
     }
 
     func nicknameCaption(_ state: PickpleTextFieldStateType) -> String {
@@ -67,6 +77,49 @@ class ProfileSetupViewModel {
     func resetNicknameDuplicateState() {
         isNicknameDuplicate = false
         nicknameDuplicateMessage = nil
+    }
+
+    // 텍스트필드가 바뀔 때마다(키 입력마다) 호출된다. 매번 바로 서버를 두드리지 않고
+    // nicknameCheckDebounce만큼 입력이 멈추길 기다린 뒤 중복확인을 실행하고, 그 사이에
+    // 또 바뀌면 이전 대기 중이던 확인은 취소한다.
+    @MainActor
+    func nicknameDidChange() {
+        resetNicknameDuplicateState()
+        isNicknameAvailable = false
+        nicknameCheckTask?.cancel()
+
+        guard isNicknameValid() else { return }
+
+        // 본인이 원래 쓰던 닉네임 그대로면 중복확인을 건너뛴다 — GET /users/nickname/availability는
+        // 익명 조회라 서버가 "지금 이 닉네임의 주인이 나"라는 걸 몰라서, 안 바뀐 본인 닉네임도
+        // "이미 사용 중"으로 판정해버린다.
+        if nickname == originalNickname {
+            isNicknameAvailable = true
+            return
+        }
+
+        nicknameCheckTask = Task { [weak self] in
+            guard let self else { return }
+            try? await Task.sleep(for: self.nicknameCheckDebounce)
+            guard !Task.isCancelled else { return }
+            await self.checkNicknameAvailability()
+        }
+    }
+
+    @MainActor
+    private func checkNicknameAvailability() async {
+        guard !Task.isCancelled else { return }
+        isCheckingNickname = true
+        defer { isCheckingNickname = false }
+        guard let availability = try? await profileRepository.checkNicknameAvailability(nickname) else { return }
+        guard !Task.isCancelled else { return }
+        print("[닉네임 중복확인] \"\(nickname)\" -> \(availability.isAvailable ? "사용 가능" : "중복") (message: \(availability.message))")
+        if availability.isAvailable {
+            isNicknameAvailable = true
+        } else {
+            isNicknameDuplicate = true
+            nicknameDuplicateMessage = availability.message
+        }
     }
 
     // 등록/수정 둘 다 "닉네임 유효성 확인 → 중복 검사 → (새 사진 있으면 업로드) → 실제 저장 호출"
