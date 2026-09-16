@@ -15,10 +15,6 @@ struct MyPageView: View {
     @State private var showsLoginRequired = false
     @State private var showsMyPostsLoginRequired = false
     @State private var showsInfoLoginRequired = false
-    @State private var isScrolledDown = false
-
-    private static let scrollCoordinateSpace = "myPageScroll"
-    private static let scrollDownThreshold: CGFloat = 20
 
     var body: some View {
         ZStack {
@@ -30,8 +26,6 @@ struct MyPageView: View {
             }
             ScrollView {
                     VStack(spacing: 0) {
-                        ScrollOffsetAnchor(coordinateSpaceName: Self.scrollCoordinateSpace)
-
                         MyPageProfileHeaderView(myPageViewModel: myPageViewModel, onLoginTapped: { showsLoginRequired = true })
 
                         MyPageStatusView(myPageViewModel: myPageViewModel)
@@ -97,10 +91,6 @@ struct MyPageView: View {
                     }
 
             }
-            .coordinateSpace(name: Self.scrollCoordinateSpace)
-            .onPreferenceChange(ScrollOffsetPreferenceKey.self) { minY in
-                isScrolledDown = minY < -Self.scrollDownThreshold
-            }
 
             if showsLoginRequired {
                 PickpleDialogOverlay {
@@ -150,8 +140,6 @@ struct MyPageView: View {
                 }
             }
         }
-        .toolbar(isScrolledDown ? .hidden : .visible, for: .tabBar)
-        .animation(.easeInOut(duration: 0.2), value: isScrolledDown)
         .task {
             await myPageViewModel.loadUserInfo()
             await myPageViewModel.loadMyPosts()

@@ -18,9 +18,6 @@ struct CommunityView: View {
     @State private var showsTypeSelection = false
     @State private var writeFlowType: VoteType?
     @State private var composePostViewModel = PostViewModel()
-    @State private var isScrolledDown = false
-
-    private static let scrollDownThreshold: CGFloat = 20
 
     var body: some View {
         ScrollViewReader { scrollProxy in
@@ -46,9 +43,6 @@ struct CommunityView: View {
                             }
                         }
                     )
-                    .onPreferenceChange(ScrollOffsetPreferenceKey.self) { minY in
-                        isScrolledDown = minY < -Self.scrollDownThreshold
-                    }
                 }
 
                 VStack {
@@ -107,8 +101,6 @@ struct CommunityView: View {
                     }
                 }
             }
-            .toolbar(isScrolledDown ? .hidden : .visible, for: .tabBar)
-            .animation(.easeInOut(duration: 0.2), value: isScrolledDown)
             .task {
                 await communityViewModel.loadPosts()
             }
