@@ -62,6 +62,14 @@ struct CardStackView: View {
     // swipeThreshold(스와이프 확정 거리)보다 훨씬 긴 rotationUnwindDistance를 기준으로 삼아서
     // 손을 떼는 시점(threshold 근처)에는 아직 다 안 펴진 상태로, 더 끝까지 끌어야 완전히 펴지게 완화했다.
     private func rotation(for index: Int, cardID: Int) -> Angle {
+        // 오른쪽에서 끌려들어오는 카드는 index로는 맨 뒤라 아래 switch로 판단이 안 되니 먼저 처리한다.
+        // 오른쪽 dismiss 회전 공식(width/divisor, ±maxDragRotationDegrees 클램프)의 부호를 반전해서,
+        // 화면 밖(먼 거리)일 땐 반대로 기울어져 있다가 중앙(0)에 가까워질수록 평평하게 펴지게 한다.
+        if cardID == pulledInCardID {
+            let width = (cardOffsets[cardID] ?? .zero).width
+            let dragDegrees = Double(width / dragRotationDivisor)
+            return .degrees(-min(max(dragDegrees, -maxDragRotationDegrees), maxDragRotationDegrees))
+        }
         switch index {
         case 0:
             let width = (cardOffsets[cardID] ?? .zero).width
