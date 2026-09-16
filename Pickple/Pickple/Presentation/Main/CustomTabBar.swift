@@ -32,34 +32,39 @@ struct CustomTabBar: View {
 
     var body: some View {
         if #available(iOS 26.0, *) {
-            // glassEffect()는 GlassEffectContainer 없이 단독으로 쓰면 반사/블렌딩 없이
-            // 대충 반투명 채우기 정도로만 나온다 — 애플 예시도 전부 컨테이너 안에서 쓴다.
-            // 그리고 유리 캡슐과 아이콘 콘텐츠를 같은 배경/전경 관계로 겹쳐두면 그 블렌딩이
-            // 아이콘까지 번져 보였다. 그래서 "유리로 보여야 하는 것"(바깥 캡슐)과
-            // "그 위에 얹는 콘텐츠"(아이콘 행)를 아예 다른 레이어(ZStack의 형제)로 완전히
-            // 분리한다 — 유리는 컨테이너 안에서만 존재하고, 아이콘 행은 유리 렌더링과
-            // 전혀 무관하게 그 위에 그려진다.
+            // 선택 표시 캡슐을 각 탭 버튼의 .background에 직접 중첩하면, 그 안에서는
+            // GlassEffectContainer/glassEffect가 아이콘과 뒤섞여 제대로 안 나온다.
+            // 그래서 버튼 안에는 위치/크기만 알려주는 투명한 matchedGeometryEffect
+            // "소스" 마커만 심어두고, 실제로 유리가 적용된 캡슐은 완전히 분리된 레이어
+            // (아이콘 행 밖, GlassEffectContainer 안)에서 그 소스의 프레임을 따라 움직이게
+            // 한다 — 이러면 유리 렌더링이 아이콘과 절대 겹치지 않는다.
             HStack(spacing: 0) {
                 ForEach(items, id: \.tag) { item in
                     tabButton(item)
+                        .frame(maxWidth: .infinity)
                         .background {
                             if selectedTab == item.tag {
-                                Capsule()
-                                    .fill(Color.neutral10)
-                                    .matchedGeometryEffect(id: "selectedTab", in: glassNamespace)
+                                Color.clear
+                                    .matchedGeometryEffect(id: "selectedTabGlass", in: glassNamespace, isSource: true)
                             }
                         }
-                        .frame(maxWidth: .infinity)
                 }
             }
             .padding(4)
-            // .background()는 이 뷰(아이콘 행)의 실제 크기에 맞춰 알아서 그려지므로, ZStack으로
-            // 직접 겹칠 때 생기는 크기 모호함(Capsule 자체엔 고유 크기가 없어서 무한히
-            // 커지려 함) 없이 딱 맞는 유리 캡슐 배경을 얻는다.
+            // .background로 붙여야 이 뷰(아이콘 행)의 실제 크기에 맞춰 바깥 유리 캡슐이
+            // 그려진다 — ZStack으로 직접 겹치면 Capsule 자체엔 고유 크기가 없어서
+            // 크기가 모호해진다. 안쪽 움직이는 캡슐은 matchedGeometryEffect가 크기/위치를
+            // 직접 지정해주므로 이 배경의 크기 제안과 무관하게 소스(선택된 버튼)를 따라간다.
             .background {
                 GlassEffectContainer {
-                    Capsule()
-                        .glassEffect(.regular, in: Capsule())
+                    ZStack {
+                        Capsule()
+                            .glassEffect(.regular, in: Capsule())
+
+                        Capsule()
+                            .glassEffect(.regular.tint(Color.neutral10), in: Capsule())
+                            .matchedGeometryEffect(id: "selectedTabGlass", in: glassNamespace, isSource: false)
+                    }
                 }
             }
             .animation(.easeInOut(duration: 0.2), value: selectedTab)
