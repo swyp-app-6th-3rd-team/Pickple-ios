@@ -83,14 +83,25 @@ struct CardStackView: View {
                     return
                 }
                 // 넘겼으면 그 방향으로 화면 밖까지 날려보내고,
-                // 애니메이션이 끝난 뒤(completion)에만 실제로 맨 뒤로 옮겨서
+                // 애니메이션이 끝난 뒤(completion)에만 실제로 데이터를 옮겨서
                 // 카드가 사라지는 것과 다음 카드가 앞으로 오는 게 자연스럽게 이어지게 함
                 let direction: CGFloat = value.translation.width > 0 ? 1 : -1
                 withAnimation(.easeOut(duration: 0.25)) {
                     dragOffset.width = direction * 600
                 } completion: {
-                    cardStackViewModel.moveTopCardToBack()
-                    dragOffset = .zero
+                    if direction > 0 {
+                        cardStackViewModel.moveTopCardToBack()
+                        dragOffset = .zero
+                    } else {
+                        // 왼쪽 스와이프는 "뒤로가기" — 방금 넘긴 카드가 아니라 그 이전에 보고 있던
+                        // 카드(맨 뒤에 있던 카드)를 다시 맨 앞으로 가져와서, 화면 오른쪽 밖에서
+                        // 스프링과 함께 슬라이드 인 시킨다.
+                        cardStackViewModel.moveBackCardToFront()
+                        dragOffset = CGSize(width: 600, height: 0)
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                            dragOffset = .zero
+                        }
+                    }
                 }
             }
     }

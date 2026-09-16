@@ -89,6 +89,14 @@ class CardStackViewModel {
         Task { await loadMoreIfNeeded(for: card.type) }
     }
 
+    // 왼쪽 스와이프(뒤로가기) 전용 — moveTopCardToBack()의 역순으로, 맨 뒤 카드(방금까지
+    // 순환에서 가장 오래전에 넘겼던, 즉 바로 직전에 보고 있던 카드)를 다시 맨 앞으로 가져온다.
+    func moveBackCardToFront() {
+        guard !voteCardData.isEmpty else { return }
+        let card = voteCardData.removeLast()
+        voteCardData.insert(card, at: 0)
+    }
+
     private func loadMoreIfNeeded(for type: VoteType) async {
         guard !isFetchingMore else { return }
         let hasNext = type == .forAgainst ? forAgainstHasNext : abHasNext
