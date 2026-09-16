@@ -29,6 +29,9 @@ struct CardStackView: View {
     // 손을 뗀 위치에 따라 달라지므로, duration을 고정하는 대신 이 속도(pt/s)로 고정해서 dismiss와
     // 뒤로가기 진입이 항상 같은 체감 속도로 움직이게 한다.
     private let flingVelocity: CGFloat = 600 / 0.25
+    // 뒤로가기 중 이전 카드를 끌어오는 속도 배수 — offscreenOffset(600pt)을 swipeThreshold
+    // 근처(약 200pt) 드래그만으로 다 끌어올 수 있게 잡은 값.
+    private let pullInDragMultiplier: CGFloat = 3
 
     var body: some View {
         ZStack {
@@ -107,8 +110,10 @@ struct CardStackView: View {
                 } else if let incomingID = cardStackViewModel.voteCardData.last?.id {
                     // 왼쪽으로 끄는 중 — "뒤로가기". 기존 카드는 그 자리에 그대로 두고, 이전 카드를
                     // 오른쪽 화면 밖(offscreenOffset)에서부터 손가락을 따라 끌고 들어오는 것처럼 보여준다.
+                    // 1:1로 추적하면 600pt를 다 끌어내려야 해서 화면 끝까지도 안 나오므로,
+                    // pullInDragMultiplier로 증폭해서 자연스러운 스와이프 거리 안에서 다 들어오게 한다.
                     pulledInCardID = incomingID
-                    let pulledIn = max(offscreenOffset + value.translation.width, 0)
+                    let pulledIn = max(offscreenOffset + value.translation.width * pullInDragMultiplier, 0)
                     cardOffsets[incomingID] = CGSize(width: pulledIn, height: 0)
                     cardOffsets[cardID] = .zero
                 }
