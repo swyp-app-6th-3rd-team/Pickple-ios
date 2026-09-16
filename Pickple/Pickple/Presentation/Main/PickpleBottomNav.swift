@@ -104,7 +104,6 @@ struct PickpleBottomNav: View {
             .tag(2)
         }
         .tint(Color.navy60)
-        .tabBarMinimizeBehavior(.onScrollDown)
         // 탭을 떠날 때 그 탭의 네비게이션 스택을 비워둔다 — 그래야 다른 탭에 갔다가 다시
         // 돌아왔을 때 마지막에 보던 상세 화면이 아니라 항상 목록(루트)부터 보인다.
         .onChange(of: selectedTab) { oldValue, _ in
