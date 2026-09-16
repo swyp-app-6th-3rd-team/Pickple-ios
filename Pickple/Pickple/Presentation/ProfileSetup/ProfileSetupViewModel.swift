@@ -17,6 +17,10 @@ class ProfileSetupViewModel {
     var nickname: String = ""
     var isSubmitting = false
     var errorMessage: String?
+    // save()에서 서버 중복확인이 실패했을 때만 세팅한다. 닉네임을 다시 입력하면
+    // resetNicknameDuplicateState()로 리셋되어 재확인 전까지 화면에 남지 않는다.
+    var isNicknameDuplicate = false
+    var nicknameDuplicateMessage: String?
 
     let nicknameMaxLength = 5
     private let profileRepository: ProfileRepository
@@ -45,18 +49,24 @@ class ProfileSetupViewModel {
     }
     
     func textFieldState(_ isFocused: Bool) -> PickpleTextFieldStateType{
-        if isFocused && self.nickname.isEmpty { return .select}
-        else if isFocused && isNicknameValid() { return .success}
-        else if isFocused && !isNicknameValid() { return .error}
+        if isNicknameDuplicate { return .error }
+        else if isFocused && self.nickname.isEmpty { return .select}
+        else if isFocused { return .success}
         else { return ._default}
     }
-    
+
     func nicknameCaption(_ state: PickpleTextFieldStateType) -> String {
         switch state {
-        case .error: return ProfileSetupStrings.error
+        case .error: return nicknameDuplicateMessage ?? ProfileSetupStrings.error
         case .success: return ProfileSetupStrings.success
         default: return ""
         }
+    }
+
+    // 닉네임을 다시 입력하기 시작하면 이전 중복확인 결과는 더 이상 유효하지 않으므로 지운다.
+    func resetNicknameDuplicateState() {
+        isNicknameDuplicate = false
+        nicknameDuplicateMessage = nil
     }
 
     // 등록/수정 둘 다 "닉네임 유효성 확인 → 중복 검사 → (새 사진 있으면 업로드) → 실제 저장 호출"
@@ -87,7 +97,8 @@ class ProfileSetupViewModel {
             if nickname != originalNickname {
                 let availability = try await profileRepository.checkNicknameAvailability(nickname)
                 guard availability.isAvailable else {
-                    errorMessage = availability.message
+                    isNicknameDuplicate = true
+                    nicknameDuplicateMessage = availability.message
                     return false
                 }
             }
