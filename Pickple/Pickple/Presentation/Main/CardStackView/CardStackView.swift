@@ -12,7 +12,12 @@ struct CardStackView: View {
     let cardStackViewModel: CardStackViewModel
     let onTapCard: (VoteCard) -> Void
     var onVoteCompleted: () -> Void = {}
-    @State private var dragOffset: CGSize = .zero
+    // 카드별 오프셋을 index가 아니라 card.id로 추적한다 — 왼쪽 스와이프(뒤로가기)로 데이터
+    // 순서가 바뀔 때, 방금 뒤로 밀려난 카드(예전엔 index 0 → 1)의 오프셋이 index 기준
+    // 조건부(.zero)라 즉시 리셋되면서 스택 안으로 순간이동하듯 "톡" 튀는 문제가 있었다.
+    // id로 추적하면 그 카드는 계속 자기 오프셋(-600)을 유지하다가, 아래에서 명시적으로
+    // 0으로 애니메이션해줘야만 움직인다.
+    @State private var cardOffsets: [Int: CGSize] = [:]
 
     private let swipeThreshold: CGFloat = 120
 
@@ -33,14 +38,14 @@ struct CardStackView: View {
                     onTapBody: { onTapCard(data) }
                 )
                     .zIndex(Double(-index))
-                    .rotationEffect(rotation(for: index))
-                    .offset(index == 0 ? dragOffset : .zero)
+                    .rotationEffect(rotation(for: index, cardID: data.id))
+                    .offset(cardOffsets[data.id] ?? .zero)
                     // count가 바뀔 때(카드 제거)만 애니메이션 걸어서, 맨 앞으로 올라온 카드의
                     // 기울기가 rotation(for: 0)의 .zero로 스프링 애니메이션과 함께 자동으로 펴지게 함.
                     .animation(.spring(response: 0.4, dampingFraction: 0.8), value: cardStackViewModel.voteCardData.count)
                     // 제스처는 카드마다 항상 붙이되, isTop이 아니면 내부에서 아무것도 안 하게 함
                     // (.gesture()에 조건부로 nil을 못 넘겨서 이렇게 우회).
-                    .gesture(dragGesture(isTop: index == 0))
+                    .gesture(dragGesture(isTop: index == 0, cardID: data.id))
             }
         }
     }
@@ -51,13 +56,16 @@ struct CardStackView: View {
     // 실시간으로 펴지게 해서, 카드가 넘어갈 때 각도가 툭 튀지 않고 자연스럽게 이어진다.
     // swipeThreshold(스와이프 확정 거리)보다 훨씬 긴 rotationUnwindDistance를 기준으로 삼아서
     // 손을 떼는 시점(threshold 근처)에는 아직 다 안 펴진 상태로, 더 끝까지 끌어야 완전히 펴지게 완화했다.
-    private func rotation(for index: Int) -> Angle {
+    private func rotation(for index: Int, cardID: Int) -> Angle {
         switch index {
         case 0:
-            let dragDegrees = Double(dragOffset.width / dragRotationDivisor)
+            let width = (cardOffsets[cardID] ?? .zero).width
+            let dragDegrees = Double(width / dragRotationDivisor)
             return .degrees(min(max(dragDegrees, -maxDragRotationDegrees), maxDragRotationDegrees))
         case 1:
-            let progress = min(abs(dragOffset.width) / rotationUnwindDistance, 1)
+            // 맨 앞 카드가 지금 얼마나 드래그됐는지에 맞춰 펴진다 — 앞 카드 id로 조회한다.
+            let topWidth = cardStackViewModel.voteCardData.first.map { (cardOffsets[$0.id] ?? .zero).width } ?? 0
+            let progress = min(abs(topWidth) / rotationUnwindDistance, 1)
             return .degrees(restingRotationDegrees * (1 - progress))
         default:
             return .degrees(restingRotationDegrees)
@@ -69,17 +77,17 @@ struct CardStackView: View {
     private let dragRotationDivisor: CGFloat = 20
     private let maxDragRotationDegrees: Double = 15
 
-    private func dragGesture(isTop: Bool) -> some Gesture {
+    private func dragGesture(isTop: Bool, cardID: Int) -> some Gesture {
         DragGesture()
             .onChanged { value in
                 guard isTop else { return }
-                dragOffset.width = value.translation.width   // 세로는 무시, 좌우로만 따라 움직임
+                cardOffsets[cardID] = CGSize(width: value.translation.width, height: 0)   // 세로는 무시, 좌우로만 따라 움직임
             }
             .onEnded { value in
                 guard isTop else { return }
                 // 임계값 못 넘으면 스프링으로 제자리 복귀
                 guard abs(value.translation.width) > swipeThreshold else {
-                    withAnimation(.spring()) { dragOffset = .zero }
+                    withAnimation(.spring()) { cardOffsets[cardID] = .zero }
                     return
                 }
                 // 넘겼으면 그 방향으로 화면 밖까지 날려보내고,
@@ -87,21 +95,24 @@ struct CardStackView: View {
                 // 카드가 사라지는 것과 다음 카드가 앞으로 오는 게 자연스럽게 이어지게 함
                 let direction: CGFloat = value.translation.width > 0 ? 1 : -1
                 withAnimation(.easeOut(duration: 0.25)) {
-                    dragOffset.width = direction * 600
+                    cardOffsets[cardID] = CGSize(width: direction * 600, height: 0)
                 } completion: {
                     if direction > 0 {
                         cardStackViewModel.moveTopCardToBack()
-                        dragOffset = .zero
+                        cardOffsets[cardID] = .zero
                     } else {
-                        // 왼쪽 스와이프는 "뒤로가기" — 방금 넘긴 카드가 아니라 그 이전에 보고 있던
-                        // 카드(맨 뒤에 있던 카드)를 다시 맨 앞으로 가져와서, 화면 오른쪽 밖에서
-                        // 슬라이드 인 시킨다. 오른쪽으로 날려보내는 애니메이션(0 → 600,
-                        // easeOut 0.25초)의 정확한 역방향이 되도록 같은 지속시간의 easeIn으로
-                        // 600 → 0을 되감는다.
+                        // 왼쪽 스와이프는 "뒤로가기" — 방금 넘긴 카드(cardID)가 아니라 그 이전에
+                        // 보고 있던 카드(맨 뒤에 있던 카드)를 다시 맨 앞으로 가져온다.
+                        guard let incomingID = cardStackViewModel.voteCardData.last?.id else { return }
                         cardStackViewModel.moveBackCardToFront()
-                        dragOffset = CGSize(width: 600, height: 0)
+                        // 들어오는 카드는 화면 오른쪽 밖(600)에서 시작.
+                        cardOffsets[incomingID] = CGSize(width: 600, height: 0)
+                        // 오른쪽으로 날려보내는 애니메이션(0 → 600, easeOut 0.25초)의 정확한
+                        // 역방향인 easeIn 0.25초로, 들어오는 카드(600 → 0)와 방금 밀려난 카드
+                        // (-600 → 0, 스택 안으로 복귀)를 동시에 되감는다.
                         withAnimation(.easeIn(duration: 0.25)) {
-                            dragOffset = .zero
+                            cardOffsets[incomingID] = .zero
+                            cardOffsets[cardID] = .zero
                         }
                     }
                 }
