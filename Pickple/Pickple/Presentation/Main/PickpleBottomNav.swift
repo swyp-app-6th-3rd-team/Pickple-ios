@@ -118,8 +118,11 @@ struct PickpleBottomNav: View {
             .tag(2)
         }
         .tint(Color.navy60)
-        // 우리가 직접 그린 CustomTabBar로 대체하므로 네이티브 탭바는 항상 숨긴다.
-        .toolbar(.hidden, for: .tabBar)
+        // 네이티브 탭바를 숨기는 .toolbar(.hidden, for: .tabBar)는 TabView 컨테이너
+        // 자체가 아니라 각 탭의 실제 콘텐츠 화면(MainView/CommunityView/MyPageView)에
+        // 걸어야 확실히 먹힌다 — PostDetailView 등 다른 화면에서도 그렇게 쓰고 있다.
+        // 여기 걸었을 땐 네이티브 탭바가 안 숨겨져서 커스텀 바와 같이 보이는 문제가 있었다.
+        //
         // 네이티브 탭바가 사라지면서 각 화면이 확보하던 하단 여백도 같이 없어지므로,
         // 콘텐츠가 항상 CustomTabBar 높이만큼 안전 영역을 갖도록 자리만 비워둔다
         // (실제로 보이는 바는 위 ZStack의 CustomTabBar가 그 위에 겹쳐서 그린다).

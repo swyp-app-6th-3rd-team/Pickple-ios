@@ -33,21 +33,19 @@ struct CustomTabBar: View {
     var body: some View {
         if #available(iOS 26.0, *) {
             GlassEffectContainer(spacing: 0) {
-                HStack(spacing: 4) {
+                HStack(spacing: -8) {
                     ForEach(items, id: \.tag) { item in
                         tabButton(item)
-                            // 선택된 탭에만 안쪽 캡슐을 얹는다 — 크기는 이 버튼 콘텐츠(아이콘+
-                            // 라벨) 자체에 padding만 더한 것이라, 라벨이 길든 짧든 자동으로 맞는다.
                             .background {
                                 if selectedTab == item.tag {
                                     Capsule()
-                                        .glassEffect(.regular.tint(Color.navy10), in: Capsule())
+                                        .glassEffect(.regular.tint(Color.neutral10), in: Capsule())
                                         .matchedGeometryEffect(id: "selectedTab", in: glassNamespace)
                                 }
                             }
                     }
                 }
-                .padding(6)
+                .padding(4)
             }
             .glassEffect(.regular, in: Capsule())
             .padding(.horizontal, 20)
@@ -77,24 +75,26 @@ struct CustomTabBar: View {
 
     private func tabButton(_ item: (title: String, icon: String, tag: Int)) -> some View {
         Button(action: { selectedTab = item.tag }) {
-            VStack(spacing: 2) {
+            VStack(spacing: 1) {
                 Image(item.icon)
-                    .renderingMode(selectedTab == item.tag ? .template : .original)
                     .resizable()
-                    .frame(width: 24, height: 24)
+                    .frame(width: 28, height: 28)
+                    .foregroundStyle(selectedTab == item.tag ? Color.black : Color.neutral30)
+                    .padding(.horizontal, 29)
                 Text(item.title)
                     .pickpleTypography(.caption)
+                    .foregroundStyle(selectedTab == item.tag ? Color.black : Color.neutral30)
             }
-            .foregroundStyle(selectedTab == item.tag ? Color.navy60 : Color.neutral40)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
+            
+            .padding(.horizontal, 10)
+            .padding(.top, 6)
+            .padding(.bottom, 7)
         }
     }
 }
 
 #Preview {
     VStack {
-        Spacer()
-        CustomTabBar(selectedTab: .constant(0))
+        CustomTabBar(selectedTab: .constant(1))
     }
 }

@@ -150,6 +150,8 @@ struct MyPageView: View {
                 }
             }
         }
+        // 커스텀 하단 바(CustomTabBar)로 대체했으니 네이티브 탭바는 이 화면에서 항상 숨긴다.
+        .toolbar(.hidden, for: .tabBar)
         .task {
             await myPageViewModel.loadUserInfo()
             await myPageViewModel.loadMyPosts()
