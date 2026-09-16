@@ -18,7 +18,6 @@ struct MainView: View {
     @State private var isScrolledDown = false
     var onRequestCommunityTab: (() -> Void)? = nil
 
-    private static let scrollCoordinateSpace = "mainScroll"
     private static let scrollDownThreshold: CGFloat = 20
 
     init(
@@ -40,8 +39,6 @@ struct MainView: View {
             
             ScrollView {
                 VStack(spacing: 0) {
-                    ScrollOffsetAnchor(coordinateSpaceName: Self.scrollCoordinateSpace)
-
                     VStack {
                         MainTitle(isOn: mainViewModel.isABSelected)
                     }
@@ -96,9 +93,10 @@ struct MainView: View {
 
                 }
             }
-            .coordinateSpace(name: Self.scrollCoordinateSpace)
-            .onPreferenceChange(ScrollOffsetPreferenceKey.self) { minY in
-                isScrolledDown = minY < -Self.scrollDownThreshold
+            .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                geometry.contentOffset.y
+            } action: { _, newValue in
+                isScrolledDown = newValue > Self.scrollDownThreshold
             }
 
             if cardStackViewModel.showsLoginRequired {

@@ -25,7 +25,6 @@ struct PostWriteFlowView: View {
 
     private let categoryOptions = PostViewStrings.categoryOptions
 
-    private static let scrollCoordinateSpace = "postWriteScroll"
     private static let topAnchor = "postWriteTop"
     private static let scrollDownThreshold: CGFloat = 40
 
@@ -66,9 +65,10 @@ struct PostWriteFlowView: View {
                         .padding(.top, 28)
                         .zIndex(isCategoryExpanded ? 1 : 0)
                     }
-                    .coordinateSpace(name: Self.scrollCoordinateSpace)
-                    .onPreferenceChange(ScrollOffsetPreferenceKey.self) { minY in
-                        isScrolledDown = minY < -Self.scrollDownThreshold
+                    .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                        geometry.contentOffset.y
+                    } action: { _, newValue in
+                        isScrolledDown = newValue > Self.scrollDownThreshold
                     }
                     .overlay(alignment: .bottomTrailing) {
                         if isScrolledDown {
@@ -106,8 +106,11 @@ struct PostWriteFlowView: View {
         .toolbar(.hidden, for: .tabBar)
     }
 
+    // ScrollViewReader가 최상단으로 스크롤할 때 목표로 삼는 자리 표시자 — 실제 오프셋
+    // 측정은 onScrollGeometryChange가 하므로 이 마커는 id만 있으면 된다.
     private var topAnchorMarker: some View {
-        ScrollOffsetAnchor(coordinateSpaceName: Self.scrollCoordinateSpace)
+        Color.clear
+            .frame(height: 0)
             .id(Self.topAnchor)
     }
 

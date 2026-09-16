@@ -5,7 +5,8 @@ iOS 클라이언트는 1인 개발. 서버·DB는 별도 백엔드 팀이 담당
 
 ## 스택
 
-- Swift 6, iOS 17.0+ / SwiftUI 전용 (UIKit은 불가피할 때만, 사유를 주석으로)
+- Swift 6, iOS 18.0+ / SwiftUI 전용 (UIKit은 불가피할 때만, 사유를 주석으로)
+  - 배포 타겟을 17.0 → 18.0으로 올림(2026-09-16). 지원 기기 범위는 17.0과 동일(iPhone XS/XR부터) — `.onScrollGeometryChange` 등 iOS 18 API를 가용성 분기 없이 쓰기 위한 결정
 - `@Observable` 기반 MVVM. 뷰에 비즈니스 로직을 두지 않는다
 - 비동기는 **async/await만**. Combine 신규 사용 금지
 - 네비게이션은 `NavigationStack` + `NavigationPath`. `NavigationView` 금지

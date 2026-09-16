@@ -19,7 +19,9 @@ struct CommunityPostListSection: View {
         } else {
             ScrollView {
                 LazyVStack(spacing: 20) {
-                    ScrollOffsetAnchor(coordinateSpaceName: CommunityViewModel.scrollCoordinateSpace)
+                    // ScrollViewReader가 최상단으로 스크롤할 때 목표로 삼는 자리 표시자.
+                    Color.clear
+                        .frame(height: 0)
                         .id(CommunityViewModel.scrollTopAnchor)
 
                     ForEach(communityViewModel.displayedPosts) { post in
@@ -36,7 +38,11 @@ struct CommunityPostListSection: View {
                     }
                 }
             }
-            .coordinateSpace(name: CommunityViewModel.scrollCoordinateSpace)
+            .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                geometry.contentOffset.y
+            } action: { _, newValue in
+                communityViewModel.isScrolledDown = newValue > CommunityViewModel.scrollDownThreshold
+            }
         }
     }
 }

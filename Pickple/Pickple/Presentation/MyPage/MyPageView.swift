@@ -17,7 +17,6 @@ struct MyPageView: View {
     @State private var showsInfoLoginRequired = false
     @State private var isScrolledDown = false
 
-    private static let scrollCoordinateSpace = "myPageScroll"
     private static let scrollDownThreshold: CGFloat = 20
 
     var body: some View {
@@ -30,8 +29,6 @@ struct MyPageView: View {
             }
             ScrollView {
                     VStack(spacing: 0) {
-                        ScrollOffsetAnchor(coordinateSpaceName: Self.scrollCoordinateSpace)
-
                         MyPageProfileHeaderView(myPageViewModel: myPageViewModel, onLoginTapped: { showsLoginRequired = true })
 
                         MyPageStatusView(myPageViewModel: myPageViewModel)
@@ -97,9 +94,10 @@ struct MyPageView: View {
                     }
 
             }
-            .coordinateSpace(name: Self.scrollCoordinateSpace)
-            .onPreferenceChange(ScrollOffsetPreferenceKey.self) { minY in
-                isScrolledDown = minY < -Self.scrollDownThreshold
+            .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                geometry.contentOffset.y
+            } action: { _, newValue in
+                isScrolledDown = newValue > Self.scrollDownThreshold
             }
 
             if showsLoginRequired {
