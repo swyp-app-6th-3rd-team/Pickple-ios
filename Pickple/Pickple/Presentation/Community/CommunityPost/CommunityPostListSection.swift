@@ -19,8 +19,7 @@ struct CommunityPostListSection: View {
         } else {
             ScrollView {
                 LazyVStack(spacing: 20) {
-                    Color.clear
-                        .frame(height: 0)
+                    ScrollOffsetAnchor(coordinateSpaceName: CommunityViewModel.scrollCoordinateSpace)
                         .id(CommunityViewModel.scrollTopAnchor)
 
                     ForEach(communityViewModel.displayedPosts) { post in
@@ -37,6 +36,7 @@ struct CommunityPostListSection: View {
                     }
                 }
             }
+            .coordinateSpace(name: CommunityViewModel.scrollCoordinateSpace)
         }
     }
 }

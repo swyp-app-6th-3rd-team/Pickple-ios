@@ -15,7 +15,11 @@ struct MainView: View {
     @Environment(\.appRequestLogin) private var appRequestLogin
     @State private var isMissionExpanded = false
     @State private var showsBadgeLoginRequired = false
+    @State private var isScrolledDown = false
     var onRequestCommunityTab: (() -> Void)? = nil
+
+    private static let scrollCoordinateSpace = "mainScroll"
+    private static let scrollDownThreshold: CGFloat = 20
     
     init(
         mainViewModel: MainViewModel = MainViewModel(),
@@ -36,6 +40,8 @@ struct MainView: View {
             
             ScrollView {
                 VStack(spacing: 0) {
+                    ScrollOffsetAnchor(coordinateSpaceName: Self.scrollCoordinateSpace)
+
                     VStack {
                         MainTitle(isOn: mainViewModel.isABSelected)
                     }
@@ -79,7 +85,6 @@ struct MainView: View {
                         }
                     )
                     .padding(.top, 50) //미션 + 핫투표 간격
-                    .padding(.horizontal, 20)
                     
                     TopPickerRankingSection(
                         rankings: mainViewModel.topRankings,
@@ -88,10 +93,14 @@ struct MainView: View {
                     .padding(.top, 50) //핫투표 + 랭킹 간격
                     .padding(.horizontal, 20)
 
-                    
+
                 }
             }
-            
+            .coordinateSpace(name: Self.scrollCoordinateSpace)
+            .onPreferenceChange(ScrollOffsetPreferenceKey.self) { minY in
+                isScrolledDown = minY < -Self.scrollDownThreshold
+            }
+
             if cardStackViewModel.showsLoginRequired {
                 PickpleDialogOverlay {
                     PickpleConfirmDialog(
@@ -124,6 +133,8 @@ struct MainView: View {
                 }
             }
         }
+        .toolbar(isScrolledDown ? .hidden : .visible, for: .tabBar)
+        .animation(.easeInOut(duration: 0.2), value: isScrolledDown)
         // .task는 이 화면이 처음 생성될 때 딱 한 번만 실행된다 — 게시글 상세 등 다른 화면에서
         // 투표하고 홈으로 돌아와도 카드스택은 그 변화를 몰라 예전(미투표) 상태 그대로 남는
         // 문제가 있었다. .onAppear로 바꿔서 홈 탭에 다시 보일 때마다 새로 불러온다.
