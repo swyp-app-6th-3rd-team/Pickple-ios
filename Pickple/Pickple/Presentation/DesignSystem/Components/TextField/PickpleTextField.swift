@@ -34,7 +34,7 @@ enum PickpleTextFieldType {
     }
 }
 
-enum PickpleTextFieldStateType {
+enum PickpleTextFieldStateType: Equatable {
     case _default
     case ing
     case complete
@@ -48,7 +48,7 @@ enum PickpleTextFieldStateType {
         case ._default: return Color.navy10
         case .ing: return Color.black
         case .complete: return Color.navy10
-        case .error: return Color.black
+        case .error: return Color.red60
         case .success: return Color.black
         case .select: return Color.black
         }

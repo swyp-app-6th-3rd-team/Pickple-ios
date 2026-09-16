@@ -33,7 +33,7 @@ struct ProfileTextFieldView: View {
         .focused($isFocused)
         .onChange(of: profileViewModel.nickname) { _, newValue in
             profileViewModel.nickname = profileViewModel.filteredNickname(newValue)
-            
+            profileViewModel.resetNicknameDuplicateState()
         }
     }
 }
