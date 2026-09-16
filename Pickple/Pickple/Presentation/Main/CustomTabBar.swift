@@ -106,10 +106,27 @@ struct CustomTabBar: View {
 
 private struct PreviewWrapper: View {
     @State private var selectedTab = 1
+    @State private var nativeSelectedTab = 1
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
+            Text("네이티브 TabView (비교용)")
+                .pickpleTypography(.caption)
+                .padding(.top, 20)
+
+            // 비교용 — 실제 앱에서는 안 쓰고(커스텀 바로 대체) 프리뷰에서 룩만 맞대보는 용도.
+            TabView(selection: $nativeSelectedTab) {
+                Color.neutral5.tabItem { Image("PickpleHome"); Text(MainStrings.tabHome) }.tag(0)
+                Color.neutral5.tabItem { Image("PickpleMessage"); Text(MainStrings.tabCommunity) }.tag(1)
+                Color.neutral5.tabItem { Image("PickpleUser"); Text(MainStrings.tabMyPage) }.tag(2)
+            }
+            .frame(height: 140)
+
             Spacer()
+
+            Text("커스텀 탭바")
+                .pickpleTypography(.caption)
+
             CustomTabBar(selectedTab: $selectedTab)
         }
     }
