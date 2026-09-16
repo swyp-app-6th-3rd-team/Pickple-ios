@@ -22,6 +22,11 @@ struct CardStackView: View {
     // 식으로 보여준다. 그 카드는 배열상 맨 뒤(zIndex가 가장 낮음)라 그냥 두면 다른 카드들에
     // 가려지므로, 끌려오는 동안만 zIndex를 맨 위로 올려서 다른 카드를 덮으며 들어오게 한다.
     @State private var pulledInCardID: Int? = nil
+    // dismiss/뒤로가기 애니메이션이 끝나 실제 데이터가 옮겨지기 전까지 새 제스처를 막는다.
+    // 이게 없으면 빠르게 연속으로 넘길 때 이전 애니메이션의 completion이 늦게 실행되면서
+    // moveTopCardToBack()/moveBackCardToFront()가 이중으로 불려 카드가 한 번에 두 장씩
+    // 넘어가거나, cardOffsets가 꼬여서 카드가 화면 밖에 멈춘 채 반응을 안 하는 문제가 있었다.
+    @State private var isAnimating = false
 
     private let swipeThreshold: CGFloat = 120
     private let offscreenOffset: CGFloat = 600
@@ -102,7 +107,7 @@ struct CardStackView: View {
     private func dragGesture(isTop: Bool, cardID: Int) -> some Gesture {
         DragGesture()
             .onChanged { value in
-                guard isTop else { return }
+                guard isTop, !isAnimating else { return }
                 if value.translation.width >= 0 {
                     // 오른쪽으로 끄는 중 — 기존 카드가 손가락을 그대로 따라간다(틴더 스타일 dismiss).
                     pulledInCardID = nil
@@ -119,7 +124,7 @@ struct CardStackView: View {
                 }
             }
             .onEnded { value in
-                guard isTop else { return }
+                guard isTop, !isAnimating else { return }
                 let incomingID = cardStackViewModel.voteCardData.last?.id
 
                 // 임계값 못 넘으면 스프링으로 제자리 복귀 (끌려오던 이전 카드는 다시 화면 밖으로).
@@ -134,6 +139,7 @@ struct CardStackView: View {
                     return
                 }
 
+                isAnimating = true
                 let direction: CGFloat = value.translation.width > 0 ? 1 : -1
                 if direction > 0 {
                     // 오른쪽 스와이프 — 기존 카드를 화면 밖까지 마저 날려보내고, 끝난 뒤에만
@@ -146,12 +152,16 @@ struct CardStackView: View {
                     } completion: {
                         cardStackViewModel.moveTopCardToBack()
                         cardOffsets[cardID] = .zero
+                        isAnimating = false
                     }
                 } else {
                     // 왼쪽 스와이프(뒤로가기) — 이미 손가락을 따라 오른쪽에서 끌려들어오고 있던
                     // 이전 카드를 마저 중앙까지 끌어온다. 오른쪽 dismiss와 똑같이 flingVelocity
                     // 기준으로 duration을 계산해서, 남은 거리와 무관하게 체감 속도가 같게 한다.
-                    guard let incomingID else { return }
+                    guard let incomingID else {
+                        isAnimating = false
+                        return
+                    }
                     let remaining = (cardOffsets[incomingID] ?? .zero).width
                     withAnimation(.easeIn(duration: remaining / flingVelocity)) {
                         cardOffsets[incomingID] = .zero
@@ -159,6 +169,7 @@ struct CardStackView: View {
                         cardStackViewModel.moveBackCardToFront()
                         pulledInCardID = nil
                         cardOffsets[cardID] = .zero
+                        isAnimating = false
                     }
                 }
             }
