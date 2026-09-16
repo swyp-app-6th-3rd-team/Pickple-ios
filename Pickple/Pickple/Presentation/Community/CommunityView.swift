@@ -18,6 +18,9 @@ struct CommunityView: View {
     @State private var showsTypeSelection = false
     @State private var writeFlowType: VoteType?
     @State private var composePostViewModel = PostViewModel()
+    @State private var isScrolledDown = false
+
+    private static let scrollDownThreshold: CGFloat = 20
 
     var body: some View {
         ScrollViewReader { scrollProxy in
@@ -43,6 +46,9 @@ struct CommunityView: View {
                             }
                         }
                     )
+                    .onPreferenceChange(ScrollOffsetPreferenceKey.self) { minY in
+                        isScrolledDown = minY < -Self.scrollDownThreshold
+                    }
                 }
 
                 VStack {
@@ -50,18 +56,21 @@ struct CommunityView: View {
                     HStack {
                         Spacer()
                         VStack(spacing: 8) {
-                            Button(action: {
-                                withAnimation {
-                                    scrollProxy.scrollTo(CommunityViewModel.scrollTopAnchor, anchor: .top)
+                            if isScrolledDown {
+                                Button(action: {
+                                    withAnimation {
+                                        scrollProxy.scrollTo(CommunityViewModel.scrollTopAnchor, anchor: .top)
+                                    }
+                                }) {
+                                    Image("PickpleArrowUp")
+                                        .resizable()
+                                        .frame(width: 24, height: 24)
+                                        .foregroundStyle(Color.black)
+                                        .padding(16)
+                                        .background(Circle().foregroundStyle(Color.white))
+                                        .shadow(color: Color.black.opacity(0.12), radius: 6)
                                 }
-                            }) {
-                                Image("PickpleArrowUp")
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                                    .foregroundStyle(Color.black)
-                                    .padding(16)
-                                    .background(Circle().foregroundStyle(Color.white))
-                                    .shadow(color: Color.black.opacity(0.12), radius: 6)
+                                .transition(.opacity.combined(with: .scale))
                             }
 
                             Button(action: {
@@ -80,6 +89,7 @@ struct CommunityView: View {
                                     .background(Circle().foregroundStyle(Color.black))
                             }
                         }
+                        .animation(.easeInOut(duration: 0.2), value: isScrolledDown)
                         .padding(.trailing, 20)
                         .padding(.bottom, 20)
                     }
