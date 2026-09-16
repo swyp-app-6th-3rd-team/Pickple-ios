@@ -63,12 +63,14 @@ struct CardStackView: View {
     // 손을 떼는 시점(threshold 근처)에는 아직 다 안 펴진 상태로, 더 끝까지 끌어야 완전히 펴지게 완화했다.
     private func rotation(for index: Int, cardID: Int) -> Angle {
         // 오른쪽에서 끌려들어오는 카드는 index로는 맨 뒤라 아래 switch로 판단이 안 되니 먼저 처리한다.
-        // 오른쪽 dismiss 회전 공식(width/divisor, ±maxDragRotationDegrees 클램프)의 부호를 반전해서,
-        // 화면 밖(먼 거리)일 땐 반대로 기울어져 있다가 중앙(0)에 가까워질수록 평평하게 펴지게 한다.
+        // 오른쪽 dismiss와 완전히 같은 회전 공식(width/divisor, ±maxDragRotationDegrees 클램프)을
+        // 부호 반전 없이 그대로 쓴다 — width 자체가 이미 방향(오른쪽 화면 밖 = 양수)을 담고 있어서,
+        // 화면 밖(먼 거리)일 땐 dismiss와 같은 방향(+)으로 기울어져 있다가 중앙(0)에 가까워질수록
+        // 평평하게 펴진다. dismiss 애니메이션을 그대로 되감는 것과 동일한 모양.
         if cardID == pulledInCardID {
             let width = (cardOffsets[cardID] ?? .zero).width
             let dragDegrees = Double(width / dragRotationDivisor)
-            return .degrees(-min(max(dragDegrees, -maxDragRotationDegrees), maxDragRotationDegrees))
+            return .degrees(min(max(dragDegrees, -maxDragRotationDegrees), maxDragRotationDegrees))
         }
         switch index {
         case 0:
