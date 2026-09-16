@@ -32,24 +32,25 @@ struct CustomTabBar: View {
 
     var body: some View {
         if #available(iOS 26.0, *) {
-            GlassEffectContainer(spacing: 0) {
-                HStack(spacing: -8) {
-                    ForEach(items, id: \.tag) { item in
-                        tabButton(item)
-                            .background {
-                                if selectedTab == item.tag {
-                                    Capsule()
-                                        .glassEffect(.regular.tint(Color.neutral10), in: Capsule())
-                                        .matchedGeometryEffect(id: "selectedTab", in: glassNamespace)
-                                }
+            // glassEffect()를 탭마다(특히 선택 표시 캡슐에) 여러 번 겹쳐 쓰면 그 블렌딩이
+            // 안쪽 아이콘/라벨에까지 새어나가 같이 흐려 보였다. 유리 재질은 바 전체
+            // 배경 딱 한 곳(맨 바깥 캡슐)에만 적용하고, 선택된 탭 표시는 유리가 아니라
+            // 그냥 단색 캡슐로 분리해서 아이콘은 항상 또렷하게 위에 그려지게 한다.
+            HStack(spacing: 0) {
+                ForEach(items, id: \.tag) { item in
+                    tabButton(item)
+                        .background {
+                            if selectedTab == item.tag {
+                                Capsule()
+                                    .fill(Color.neutral10)
+                                    .matchedGeometryEffect(id: "selectedTab", in: glassNamespace)
                             }
-                    }
+                        }
+                        .frame(maxWidth: .infinity)
                 }
-                .padding(4)
             }
+            .padding(4)
             .glassEffect(.regular, in: Capsule())
-            .padding(.horizontal, 20)
-            .padding(.bottom, 8)
             .animation(.easeInOut(duration: 0.2), value: selectedTab)
         } else {
             HStack(spacing: 0) {
