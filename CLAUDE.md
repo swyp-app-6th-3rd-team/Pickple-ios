@@ -5,7 +5,8 @@ iOS 클라이언트는 1인 개발. 서버·DB는 별도 백엔드 팀이 담당
 
 ## 스택
 
-- Swift 6, iOS 17.0+ / SwiftUI 전용 (UIKit은 불가피할 때만, 사유를 주석으로)
+- Swift 6, iOS 26.0+ / SwiftUI 전용 (UIKit은 불가피할 때만, 사유를 주석으로)
+  - 배포 타겟을 17.0 → 26.0으로 올림(2026-09-16). iPhone 11 이상만 지원(구형 기기 지원 범위는 좁아지지만, 그만큼 OS 채택률이 낮은 사용자를 배제하는 트레이드오프가 있음을 인지하고 결정함). iOS 26 미만 분기(`#available`)는 더 이상 필요 없으니 새로 만들지 말 것
 - `@Observable` 기반 MVVM. 뷰에 비즈니스 로직을 두지 않는다
 - 비동기는 **async/await만**. Combine 신규 사용 금지
 - 네비게이션은 `NavigationStack` + `NavigationPath`. `NavigationView` 금지
