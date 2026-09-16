@@ -76,7 +76,6 @@ struct MyGradeView: View {
         }
         .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .tabBar)
     }
 }
 

@@ -103,7 +103,6 @@ struct PostWriteFlowView: View {
         }
         .pickpleToast(isPresented: $showsFailureToast, message: postViewModel.isEditing ? PostViewStrings.submitEditFailedToast : PostViewStrings.submitFailedToast)
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .tabBar)
     }
 
     // ScrollViewReader가 최상단으로 스크롤할 때 목표로 삼는 자리 표시자 — 실제 오프셋

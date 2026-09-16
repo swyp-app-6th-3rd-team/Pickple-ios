@@ -134,7 +134,6 @@ struct CommunitySearchView: View {
         }
         .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .tabBar)
         .task {
             await communitySearchViewModel.loadPosts()
         }

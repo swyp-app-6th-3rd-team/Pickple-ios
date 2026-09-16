@@ -17,8 +17,7 @@ struct PickpleBottomNav: View {
     @State private var myPageRouter = MyPageRouter()
     @State private var myPageViewModel: MyPageViewModel
     // 홈/커뮤니티/마이페이지 각 화면이 스크롤 위치에 따라 이 값을 바꾸면, 아래 커스텀 바가
-    // offset(y:)로 실제로 위아래로 슬라이드한다. 네이티브 탭바(.toolbar(_:for:.tabBar))는
-    // 숨김 애니메이션 방식(페이드/슬라이드)을 우리가 고를 수 없어서 직접 그린 바로 대체했다.
+    // offset(y:)로 실제로 위아래로 슬라이드한다.
     @State private var tabBarVisibility = TabBarVisibilityController()
 
     init(myPageViewModel: MyPageViewModel = MyPageViewModel()) {
@@ -27,16 +26,23 @@ struct PickpleBottomNav: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            tabView
+            tabContent
             CustomTabBar(selectedTab: $selectedTab)
                 .offset(y: tabBarVisibility.isHidden ? CustomTabBar.height + 40 : 0)
                 .animation(.easeInOut(duration: 0.2), value: tabBarVisibility.isHidden)
         }
         .environment(tabBarVisibility)
+        .tint(Color.navy60)
     }
 
-    private var tabView: some View {
-        TabView(selection: $selectedTab) {
+    // TabView는 .tabItem으로 만든 네이티브 탭바가 항상 같이 딸려 온다 — .toolbar(.hidden,
+    // for: .tabBar)로 숨겨봐도 실제로는 존재만 하고 안 보이는 것뿐이라(그리고 그 "숨기기"
+    // 자체도 거는 위치에 따라 안 먹히는 경우가 있었다), 우리 커스텀 바랑 겹쳐 보이는 문제가
+    // 계속 반복됐다. 그래서 TabView를 아예 안 쓰고, 3개 화면을 전부 동시에 살려둔 채
+    // opacity/hitTesting으로만 전환한다 — 네이티브 탭바 자체가 존재하지 않으니 숨길 필요도
+    // 없고, 탭을 오갈 때 각 화면의 상태(스크롤 위치 등)도 화면이 파괴되지 않아 그대로 유지된다.
+    private var tabContent: some View {
+        ZStack {
             NavigationStack(path: $mainRouter.path) {
                 MainView(
                     mainViewModel: MainViewModel(
@@ -64,8 +70,9 @@ struct PickpleBottomNav: View {
                     }
             }
             .environment(mainRouter)
-            .tabItem { tabLabel(title: MainStrings.tabHome, icon: "PickpleHome", tag: 0) }
-            .tag(0)
+            .opacity(selectedTab == 0 ? 1 : 0)
+            .allowsHitTesting(selectedTab == 0)
+            .accessibilityHidden(selectedTab != 0)
 
             NavigationStack(path: $communityRouter.path) {
                 CommunityView(communityViewModel: CommunityViewModel(communityRepository: RemoteCommunityRepository(apiClient: apiClient)))
@@ -85,8 +92,9 @@ struct PickpleBottomNav: View {
                     }
             }
             .environment(communityRouter)
-            .tabItem { tabLabel(title: MainStrings.tabCommunity, icon: "PickpleMessage", tag: 1) }
-            .tag(1)
+            .opacity(selectedTab == 1 ? 1 : 0)
+            .allowsHitTesting(selectedTab == 1)
+            .accessibilityHidden(selectedTab != 1)
 
             NavigationStack(path: $myPageRouter.path) {
                 MyPageView(myPageViewModel: myPageViewModel)
@@ -114,16 +122,10 @@ struct PickpleBottomNav: View {
                     }
             }
             .environment(myPageRouter)
-            .tabItem { tabLabel(title: MainStrings.tabMyPage, icon: "PickpleUser", tag: 2) }
-            .tag(2)
+            .opacity(selectedTab == 2 ? 1 : 0)
+            .allowsHitTesting(selectedTab == 2)
+            .accessibilityHidden(selectedTab != 2)
         }
-        .tint(Color.navy60)
-        // 네이티브 탭바를 숨기는 .toolbar(.hidden, for: .tabBar)는 TabView 컨테이너
-        // 자체가 아니라 각 탭의 실제 콘텐츠 화면(MainView/CommunityView/MyPageView)에
-        // 걸어야 확실히 먹힌다 — PostDetailView 등 다른 화면에서도 그렇게 쓰고 있다.
-        // 여기 걸었을 땐 네이티브 탭바가 안 숨겨져서 커스텀 바와 같이 보이는 문제가 있었다.
-        //
-        // 네이티브 탭바가 사라지면서 각 화면이 확보하던 하단 여백도 같이 없어지므로,
         // 콘텐츠가 항상 CustomTabBar 높이만큼 안전 영역을 갖도록 자리만 비워둔다
         // (실제로 보이는 바는 위 ZStack의 CustomTabBar가 그 위에 겹쳐서 그린다).
         .safeAreaInset(edge: .bottom) {
@@ -145,16 +147,6 @@ struct PickpleBottomNav: View {
                 default: break
                 }
             }
-        }
-    }
-
-    // 탭 3개가 제목/아이콘만 다르고 나머지(선택 시 renderingMode 전환)는 동일해서 뽑았다.
-    private func tabLabel(title: String, icon: String, tag: Int) -> some View {
-        Label {
-            Text(title)
-        } icon: {
-            Image(icon)
-                .renderingMode(selectedTab == tag ? .template : .original)
         }
     }
 }
