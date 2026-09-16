@@ -14,6 +14,8 @@ struct TextStepOneView: View {
     @Binding var isCategoryExpanded: Bool
     let categoryOptions: [String]
 
+    @FocusState private var isTitleFocused: Bool
+
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             VStack(alignment: .leading, spacing: 32) {
@@ -34,8 +36,10 @@ struct TextStepOneView: View {
                     text: $postViewModel.title,
                     type: .trailing,
                     placeholder: PostViewStrings.titlePlaceholder,
-                    trailingAccessory: .text("\(postViewModel.title.count)/\(postViewModel.titleMaxLength)")
+                    trailingAccessory: .text("\(postViewModel.title.count)/\(postViewModel.titleMaxLength)"),
+                    state: isTitleFocused ? .ing : ._default
                 )
+                .focused($isTitleFocused)
                 .onChange(of: postViewModel.title) { _, newValue in
                     if newValue.count > postViewModel.titleMaxLength {
                         postViewModel.title = String(newValue.prefix(postViewModel.titleMaxLength))

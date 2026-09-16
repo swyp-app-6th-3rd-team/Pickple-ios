@@ -15,13 +15,17 @@ struct ProductURLFieldBlock: View {
     var isDisabled: Bool = false
     var AB: String = ""
 
+    @FocusState private var isFocused: Bool
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             PickpleTextField(
                 text: $url,
                 type: .leading,
-                placeholder: "\(AB) " + PostViewStrings.urlPlaceholder
+                placeholder: "\(AB) " + PostViewStrings.urlPlaceholder,
+                state: isFocused ? .ing : ._default
             )
+            .focused($isFocused)
             .disabled(isDisabled)
         }
     }

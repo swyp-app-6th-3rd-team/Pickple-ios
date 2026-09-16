@@ -13,6 +13,8 @@ struct ABWriteView: View {
     @Binding var isCategoryExpanded: Bool
     let categoryOptions: [String]
 
+    @FocusState private var isTopicFocused: Bool
+
     private var isANameFilled: Bool { postViewModel.productA.hasName }
     private var isBNameFilled: Bool { postViewModel.productB.hasName }
     private var areNamesFilled: Bool { isANameFilled && isBNameFilled }
@@ -44,8 +46,10 @@ struct ABWriteView: View {
                     text: $postViewModel.topic,
                     type: .trailing,
                     placeholder: PostViewStrings.topicText,
-                    trailingAccessory: .text("\(postViewModel.topic.count)/\(postViewModel.topicMaxLength)")
+                    trailingAccessory: .text("\(postViewModel.topic.count)/\(postViewModel.topicMaxLength)"),
+                    state: isTopicFocused ? .ing : ._default
                 )
+                .focused($isTopicFocused)
                 .onChange(of: postViewModel.topic) { _, newValue in
                     if newValue.count > postViewModel.topicMaxLength {
                         postViewModel.topic = String(newValue.prefix(postViewModel.topicMaxLength))

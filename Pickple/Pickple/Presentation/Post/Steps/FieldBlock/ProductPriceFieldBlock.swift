@@ -15,14 +15,18 @@ struct ProductPriceFieldBlock: View {
     var isDisabled: Bool = false
     var AB: String = ""
 
+    @FocusState private var isFocused: Bool
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             PickpleTextField(
                 text: $price,
                 type: .trailing,
                 placeholder: "\(AB) 가격을 입력해 주세요",
-                trailingAccessory: .text(PostViewStrings.priceUnit)
+                trailingAccessory: .text(PostViewStrings.priceUnit),
+                state: isFocused ? .ing : ._default
             )
+            .focused($isFocused)
             .keyboardType(.numberPad)
             .onChange(of: price) { _, newValue in
                 let digitsOnly = newValue.filter(\.isNumber)

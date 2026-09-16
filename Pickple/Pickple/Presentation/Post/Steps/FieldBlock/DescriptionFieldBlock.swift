@@ -13,7 +13,9 @@ import SwiftUI
 struct DescriptionFieldBlock: View {
     @Binding var text: String
     let maxLength: Int
-    
+
+    @FocusState private var isFocused: Bool
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(PostViewStrings.description)
@@ -24,6 +26,7 @@ struct DescriptionFieldBlock: View {
                 .foregroundStyle(Color.neutral100)
                 .scrollContentBackground(.hidden)
                 .frame(maxWidth: .infinity, minHeight: 180)
+                .focused($isFocused)
                 .onChange(of: text) { _, newValue in
                     if newValue.count > maxLength {
                         text = String(newValue.prefix(maxLength))
@@ -46,7 +49,7 @@ struct DescriptionFieldBlock: View {
             .padding(.horizontal, 20)
             .overlay {
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.navy10, lineWidth: 1)
+                    .stroke(isFocused ? PickpleTextFieldStateType.ing.borderColor : Color.navy10, lineWidth: 1)
             }
             
         }
