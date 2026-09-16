@@ -58,7 +58,9 @@ struct PostDetailContent: View {
                 
 
                 PostDetailCommentSectionHeader(
-                    count: postDetailViewModel.comments.count,
+                    // 게스트는 댓글 목록 조회 자체가 막혀 있어 comments가 항상 []이라, 그 개수 대신
+                    // 게시글 메타데이터(post.commentCount)의 실제 댓글 수를 보여준다.
+                    count: postDetailViewModel.isLoggedIn ? postDetailViewModel.comments.count : post.commentCount,
                     sortOption: $postDetailViewModel.sortOption,
                     isSortExpanded: $isSortExpanded
                 )
