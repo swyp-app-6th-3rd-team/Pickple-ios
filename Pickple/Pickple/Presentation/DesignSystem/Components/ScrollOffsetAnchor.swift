@@ -21,10 +21,16 @@ struct ScrollOffsetAnchor: View {
     let coordinateSpaceName: String
 
     var body: some View {
-        GeometryReader { proxy in
-            Color.clear
-                .preference(key: ScrollOffsetPreferenceKey.self, value: proxy.frame(in: .named(coordinateSpaceName)).minY)
-        }
-        .frame(height: 0)
+        // GeometryReader를 .frame(height: 0)로 직접 두면 부모가 0 크기로 배치해버려서
+        // PreferenceKey가 아예 안 불리는 경우가 있다(알려진 SwiftUI 이슈) — 대신 실제 높이가
+        // 있는 뷰의 .background로 붙여서 유효한 레이아웃 크기를 갖게 한다.
+        Color.clear
+            .frame(height: 1)
+            .background {
+                GeometryReader { proxy in
+                    Color.clear
+                        .preference(key: ScrollOffsetPreferenceKey.self, value: proxy.frame(in: .named(coordinateSpaceName)).minY)
+                }
+            }
     }
 }

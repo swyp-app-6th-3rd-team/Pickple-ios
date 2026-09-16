@@ -8,15 +8,6 @@
 
 import SwiftUI
 
-// 스크롤 영역 맨 위 앵커의 y좌표(coordinateSpace 기준)를 관찰해서, 최상단에서
-// 벗어났는지(음수로 얼마나 스크롤됐는지) 판단하는 데 쓴다.
-private struct PostWriteScrollOffsetKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
-    }
-}
-
 // 글 유형이 정해진 뒤의 작성 화면. 유형별 입력을 전부 한 화면에 모아서 보여주고,
 // 상단 게이지가 필수 항목 채움 정도를 보여준다.
 struct PostWriteFlowView: View {
@@ -76,7 +67,7 @@ struct PostWriteFlowView: View {
                         .zIndex(isCategoryExpanded ? 1 : 0)
                     }
                     .coordinateSpace(name: Self.scrollCoordinateSpace)
-                    .onPreferenceChange(PostWriteScrollOffsetKey.self) { minY in
+                    .onPreferenceChange(ScrollOffsetPreferenceKey.self) { minY in
                         isScrolledDown = minY < -Self.scrollDownThreshold
                     }
                     .overlay(alignment: .bottomTrailing) {
@@ -116,12 +107,8 @@ struct PostWriteFlowView: View {
     }
 
     private var topAnchorMarker: some View {
-        GeometryReader { proxy in
-            Color.clear
-                .preference(key: PostWriteScrollOffsetKey.self, value: proxy.frame(in: .named(Self.scrollCoordinateSpace)).minY)
-        }
-        .frame(height: 0)
-        .id(Self.topAnchor)
+        ScrollOffsetAnchor(coordinateSpaceName: Self.scrollCoordinateSpace)
+            .id(Self.topAnchor)
     }
 
     private func scrollToTopButton(scrollProxy: ScrollViewProxy) -> some View {
