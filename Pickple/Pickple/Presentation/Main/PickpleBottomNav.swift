@@ -23,7 +23,6 @@ private struct MinimizeTabBarOnScrollDown: ViewModifier {
 struct PickpleBottomNav: View {
     @Environment(\.apiClient) private var apiClient
     @Environment(\.isLoggedIn) private var isLoggedIn
-    @Environment(GuestVoteTracker.self) private var guestVoteTracker
     @State private var selectedTab = 0
     @State private var mainRouter = MainRouter()
     @State private var communityRouter = CommunityRouter()
@@ -44,7 +43,7 @@ struct PickpleBottomNav: View {
                         pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient),
                         isLoggedIn: isLoggedIn
                     ),
-                    cardStackViewModel: CardStackViewModel(voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), isLoggedIn: isLoggedIn, guestVoteTracker: guestVoteTracker),
+                    cardStackViewModel: CardStackViewModel(voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), isLoggedIn: isLoggedIn),
                     onRequestCommunityTab: { selectedTab = 1 }
                 )
                     .navigationDestination(for: MainRoute.self) { route in
@@ -55,8 +54,7 @@ struct PickpleBottomNav: View {
                                 postDetailRepository: RemotePostDetailRepository(apiClient: apiClient, postId: postId),
                                 commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
                                 userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
-                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
-                                guestVoteTracker: guestVoteTracker
+                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient)
                             )
                         case .ranking:
                             MainRankingView(mainRankingViewModel: MainRankingViewModel(pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient), isLoggedIn: isLoggedIn))
@@ -77,8 +75,7 @@ struct PickpleBottomNav: View {
                                 postDetailRepository: RemotePostDetailRepository(apiClient: apiClient, postId: postId),
                                 commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
                                 userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
-                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
-                                guestVoteTracker: guestVoteTracker
+                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient)
                             )
                         case .search:
                             CommunitySearchView(communitySearchViewModel: CommunitySearchViewModel(communityRepository: RemoteCommunityRepository(apiClient: apiClient)))
@@ -109,8 +106,7 @@ struct PickpleBottomNav: View {
                                 postDetailRepository: RemotePostDetailRepository(apiClient: apiClient, postId: postId),
                                 commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
                                 userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
-                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
-                                guestVoteTracker: guestVoteTracker
+                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient)
                             )
                         }
                     }

@@ -25,7 +25,6 @@ struct MyPageExtraView: View {
             .padding(.top, 20)
 
             VStack(spacing: 0) {
-                // 게스트는 계정 관리 진입 시 로그인 유도 다이얼로그로 연결한다(onTapAccount에서 분기).
                 MyPageInfoRow(iconName: "PickpleUser", title: MyPageStrings.account, action: onTapAccount)
                 
                 MyPageInfoRow(iconName: "PickplePrivate", title: MyPageStrings.privatePolicy, url: MyPageStrings.privacy)

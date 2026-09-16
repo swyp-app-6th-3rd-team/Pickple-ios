@@ -36,16 +36,14 @@ struct PostDetailView: View {
         postDetailRepository: PostDetailRepository? = nil,
         commentRepository: CommentRepository,
         userInfoRepository: UserInfoRepository,
-        voteCardRepository: VoteCardRepository,
-        guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
+        voteCardRepository: VoteCardRepository
     ) {
         _postDetailViewModel = State(initialValue: PostDetailViewModel(
             voteType: voteType,
             postDetailRepository: postDetailRepository,
             commentRepository: commentRepository,
             userInfoRepository: userInfoRepository,
-            voteCardRepository: voteCardRepository,
-            guestVoteTracker: guestVoteTracker
+            voteCardRepository: voteCardRepository
         ))
     }
     
@@ -69,7 +67,13 @@ struct PostDetailView: View {
                         PostDetailContent(
                             post: post,
                             postDetailViewModel: postDetailViewModel,
-                            onMoreTapped: { showsMoreMenu = true },
+                            onMoreTapped: {
+                                if isLoggedIn {
+                                    showsMoreMenu = true
+                                } else {
+                                    loginRequiredDescription = PostDetailStrings.moreMenuRequiredDescription
+                                }
+                            },
                             onVote: { side in
                                 Task {
                                     if await postDetailViewModel.vote(side) {

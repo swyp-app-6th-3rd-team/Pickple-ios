@@ -25,9 +25,6 @@ class PostDetailViewModel {
     var editingCommentID: Int?
 
     var isLoggedIn: Bool
-    // 게스트 무료 투표 3회는 홈 카드스택과 공유된다(기능명세서 2.2·6.3 동일 문구) — 화면마다
-    // 따로 세지 않도록 앱 전체에서 하나만 만들어 공유하는 GuestVoteTracker를 주입받는다.
-    private let guestVoteTracker: GuestVoteTracker
 
     static let sortOptions = ["최신순", "오래된 순"]
 
@@ -69,15 +66,13 @@ class PostDetailViewModel {
         commentRepository: CommentRepository = MockCommentRepository(),
         userInfoRepository: UserInfoRepository = MockUserInfoRepository(),
         voteCardRepository: VoteCardRepository = MockVoteCardRepository(),
-        isLoggedIn: Bool = true,
-        guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
+        isLoggedIn: Bool = true
     ) {
         self.postDetailRepository = postDetailRepository ?? MockPostDetailRepository(type: voteType)
         self.commentRepository = commentRepository
         self.userInfoRepository = userInfoRepository
         self.voteCardRepository = voteCardRepository
         self.isLoggedIn = isLoggedIn
-        self.guestVoteTracker = guestVoteTracker
     }
 
     func loadPostDetail() async {
@@ -164,21 +159,15 @@ class PostDetailViewModel {
         }
     }
 
-    // 게스트는 홈 카드스택과 공유하는 무료 투표 3회까지만 허용한다(기능명세서 6.3).
-    // 반환값 true = 로그인 유도 모달을 띄워야 함(게스트 한도 초과). false = 투표 적용됐거나 이미 투표한 상태.
+    // 게스트는 투표할 수 없다 — 투표를 시도하면 무조건 로그인 유도 모달을 띄운다.
+    // 반환값 true = 로그인 유도 모달을 띄워야 함. false = 투표 적용됐거나 이미 투표한 상태.
     @MainActor
     @discardableResult
     func vote(_ side: PostDetailVoteSide) async -> Bool {
         guard let post, post.votedSide == nil else { return false }
         guard let optionId = side == .first ? post.firstOptionId : post.secondOptionId else { return false }
 
-        if !isLoggedIn {
-            guard guestVoteTracker.registerVote() else { return true }
-            // 게스트는 토큰이 없어서 서버에 실제로 투표할 방법이 없다 — 로컬에서만 결과를 흉내낸다.
-            let firstPercentage = side == .first ? Int.random(in: 55...80) : Int.random(in: 20...45)
-            self.post = post.votingApplied(selectedOptionId: optionId, firstPercentage: firstPercentage, secondPercentage: 100 - firstPercentage)
-            return false
-        }
+        guard isLoggedIn else { return true }
 
         guard let result = try? await voteCardRepository.castVote(postId: post.id, optionId: optionId) else { return false }
         self.post = post.votingApplied(selectedOptionId: optionId, firstPercentage: result.firstPercentage, secondPercentage: result.secondPercentage)
