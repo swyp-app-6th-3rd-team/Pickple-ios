@@ -18,22 +18,9 @@
 //  소재)로 폴백한다.
 import SwiftUI
 
-// 선택된 탭 버튼의 프레임(위치/크기)을 측정해서 유리 캡슐이 그 자리로 직접
-// frame/offset을 옮기게 하는 데 쓴다 — matchedGeometryEffect 대신 이 방식을 쓰면
-// GlassEffectContainer가 유리 모양 자체의 변화를 자기 방식(모핑)으로 부드럽게
-// 처리해줘서, matchedGeometryEffect로 유리 뷰를 움직일 때보다 더 매끄럽다.
-private struct TabFramePreferenceKey: PreferenceKey {
-    static var defaultValue: [Int: CGRect] = [:]
-    static func reduce(value: inout [Int: CGRect], nextValue: () -> [Int: CGRect]) {
-        value.merge(nextValue()) { _, new in new }
-    }
-}
-
 struct CustomTabBar: View {
     @Binding var selectedTab: Int
-    @State private var tabFrames: [Int: CGRect] = [:]
-
-    private static let tabBarCoordinateSpace = "customTabBarSpace"
+    @Namespace private var glassNamespace
 
     static let height: CGFloat = 56
 
@@ -49,39 +36,26 @@ struct CustomTabBar: View {
                 ForEach(items, id: \.tag) { item in
                     tabButton(item)
                         .background {
-                            GeometryReader { proxy in
+                            if selectedTab == item.tag {
                                 Color.clear
-                                    .preference(
-                                        key: TabFramePreferenceKey.self,
-                                        value: [item.tag: proxy.frame(in: .named(Self.tabBarCoordinateSpace))]
-                                    )
+                                    .matchedGeometryEffect(id: "selectedTabGlass", in: glassNamespace, isSource: true)
                             }
                         }
                 }
             }
             .padding(4)
-            .coordinateSpace(name: Self.tabBarCoordinateSpace)
-            .onPreferenceChange(TabFramePreferenceKey.self) { tabFrames = $0 }
             .background {
-                    ZStack(alignment: .topLeading) {
-                        GlassEffectContainer {
-
+                GlassEffectContainer {
+                    ZStack {
                         Capsule()
                             .foregroundStyle(Color.white)
                             .glassEffect(.regular, in: Capsule())
-                    }
-                        GlassEffectContainer {
-                            if let frame = tabFrames[selectedTab] {
-                                Capsule()
-                                    .foregroundStyle(Color.neutral10)
-                                    .glassEffect(.regular)
-                                    .frame(width: frame.width, height: frame.height)
-                                    .offset(x: frame.minX, y: frame.minY)
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
 
+                        Capsule()
+                            .glassEffect(.regular.tint(Color.neutral10), in: Capsule())
+                            .matchedGeometryEffect(id: "selectedTabGlass", in: glassNamespace, isSource: false)
+                    }
+                }
             }
             .animation(.easeInOut(duration: 0.2), value: selectedTab)
         } else {
@@ -135,6 +109,7 @@ private struct PreviewWrapper: View {
 
     var body: some View {
         VStack {
+            Spacer()
             CustomTabBar(selectedTab: $selectedTab)
         }
     }
