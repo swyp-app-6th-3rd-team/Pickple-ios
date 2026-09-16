@@ -8,6 +8,18 @@
 
 import SwiftUI
 
+// tabBarMinimizeBehavior는 iOS 26+ 전용 API라, 배포 타겟(17.0)에서도 빌드되도록
+// 가용성 분기를 모디파이어로 감싼다.
+private struct MinimizeTabBarOnScrollDown: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.tabBarMinimizeBehavior(.onScrollDown)
+        } else {
+            content
+        }
+    }
+}
+
 struct PickpleBottomNav: View {
     @Environment(\.apiClient) private var apiClient
     @Environment(\.isLoggedIn) private var isLoggedIn
@@ -108,6 +120,7 @@ struct PickpleBottomNav: View {
             .tag(2)
         }
         .tint(Color.navy60)
+        .modifier(MinimizeTabBarOnScrollDown())
         // 탭을 떠날 때 그 탭의 네비게이션 스택을 비워둔다 — 그래야 다른 탭에 갔다가 다시
         // 돌아왔을 때 마지막에 보던 상세 화면이 아니라 항상 목록(루트)부터 보인다.
         .onChange(of: selectedTab) { oldValue, _ in
