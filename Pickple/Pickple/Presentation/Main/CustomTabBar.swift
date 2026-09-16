@@ -101,7 +101,16 @@ struct CustomTabBar: View {
 }
 
 #Preview {
-    VStack {
-        CustomTabBar(selectedTab: .constant(1))
+    PreviewWrapper()
+}
+
+private struct PreviewWrapper: View {
+    @State private var selectedTab = 1
+
+    var body: some View {
+        VStack {
+            Spacer()
+            CustomTabBar(selectedTab: $selectedTab)
+        }
     }
 }
