@@ -8,6 +8,15 @@
 
 import SwiftUI
 
+// 스크롤 영역 맨 위 앵커의 y좌표(coordinateSpace 기준)를 관찰해서, 최상단에서
+// 벗어났는지(음수로 얼마나 스크롤됐는지) 판단하는 데 쓴다.
+private struct PostWriteScrollOffsetKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
 // 글 유형이 정해진 뒤의 작성 화면. 유형별 입력을 전부 한 화면에 모아서 보여주고,
 // 상단 게이지가 필수 항목 채움 정도를 보여준다.
 struct PostWriteFlowView: View {
@@ -21,8 +30,13 @@ struct PostWriteFlowView: View {
     @State private var isCategoryExpanded = false
     @State private var showsLeaveConfirm = false
     @State private var showsFailureToast = false
+    @State private var isScrolledDown = false
 
     private let categoryOptions = PostViewStrings.categoryOptions
+
+    private static let scrollCoordinateSpace = "postWriteScroll"
+    private static let topAnchor = "postWriteTop"
+    private static let scrollDownThreshold: CGFloat = 40
 
     var body: some View {
         ZStack {
@@ -49,14 +63,28 @@ struct PostWriteFlowView: View {
                         .animation(.easeInOut, value: postViewModel.requiredFieldsFilledCount)
                 }
 
-                ScrollView {
-                    PostWriteFlowStepContent(
-                        postViewModel: postViewModel,
-                        isCategoryExpanded: $isCategoryExpanded,
-                        categoryOptions: categoryOptions
-                    )
-                    .padding(.top, 28)
-                    .zIndex(isCategoryExpanded ? 1 : 0)
+                ScrollViewReader { scrollProxy in
+                    ScrollView {
+                        topAnchorMarker
+
+                        PostWriteFlowStepContent(
+                            postViewModel: postViewModel,
+                            isCategoryExpanded: $isCategoryExpanded,
+                            categoryOptions: categoryOptions
+                        )
+                        .padding(.top, 28)
+                        .zIndex(isCategoryExpanded ? 1 : 0)
+                    }
+                    .coordinateSpace(name: Self.scrollCoordinateSpace)
+                    .onPreferenceChange(PostWriteScrollOffsetKey.self) { minY in
+                        isScrolledDown = minY < -Self.scrollDownThreshold
+                    }
+                    .overlay(alignment: .bottomTrailing) {
+                        if isScrolledDown {
+                            scrollToTopButton(scrollProxy: scrollProxy)
+                        }
+                    }
+                    .animation(.easeInOut(duration: 0.2), value: isScrolledDown)
                 }
                 .padding(.horizontal, 20)
 
@@ -85,6 +113,33 @@ struct PostWriteFlowView: View {
         .pickpleToast(isPresented: $showsFailureToast, message: postViewModel.isEditing ? PostViewStrings.submitEditFailedToast : PostViewStrings.submitFailedToast)
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .tabBar)
+    }
+
+    private var topAnchorMarker: some View {
+        GeometryReader { proxy in
+            Color.clear
+                .preference(key: PostWriteScrollOffsetKey.self, value: proxy.frame(in: .named(Self.scrollCoordinateSpace)).minY)
+        }
+        .frame(height: 0)
+        .id(Self.topAnchor)
+    }
+
+    private func scrollToTopButton(scrollProxy: ScrollViewProxy) -> some View {
+        Button(action: {
+            withAnimation {
+                scrollProxy.scrollTo(Self.topAnchor, anchor: .top)
+            }
+        }) {
+            Image("PickpleArrowUp")
+                .resizable()
+                .frame(width: 24, height: 24)
+                .foregroundStyle(Color.black)
+                .padding(16)
+                .background(Circle().foregroundStyle(Color.white))
+                .shadow(color: Color.black.opacity(0.12), radius: 6)
+        }
+        .padding(.bottom, 12)
+        .transition(.opacity.combined(with: .scale))
     }
 
     private func handleBack() {
