@@ -17,6 +17,14 @@ class CardStackViewModel {
     private var abCursor: String?
     private var abHasNext = false
     private var isFetchingMore = false
+    // moveTopCardToBack()은 스와이프할 때마다 loadMoreIfNeeded()를 부르는데, 서버가 hasNext를
+    // 계속 true로 주면(컨텐츠가 많으면 충분히 그럴 수 있다) 빠르게 계속 넘길 때마다 새 페이지를
+    // 끝없이 받아와 allCards/voteCardData가 무한정 쌓인다. CardStackView는 voteCardData 전체를
+    // ZStack에 그리므로(각 카드가 AsyncImage까지 포함) 카드가 수십~수백 개로 불어나면 화면에도
+    // 안 보이는 카드들 때문에 렌더링 비용이 계속 커지다가 결국 반응이 멈춘다 — 실제로 "빠르게
+    // 넘기면 렉 걸리다 멈춘다"는 버그의 원인이었다. 이 한도로 더 이상 새로 받아오지 않게 막는다
+    // (이미 받아온 카드는 moveTopCardToBack()이 계속 순환시켜 재사용한다).
+    private let maxCardPoolSize = 30
 
     var voteCardData: [VoteCard] = []
     var showsLoginRequired = false
@@ -99,6 +107,7 @@ class CardStackViewModel {
 
     private func loadMoreIfNeeded(for type: VoteType) async {
         guard !isFetchingMore else { return }
+        guard allCards.count < maxCardPoolSize else { return }
         let hasNext = type == .forAgainst ? forAgainstHasNext : abHasNext
         guard hasNext else { return }
         let cursor = type == .forAgainst ? forAgainstCursor : abCursor
