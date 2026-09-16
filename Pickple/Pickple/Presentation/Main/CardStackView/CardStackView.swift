@@ -95,10 +95,12 @@ struct CardStackView: View {
                     } else {
                         // 왼쪽 스와이프는 "뒤로가기" — 방금 넘긴 카드가 아니라 그 이전에 보고 있던
                         // 카드(맨 뒤에 있던 카드)를 다시 맨 앞으로 가져와서, 화면 오른쪽 밖에서
-                        // 스프링과 함께 슬라이드 인 시킨다.
+                        // 슬라이드 인 시킨다. 오른쪽으로 날려보내는 애니메이션(0 → 600,
+                        // easeOut 0.25초)의 정확한 역방향이 되도록 같은 지속시간의 easeIn으로
+                        // 600 → 0을 되감는다.
                         cardStackViewModel.moveBackCardToFront()
                         dragOffset = CGSize(width: 600, height: 0)
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                        withAnimation(.easeIn(duration: 0.25)) {
                             dragOffset = .zero
                         }
                     }
