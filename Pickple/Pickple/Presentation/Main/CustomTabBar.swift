@@ -32,10 +32,13 @@ struct CustomTabBar: View {
 
     var body: some View {
         if #available(iOS 26.0, *) {
-            // glassEffect()를 탭마다(특히 선택 표시 캡슐에) 여러 번 겹쳐 쓰면 그 블렌딩이
-            // 안쪽 아이콘/라벨에까지 새어나가 같이 흐려 보였다. 유리 재질은 바 전체
-            // 배경 딱 한 곳(맨 바깥 캡슐)에만 적용하고, 선택된 탭 표시는 유리가 아니라
-            // 그냥 단색 캡슐로 분리해서 아이콘은 항상 또렷하게 위에 그려지게 한다.
+            // glassEffect()는 GlassEffectContainer 없이 단독으로 쓰면 반사/블렌딩 없이
+            // 대충 반투명 채우기 정도로만 나온다 — 애플 예시도 전부 컨테이너 안에서 쓴다.
+            // 그리고 유리 캡슐과 아이콘 콘텐츠를 같은 배경/전경 관계로 겹쳐두면 그 블렌딩이
+            // 아이콘까지 번져 보였다. 그래서 "유리로 보여야 하는 것"(바깥 캡슐)과
+            // "그 위에 얹는 콘텐츠"(아이콘 행)를 아예 다른 레이어(ZStack의 형제)로 완전히
+            // 분리한다 — 유리는 컨테이너 안에서만 존재하고, 아이콘 행은 유리 렌더링과
+            // 전혀 무관하게 그 위에 그려진다.
             HStack(spacing: 0) {
                 ForEach(items, id: \.tag) { item in
                     tabButton(item)
@@ -50,7 +53,15 @@ struct CustomTabBar: View {
                 }
             }
             .padding(4)
-            .glassEffect(.regular, in: Capsule())
+            // .background()는 이 뷰(아이콘 행)의 실제 크기에 맞춰 알아서 그려지므로, ZStack으로
+            // 직접 겹칠 때 생기는 크기 모호함(Capsule 자체엔 고유 크기가 없어서 무한히
+            // 커지려 함) 없이 딱 맞는 유리 캡슐 배경을 얻는다.
+            .background {
+                GlassEffectContainer {
+                    Capsule()
+                        .glassEffect(.regular, in: Capsule())
+                }
+            }
             .animation(.easeInOut(duration: 0.2), value: selectedTab)
         } else {
             HStack(spacing: 0) {
