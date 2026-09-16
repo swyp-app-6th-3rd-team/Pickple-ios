@@ -18,13 +18,18 @@ struct CardStackView: View {
     // id로 추적하면 그 카드는 계속 자기 오프셋(-600)을 유지하다가, 아래에서 명시적으로
     // 0으로 애니메이션해줘야만 움직인다.
     @State private var cardOffsets: [Int: CGSize] = [:]
+    // 왼쪽으로 끄는 중에는 "이전 카드"를 오른쪽 화면 밖에서부터 손가락을 따라 끌고 들어오는
+    // 식으로 보여준다. 그 카드는 배열상 맨 뒤(zIndex가 가장 낮음)라 그냥 두면 다른 카드들에
+    // 가려지므로, 끌려오는 동안만 zIndex를 맨 위로 올려서 다른 카드를 덮으며 들어오게 한다.
+    @State private var pulledInCardID: Int? = nil
 
     private let swipeThreshold: CGFloat = 120
+    private let offscreenOffset: CGFloat = 600
 
     var body: some View {
         ZStack {
             // index가 배열 순서 = 쌓인 순서라, index 0이 맨 앞(터치 가능한) 카드.
-            // zIndex는 뒤집어서 index가 작을수록 위로 그려지게 함.
+            // zIndex는 뒤집어서 index가 작을수록 위로 그려지게 함 — 단, 끌려들어오는 카드는 예외.
             ForEach(Array(cardStackViewModel.voteCardData.enumerated()), id: \.element.id) { index, data in
                 CardView(
                     data: data,
@@ -37,7 +42,7 @@ struct CardStackView: View {
                     },
                     onTapBody: { onTapCard(data) }
                 )
-                    .zIndex(Double(-index))
+                    .zIndex(data.id == pulledInCardID ? .infinity : Double(-index))
                     .rotationEffect(rotation(for: index, cardID: data.id))
                     .offset(cardOffsets[data.id] ?? .zero)
                     // count가 바뀔 때(카드 제거)만 애니메이션 걸어서, 맨 앞으로 올라온 카드의
@@ -81,39 +86,57 @@ struct CardStackView: View {
         DragGesture()
             .onChanged { value in
                 guard isTop else { return }
-                cardOffsets[cardID] = CGSize(width: value.translation.width, height: 0)   // 세로는 무시, 좌우로만 따라 움직임
+                if value.translation.width >= 0 {
+                    // 오른쪽으로 끄는 중 — 기존 카드가 손가락을 그대로 따라간다(틴더 스타일 dismiss).
+                    pulledInCardID = nil
+                    cardOffsets[cardID] = CGSize(width: value.translation.width, height: 0)
+                } else if let incomingID = cardStackViewModel.voteCardData.last?.id {
+                    // 왼쪽으로 끄는 중 — "뒤로가기". 기존 카드는 그 자리에 그대로 두고, 이전 카드를
+                    // 오른쪽 화면 밖(offscreenOffset)에서부터 손가락을 따라 끌고 들어오는 것처럼 보여준다.
+                    pulledInCardID = incomingID
+                    let pulledIn = max(offscreenOffset + value.translation.width, 0)
+                    cardOffsets[incomingID] = CGSize(width: pulledIn, height: 0)
+                    cardOffsets[cardID] = .zero
+                }
             }
             .onEnded { value in
                 guard isTop else { return }
-                // 임계값 못 넘으면 스프링으로 제자리 복귀
+                let incomingID = cardStackViewModel.voteCardData.last?.id
+
+                // 임계값 못 넘으면 스프링으로 제자리 복귀 (끌려오던 이전 카드는 다시 화면 밖으로).
                 guard abs(value.translation.width) > swipeThreshold else {
-                    withAnimation(.spring()) { cardOffsets[cardID] = .zero }
+                    withAnimation(.spring()) {
+                        cardOffsets[cardID] = .zero
+                        if let incomingID {
+                            cardOffsets[incomingID] = CGSize(width: offscreenOffset, height: 0)
+                        }
+                    }
+                    pulledInCardID = nil
                     return
                 }
-                // 넘겼으면 그 방향으로 화면 밖까지 날려보내고,
-                // 애니메이션이 끝난 뒤(completion)에만 실제로 데이터를 옮겨서
-                // 카드가 사라지는 것과 다음 카드가 앞으로 오는 게 자연스럽게 이어지게 함
+
                 let direction: CGFloat = value.translation.width > 0 ? 1 : -1
-                withAnimation(.easeOut(duration: 0.25)) {
-                    cardOffsets[cardID] = CGSize(width: direction * 600, height: 0)
-                } completion: {
-                    if direction > 0 {
+                if direction > 0 {
+                    // 오른쪽 스와이프 — 기존 카드를 화면 밖까지 마저 날려보내고, 끝난 뒤에만
+                    // 실제로 맨 뒤로 옮겨서 카드가 사라지는 것과 다음 카드가 앞으로 오는 게
+                    // 자연스럽게 이어지게 함.
+                    withAnimation(.easeOut(duration: 0.25)) {
+                        cardOffsets[cardID] = CGSize(width: offscreenOffset, height: 0)
+                    } completion: {
                         cardStackViewModel.moveTopCardToBack()
                         cardOffsets[cardID] = .zero
-                    } else {
-                        // 왼쪽 스와이프는 "뒤로가기" — 방금 넘긴 카드(cardID)가 아니라 그 이전에
-                        // 보고 있던 카드(맨 뒤에 있던 카드)를 다시 맨 앞으로 가져온다.
-                        guard let incomingID = cardStackViewModel.voteCardData.last?.id else { return }
+                    }
+                } else {
+                    // 왼쪽 스와이프(뒤로가기) — 이미 손가락을 따라 오른쪽에서 끌려들어오고 있던
+                    // 이전 카드를, 오른쪽으로 날려보내는 애니메이션(easeOut 0.25초)의 정확한
+                    // 역방향인 easeIn 0.25초로 마저 중앙까지 끌어온다.
+                    guard let incomingID else { return }
+                    withAnimation(.easeIn(duration: 0.25)) {
+                        cardOffsets[incomingID] = .zero
+                    } completion: {
                         cardStackViewModel.moveBackCardToFront()
-                        // 들어오는 카드는 화면 오른쪽 밖(600)에서 시작.
-                        cardOffsets[incomingID] = CGSize(width: 600, height: 0)
-                        // 오른쪽으로 날려보내는 애니메이션(0 → 600, easeOut 0.25초)의 정확한
-                        // 역방향인 easeIn 0.25초로, 들어오는 카드(600 → 0)와 방금 밀려난 카드
-                        // (-600 → 0, 스택 안으로 복귀)를 동시에 되감는다.
-                        withAnimation(.easeIn(duration: 0.25)) {
-                            cardOffsets[incomingID] = .zero
-                            cardOffsets[cardID] = .zero
-                        }
+                        pulledInCardID = nil
+                        cardOffsets[cardID] = .zero
                     }
                 }
             }
