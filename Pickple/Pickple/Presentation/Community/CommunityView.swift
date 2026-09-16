@@ -14,6 +14,7 @@ struct CommunityView: View {
     @Environment(\.isLoggedIn) private var isLoggedIn
     @Environment(\.appRequestLogin) private var appRequestLogin
     @Environment(\.apiClient) private var apiClient
+    @Environment(TabBarVisibilityController.self) private var tabBarVisibility
     @State private var showsLoginRequired = false
     @State private var showsTypeSelection = false
     @State private var writeFlowType: VoteType?
@@ -105,9 +106,13 @@ struct CommunityView: View {
                     }
                 }
             }
-            .toolbar(communityViewModel.isScrolledDown ? .hidden : .visible, for: .tabBar)
             .task {
                 await communityViewModel.loadPosts()
+            }
+            .onChange(of: communityViewModel.isScrolledDown) { _, newValue in
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    tabBarVisibility.isHidden = newValue
+                }
             }
             .onChange(of: communityViewModel.selectedCategory) { _, _ in
                 communityViewModel.isSortExpanded = false
@@ -143,10 +148,12 @@ struct CommunityView: View {
     CommunityView(communityViewModel: CommunityViewModel())
         .environment(CommunityRouter())
         .environment(\.isLoggedIn, false)
+        .environment(TabBarVisibilityController())
 }
 
 #Preview("로그인") {
     CommunityView(communityViewModel: CommunityViewModel())
         .environment(CommunityRouter())
         .environment(\.isLoggedIn, true)
+        .environment(TabBarVisibilityController())
 }

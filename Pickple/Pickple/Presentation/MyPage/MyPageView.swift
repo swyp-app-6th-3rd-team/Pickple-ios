@@ -12,10 +12,10 @@ struct MyPageView: View {
     let myPageViewModel: MyPageViewModel
     @Environment(MyPageRouter.self) private var myPageRouter
     @Environment(\.appRequestLogin) private var appRequestLogin
+    @Environment(TabBarVisibilityController.self) private var tabBarVisibility
     @State private var showsLoginRequired = false
     @State private var showsMyPostsLoginRequired = false
     @State private var showsInfoLoginRequired = false
-    @State private var isScrolledDown = false
 
     private static let scrollDownThreshold: CGFloat = 20
 
@@ -98,7 +98,7 @@ struct MyPageView: View {
                 geometry.contentOffset.y
             } action: { _, newValue in
                 withAnimation(.easeInOut(duration: 0.2)) {
-                    isScrolledDown = newValue > Self.scrollDownThreshold
+                    tabBarVisibility.isHidden = newValue > Self.scrollDownThreshold
                 }
             }
 
@@ -150,7 +150,6 @@ struct MyPageView: View {
                 }
             }
         }
-        .toolbar(isScrolledDown ? .hidden : .visible, for: .tabBar)
         .task {
             await myPageViewModel.loadUserInfo()
             await myPageViewModel.loadMyPosts()
@@ -161,4 +160,5 @@ struct MyPageView: View {
 #Preview {
     MyPageView(myPageViewModel: MyPageViewModel())
         .environment(MyPageRouter())
+        .environment(TabBarVisibilityController())
 }

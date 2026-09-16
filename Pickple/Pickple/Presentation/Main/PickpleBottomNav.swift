@@ -16,12 +16,26 @@ struct PickpleBottomNav: View {
     @State private var communityRouter = CommunityRouter()
     @State private var myPageRouter = MyPageRouter()
     @State private var myPageViewModel: MyPageViewModel
+    // 홈/커뮤니티/마이페이지 각 화면이 스크롤 위치에 따라 이 값을 바꾸면, 아래 커스텀 바가
+    // offset(y:)로 실제로 위아래로 슬라이드한다. 네이티브 탭바(.toolbar(_:for:.tabBar))는
+    // 숨김 애니메이션 방식(페이드/슬라이드)을 우리가 고를 수 없어서 직접 그린 바로 대체했다.
+    @State private var tabBarVisibility = TabBarVisibilityController()
 
     init(myPageViewModel: MyPageViewModel = MyPageViewModel()) {
         _myPageViewModel = State(initialValue: myPageViewModel)
     }
 
     var body: some View {
+        ZStack(alignment: .bottom) {
+            tabView
+            CustomTabBar(selectedTab: $selectedTab)
+                .offset(y: tabBarVisibility.isHidden ? CustomTabBar.height + 40 : 0)
+                .animation(.easeInOut(duration: 0.2), value: tabBarVisibility.isHidden)
+        }
+        .environment(tabBarVisibility)
+    }
+
+    private var tabView: some View {
         TabView(selection: $selectedTab) {
             NavigationStack(path: $mainRouter.path) {
                 MainView(
@@ -104,6 +118,14 @@ struct PickpleBottomNav: View {
             .tag(2)
         }
         .tint(Color.navy60)
+        // 우리가 직접 그린 CustomTabBar로 대체하므로 네이티브 탭바는 항상 숨긴다.
+        .toolbar(.hidden, for: .tabBar)
+        // 네이티브 탭바가 사라지면서 각 화면이 확보하던 하단 여백도 같이 없어지므로,
+        // 콘텐츠가 항상 CustomTabBar 높이만큼 안전 영역을 갖도록 자리만 비워둔다
+        // (실제로 보이는 바는 위 ZStack의 CustomTabBar가 그 위에 겹쳐서 그린다).
+        .safeAreaInset(edge: .bottom) {
+            Color.clear.frame(height: CustomTabBar.height)
+        }
         // 탭을 떠날 때 그 탭의 네비게이션 스택을 비워둔다 — 그래야 다른 탭에 갔다가 다시
         // 돌아왔을 때 마지막에 보던 상세 화면이 아니라 항상 목록(루트)부터 보인다.
         .onChange(of: selectedTab) { oldValue, _ in
