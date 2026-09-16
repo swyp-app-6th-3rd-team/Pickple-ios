@@ -25,6 +25,10 @@ struct CardStackView: View {
 
     private let swipeThreshold: CGFloat = 120
     private let offscreenOffset: CGFloat = 600
+    // 기존 0.25초 duration은 offscreenOffset(600)을 그 시간에 주파하는 속도였다 — 남은 거리가
+    // 손을 뗀 위치에 따라 달라지므로, duration을 고정하는 대신 이 속도(pt/s)로 고정해서 dismiss와
+    // 뒤로가기 진입이 항상 같은 체감 속도로 움직이게 한다.
+    private let flingVelocity: CGFloat = 600 / 0.25
 
     var body: some View {
         ZStack {
@@ -129,8 +133,10 @@ struct CardStackView: View {
                 if direction > 0 {
                     // 오른쪽 스와이프 — 기존 카드를 화면 밖까지 마저 날려보내고, 끝난 뒤에만
                     // 실제로 맨 뒤로 옮겨서 카드가 사라지는 것과 다음 카드가 앞으로 오는 게
-                    // 자연스럽게 이어지게 함.
-                    withAnimation(.easeOut(duration: 0.25)) {
+                    // 자연스럽게 이어지게 함. duration을 고정하지 않고 남은 거리 기준으로 계산해서,
+                    // 어디서 손을 떼든 flingVelocity와 같은 속도로 날아가게 한다.
+                    let remaining = abs(offscreenOffset - (cardOffsets[cardID] ?? .zero).width)
+                    withAnimation(.easeOut(duration: remaining / flingVelocity)) {
                         cardOffsets[cardID] = CGSize(width: offscreenOffset, height: 0)
                     } completion: {
                         cardStackViewModel.moveTopCardToBack()
@@ -138,10 +144,11 @@ struct CardStackView: View {
                     }
                 } else {
                     // 왼쪽 스와이프(뒤로가기) — 이미 손가락을 따라 오른쪽에서 끌려들어오고 있던
-                    // 이전 카드를, 오른쪽으로 날려보내는 애니메이션(easeOut 0.25초)의 정확한
-                    // 역방향인 easeIn 0.25초로 마저 중앙까지 끌어온다.
+                    // 이전 카드를 마저 중앙까지 끌어온다. 오른쪽 dismiss와 똑같이 flingVelocity
+                    // 기준으로 duration을 계산해서, 남은 거리와 무관하게 체감 속도가 같게 한다.
                     guard let incomingID else { return }
-                    withAnimation(.easeIn(duration: 0.25)) {
+                    let remaining = (cardOffsets[incomingID] ?? .zero).width
+                    withAnimation(.easeIn(duration: remaining / flingVelocity)) {
                         cardOffsets[incomingID] = .zero
                     } completion: {
                         cardStackViewModel.moveBackCardToFront()
