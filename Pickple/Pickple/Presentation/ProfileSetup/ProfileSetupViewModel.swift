@@ -26,9 +26,7 @@ class ProfileSetupViewModel {
     var isNicknameAvailable = false
     // 중복확인 요청이 아직 응답을 기다리는 중인지 — 텍스트필드에 "작성중" 상태를 보여주는 데 쓴다.
     var isCheckingNickname = false
-    // onChange마다 바로 요청을 보내면 타이핑 중에 매 글자마다 서버를 두드리게 되므로,
-    // 이 시간만큼 입력이 멈추길 기다렸다가 확인한다. 테스트에서는 .zero로 낮춰서 바로 검증한다.
-    var nicknameCheckDebounce: Duration = .milliseconds(400)
+    // 입력이 바뀔 때마다 이전 요청을 취소하고 새로 확인한다(디바운스 없이 매 입력마다 바로 요청).
     private var nicknameCheckTask: Task<Void, Never>?
 
     let nicknameMaxLength = 5
@@ -79,9 +77,9 @@ class ProfileSetupViewModel {
         nicknameDuplicateMessage = nil
     }
 
-    // 텍스트필드가 바뀔 때마다(키 입력마다) 호출된다. 매번 바로 서버를 두드리지 않고
-    // nicknameCheckDebounce만큼 입력이 멈추길 기다린 뒤 중복확인을 실행하고, 그 사이에
-    // 또 바뀌면 이전 대기 중이던 확인은 취소한다.
+    // 텍스트필드가 바뀔 때마다(키 입력마다) 호출된다. 디바운스 없이 바로 중복확인을 실행하되,
+    // 이전 요청이 아직 응답을 안 받았으면 취소하고 새 값으로 다시 요청한다(응답이 입력 순서와
+    // 다르게 도착해서 최신 입력값 결과를 옛날 응답이 덮어쓰는 걸 방지).
     @MainActor
     func nicknameDidChange() {
         resetNicknameDuplicateState()
@@ -99,10 +97,7 @@ class ProfileSetupViewModel {
         }
 
         nicknameCheckTask = Task { [weak self] in
-            guard let self else { return }
-            try? await Task.sleep(for: self.nicknameCheckDebounce)
-            guard !Task.isCancelled else { return }
-            await self.checkNicknameAvailability()
+            await self?.checkNicknameAvailability()
         }
     }
 

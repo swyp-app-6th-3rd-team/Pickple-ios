@@ -126,7 +126,6 @@ final class ProfileSetupViewModelTests: XCTestCase {
         let spy = SpyProfileRepository()
         spy.availability = NicknameAvailability(isAvailable: true, message: "사용 가능한 닉네임")
         let viewModel = ProfileSetupViewModel(profileRepository: spy)
-        viewModel.nicknameCheckDebounce = .zero
 
         viewModel.nickname = "picker"
         viewModel.nicknameDidChange()
@@ -141,7 +140,6 @@ final class ProfileSetupViewModelTests: XCTestCase {
         let spy = SpyProfileRepository()
         spy.availability = NicknameAvailability(isAvailable: false, message: "이미 사용 중인 닉네임이에요")
         let viewModel = ProfileSetupViewModel(profileRepository: spy)
-        viewModel.nicknameCheckDebounce = .zero
 
         viewModel.nickname = "picker"
         viewModel.nicknameDidChange()
@@ -155,7 +153,6 @@ final class ProfileSetupViewModelTests: XCTestCase {
     func test_nicknameDidChange_whenUnchangedFromOriginal_skipsNetworkCheck() async {
         let spy = SpyProfileRepository()
         let viewModel = ProfileSetupViewModel(profileRepository: spy)
-        viewModel.nicknameCheckDebounce = .zero
         await viewModel.loadCurrentProfile()   // originalNickname = "picker" (SpyProfileRepository 기준)
 
         viewModel.nicknameDidChange()
