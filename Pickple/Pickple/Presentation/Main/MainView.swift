@@ -98,7 +98,11 @@ struct MainView: View {
             }
             .coordinateSpace(name: Self.scrollCoordinateSpace)
             .onPreferenceChange(ScrollOffsetPreferenceKey.self) { minY in
-                isScrolledDown = minY < -Self.scrollDownThreshold
+                let newValue = minY < -Self.scrollDownThreshold
+                if newValue != isScrolledDown {
+                    print("[탭바 디버그] minY=\(minY), isScrolledDown \(isScrolledDown) -> \(newValue)")
+                }
+                isScrolledDown = newValue
             }
 
             if cardStackViewModel.showsLoginRequired {
