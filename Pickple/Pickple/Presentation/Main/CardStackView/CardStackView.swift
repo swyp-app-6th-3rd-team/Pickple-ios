@@ -31,7 +31,7 @@ struct CardStackView: View {
     private let flingVelocity: CGFloat = 600 / 0.25
     // 뒤로가기 중 이전 카드를 끌어오는 속도 배수 — offscreenOffset(600pt)을 swipeThreshold
     // 근처(약 200pt) 드래그만으로 다 끌어올 수 있게 잡은 값.
-    private let pullInDragMultiplier: CGFloat = 3
+    private let pullInDragMultiplier: CGFloat = 2.5
 
     var body: some View {
         ZStack {
