@@ -41,19 +41,27 @@ struct CustomTabBar: View {
         }
         .frame(height: Self.height)
         .background(alignment: .top) {
-            // 네이티브 탭바에 최대한 가깝게: 그림자 대신 얇은 구분선 하나만 위에 긋고,
-            // 배경은 시스템 바 소재(.bar)를 써서 라이트/다크 모드와 아래 콘텐츠에 맞춰
-            // 자동으로 반투명하게 비친다. 배경만 safe area(홈 인디케이터) 아래까지
-            // 이어지게 하고, 아이콘/라벨은 그대로 안전 영역 안에 머문다.
-            VStack(spacing: 0) {
-                Rectangle()
-                    .fill(Color.navy10)
-                    .frame(height: 0.5)
+            // 기준은 iOS 26의 Liquid Glass 탭바 룩 — glassEffect()로 진짜 시스템 유리
+            // 소재를 그대로 쓴다. 26 미만(우리 배포 타겟은 18.0)에서는 이 API 자체가
+            // 없어서, 얇은 구분선 + 시스템 바 블러 소재(.bar)로 최대한 비슷하게 흉내만
+            // 낸다. 배경만 safe area(홈 인디케이터) 아래까지 이어지게 하고, 아이콘/라벨은
+            // 그대로 안전 영역 안에 머문다.
+            if #available(iOS 26.0, *) {
                 Rectangle()
                     .fill(.clear)
+                    .glassEffect(.regular, in: Rectangle())
+                    .ignoresSafeArea(edges: .bottom)
+            } else {
+                VStack(spacing: 0) {
+                    Rectangle()
+                        .fill(Color.navy10)
+                        .frame(height: 0.5)
+                    Rectangle()
+                        .fill(.clear)
+                }
+                .background(.bar)
+                .ignoresSafeArea(edges: .bottom)
             }
-            .background(.bar)
-            .ignoresSafeArea(edges: .bottom)
         }
     }
 }
