@@ -96,6 +96,7 @@ class ProfileSetupViewModel {
             // 판정해버린다. 그러면 사진만 바꾸는 수정조차 매번 중복 에러로 실패하던 문제가 있었다.
             if nickname != originalNickname {
                 let availability = try await profileRepository.checkNicknameAvailability(nickname)
+                print("[닉네임 중복확인] \"\(nickname)\" -> \(availability.isAvailable ? "사용 가능" : "중복") (message: \(availability.message))")
                 guard availability.isAvailable else {
                     isNicknameDuplicate = true
                     nicknameDuplicateMessage = availability.message
