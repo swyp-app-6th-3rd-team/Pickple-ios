@@ -96,7 +96,11 @@ struct MainView: View {
             .onScrollGeometryChange(for: CGFloat.self) { geometry in
                 geometry.contentOffset.y
             } action: { _, newValue in
-                isScrolledDown = newValue > Self.scrollDownThreshold
+                // 탭바처럼 시스템이 그리는 chrome은 .animation(_:value:) 앰비언트 모디파이어로는
+                // 잘 안 실려서, 상태를 바꾸는 시점에 직접 withAnimation으로 감싼다.
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isScrolledDown = newValue > Self.scrollDownThreshold
+                }
             }
 
             if cardStackViewModel.showsLoginRequired {
@@ -132,7 +136,6 @@ struct MainView: View {
             }
         }
         .toolbar(isScrolledDown ? .hidden : .visible, for: .tabBar)
-        .animation(.easeInOut(duration: 0.2), value: isScrolledDown)
         // .task는 이 화면이 처음 생성될 때 딱 한 번만 실행된다 — 게시글 상세 등 다른 화면에서
         // 투표하고 홈으로 돌아와도 카드스택은 그 변화를 몰라 예전(미투표) 상태 그대로 남는
         // 문제가 있었다. .onAppear로 바꿔서 홈 탭에 다시 보일 때마다 새로 불러온다.

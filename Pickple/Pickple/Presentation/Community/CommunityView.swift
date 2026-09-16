@@ -106,7 +106,6 @@ struct CommunityView: View {
                 }
             }
             .toolbar(communityViewModel.isScrolledDown ? .hidden : .visible, for: .tabBar)
-            .animation(.easeInOut(duration: 0.2), value: communityViewModel.isScrolledDown)
             .task {
                 await communityViewModel.loadPosts()
             }

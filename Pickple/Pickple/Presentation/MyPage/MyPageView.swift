@@ -97,7 +97,9 @@ struct MyPageView: View {
             .onScrollGeometryChange(for: CGFloat.self) { geometry in
                 geometry.contentOffset.y
             } action: { _, newValue in
-                isScrolledDown = newValue > Self.scrollDownThreshold
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isScrolledDown = newValue > Self.scrollDownThreshold
+                }
             }
 
             if showsLoginRequired {
@@ -149,7 +151,6 @@ struct MyPageView: View {
             }
         }
         .toolbar(isScrolledDown ? .hidden : .visible, for: .tabBar)
-        .animation(.easeInOut(duration: 0.2), value: isScrolledDown)
         .task {
             await myPageViewModel.loadUserInfo()
             await myPageViewModel.loadMyPosts()

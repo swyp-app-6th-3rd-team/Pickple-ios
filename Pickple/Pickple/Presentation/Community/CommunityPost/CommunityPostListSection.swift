@@ -41,7 +41,9 @@ struct CommunityPostListSection: View {
             .onScrollGeometryChange(for: CGFloat.self) { geometry in
                 geometry.contentOffset.y
             } action: { _, newValue in
-                communityViewModel.isScrolledDown = newValue > CommunityViewModel.scrollDownThreshold
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    communityViewModel.isScrolledDown = newValue > CommunityViewModel.scrollDownThreshold
+                }
             }
         }
     }
