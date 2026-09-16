@@ -36,7 +36,7 @@ struct CardStackView: View {
     private let flingVelocity: CGFloat = 600 / 0.25
     // 뒤로가기 중 이전 카드를 끌어오는 속도 배수 — offscreenOffset(600pt)을 swipeThreshold
     // 근처(약 200pt) 드래그만으로 다 끌어올 수 있게 잡은 값.
-    private let pullInDragMultiplier: CGFloat = 2.5
+    private let pullInDragMultiplier: CGFloat = 1.5
 
     var body: some View {
         ZStack {
@@ -147,12 +147,23 @@ struct CardStackView: View {
                     // 자연스럽게 이어지게 함. duration을 고정하지 않고 남은 거리 기준으로 계산해서,
                     // 어디서 손을 떼든 flingVelocity와 같은 속도로 날아가게 한다.
                     let remaining = abs(offscreenOffset - (cardOffsets[cardID] ?? .zero).width)
-                    withAnimation(.easeOut(duration: remaining / flingVelocity)) {
-                        cardOffsets[cardID] = CGSize(width: offscreenOffset, height: 0)
-                    } completion: {
+                    func finishDismiss() {
                         cardStackViewModel.moveTopCardToBack()
                         cardOffsets[cardID] = .zero
                         isAnimating = false
+                    }
+                    // 남은 거리가 없으면(이미 목표값이면) withAnimation이 실제 값 변화가 없다고
+                    // 보고 트랜잭션 자체를 안 만들어서 completion이 영영 안 불릴 수 있다 — 그러면
+                    // isAnimating이 true로 계속 남아 스택 전체가 멈춘다. 이 경우 애니메이션 없이
+                    // 바로 마무리한다.
+                    if remaining <= 0 {
+                        finishDismiss()
+                    } else {
+                        withAnimation(.easeOut(duration: remaining / flingVelocity)) {
+                            cardOffsets[cardID] = CGSize(width: offscreenOffset, height: 0)
+                        } completion: {
+                            finishDismiss()
+                        }
                     }
                 } else {
                     // 왼쪽 스와이프(뒤로가기) — 이미 손가락을 따라 오른쪽에서 끌려들어오고 있던
@@ -163,13 +174,26 @@ struct CardStackView: View {
                         return
                     }
                     let remaining = (cardOffsets[incomingID] ?? .zero).width
-                    withAnimation(.easeIn(duration: remaining / flingVelocity)) {
-                        cardOffsets[incomingID] = .zero
-                    } completion: {
+                    func finishPullIn() {
                         cardStackViewModel.moveBackCardToFront()
                         pulledInCardID = nil
                         cardOffsets[cardID] = .zero
+                        cardOffsets[incomingID] = .zero
                         isAnimating = false
+                    }
+                    // 빠르고 길게 끌면 손을 떼기 전에 pulledIn이 이미 offscreenOffset의
+                    // max(...,0) 클램프에 걸려 0에 도달해있을 수 있다 — 그러면 아래 withAnimation이
+                    // .zero를 .zero로 재대입하는 셈이라 실제 값 변화가 없고, completion이 영영 안
+                    // 불려 isAnimating이 true로 멈춰버린다(실제로 재현됐던 "카드스택이 멈추는" 버그의
+                    // 원인). 이 경우도 애니메이션 없이 바로 마무리한다.
+                    if remaining <= 0 {
+                        finishPullIn()
+                    } else {
+                        withAnimation(.easeIn(duration: remaining / flingVelocity)) {
+                            cardOffsets[incomingID] = .zero
+                        } completion: {
+                            finishPullIn()
+                        }
                     }
                 }
             }
