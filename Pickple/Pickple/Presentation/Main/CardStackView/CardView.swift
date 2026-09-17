@@ -29,6 +29,7 @@ struct CardView: View {
                     .frame(width: 333, height: 526)
                     .scaledToFill()
                     .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .shadow(color: Color.black.opacity(0.08), radius: 12)
 
                     bottomGradient
                     .clipShape(RoundedRectangle(cornerRadius: 16))
