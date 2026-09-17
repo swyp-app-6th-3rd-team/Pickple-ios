@@ -18,11 +18,16 @@ struct PickpleApp: App {
 
     init() {
         let tokenStore = InMemoryTokenStore()
-        let apiClient = APIClient(baseURL: APIEnvironment.devBaseURL, tokenProvider: tokenStore)
+        let refreshTokenStore = KeychainRefreshTokenStore()
+        let apiClient = APIClient(
+            baseURL: APIEnvironment.devBaseURL,
+            tokenProvider: tokenStore,
+            tokenStore: tokenStore,
+            refreshTokenStore: refreshTokenStore
+        )
         let authRepository = RemoteAuthRepository(apiClient: apiClient)
         let profileRepository = RemoteProfileRepository(apiClient: apiClient)
-        let refreshTokenStore = KeychainRefreshTokenStore()
-        
+
         guard let kakaoNativeAppKey = Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] as? String else {
             fatalError("Info.plist에 KAKAO_NATIVE_APP_KEY가 없습니다")
         }

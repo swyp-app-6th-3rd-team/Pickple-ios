@@ -22,11 +22,14 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
     private let session: URLSession
     private let tokenProvider: AccessTokenProviding
     private let decoder: JSONDecoder
+    private let tokenRefresher: TokenRefresher?
 
     init(
         baseURL: URL,
         session: URLSession = .shared,
-        tokenProvider: AccessTokenProviding
+        tokenProvider: AccessTokenProviding,
+        tokenStore: InMemoryTokenStore? = nil,
+        refreshTokenStore: RefreshTokenStoring? = nil
     ) {
         self.baseURL = baseURL
         self.session = session
@@ -35,6 +38,20 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .custom(Self.decodeFlexibleDate)
         self.decoder = decoder
+
+        // tokenStore/refreshTokenStore를 둘 다 받았을 때만 401 자동 재발급을 켠다 — 로그인
+        // 전 임시 APIClient(APIClientEnvironment 기본값 등)처럼 갱신이 의미 없는 곳에서는 nil로 둔다.
+        if let tokenStore, let refreshTokenStore {
+            self.tokenRefresher = TokenRefresher(refreshTokenStore: refreshTokenStore, tokenStore: tokenStore) { [decoder, baseURL, session] (refreshToken: String) async throws -> AuthTokens in
+                let body = try JSONEncoder().encode(MobileRefreshRequestDTO(refreshToken: refreshToken))
+                let endpoint = APIEndpoint(method: .post, path: "/auth/mobile/refresh", body: body, requiresAuth: false)
+                let (data, _) = try await Self.rawSend(endpoint, baseURL: baseURL, session: session, token: nil)
+                let dto = try decoder.decode(APIEnvelope<AuthTokensDTO>.self, from: data).returnObject
+                return AuthTokens(accessToken: dto.accessToken, refreshToken: dto.refreshToken)
+            }
+        } else {
+            self.tokenRefresher = nil
+        }
     }
 
     func request<T: Decodable>(_ endpoint: APIEndpoint) async throws -> T {
@@ -51,7 +68,41 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
     }
 
     // 요청을 만들어 보내고, 성공(2xx)이면 응답 데이터를 그대로 돌려준다. 실패면 서버가 준 code/message를 담아 던진다.
-    private func send(_ endpoint: APIEndpoint) async throws -> (Data, HTTPURLResponse) {
+    // 401을 받으면(토큰을 실었던 요청에 한해) accessToken을 한 번 재발급받고 그 요청만 재시도한다 —
+    // 그래서 앱을 오래 켜둬서 토큰이 만료돼도 다시 로그인할 때까지 모든 요청이 조용히 실패하지 않는다.
+    private func send(_ endpoint: APIEndpoint, isRetry: Bool = false) async throws -> (Data, HTTPURLResponse) {
+        var token: String?
+        if endpoint.requiresAuth {
+            guard let requiredToken = await tokenProvider.accessToken() else {
+                throw APIError.unauthorized
+            }
+            token = requiredToken
+        } else if endpoint.attachesAuthIfAvailable {
+            token = await tokenProvider.accessToken()
+        }
+
+        let (data, httpResponse) = try await Self.rawSend(endpoint, baseURL: baseURL, session: session, token: token)
+
+        guard (200..<300).contains(httpResponse.statusCode) else {
+            if httpResponse.statusCode == 401 {
+                if !isRetry, token != nil, let tokenRefresher, (try? await tokenRefresher.refreshedAccessToken()) != nil {
+                    return try await send(endpoint, isRetry: true)
+                }
+                throw APIError.unauthorized
+            }
+            if let meta = try? decoder.decode(APIEnvelopeMeta.self, from: data) {
+                throw APIError.server(code: meta.code, message: meta.message)
+            }
+            throw APIError.server(code: "HTTP_\(httpResponse.statusCode)", message: "요청이 실패했습니다")
+        }
+
+        return (data, httpResponse)
+    }
+
+    // send()의 순수 HTTP 부분(요청 조립 + 전송)만 떼어낸 static 버전 — TokenRefresher에 넘기는
+    // 재발급 클로저가 init 시점에 만들어지는데, 그 안에서 self의 인스턴스 메서드(send)를 쓰면
+    // "self가 아직 다 초기화되지 않았다"는 제약에 걸려서 정적으로 필요한 값만 받아 처리한다.
+    private static func rawSend(_ endpoint: APIEndpoint, baseURL: URL, session: URLSession, token: String?) async throws -> (Data, HTTPURLResponse) {
         guard var components = URLComponents(url: baseURL.appendingPathComponent(endpoint.path), resolvingAgainstBaseURL: false) else {
             throw APIError.invalidURL
         }
@@ -74,12 +125,7 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
                 request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             }
         }
-        if endpoint.requiresAuth {
-            guard let token = await tokenProvider.accessToken() else {
-                throw APIError.unauthorized
-            }
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        } else if endpoint.attachesAuthIfAvailable, let token = await tokenProvider.accessToken() {
+        if let token {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
@@ -93,16 +139,6 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.transport("HTTPURLResponse가 아님")
-        }
-
-        guard (200..<300).contains(httpResponse.statusCode) else {
-            if httpResponse.statusCode == 401 {
-                throw APIError.unauthorized
-            }
-            if let meta = try? decoder.decode(APIEnvelopeMeta.self, from: data) {
-                throw APIError.server(code: meta.code, message: meta.message)
-            }
-            throw APIError.server(code: "HTTP_\(httpResponse.statusCode)", message: "요청이 실패했습니다")
         }
 
         return (data, httpResponse)

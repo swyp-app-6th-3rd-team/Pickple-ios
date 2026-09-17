@@ -15,6 +15,8 @@ private struct APIClientKey: EnvironmentKey {
         baseURL: APIEnvironment.devBaseURL,
         tokenProvider: InMemoryTokenStore()
     )
+    // tokenStore/refreshTokenStore를 안 줬으니 401이 나도 재발급을 시도하지 않는다(APIClient
+    // 참고) — 이 기본값 자체가 "실수로 쓰였을 때 바로 티가 나야 하는" 자리라 의도된 동작이다.
 }
 
 extension EnvironmentValues {
