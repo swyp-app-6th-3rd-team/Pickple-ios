@@ -8,12 +8,18 @@ import Foundation
 
 // 타입(찬반/AB)별로 독립적으로 관리하는 카드 상태 — 탭을 오가도 서로 진행 상태가 안 섞인다.
 // pending: 서버에서 받아왔지만 아직 화면에 보여준 적 없는 카드.
-// history: 스와이프로 넘긴(뒤로가기로 되돌아올 수 있는) 카드.
+// history: 뒤로가기 전용 스택(LIFO) — 가장 최근에 넘긴 카드부터 popLast()로 꺼낸다.
+// recyclePool: 콘텐츠 소진(hasNext=false) 시 순환 재활용 전용 — history와 별개로 독립
+// 운영한다. 처음엔 이 둘을 history 하나로 같이 썼는데(뒤로가기는 popLast, 재활용은
+// removeFirst), 같은 배열을 서로 다른 용도로 양쪽에서 파먹다 보니 voteCardData에 카드
+// id가 중복되는 버그가 생겼다 — 용도별로 완전히 분리해서 재활용 쪽은 "지금 화면에 이미
+// 떠 있는 카드는 절대 안 고른다"는 조건 하나로 안전하게 만든다.
 // displayed: 이 타입이 화면에 없는 동안(다른 탭을 보는 동안) 보관해두는 스택 스냅샷 —
 // 다시 이 탭으로 돌아왔을 때 그대로 복원한다.
 private struct CardBuffer {
     var pending: [VoteCard] = []
     var history: [VoteCard] = []
+    var recyclePool: [VoteCard] = []
     var displayed: [VoteCard] = []
     var cursor: String?
     var hasNext = false
@@ -119,21 +125,40 @@ class CardStackViewModel {
         guard !voteCardData.isEmpty else { return }
         let card = voteCardData.removeFirst()
         buffers[currentType]?.history.append(card)
+        // recyclePool엔 "이 타입에서 지금까지 본 적 있는 카드 전체"를 중복 없이 쌓아둔다 —
+        // 재활용 카드가 다시 넘겨질 때도 이 줄을 타지만, 이미 들어있으면 다시 안 넣는다.
+        if buffers[currentType]?.recyclePool.contains(where: { $0.id == card.id }) == false {
+            buffers[currentType]?.recyclePool.append(card)
+        }
 
         if let next = buffers[currentType]?.pending.first {
             buffers[currentType]?.pending.removeFirst()
             voteCardData.append(next)
+            logIfDuplicate(after: "pending pull", cardID: next.id)
         } else if buffers[currentType]?.hasNext == false,
-                  (buffers[currentType]?.history.count ?? 0) > 1,
-                  let recycled = buffers[currentType]?.history.first {
+                  let recycled = buffers[currentType]?.recyclePool.first(where: { candidate in
+                      !voteCardData.contains(where: { $0.id == candidate.id })
+                  }) {
             // 서버가 더 줄 카드가 없다고 확인된 경우(hasNext=false)에만 쓰는 마지막 안전장치 —
-            // 가장 오래전에 넘긴 카드를 재활용한다. history.count > 1 조건은 방금 막 history에
-            // 넣은 카드(자기 자신) 하나뿐일 때 그 카드를 바로 재활용해버리는 걸 막기 위함.
-            buffers[currentType]?.history.removeFirst()
-            print("[CardStack] pending 소진 + hasNext=false — history에서 재활용 (type=\(currentType), cardID=\(recycled.id))")
+            // recyclePool에서 "지금 voteCardData에 이미 떠 있지 않은" 카드만 고르므로, 어떤
+            // 타이밍이든 같은 카드가 동시에 두 번 보이는 일이 구조적으로 불가능하다.
             voteCardData.append(recycled)
+            logIfDuplicate(after: "recyclePool 재활용", cardID: recycled.id)
         }
         Task { await refillPendingIfNeeded(for: currentType) }
+    }
+
+    // 임시 디버깅용 — voteCardData에 중복 id가 생기면 그 순간의 전체 상태를 찍는다.
+    @MainActor
+    private func logIfDuplicate(after label: String, cardID: Int) {
+        let ids = voteCardData.map(\.id)
+        guard Set(ids).count != ids.count else { return }
+        let buffer = buffers[currentType]
+        print("[CardStack] ⚠️ 중복 발생 — \(label) 직후, cardID=\(cardID)")
+        print("[CardStack]   voteCardData=\(ids)")
+        print("[CardStack]   pending=\(buffer?.pending.map(\.id) ?? [])")
+        print("[CardStack]   history=\(buffer?.history.map(\.id) ?? [])")
+        print("[CardStack]   displayed=\(buffer?.displayed.map(\.id) ?? [])")
     }
 
     // 왼쪽 스와이프(뒤로가기) 전용 — history 맨 뒤(가장 최근에 넘긴) 카드를 다시 맨 앞으로
@@ -145,6 +170,7 @@ class CardStackViewModel {
     func moveBackCardToFront() -> VoteCard? {
         guard let card = buffers[currentType]?.history.popLast() else { return nil }
         voteCardData.insert(card, at: 0)
+        logIfDuplicate(after: "moveBackCardToFront insert", cardID: card.id)
 
         guard voteCardData.count > visibleStackSize else { return nil }
         let overflow = voteCardData.removeLast()
@@ -194,6 +220,7 @@ class CardStackViewModel {
             while voteCardData.count < visibleStackSize, let next = buffers[type]?.pending.first {
                 buffers[type]?.pending.removeFirst()
                 voteCardData.append(next)
+                logIfDuplicate(after: "refillPendingIfNeeded top-up", cardID: next.id)
             }
         }
     }

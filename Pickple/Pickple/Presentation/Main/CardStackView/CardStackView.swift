@@ -65,6 +65,7 @@ struct CardStackView: View {
                     .zIndex(Double(-index))
                     .rotationEffect(rotation(for: index, cardID: data.id))
                     .offset(cardOffsets[data.id] ?? .zero)
+                    .opacity(opacity(for: index))
                     // count가 바뀔 때(카드 제거)만 애니메이션 걸어서, 맨 앞으로 올라온 카드의
                     // 기울기가 rotation(for: 0)의 .zero로 스프링 애니메이션과 함께 자동으로 펴지게 함.
                     .animation(.spring(response: 0.4, dampingFraction: 0.8), value: cardStackViewModel.voteCardData.count)
@@ -145,15 +146,32 @@ struct CardStackView: View {
         switch index {
         case 1:
             // 맨 앞 카드가 지금 얼마나 드래그됐는지에 맞춰 펴진다 — 앞 카드 id로 조회한다.
-            let topWidth = cardStackViewModel.voteCardData.first.map { (cardOffsets[$0.id] ?? .zero).width } ?? 0
-            let progress = min(abs(topWidth) / rotationUnwindDistance, 1)
-            return .degrees(restingRotationDegrees * (1 - progress))
+            return .degrees(restingRotationDegrees * (1 - dragProgress))
+        case 2:
+            // 3번째 카드는 평소엔 더 눕혀진 각도(deepRestingRotationDegrees)로 살짝 숨어있다가,
+            // 앞 카드를 끄는 만큼 2번째 카드의 각도(restingRotationDegrees)로 따라 펴진다 —
+            // opacity(for:)와 같은 진행도(dragProgress)를 써서 회전과 등장이 같이 맞물린다.
+            return .degrees(deepRestingRotationDegrees + (restingRotationDegrees - deepRestingRotationDegrees) * dragProgress)
         default:
             return .degrees(restingRotationDegrees)
         }
     }
 
+    // 3번째 카드가 서서히 나타나는 정도 — 평소엔 거의 안 보이다가 앞 카드를 끄는 만큼
+    // (rotation의 dragProgress와 같은 기준으로) 점점 또렷해진다.
+    private func opacity(for index: Int) -> Double {
+        guard index == 2 else { return 1 }
+        return dragProgress
+    }
+
+    // 맨 앞 카드를 지금 얼마나 끌었는지(0~1) — rotation(1,2)과 opacity(2)가 공통으로 쓴다.
+    private var dragProgress: Double {
+        let topWidth = cardStackViewModel.voteCardData.first.map { (cardOffsets[$0.id] ?? .zero).width } ?? 0
+        return min(abs(topWidth) / rotationUnwindDistance, 1)
+    }
+
     private let restingRotationDegrees: Double = -5.0
+    private let deepRestingRotationDegrees: Double = -10.0
     private let rotationUnwindDistance: CGFloat = 320
     private let dragRotationDivisor: CGFloat = 20
     private let maxDragRotationDegrees: Double = 15
@@ -164,7 +182,12 @@ struct CardStackView: View {
                 guard let cardID = cardStackViewModel.voteCardData.first?.id else { return }
                 if value.translation.width >= 0 {
                     // 오른쪽으로 끄는 중 — 기존 카드가 손가락을 그대로 따라간다(틴더 스타일 dismiss).
+                    // 손가락이 완벽한 직선이 아니라 드래그 초반에 살짝 왼쪽으로 흔들렸다가
+                    // 바로잡는 경우가 있는데, 그 찰나에 세팅된 incomingBackCard를 여기서 안
+                    // 지우면 왼쪽 스와이프를 확정할 때만 지워지는 구조라 취소/오른쪽 스와이프
+                    // 후에도 이전 카드 오버레이가 zIndex(.infinity)로 계속 화면을 덮고 있었다.
                     pulledInCardID = nil
+                    incomingBackCard = nil
                     cardOffsets[cardID] = CGSize(width: value.translation.width, height: 0)
                 } else if let previous = cardStackViewModel.previousCard {
                     // 왼쪽으로 끄는 중 — "뒤로가기". 기존 카드는 그 자리에 그대로 두고, 이전 카드를
@@ -192,6 +215,7 @@ struct CardStackView: View {
                         }
                     }
                     pulledInCardID = nil
+                    incomingBackCard = nil
                     return
                 }
 
@@ -205,6 +229,8 @@ struct CardStackView: View {
                 // (또는 안 오든) 상호작용에는 전혀 영향이 없다.
                 let direction: CGFloat = value.translation.width > 0 ? 1 : -1
                 if direction > 0 {
+                    // onChanged에서 이미 지워지지만(방향이 오른쪽이면), 방어적으로 한 번 더.
+                    incomingBackCard = nil
                     let remaining = abs(offscreenOffset - (cardOffsets[cardID] ?? .zero).width)
                     let duration = remaining / flingVelocity
                     // moveTopCardToBack()이 부르는 즉시 이 카드는 voteCardData에서 빠져서
