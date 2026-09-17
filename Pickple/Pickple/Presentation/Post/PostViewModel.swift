@@ -135,6 +135,31 @@ class PostViewModel {
         }
     }
 
+    // 순차 공개(.revealed)로 새 필드가 나타난 단계 수 — 가격/URL처럼 게이지엔 안 잡히는
+    // 선택 입력도 다음 필드를 공개하는 트리거라 여기엔 포함한다. ForAgainstPostFieldSectionView/
+    // ABWriteView의 .revealed(...) 조건과 순서를 그대로 따른다. 늘어날 때만(새 필드 등장)
+    // 화면을 자동으로 아래로 스크롤하는 데 쓴다.
+    var revealedFieldStepCount: Int {
+        switch selectedType {
+        case .forAgainst:
+            let afterName = isCategorySelected && product.hasName
+            let afterPhoto = afterName && product.hasPhoto
+            let afterPrice = afterPhoto && !product.price.isEmpty
+            let afterUrl = afterPrice && !product.url.isEmpty
+            return [afterName, afterPhoto, afterPrice, afterUrl].filter { $0 }.count
+        case .ab:
+            let afterTopic = isCategorySelected && isTopicFilled
+            let afterName = afterTopic && productA.hasName && productB.hasName
+            let afterPhoto = afterName && productA.hasPhoto && productB.hasPhoto
+            let afterPrice = afterPhoto && !productA.price.isEmpty && !productB.price.isEmpty
+            let afterUrl = afterPrice && !productA.url.isEmpty && !productB.url.isEmpty
+            return [afterName, afterPhoto, afterPrice, afterUrl].filter { $0 }.count
+        case .text:
+            // 순차 공개 없이 필드 3개가 항상 다 보인다.
+            return 0
+        }
+    }
+
     var isTopicFilled: Bool {
         !topic.trimmingCharacters(in: .whitespaces).isEmpty
     }

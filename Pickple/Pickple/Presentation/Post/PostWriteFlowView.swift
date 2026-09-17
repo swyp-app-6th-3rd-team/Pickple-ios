@@ -21,6 +21,7 @@ struct PostWriteFlowView: View {
     @State private var isCategoryExpanded = false
     @State private var showsLeaveConfirm = false
     @State private var showsFailureToast = false
+    @State private var scrollPosition = ScrollPosition()
 
     private let categoryOptions = PostViewStrings.categoryOptions
 
@@ -50,22 +51,30 @@ struct PostWriteFlowView: View {
                 }
 
                 ScrollView {
-                    PostWriteFlowStepContent(
-                        postViewModel: postViewModel,
-                        isCategoryExpanded: $isCategoryExpanded,
-                        categoryOptions: categoryOptions
-                    )
-                    .padding(.top, 28)
-                    .zIndex(isCategoryExpanded ? 1 : 0)
-                }
-                .padding(.horizontal, 20)
+                    VStack(spacing: 0) {
+                        PostWriteFlowStepContent(
+                            postViewModel: postViewModel,
+                            isCategoryExpanded: $isCategoryExpanded,
+                            categoryOptions: categoryOptions
+                        )
+                        .zIndex(isCategoryExpanded ? 1 : 0)
 
-                PostWriteFlowButtonRow(
-                    title: postViewModel.isEditing ? PostViewStrings.submitEdit : PostViewStrings.submit,
-                    isEnabled: postViewModel.canSubmit,
-                    onSubmit: handleSubmit
-                )
-                .padding(.horizontal, 20)
+                        PostWriteFlowButtonRow(
+                            title: postViewModel.isEditing ? PostViewStrings.submitEdit : PostViewStrings.submit,
+                            isEnabled: postViewModel.canSubmit,
+                            onSubmit: handleSubmit
+                        )
+                    }
+                    .padding(.top, 28)
+                    .padding(.horizontal, 20)
+                }
+                .scrollPosition($scrollPosition)
+                .onChange(of: postViewModel.revealedFieldStepCount) { oldValue, newValue in
+                    guard newValue > oldValue else { return }
+                    withAnimation {
+                        scrollPosition.scrollTo(edge: .bottom)
+                    }
+                }
             }
             
 
