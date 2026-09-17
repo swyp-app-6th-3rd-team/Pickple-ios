@@ -84,6 +84,7 @@ struct PostWriteFlowView: View {
         }
         .pickpleToast(isPresented: $showsFailureToast, message: postViewModel.isEditing ? PostViewStrings.submitEditFailedToast : PostViewStrings.submitFailedToast)
         .navigationBarBackButtonHidden(true)
+        .restoresSwipeBackGesture()
         .toolbar(.hidden, for: .tabBar)
     }
 
