@@ -40,6 +40,9 @@ class CardStackViewModel {
     private let visibleStackSize = 3
 
     var voteCardData: [VoteCard] = []
+    // 왼쪽 스와이프(뒤로가기)로 돌아올 카드를 미리보기용으로 들여다본다 — history에서 실제로
+    // 꺼내지는(consume) 건 moveBackCardToFront()뿐이고, 이건 그냥 조회만 한다.
+    var previousCard: VoteCard? { buffers[currentType]?.history.last }
     var showsLoginRequired = false
     // 게시글 상세 투표 버튼과 동일하게, 내가 고른 쪽 옆에 보여줄 내 프로필 사진.
     var myProfileImageUrl: URL?
@@ -135,16 +138,18 @@ class CardStackViewModel {
 
     // 왼쪽 스와이프(뒤로가기) 전용 — history 맨 뒤(가장 최근에 넘긴) 카드를 다시 맨 앞으로
     // 가져온다. 그 결과 visibleStackSize를 넘으면 맨 뒤 카드를 pending 맨 앞으로 돌려보내서
-    // 스택 크기를 유지한다(카드를 잃어버리지 않고 나중에 다시 나오게).
+    // 스택 크기를 유지한다(카드를 잃어버리지 않고 나중에 다시 나오게). 이때 voteCardData에서
+    // 밀려난 카드를 반환한다 — 호출부(CardStackView)가 그 카드를 잠깐 더 그려서 화면에서
+    // 순간이동하듯 사라지지 않고 자연스럽게 빠지게 할 수 있도록.
     @MainActor
-    func moveBackCardToFront() {
-        guard let card = buffers[currentType]?.history.popLast() else { return }
+    func moveBackCardToFront() -> VoteCard? {
+        guard let card = buffers[currentType]?.history.popLast() else { return nil }
         voteCardData.insert(card, at: 0)
 
-        if voteCardData.count > visibleStackSize {
-            let overflow = voteCardData.removeLast()
-            buffers[currentType]?.pending.insert(overflow, at: 0)
-        }
+        guard voteCardData.count > visibleStackSize else { return nil }
+        let overflow = voteCardData.removeLast()
+        buffers[currentType]?.pending.insert(overflow, at: 0)
+        return overflow
     }
 
     @MainActor
