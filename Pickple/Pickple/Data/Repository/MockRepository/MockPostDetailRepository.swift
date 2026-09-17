@@ -20,6 +20,11 @@ struct MockPostDetailRepository: PostDetailRepository {
             gradeName: "LV.5"
         )
         let productImage = URL(string: "https://picsum.photos/600/600")
+        let productImages = [
+            URL(string: "https://picsum.photos/seed/1/600/600"),
+            URL(string: "https://picsum.photos/seed/2/600/600"),
+            URL(string: "https://picsum.photos/seed/3/600/600")
+        ].compactMap { $0 }
 
         switch type {
         case .forAgainst:
@@ -43,7 +48,7 @@ struct MockPostDetailRepository: PostDetailRepository {
                     selectedOptionId: nil,
                     voterCount: 3,
                     products: [
-                        PostDetailProduct(id: 1, name: "나이키 에어포스 흰색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/?appLnkWyCd=04&prdNo=7853...", imageUrl: productImage, displayOrder: 1)
+                        PostDetailProduct(id: 1, name: "나이키 에어포스 흰색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/?appLnkWyCd=04&prdNo=7853...", imageUrls: productImages, displayOrder: 1)
                     ],
                     options: [
                         PostDetailVoteOption(optionId: 1, label: PostDetailStrings.voteSideFor, productId: nil, displayOrder: 1, voteCount: nil, percentage: nil),
@@ -72,8 +77,8 @@ struct MockPostDetailRepository: PostDetailRepository {
                     selectedOptionId: nil,
                     voterCount: 3,
                     products: [
-                        PostDetailProduct(id: 1, name: "나이키 에어포스 흰색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/?appLnkWyCd=04&prdNo=7853...", imageUrl: productImage, displayOrder: 1),
-                        PostDetailProduct(id: 2, name: "나이키 에어포스 검은색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/?appLnkWyCd=04&prdNo=7853...", imageUrl: productImage, displayOrder: 2)
+                        PostDetailProduct(id: 1, name: "나이키 에어포스 흰색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/?appLnkWyCd=04&prdNo=7853...", imageUrls: [productImage].compactMap { $0 }, displayOrder: 1),
+                        PostDetailProduct(id: 2, name: "나이키 에어포스 검은색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/?appLnkWyCd=04&prdNo=7853...", imageUrls: [productImage].compactMap { $0 }, displayOrder: 2)
                     ],
                     options: [
                         PostDetailVoteOption(optionId: 1, label: nil, productId: 1, displayOrder: 1, voteCount: nil, percentage: nil),

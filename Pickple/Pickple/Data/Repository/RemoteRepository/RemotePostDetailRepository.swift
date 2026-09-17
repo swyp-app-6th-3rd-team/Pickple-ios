@@ -12,7 +12,8 @@ private struct ProductItemDTO: Decodable {
     let name: String
     let price: Int?
     let linkUrl: String?
-    let imageUrl: String?
+    // imageUrl(대표 사진 1장)은 imageUrls의 첫 값과 같아서 상세 화면에서는 imageUrls만 쓴다(Issue #181/PR #182).
+    let imageUrls: [String]
     let displayOrder: Int
 }
 
@@ -103,7 +104,7 @@ struct RemotePostDetailRepository: PostDetailRepository {
             name: dto.name,
             price: dto.price,
             purchaseURL: dto.linkUrl,
-            imageUrl: dto.imageUrl.flatMap(URL.init(string:)),
+            imageUrls: dto.imageUrls.compactMap(URL.init(string:)),
             displayOrder: dto.displayOrder
         )
     }
