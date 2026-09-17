@@ -46,7 +46,7 @@ struct ForAgainstPostFieldSectionView: View {
                 Text(PostViewStrings.price)
                     .pickpleTypography(.body01_500)
 
-                ProductPriceFieldBlock(price: $postViewModel.product.price, isDisabled: postViewModel.isEditing, AB: "A")
+                ProductPriceFieldBlock(price: $postViewModel.product.price, isDisabled: postViewModel.isEditing)
             }
             .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled && isPhotoFilled))
 
