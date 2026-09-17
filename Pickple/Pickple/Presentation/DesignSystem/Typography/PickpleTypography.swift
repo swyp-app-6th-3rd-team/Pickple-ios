@@ -27,6 +27,7 @@ enum PickpleTypography {
     case heading01
     case heading02
     case title01
+    case title01_600
     case title02_600
     case title02_400
     case body01_600
@@ -44,7 +45,7 @@ enum PickpleTypography {
     var weight: PickpleFontWeight {
         switch self {
         case .heading01, .heading02, .title01: return .bold
-        case .title02_600, .body01_600, .body02_600, .label_600, .caption_600: return .semibold
+        case .title01_600, .title02_600, .body01_600, .body02_600, .label_600, .caption_600: return .semibold
         case .body01_500, .body02_500, .label_500: return .medium
         case .title02_400, .body01_400, .body02_400, .label_400, .caption_400: return .regular
         }
@@ -54,7 +55,7 @@ enum PickpleTypography {
         switch self {
         case .heading01: return 28
         case .heading02: return 24
-        case .title01: return 20
+        case .title01_600, .title01: return 20
         case .title02_600, .title02_400: return 18
         case .body01_600, .body01_500, .body01_400: return 16
         case .body02_600, .body02_500, .body02_400: return 14
@@ -66,7 +67,7 @@ enum PickpleTypography {
     var lineHeightPercent: CGFloat {
         switch self {
         case .heading01: return 1.35
-        case .heading02, .title01: return 1.40
+        case .heading02, .title01,.title01_600: return 1.40
         case .title02_600, .title02_400, .body02_600, .body02_500, .body02_400: return 1.45
         case .body01_600, .body01_500, .body01_400, .caption_600, .caption_400: return 1.50
         case .label_600, .label_500, .label_400: return 1.40

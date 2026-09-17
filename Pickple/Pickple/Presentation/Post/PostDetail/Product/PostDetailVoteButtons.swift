@@ -175,7 +175,7 @@ struct PostDetailVoteButtons: View {
 
     // 실제 SwiftUI 렌더링 결과를 기다리지 않고, 같은 폰트로 미리 텍스트 폭을 계산한다.
     private static func textWidth(_ text: String) -> CGFloat {
-        let typography = PickpleTypography.body01_500
+        let typography = PickpleTypography.body01_600
         let attributes: [NSAttributedString.Key: Any] = [
             .font: typography.uiFont,
             .kern: typography.tracking
@@ -204,7 +204,7 @@ struct PostDetailVoteButtons: View {
         // 공간을 다 차지해버려 레이아웃이 깨진다 — 투명한 원본 Text로 정확한 크기를 잡아두고,
         // 그 위에 같은 크기로 그라데이션 텍스트를 overlay한다.
         return Text(text)
-            .pickpleTypography(.body01_500)
+            .pickpleTypography(.body01_600)
             .foregroundStyle(.clear)
             .contentTransition(.numericText())
             .overlay(
@@ -220,7 +220,7 @@ struct PostDetailVoteButtons: View {
                 )
                 .mask(
                     Text(text)
-                        .pickpleTypography(.body01_500)
+                        .pickpleTypography(.body01_600)
                         .contentTransition(.numericText())
                 )
             )

@@ -17,7 +17,7 @@ struct TopPickerRankingSection: View {
             //MARK: - Title
             HStack {
                 Text(MainStrings.topRankingSectionTitle)
-                    .pickpleTypography(.title01)
+                    .pickpleTypography(.title01_600)
                     .foregroundStyle(Color.black)
 
                 Spacer()
@@ -51,7 +51,7 @@ struct TopPickerRankingSection: View {
                             .padding(.vertical, 16)
 
                         Divider()
-                            .foregroundStyle(Color.navy10)
+                            .foregroundColor(Color("#FF5733")) // 임시 적용
                     }
                 }
             }
