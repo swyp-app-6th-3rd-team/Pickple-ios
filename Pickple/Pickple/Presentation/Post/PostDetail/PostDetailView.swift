@@ -218,7 +218,6 @@ struct PostDetailView: View {
         .pickpleToast(isPresented: $showsDeleteFailureToast, message: PostDetailStrings.deleteFailedToast)
         .navigationBarBackButtonHidden(true)
         .restoresSwipeBackGesture()
-        .toolbar(.hidden, for: .tabBar)
         .task {
             postDetailViewModel.isLoggedIn = isLoggedIn
             await postDetailViewModel.loadPostDetail()

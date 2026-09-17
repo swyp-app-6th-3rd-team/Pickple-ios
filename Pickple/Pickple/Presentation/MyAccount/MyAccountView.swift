@@ -95,7 +95,6 @@ struct MyAccountView: View {
         }
         .navigationBarBackButtonHidden(true)
         .restoresSwipeBackGesture()
-        .toolbar(.hidden, for: .tabBar)
         .alert(MyAccountStrings.deleteAccountFailedTitle, isPresented: Binding(
             get: { deleteAccountErrorMessage != nil },
             set: { isPresented in if !isPresented { deleteAccountErrorMessage = nil } }

@@ -138,7 +138,6 @@ struct MainRankingView: View {
         .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
         .restoresSwipeBackGesture()
-        .toolbar(.hidden, for: .tabBar)
         .task {
             await mainRankingViewModel.loadInitial()
             await mainRankingViewModel.loadMyRanking()

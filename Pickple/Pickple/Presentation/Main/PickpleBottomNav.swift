@@ -51,6 +51,10 @@ struct PickpleBottomNav: View {
                     }
             }
             .environment(mainRouter)
+            // 탭바 visibility를 상세화면 각자가 개별 선언하는 대신, push/pop 애니메이션과
+            // 같은 state(path)로 직접 계산한다 — 그래야 탭바 재노출이 pop과 같은 순간에
+            // 반응해서, 자식 화면의 toolbar 선언이 반영되길 기다리며 생기던 지연이 없어진다.
+            .toolbar(mainRouter.path.isEmpty ? .visible : .hidden, for: .tabBar)
             .tabItem { tabLabel(title: MainStrings.tabHome, icon: "PickpleHome", tag: 0) }
             .tag(0)
 
@@ -79,6 +83,7 @@ struct PickpleBottomNav: View {
             // 자신에게 달면 push된 화면에 가려 안 보인다 — push와 무관하게 계속 보이도록
             // NavigationStack 바깥(탭 전체를 감싸는 이 레벨)에서 띄운다.
             .pickpleToast(isPresented: $showsPostCreatedToast, message: PostViewStrings.submitSucceededToast)
+            .toolbar(communityRouter.path.isEmpty ? .visible : .hidden, for: .tabBar)
             .tabItem { tabLabel(title: MainStrings.tabCommunity, icon: "PickpleMessage", tag: 1) }
             .tag(1)
 
@@ -108,6 +113,7 @@ struct PickpleBottomNav: View {
                     }
             }
             .environment(myPageRouter)
+            .toolbar(myPageRouter.path.isEmpty ? .visible : .hidden, for: .tabBar)
             .tabItem { tabLabel(title: MainStrings.tabMyPage, icon: "PickpleUser", tag: 2) }
             .tag(2)
         }
