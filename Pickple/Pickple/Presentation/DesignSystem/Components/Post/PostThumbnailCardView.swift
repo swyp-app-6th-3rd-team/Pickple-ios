@@ -76,7 +76,7 @@ struct PostThumbnailCardView: View {
     }
 
     private func thumbnailImage(url: URL?) -> some View {
-        AsyncImage(url: url) { image in
+        PickpleAsyncImage(url: url, targetSize: CGSize(width: 160, height: 160)) { image in
             image.resizable().scaledToFill()
         } placeholder: {
             Image("McokMyPostPicture").resizable().scaledToFill()

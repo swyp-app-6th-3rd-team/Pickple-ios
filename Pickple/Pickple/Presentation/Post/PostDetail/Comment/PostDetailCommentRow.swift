@@ -21,7 +21,7 @@ struct PostDetailCommentRow: View {
         VStack(alignment: .leading, spacing: 12) {
                 //MARK: - Profile
                 HStack(spacing: 8) {
-                AsyncImage(url: comment.authorProfileImageUrl) { image in
+                PickpleAsyncImage(url: comment.authorProfileImageUrl, targetSize: CGSize(width: 32, height: 32)) { image in
                     image.resizable().scaledToFill()
                 } placeholder: {
                     Image("PickpleCharacter").resizable().scaledToFill()

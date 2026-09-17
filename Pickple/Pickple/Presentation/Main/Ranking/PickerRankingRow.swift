@@ -34,7 +34,7 @@ struct PickerRankingRow: View {
                         .frame(width: 28, height: 28)
                 }
                 
-                AsyncImage(url: ranking.profileImageUrl) { image in
+                PickpleAsyncImage(url: ranking.profileImageUrl, targetSize: CGSize(width: 48, height: 48)) { image in
                     image.resizable().scaledToFill()
                 } placeholder: {
                     Image("PickpleCharacter").resizable().scaledToFill()

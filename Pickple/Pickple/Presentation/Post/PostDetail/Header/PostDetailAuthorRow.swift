@@ -24,7 +24,7 @@ struct PostDetailAuthorRow: View {
 
     var body: some View {
             HStack(spacing: 12) {
-                AsyncImage(url: profileImageUrl) { image in
+                PickpleAsyncImage(url: profileImageUrl, targetSize: CGSize(width: 32, height: 32)) { image in
                     image.resizable().scaledToFill()
                 } placeholder: {
                     Image("PickpleCharacter").resizable().scaledToFill()

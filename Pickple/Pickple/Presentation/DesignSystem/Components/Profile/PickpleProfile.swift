@@ -55,7 +55,7 @@ struct PickpleProfile: View {
                         .frame(width: 160, height: 160)
                         .clipShape(Circle())
                 } else if let existingImageUrl {
-                    AsyncImage(url: existingImageUrl) { image in
+                    PickpleAsyncImage(url: existingImageUrl, targetSize: CGSize(width: 160, height: 160)) { image in
                         image.resizable().scaledToFill()
                     } placeholder: {
                         Image("PickpleCharacter").resizable().scaledToFill()

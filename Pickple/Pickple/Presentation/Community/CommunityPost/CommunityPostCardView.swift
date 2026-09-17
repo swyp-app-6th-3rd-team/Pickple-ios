@@ -9,6 +9,7 @@
 // 분리 바 확인 필요(리소스 및 색상)
 
 import SwiftUI
+import UIKit
 
 struct CommunityPostCardView: View {
     let post: PostSummary
@@ -128,7 +129,7 @@ struct CommunityPostCardView: View {
     private func thumbnailImage(url: URL?) -> some View {
         Color.neutral10
             .overlay {
-                AsyncImage(url: url) { image in
+                PickpleAsyncImage(url: url, targetSize: CGSize(width: UIScreen.main.bounds.width, height: 150)) { image in
                     image.resizable().scaledToFill()
                 } placeholder: {
                     Image("McokMyPostPicture").resizable().scaledToFill()

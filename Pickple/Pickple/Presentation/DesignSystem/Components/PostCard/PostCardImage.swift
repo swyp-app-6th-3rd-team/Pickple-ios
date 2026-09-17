@@ -15,7 +15,7 @@ struct PostCardImage: View {
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            AsyncImage(url: url) { image in
+            PickpleAsyncImage(url: url, targetSize: CGSize(width: 72, height: 72)) { image in
                 image
                     .resizable()
                     .scaledToFill()

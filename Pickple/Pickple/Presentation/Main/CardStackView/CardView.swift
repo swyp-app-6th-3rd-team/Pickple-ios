@@ -117,7 +117,7 @@ struct CardView: View {
     }
 
     private func productImage(_ url: URL?) -> some View {
-        AsyncImage(url: url) { image in
+        PickpleAsyncImage(url: url, targetSize: CGSize(width: 333, height: 526)) { image in
             image.resizable().scaledToFill()
         } placeholder: {
             Image("MockAgainstPicture").resizable().scaledToFill()

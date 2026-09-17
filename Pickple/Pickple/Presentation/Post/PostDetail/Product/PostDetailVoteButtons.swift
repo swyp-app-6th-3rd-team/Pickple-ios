@@ -132,10 +132,16 @@ struct PostDetailVoteButtons: View {
     ) -> some View {
         let fraction = measuredWidth > 0 ? min(max((boundaryX - labelStartX) / measuredWidth, 0), 1) : 0
 
+        // Text에 .foregroundStyle(gradient)를 직접 걸면 그라데이션 적용이 조용히 실패하고
+        // 텍스트 기본색(검정)으로 떨어지는 경우가 있다 — LinearGradient를 Text 모양으로
+        // 마스킹하는 방식이 훨씬 안정적으로 렌더링된다. LinearGradient 자체는 고유 크기가
+        // 없어서(부모가 주는 공간을 다 채우려 함) 그대로 반환하면 이 라벨이 HStack의 남은
+        // 공간을 다 차지해버려 레이아웃이 깨진다 — 투명한 원본 Text로 정확한 크기를 잡아두고,
+        // 그 위에 같은 크기로 그라데이션 텍스트를 overlay한다.
         return Text(text)
             .pickpleTypography(.body01_500)
-            .foregroundStyle(Color.black)
-            .foregroundStyle(
+            .foregroundStyle(.clear)
+            .overlay(
                 LinearGradient(
                     stops: [
                         .init(color: beforeColor, location: fraction),
@@ -146,11 +152,15 @@ struct PostDetailVoteButtons: View {
                     startPoint: .leading,
                     endPoint: .trailing
                 )
+                .mask(
+                    Text(text)
+                        .pickpleTypography(.body01_500)
+                )
             )
     }
 
     private var profileIcon: some View {
-        AsyncImage(url: myProfileImageUrl) { image in
+        PickpleAsyncImage(url: myProfileImageUrl, targetSize: CGSize(width: 28, height: 28)) { image in
             image.resizable().scaledToFill()
         } placeholder: {
             ZStack {
