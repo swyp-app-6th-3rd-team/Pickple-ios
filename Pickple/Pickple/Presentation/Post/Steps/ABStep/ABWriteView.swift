@@ -56,7 +56,7 @@ struct ABWriteView: View {
                     }
                 }
             }
-            
+
             // 수정 모드는 상품명/사진/가격/URL이 PATCH로 반영되지 않아(카테고리/제목(=주제)/설명만
             // 지원) 원래 값을 보여주기만 하고 편집을 막는다 — 순차 공개도 건너뛰고 한꺼번에 보여준다.
             ProductNameSectionView(postViewModel: postViewModel)

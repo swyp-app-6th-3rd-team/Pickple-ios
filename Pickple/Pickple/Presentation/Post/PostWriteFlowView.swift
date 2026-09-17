@@ -21,7 +21,6 @@ struct PostWriteFlowView: View {
     @State private var isCategoryExpanded = false
     @State private var showsLeaveConfirm = false
     @State private var showsFailureToast = false
-    @State private var scrollPosition = ScrollPosition()
 
     private let categoryOptions = PostViewStrings.categoryOptions
 
@@ -67,13 +66,6 @@ struct PostWriteFlowView: View {
                     }
                     .padding(.top, 28)
                     .padding(.horizontal, 20)
-                }
-                .scrollPosition($scrollPosition)
-                .onChange(of: postViewModel.revealedFieldStepCount) { oldValue, newValue in
-                    guard newValue > oldValue else { return }
-                    withAnimation {
-                        scrollPosition.scrollTo(edge: .bottom)
-                    }
                 }
             }
             

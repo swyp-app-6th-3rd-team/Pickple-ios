@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ProductNameSectionView: View {
     @Bindable var postViewModel: PostViewModel
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             (

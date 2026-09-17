@@ -12,7 +12,7 @@ struct ForAgainstPostFieldSectionView: View {
     @Bindable var postViewModel: PostViewModel
     @Binding var isCategoryExpanded: Bool
     let categoryOptions: [String]
-    
+
     private var isNameFilled: Bool { postViewModel.product.hasName }
     private var isPhotoFilled: Bool { postViewModel.product.hasPhoto }
     private var isPriceFilled: Bool { !postViewModel.product.price.isEmpty }
@@ -38,10 +38,10 @@ struct ForAgainstPostFieldSectionView: View {
 
                 ProductNameFieldBlock(name: $postViewModel.product.name, maxLength: postViewModel.productNameMaxLength, isDisabled: postViewModel.isEditing)
             }
-            
+
             PhotoUploadSectionView(photos: $postViewModel.product.photos, maxCount: 3, hintText: PostViewStrings.photoHintUpToThree, isDisabled: postViewModel.isEditing)
                 .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled))
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 Text(PostViewStrings.price)
                     .pickpleTypography(.body01_500)
@@ -57,7 +57,7 @@ struct ForAgainstPostFieldSectionView: View {
                 ProductURLFieldBlock(url: $postViewModel.product.url, isDisabled: postViewModel.isEditing)
             }
             .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled && isPhotoFilled && isPriceFilled))
-            
+
             DescriptionFieldBlock(text: $postViewModel.description, maxLength: postViewModel.descriptionMaxLength)
                 .revealed(postViewModel.isEditing || (postViewModel.isCategorySelected && isNameFilled && isPhotoFilled && isPriceFilled && isUrlFilled))
         }
