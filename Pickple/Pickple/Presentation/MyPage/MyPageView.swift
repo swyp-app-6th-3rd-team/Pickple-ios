@@ -48,7 +48,7 @@ struct MyPageView: View {
                             onTapPost: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) },
                             onTapMore: {
                                 if myPageViewModel.isLoggedIn {
-                                    myPageRouter.push(.activity(initialTab: 2))
+                                    myPageRouter.push(.activity(initialTab: 0))
                                 } else {
                                     showsMyPostsLoginRequired = true
                                 }
