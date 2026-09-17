@@ -117,7 +117,10 @@ struct PostDetailVoteButtons: View {
                     isVoted: true,
                     isSelected: votedSide == .first,
                     corner: .leading,
-                    isFullWidth: firstPercentage >= 100,
+                    // 최종 퍼센트가 아니라 지금 실제로 계산된 폭 기준으로 판단한다 — 바가 막
+                    // 나타난 직후(showsGaugeFill 전)엔 선택 안 한 쪽이 바 전체 폭을 차지하는데,
+                    // 이때 퍼센트만 보면 100%가 아니라서 안쪽 모서리가 각지게 보이는 버그가 있었다.
+                    isFullWidth: firstWidth >= totalWidth,
                     action: { onVote(.first) }
                 )
                 .frame(width: firstWidth)
@@ -127,7 +130,7 @@ struct PostDetailVoteButtons: View {
                     isVoted: true,
                     isSelected: votedSide == .second,
                     corner: .trailing,
-                    isFullWidth: secondPercentage >= 100,
+                    isFullWidth: secondWidth >= totalWidth,
                     action: { onVote(.second) }
                 )
                 .frame(width: secondWidth)
@@ -320,7 +323,7 @@ private struct PostDetailVoteSegment: View {
                     onVote: { votedSide = $0 }
                 )
                 .frame(height: 58)
-                .border(Color.black)
+                .padding(.horizontal, 20)
             }
         }
     }
