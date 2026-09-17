@@ -15,9 +15,9 @@ struct PostDetailHeaderRow: View {
 
     var body: some View {
         HStack {
-            PostTypeBadge(type: type, iconSize: 16, typography: .label, textColor: Color.neutral40, backgroundColor: .white)
+            PostTypeBadge(type: type, iconSize: 16, typography: .label_600, textColor: Color.neutral40, backgroundColor: .white)
                 .background(
-                    PostTypeBadge(type: type, iconSize: 16, typography: .label, textColor: Color.neutral40, backgroundColor: .white, stroke: true, strokeColor: .navy10)
+                    PostTypeBadge(type: type, iconSize: 16, typography: .label_600, textColor: Color.neutral40, backgroundColor: .white, stroke: true, strokeColor: .navy10)
                 )
 
             Spacer()

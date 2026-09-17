@@ -19,7 +19,7 @@ struct CommunityCategoryRow: View {
                     
                     Button(action: { selectedCategory = category }) {
                         Text(category)
-                            .pickpleTypography(.body01)
+                            .pickpleTypography(.body01_500)
                             .foregroundStyle(isSelected ? Color.white : Color.neutral50)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)

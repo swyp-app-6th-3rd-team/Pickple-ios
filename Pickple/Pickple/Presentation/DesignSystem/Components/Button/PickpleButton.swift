@@ -22,7 +22,7 @@ struct PickpleButton: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .pickpleTypography(.body01)
+            .pickpleTypography(.body01_500)
             .foregroundStyle(foregroundColor)
             .frame(maxWidth: .infinity, minHeight: height)
             .background(backgroundColor)

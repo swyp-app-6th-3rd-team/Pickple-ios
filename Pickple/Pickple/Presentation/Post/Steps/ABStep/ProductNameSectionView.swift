@@ -19,7 +19,7 @@ struct ProductNameSectionView: View {
                 Text(PostViewStrings.requiredMark)
                     .foregroundStyle(Color.red60)
             )
-            .pickpleTypography(.body01)
+            .pickpleTypography(.body01_500)
 
             ProductNameFieldBlock(
                 name: $postViewModel.productA.name,

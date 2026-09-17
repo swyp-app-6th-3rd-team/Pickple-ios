@@ -29,7 +29,7 @@ struct BadgeMissionStreakTracker: View {
             HStack(spacing: 0) {
                 ForEach(1...target, id: \.self) { day in
                     Text(day == current ? "\(current)일차" : "")
-                        .pickpleTypography(.caption)
+                        .pickpleTypography(.caption_400)
                         .foregroundStyle(Color.blue60)
                     if day != target {
                         Spacer()

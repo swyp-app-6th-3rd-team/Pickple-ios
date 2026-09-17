@@ -41,7 +41,7 @@ struct PostDetailImageCarousel: View {
                         .frame(width: 16, height: 16)
                     
                     Text("\(participantCount)명 투표중")
-                        .pickpleTypography(.body02)
+                        .pickpleTypography(.body02_600)
                         .foregroundStyle(Color.white)
                 }
                 .padding(.horizontal, 12)
@@ -52,7 +52,7 @@ struct PostDetailImageCarousel: View {
                 Spacer()
 
                 Text("\(currentIndex + 1)/\(images.count)")
-                    .pickpleTypography(.body02)
+                    .pickpleTypography(.body02_600)
                     .foregroundStyle(Color.white)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)

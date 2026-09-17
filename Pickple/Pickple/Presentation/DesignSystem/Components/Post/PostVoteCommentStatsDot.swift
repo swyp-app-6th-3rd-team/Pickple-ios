@@ -50,7 +50,7 @@ struct PostVoteCommentStatsDot: View {
         PostVoteCommentStats(type: .text, voteCount: 0, commentCount: 5)
         PostVoteCommentStats(type: .forAgainst, voteCount: 12, commentCount: 4)
     }
-    .pickpleTypography(.label)
+    .pickpleTypography(.label_600)
     .foregroundStyle(Color.neutral30)
     .padding()
 }

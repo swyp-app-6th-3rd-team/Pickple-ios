@@ -16,7 +16,7 @@ struct PostDetailCommentSectionHeader: View {
     var body: some View {
         HStack {
             Text(PostDetailStrings.commentCount(count))
-                .pickpleTypography(.body01)
+                .pickpleTypography(.body01_500)
                 .foregroundStyle(Color.black)
 
             Spacer()

@@ -40,7 +40,7 @@ struct ABWriteView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 (Text(PostViewStrings.topic) + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
 
                 PickpleTextField(
                     text: $postViewModel.topic,

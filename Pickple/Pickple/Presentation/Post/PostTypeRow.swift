@@ -22,7 +22,7 @@ struct PostTypeRow: View {
                     .frame(width: 24, height: 24)
 
                 Text(title)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(Color.neutral100)
 
                 Spacer()

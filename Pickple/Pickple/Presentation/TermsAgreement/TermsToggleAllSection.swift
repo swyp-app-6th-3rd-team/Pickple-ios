@@ -29,7 +29,7 @@ struct TermsToggleAllSection: View {
             Toggle(isOn: allOn) {}
                 .padding(.leading, 11)
             Text(TermsAgreementStrings.agreeAll)
-                .pickpleTypography(.body01)
+                .pickpleTypography(.body01_500)
                 .foregroundStyle(Color.navy60)
 
             Spacer()

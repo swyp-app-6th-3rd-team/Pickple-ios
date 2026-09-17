@@ -17,10 +17,10 @@ struct ComparisonPhotoFieldBlock: View {
         VStack(alignment: .leading, spacing: 20) {
             VStack(alignment: .leading, spacing: 0) {
                 (Text(PostViewStrings.photo) + Text(" ") + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                 
                 Text("각각 1장씩 업로드")
-                    .pickpleTypography(.body02)
+                    .pickpleTypography(.body02_600)
                     .foregroundStyle(Color.neutral40)
             }
             .padding(.horizontal, 4)
@@ -69,7 +69,7 @@ private struct ComparisonPhotoSlot: View {
                             .foregroundStyle(Color.neutral20)
 
                         Text(label)
-                            .pickpleTypography(.caption)
+                            .pickpleTypography(.caption_400)
                             .foregroundStyle(Color.neutral20)
                     }
                     .frame(width: 96, height: 96)

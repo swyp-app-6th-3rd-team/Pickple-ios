@@ -20,45 +20,56 @@ enum PickpleFontWeight: String {
     case regular = "Pretendard-Regular"
 }
 
+// 스타일당 굵기가 여러 개인 경우(Title02/Body01/Body02/Label/Caption) 케이스 이름에
+// 굵기를 붙여 구분한다(_600/_500/_400). 굵기가 하나뿐인 스타일(Heading/Title01)은
+// 접미사 없이 그대로 쓴다.
 enum PickpleTypography {
     case heading01
     case heading02
     case title01
-    case title02
-    case body01
-    case body02
-    case label
-    case caption
+    case title02_600
+    case title02_400
+    case body01_600
+    case body01_500
+    case body01_400
+    case body02_600
+    case body02_500
+    case body02_400
+    case label_600
+    case label_500
+    case label_400
+    case caption_600
+    case caption_400
 
     var weight: PickpleFontWeight {
         switch self {
         case .heading01, .heading02, .title01: return .bold
-        case .title02, .body02, .label: return .semibold
-        case .body01: return .medium
-        case .caption: return .regular
+        case .title02_600, .body01_600, .body02_600, .label_600, .caption_600: return .semibold
+        case .body01_500, .body02_500, .label_500: return .medium
+        case .title02_400, .body01_400, .body02_400, .label_400, .caption_400: return .regular
         }
     }
 
     var size: CGFloat {
         switch self {
         case .heading01: return 28
-        case .heading02: return 28
+        case .heading02: return 24
         case .title01: return 20
-        case .title02: return 18
-        case .body01: return 16
-        case .body02: return 14
-        case .label: return 13
-        case .caption: return 12
+        case .title02_600, .title02_400: return 18
+        case .body01_600, .body01_500, .body01_400: return 16
+        case .body02_600, .body02_500, .body02_400: return 14
+        case .label_600, .label_500, .label_400: return 13
+        case .caption_600, .caption_400: return 12
         }
     }
 
     var lineHeightPercent: CGFloat {
         switch self {
-        case .heading01, .heading02: return 1.35
-        case .title01: return 1.40
-        case .title02, .body02: return 1.45
-        case .body01, .caption: return 1.50
-        case .label: return 1.40
+        case .heading01: return 1.35
+        case .heading02, .title01: return 1.40
+        case .title02_600, .title02_400, .body02_600, .body02_500, .body02_400: return 1.45
+        case .body01_600, .body01_500, .body01_400, .caption_600, .caption_400: return 1.50
+        case .label_600, .label_500, .label_400: return 1.40
         }
     }
 

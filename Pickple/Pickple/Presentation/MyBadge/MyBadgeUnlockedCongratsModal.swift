@@ -25,13 +25,13 @@ struct MyBadgeUnlockedCongratsModal: View {
                     .frame(width: 87, height: 82)
 
                 Text(badge.title)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(Color.black)
             }
 
             Button(action: onConfirm) {
                 Text(MyBadgeStrings.confirm)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(Color.white)
                     .frame(maxWidth: .infinity, minHeight: 52)
                     .background(Color.black)

@@ -30,7 +30,7 @@ struct TextStepOneView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 (Text(PostViewStrings.title) + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
 
                 PickpleTextField(
                     text: $postViewModel.title,

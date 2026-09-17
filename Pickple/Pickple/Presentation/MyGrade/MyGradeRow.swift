@@ -28,12 +28,12 @@ struct MyGradeRow: View {
                         .frame(width: 20, height: 20)
 
                     Text("LV.\(grade.level)")
-                        .pickpleTypography(.label)
+                        .pickpleTypography(.label_600)
                         .foregroundStyle(Color.black)
                 }
 
                 Text(description)
-                    .pickpleTypography(.body02)
+                    .pickpleTypography(.body02_600)
                     .foregroundStyle(Color.neutral40)
             }
 

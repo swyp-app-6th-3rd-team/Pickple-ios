@@ -29,7 +29,7 @@ struct PickerRankingRow: View {
                         .frame(width: 28, height: 28)
                 } else {
                     Text("\(ranking.rank)")
-                        .pickpleTypography(.title02)
+                        .pickpleTypography(.title02_600)
                         .foregroundStyle(Color.neutral40) //폰트 색상 미정
                         .frame(width: 28, height: 28)
                 }
@@ -44,7 +44,7 @@ struct PickerRankingRow: View {
                 
                 HStack(spacing: 6) {
                     Text(ranking.nickname)
-                        .pickpleTypography(.body01)
+                        .pickpleTypography(.body01_600)
                         .foregroundStyle(Color.black)
                     
                     Image("PickpleLevelBadge\(ranking.level)")
@@ -55,7 +55,7 @@ struct PickerRankingRow: View {
                 Spacer()
                 
                 Text("\(ranking.points)P")
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_400)
                     .foregroundStyle(Color.black)
             }
         }

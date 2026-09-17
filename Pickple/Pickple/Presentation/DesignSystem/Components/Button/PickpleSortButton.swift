@@ -24,7 +24,7 @@ struct PickpleSortButton: View {
             }) {
                 HStack(spacing: 2) {
                     Text(selectedValue)
-                        .pickpleTypography(.body02)
+                        .pickpleTypography(.body02_600)
                         .foregroundStyle(Color.neutral50)
 
                     Image("PickpleArrowFill")
@@ -46,7 +46,7 @@ struct PickpleSortButton: View {
                         }) {
                             HStack {
                                 Text(option)
-                                    .pickpleTypography(.body01)
+                                    .pickpleTypography(.body01_500)
                                     .foregroundStyle(Color.neutral70)
                                 
                                 Spacer()

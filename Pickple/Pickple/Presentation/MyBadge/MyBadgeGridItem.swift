@@ -21,7 +21,7 @@ struct MyBadgeGridItem: View {
                     .frame(width: 80, height: 80)
 
                 Text(badge.title)
-                    .pickpleTypography(.caption)
+                    .pickpleTypography(.caption_400)
                     .foregroundStyle(badge.isUnlocked ? Color.black : Color.neutral40)
             }
         }

@@ -16,7 +16,7 @@ struct MyPageExtraView: View {
         VStack(spacing: 0) {
             HStack {
                 Text(MyPageStrings.extraSectionTitle)
-                    .pickpleTypography(.body02)
+                    .pickpleTypography(.body02_600)
                     .foregroundStyle(Color.neutral40)
 
                 Spacer()

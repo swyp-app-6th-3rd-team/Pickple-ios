@@ -19,7 +19,7 @@ struct TermsToggleSection: View {
             TermsToggleRow(isOn: $serviceTermsOn, title: TermsAgreementStrings.serviceTermsTitle, url: TermsAgreementStrings.ToU)
             TermsToggleRow(isOn: $pushNotificationOn, title: TermsAgreementStrings.pushNotificationTitle, showsViewButton: false)
         }
-        .pickpleTypography(.body02)
+        .pickpleTypography(.body02_600)
         .foregroundStyle(Color.neutral80)
     }
 }

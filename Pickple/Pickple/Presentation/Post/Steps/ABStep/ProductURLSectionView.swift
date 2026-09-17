@@ -14,7 +14,7 @@ struct ProductURLSectionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(PostViewStrings.url)
-                .pickpleTypography(.body01)
+                .pickpleTypography(.body01_500)
 
             ProductURLFieldBlock(
                 url: $postViewModel.productA.url,

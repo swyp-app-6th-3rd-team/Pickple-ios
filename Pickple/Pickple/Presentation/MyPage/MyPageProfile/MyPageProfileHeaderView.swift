@@ -41,7 +41,7 @@ struct MyPageProfileHeaderView: View {
                     HStack(spacing: 4) {
                         if let nickname = myPageViewModel.userInfo?.nickname {
                             Text(nickname)
-                                .pickpleTypography(.title02)
+                                .pickpleTypography(.title02_600)
                                 .foregroundStyle(Color.white)
                         }
                         Image("PickpleEdit")
@@ -66,7 +66,7 @@ struct MyPageProfileHeaderView: View {
                                 .frame(maxWidth: .infinity, minHeight: 56)
                                 .foregroundStyle(Color.yellow60)
                             Text("로그인")
-                                .pickpleTypography(.title02)
+                                .pickpleTypography(.title02_600)
                                 .foregroundStyle(Color.navy60)
                         }
                         .padding(.horizontal, 20)

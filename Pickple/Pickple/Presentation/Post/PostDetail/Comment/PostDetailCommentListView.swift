@@ -28,7 +28,7 @@ struct PostDetailCommentListView: View {
                 .overlay {
                     VStack(spacing: 16) {
                         Text(PostDetailStrings.commentViewRequiredDescription)
-                            .pickpleTypography(.body02) //폰트 미지정
+                            .pickpleTypography(.body02_600) //폰트 미지정
                             .foregroundStyle(Color.neutral70)
 
                         Button(action: onLoginRequired) {
@@ -41,7 +41,7 @@ struct PostDetailCommentListView: View {
                                     }
                                     .frame(width: 113, height: 48)
                                 Text("로그인하기")
-                                    .pickpleTypography(.body01)
+                                    .pickpleTypography(.body01_500)
                                     .foregroundStyle(Color.black)
                             }
                         }

@@ -19,10 +19,10 @@ struct DescriptionFieldBlock: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(PostViewStrings.description)
-                .pickpleTypography(.body01)
+                .pickpleTypography(.body01_500)
             
             TextEditor(text: $text)
-                .pickpleTypography(.body01)
+                .pickpleTypography(.body01_500)
                 .foregroundStyle(Color.neutral100)
                 .scrollContentBackground(.hidden)
                 .frame(maxWidth: .infinity, minHeight: 180)
@@ -35,14 +35,14 @@ struct DescriptionFieldBlock: View {
                 .overlay(alignment: .top) {
                     if text.isEmpty {
                         Text(PostViewStrings.descriptionPlaceholder)
-                            .pickpleTypography(.body01)
+                            .pickpleTypography(.body01_500)
                             .foregroundStyle(Color.neutral40)
                             .allowsHitTesting(false)
                     }
                 }
                 .overlay(alignment: .bottomTrailing) {
                     Text("\(text.count)/\(maxLength)")
-                        .pickpleTypography(.body02)
+                        .pickpleTypography(.body02_600)
                         .foregroundStyle(Color.neutral40)
                 }
             .padding(.vertical, 15)

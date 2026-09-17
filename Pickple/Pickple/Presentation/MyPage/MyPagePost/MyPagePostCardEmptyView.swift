@@ -29,7 +29,7 @@ struct MyPagePostCardEmptyView: View {
                             .foregroundStyle(Color.neutral30)
                     }
                     Text(MyPageStrings.addNewPost)
-                        .pickpleTypography(.body02)
+                        .pickpleTypography(.body02_600)
                         .foregroundStyle(Color.neutral40)
                 }
             }

@@ -14,7 +14,7 @@ struct ProductPriceSectionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(PostViewStrings.price)
-                .pickpleTypography(.body01)
+                .pickpleTypography(.body01_500)
 
             ProductPriceFieldBlock(
                 price: $postViewModel.productA.price,

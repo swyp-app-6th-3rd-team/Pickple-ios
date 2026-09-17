@@ -30,7 +30,7 @@ struct MyPagePostTitleView: View {
                 }
 
             }
-            .pickpleTypography(.body02)
+            .pickpleTypography(.body02_600)
             .foregroundStyle(Color.neutral40)
         }
     }

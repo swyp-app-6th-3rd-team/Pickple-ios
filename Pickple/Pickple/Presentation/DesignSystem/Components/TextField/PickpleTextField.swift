@@ -75,7 +75,7 @@ struct PickpleTextFieldAccessoryView: View {
             EmptyView()
         case .text(let text):
             Text(text)
-                .pickpleTypography(.body02)
+                .pickpleTypography(.body02_600)
                 .foregroundStyle(Color.neutral40)
         case .image(let image):
             image
@@ -117,7 +117,7 @@ struct PickpleTextField: View {
                     //실제 터치 영역 미변동 추후 확인 예정
 
                 }
-                .pickpleTypography(.body01)
+                .pickpleTypography(.body01_500)
                 .foregroundStyle(Color.neutral40)
 
                 if type.showTrailingAccessory {

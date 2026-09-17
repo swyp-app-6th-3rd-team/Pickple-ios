@@ -11,7 +11,7 @@ import SwiftUI
 struct PostTypeBadge: View {
     let type: VoteType
     var iconSize: CGFloat = 16
-    var typography: PickpleTypography = .label
+    var typography: PickpleTypography = .label_600
     var horizontalPadding: CGFloat = 10
     var verticalPadding: CGFloat = 4
     var textColor: Color = .white
@@ -55,8 +55,8 @@ struct PostTypeBadge: View {
     VStack(spacing: 12) {
         PostTypeBadge(type: .text)
         PostTypeBadge(type: .forAgainst)
-        PostTypeBadge(type: .ab, iconSize: 14, typography: .caption, horizontalPadding: 8)
-        PostTypeBadge(type: .forAgainst, iconSize: 14, typography: .caption, textColor: .green80, backgroundColor: .green20)
+        PostTypeBadge(type: .ab, iconSize: 14, typography: .caption_400, horizontalPadding: 8)
+        PostTypeBadge(type: .forAgainst, iconSize: 14, typography: .caption_400, textColor: .green80, backgroundColor: .green20)
     }
     .padding()
     .background(Color.neutral10)

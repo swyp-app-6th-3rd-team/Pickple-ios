@@ -13,10 +13,10 @@ struct PhotoUploadTitleView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             (Text(PostViewStrings.photo) + Text(" ") + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
-                .pickpleTypography(.body01)
+                .pickpleTypography(.body01_500)
             
             Text(hintText)
-                .pickpleTypography(.body02)
+                .pickpleTypography(.body02_600)
                 .foregroundStyle(Color.neutral40)
         }
     }

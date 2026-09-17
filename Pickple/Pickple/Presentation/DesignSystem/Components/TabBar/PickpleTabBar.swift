@@ -22,7 +22,7 @@ struct PickpleTabBar: View {
                 } label: {
                     VStack(spacing: 8) {
                         Text(tabs[index])
-                            .pickpleTypography(.title02)
+                            .pickpleTypography(.title02_600)
                             .foregroundStyle(index == selectedIndex ? .black : .neutral20)
 
                         Rectangle()

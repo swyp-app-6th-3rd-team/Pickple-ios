@@ -16,7 +16,7 @@ struct MainRankingGuestRow: View {
         HStack(spacing: 6) {
             HStack(spacing: 6) {
                 Text("-")
-                    .pickpleTypography(.title02) // 폰트 미지정(폰트가 맞나?)
+                    .pickpleTypography(.title02_600) // 폰트 미지정(폰트가 맞나?)
                     .foregroundStyle(Color.neutral40)
                     .frame(width: 28, height: 28)
 
@@ -27,7 +27,7 @@ struct MainRankingGuestRow: View {
                     .clipShape(Circle())
 
                 Text(MainStrings.rankingGuestNickname)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(Color.black)
             }
 
@@ -35,7 +35,7 @@ struct MainRankingGuestRow: View {
 
             Button(action: onLoginTapped) {
                 Text(MainStrings.rankingGuestLoginCTA)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(Color.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)

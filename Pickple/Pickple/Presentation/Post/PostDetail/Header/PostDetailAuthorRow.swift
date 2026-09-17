@@ -39,7 +39,7 @@ struct PostDetailAuthorRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 2) {
                         Text(nickname)
-                            .pickpleTypography(.label)
+                            .pickpleTypography(.label_600)
                             .foregroundStyle(Color.neutral70)
                         
                         
@@ -59,7 +59,7 @@ struct PostDetailAuthorRow: View {
                             .foregroundStyle(Color.neutral30)
                         // 폰트 미지정
                     }
-                    .pickpleTypography(.caption)
+                    .pickpleTypography(.caption_400)
                     
                 }
             }

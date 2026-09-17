@@ -15,7 +15,7 @@ struct PickpleToast: View {
 
     var body: some View {
         Text(message)
-            .pickpleTypography(.body02)
+            .pickpleTypography(.body02_600)
             .foregroundStyle(Color.white)
             .padding(.horizontal, 24)
             .padding(.vertical, 10)

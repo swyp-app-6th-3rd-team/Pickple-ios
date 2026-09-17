@@ -36,7 +36,7 @@ struct CustomPhotoPickerView: View {
             Group {
                 if viewModel.isAuthorizationDenied {
                     Text(CustomPhotoPickerStrings.permissionDeniedMessage)
-                        .pickpleTypography(.body01)
+                        .pickpleTypography(.body01_500)
                         .foregroundStyle(Color.neutral40)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
