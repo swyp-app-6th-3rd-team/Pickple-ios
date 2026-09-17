@@ -107,16 +107,23 @@ struct CommunityView: View {
                     }
                 }
             }
+            // .task는 이 화면이 다시 나타날 때마다(상세화면 갔다가 뒤로가기 등) 재실행된다
+            // (SwiftUI 공식 동작) — 이미 불러온 게 있으면 매번 새로 네트워크를 타지 않게 막는다.
+            // 카테고리/정렬 변경 시 새로고침은 아래 onChange가 loadPosts()를 직접 불러서
+            // 이 가드와 무관하게 항상 동작한다.
             .task {
+                guard communityViewModel.posts.isEmpty else { return }
                 await communityViewModel.loadPosts()
             }
             .onChange(of: communityViewModel.selectedCategory) { _, _ in
                 communityViewModel.isSortExpanded = false
                 communityViewModel.isScrolledDown = false
+                communityViewModel.scrollPosition.scrollTo(edge: .top)
                 Task { await communityViewModel.loadPosts() }
             }
             .onChange(of: communityViewModel.sortOption) { _, _ in
                 communityViewModel.isScrolledDown = false
+                communityViewModel.scrollPosition.scrollTo(edge: .top)
                 Task { await communityViewModel.loadPosts() }
             }
             .sheet(isPresented: $showsTypeSelection) {
