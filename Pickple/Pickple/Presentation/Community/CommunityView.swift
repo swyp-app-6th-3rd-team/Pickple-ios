@@ -23,6 +23,7 @@ struct CommunityView: View {
     var onPostCreated: () -> Void = {}
 
     var body: some View {
+        ScrollViewReader { scrollProxy in
             ZStack {
                 Color.white
                     .ignoresSafeArea()
@@ -52,6 +53,23 @@ struct CommunityView: View {
                     HStack {
                         Spacer()
                         VStack(spacing: 8) {
+                            if communityViewModel.isScrolledDown {
+                                Button(action: {
+                                    withAnimation {
+                                        scrollProxy.scrollTo(CommunityViewModel.scrollTopAnchor, anchor: .top)
+                                    }
+                                }) {
+                                    Image("PickpleArrowUp")
+                                        .resizable()
+                                        .frame(width: 24, height: 24)
+                                        .foregroundStyle(Color.black)
+                                        .padding(16)
+                                        .background(Circle().foregroundStyle(Color.white))
+                                        .shadow(color: Color.black.opacity(0.12), radius: 6)
+                                }
+                                .transition(.opacity.combined(with: .scale))
+                            }
+
                             Button(action: {
                                 if isLoggedIn {
                                     composePostViewModel = PostViewModel(postWriteRepository: RemotePostWriteRepository(apiClient: apiClient))
@@ -68,6 +86,7 @@ struct CommunityView: View {
                                     .background(Circle().foregroundStyle(Color.black))
                             }
                         }
+                        .animation(.easeInOut(duration: 0.2), value: communityViewModel.isScrolledDown)
                         .padding(.trailing, 20)
                         .padding(.bottom, 20)
                     }
@@ -119,6 +138,7 @@ struct CommunityView: View {
                     })
                 }
             }
+        }
     }
 }
 
