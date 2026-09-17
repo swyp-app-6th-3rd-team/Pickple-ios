@@ -48,10 +48,11 @@ struct MainHotPostSection: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(posts) { post in
-                            PostThumbnailCardView(post: post)
-
-                                .onTapGesture { onTapPost(post) }
-
+                            Button(action: { onTapPost(post) }) {
+                                PostThumbnailCardView(post: post)
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
                         }
 
                     }

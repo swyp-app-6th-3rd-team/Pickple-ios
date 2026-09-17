@@ -118,11 +118,14 @@ struct CommunitySearchView: View {
 
                         ForEach(communitySearchViewModel.results) { post in
                             VStack(spacing: 0) {
-                                CommunitySearchResultCardView(post: post)
-                                    .onTapGesture {
-                                        communityRouter.push(.postDetail(postId: post.id, type: post.type))
-                                    }
-                                
+                                Button(action: {
+                                    communityRouter.push(.postDetail(postId: post.id, type: post.type))
+                                }) {
+                                    CommunitySearchResultCardView(post: post)
+                                        .contentShape(Rectangle())
+                                }
+                                .buttonStyle(.plain)
+
                                 Divider()
                                     .foregroundStyle(Color.navy10)
                             }
