@@ -24,7 +24,9 @@ final class TokenRefresher {
     private let performRefresh: @MainActor @Sendable (String) async throws -> AuthTokens
     private var inFlightTask: Task<String, Error>?
 
-    init(
+    // nonisolated: APIClient.init(nonisolated 컨텍스트)에서 동기적으로 생성해야 한다 —
+    // 여기선 값 저장만 하고 MainActor가 필요한 작업(재발급 로직)은 없어서 안전하다.
+    nonisolated init(
         refreshTokenStore: RefreshTokenStoring,
         tokenStore: InMemoryTokenStore,
         performRefresh: @escaping @MainActor @Sendable (String) async throws -> AuthTokens
