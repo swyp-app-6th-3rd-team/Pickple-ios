@@ -19,6 +19,8 @@ struct SplashView: View {
                 Image("Logo")
                     .resizable()
                     .frame(width: 200, height: 45)
+                    .offset(y: -40)
+
             }
     }
 }
