@@ -45,7 +45,7 @@ struct BadgeMissionSection: View {
                             .foregroundStyle(Color.black)
 
                         Text(isLoggedIn ? MainStrings.badgeMissionSubtitleLoggedIn : MainStrings.badgeMissionSubtitleGuest)
-                            .pickpleTypography(.caption_400) //폰트 미지정 임시 적용
+                            .pickpleTypography(.label_500)
                             .foregroundStyle(Color.blue60)
                     }
 
