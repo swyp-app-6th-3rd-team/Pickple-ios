@@ -23,7 +23,6 @@ struct CommunityView: View {
     var onPostCreated: () -> Void = {}
 
     var body: some View {
-        ScrollViewReader { scrollProxy in
             ZStack {
                 Color.white
                     .ignoresSafeArea()
@@ -56,7 +55,7 @@ struct CommunityView: View {
                             if communityViewModel.isScrolledDown {
                                 Button(action: {
                                     withAnimation {
-                                        scrollProxy.scrollTo(CommunityViewModel.scrollTopAnchor, anchor: .top)
+                                        communityViewModel.scrollPosition.scrollTo(edge: .top)
                                     }
                                 }) {
                                     Image("PickpleArrowUp")
@@ -113,9 +112,11 @@ struct CommunityView: View {
             }
             .onChange(of: communityViewModel.selectedCategory) { _, _ in
                 communityViewModel.isSortExpanded = false
+                communityViewModel.isScrolledDown = false
                 Task { await communityViewModel.loadPosts() }
             }
             .onChange(of: communityViewModel.sortOption) { _, _ in
+                communityViewModel.isScrolledDown = false
                 Task { await communityViewModel.loadPosts() }
             }
             .sheet(isPresented: $showsTypeSelection) {
@@ -138,7 +139,6 @@ struct CommunityView: View {
                     })
                 }
             }
-        }
     }
 }
 
