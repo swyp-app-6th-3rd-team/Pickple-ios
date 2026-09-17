@@ -88,6 +88,7 @@ struct PickpleApp: App {
             }.onOpenURL(perform: { url in
                     _ = AuthController.handleOpenUrl(url: url)
             })
+            .dismissKeyboardOnTap()
             .task {
                 await sessionViewModel.restoreSession()
             }
