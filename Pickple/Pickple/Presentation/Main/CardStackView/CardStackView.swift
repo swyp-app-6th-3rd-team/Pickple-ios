@@ -47,6 +47,11 @@ struct CardStackView: View {
     private let pullInDragMultiplier: CGFloat = 1.5
 
     var body: some View {
+        // 맨 앞 카드를 지금 얼마나 끌었는지(0~1) — rotation(1,2)과 opacity(2)가 공통으로 쓴다.
+        // 렌더당 한 번만 계산해서 각 카드 modifier에 넘긴다(예전엔 computed property라 카드마다 재계산됐다).
+        let topWidth = cardStackViewModel.voteCardData.first.map { (cardOffsets[$0.id] ?? .zero).width } ?? 0
+        let dragProgress = min(abs(topWidth) / rotationUnwindDistance, 1)
+
         ZStack {
             // index가 배열 순서 = 쌓인 순서라, index 0이 맨 앞(터치 가능한) 카드.
             // zIndex는 뒤집어서 index가 작을수록 위로 그려지게 함 — 단, 끌려들어오는 카드는 예외.
@@ -63,12 +68,15 @@ struct CardStackView: View {
                     onTapBody: { onTapCard(data) }
                 )
                     .zIndex(Double(-index))
-                    .rotationEffect(rotation(for: index, cardID: data.id))
-                    .offset(cardOffsets[data.id] ?? .zero)
-                    .opacity(opacity(for: index))
+                    .rotationEffect(rotation(for: index, cardID: data.id, dragProgress: dragProgress))
+                    .opacity(opacity(for: index, dragProgress: dragProgress))
                     // count가 바뀔 때(카드 제거)만 애니메이션 걸어서, 맨 앞으로 올라온 카드의
                     // 기울기가 rotation(for: 0)의 .zero로 스프링 애니메이션과 함께 자동으로 펴지게 함.
+                    // offset은 이 아래(체인 밖)에 둬서 이 스프링에 안 묶인다 — 제스처의 명시적
+                    // withAnimation과 같은 프레임에 겹쳐 걸리면 두 커브가 offset을 놓고 경합해
+                    // 미세하게 튀는 느낌이 있었다.
                     .animation(.spring(response: 0.4, dampingFraction: 0.8), value: cardStackViewModel.voteCardData.count)
+                    .offset(cardOffsets[data.id] ?? .zero)
             }
 
             // 뒤로가기로 끌려들어오는 이전 카드 — history에만 있고 voteCardData에는 아직
@@ -82,7 +90,7 @@ struct CardStackView: View {
                     onTapBody: {}
                 )
                     .zIndex(.infinity)
-                    .rotationEffect(rotation(for: -1, cardID: incomingBackCard.id))
+                    .rotationEffect(rotation(for: -1, cardID: incomingBackCard.id, dragProgress: dragProgress))
                     .offset(cardOffsets[incomingBackCard.id] ?? .zero)
                     .allowsHitTesting(false)
             }
@@ -97,7 +105,7 @@ struct CardStackView: View {
                     onTapBody: {}
                 )
                     .zIndex(.infinity)
-                    .rotationEffect(rotation(for: 0, cardID: outgoingCard.id))
+                    .rotationEffect(rotation(for: 0, cardID: outgoingCard.id, dragProgress: dragProgress))
                     .offset(cardOffsets[outgoingCard.id] ?? .zero)
                     .allowsHitTesting(false)
             }
@@ -132,7 +140,7 @@ struct CardStackView: View {
     // 실시간으로 펴지게 해서, 카드가 넘어갈 때 각도가 툭 튀지 않고 자연스럽게 이어진다.
     // swipeThreshold(스와이프 확정 거리)보다 훨씬 긴 rotationUnwindDistance를 기준으로 삼아서
     // 손을 떼는 시점(threshold 근처)에는 아직 다 안 펴진 상태로, 더 끝까지 끌어야 완전히 펴지게 완화했다.
-    private func rotation(for index: Int, cardID: Int) -> Angle {
+    private func rotation(for index: Int, cardID: Int, dragProgress: Double) -> Angle {
         // 오른쪽에서 끌려들어오는 카드는 index로는 맨 뒤라 아래 switch로 판단이 안 되니 먼저 처리한다.
         // 오른쪽 dismiss와 완전히 같은 회전 공식(width/divisor, ±maxDragRotationDegrees 클램프)을
         // 부호 반전 없이 그대로 쓴다 — width 자체가 이미 방향(오른쪽 화면 밖 = 양수)을 담고 있어서,
@@ -159,15 +167,9 @@ struct CardStackView: View {
 
     // 3번째 카드가 서서히 나타나는 정도 — 평소엔 거의 안 보이다가 앞 카드를 끄는 만큼
     // (rotation의 dragProgress와 같은 기준으로) 점점 또렷해진다.
-    private func opacity(for index: Int) -> Double {
+    private func opacity(for index: Int, dragProgress: Double) -> Double {
         guard index == 2 else { return 1 }
         return dragProgress
-    }
-
-    // 맨 앞 카드를 지금 얼마나 끌었는지(0~1) — rotation(1,2)과 opacity(2)가 공통으로 쓴다.
-    private var dragProgress: Double {
-        let topWidth = cardStackViewModel.voteCardData.first.map { (cardOffsets[$0.id] ?? .zero).width } ?? 0
-        return min(abs(topWidth) / rotationUnwindDistance, 1)
     }
 
     private let restingRotationDegrees: Double = -5.0
@@ -199,7 +201,7 @@ struct CardStackView: View {
                     incomingBackCard = previous
                     let pulledIn = max(offscreenOffset + value.translation.width * pullInDragMultiplier, 0)
                     cardOffsets[incomingID] = CGSize(width: pulledIn, height: 0)
-                    cardOffsets[cardID] = .zero
+                    cardOffsets.removeValue(forKey: cardID)
                 }
             }
             .onEnded { value in
@@ -209,7 +211,7 @@ struct CardStackView: View {
                 // 임계값 못 넘으면 스프링으로 제자리 복귀 (끌려오던 이전 카드는 다시 화면 밖으로).
                 guard abs(value.translation.width) > swipeThreshold else {
                     withAnimation(.spring()) {
-                        cardOffsets[cardID] = .zero
+                        cardOffsets.removeValue(forKey: cardID)
                         if let incomingID {
                             cardOffsets[incomingID] = CGSize(width: offscreenOffset, height: 0)
                         }
@@ -237,15 +239,14 @@ struct CardStackView: View {
                     // ForEach가 뷰를 없애버리므로, 날아가는 동안 보여줄 스냅샷을 먼저 붙잡아둔다.
                     outgoingCard = cardStackViewModel.voteCardData.first
                     cardStackViewModel.moveTopCardToBack()
+                    // 이 카드가 다음에 다시 앞으로 돌아왔을 때(재활용 등) 깨끗한 상태이도록,
+                    // 애니메이션이 실제로 끝나는 시점에 오프셋을 정리하고 outgoingCard 스냅샷도
+                    // 치운다 — 추정 duration으로 별도 타이머를 재는 대신, withAnimation의
+                    // completion 콜백을 써서 실제 렌더 종료와 정확히 맞물리게 한다.
                     withAnimation(.easeOut(duration: duration)) {
                         cardOffsets[cardID] = CGSize(width: offscreenOffset, height: 0)
-                    }
-                    // 이 카드가 다음에 다시 앞으로 돌아왔을 때(재활용 등) 깨끗한 상태이도록,
-                    // 애니메이션이 끝날 시점에 오프셋을 되돌리고 outgoingCard 스냅샷도 치운다 —
-                    // SwiftUI completion이 아니라 자체 타이머라 신뢰성 문제와 무관하다.
-                    Task {
-                        try? await Task.sleep(for: .seconds(duration))
-                        cardOffsets[cardID] = .zero
+                    } completion: {
+                        cardOffsets.removeValue(forKey: cardID)
                         outgoingCard = nil
                     }
                 } else {
@@ -260,9 +261,11 @@ struct CardStackView: View {
                     // 그리도록(같은 cardOffsets를 계속 읽으므로 끊김 없이 이어짐) 오버레이는 치운다.
                     incomingBackCard = nil
                     pulledInCardID = nil
-                    cardOffsets[cardID] = .zero
+                    cardOffsets.removeValue(forKey: cardID)
                     withAnimation(.easeIn(duration: remaining / flingVelocity)) {
                         cardOffsets[incomingID] = .zero
+                    } completion: {
+                        cardOffsets.removeValue(forKey: incomingID)
                     }
 
                     if let displaced {

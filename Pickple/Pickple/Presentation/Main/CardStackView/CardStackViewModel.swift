@@ -134,7 +134,6 @@ class CardStackViewModel {
         if let next = buffers[currentType]?.pending.first {
             buffers[currentType]?.pending.removeFirst()
             voteCardData.append(next)
-            logIfDuplicate(after: "pending pull", cardID: next.id)
         } else if buffers[currentType]?.hasNext == false,
                   let recycled = buffers[currentType]?.recyclePool.first(where: { candidate in
                       !voteCardData.contains(where: { $0.id == candidate.id })
@@ -143,22 +142,8 @@ class CardStackViewModel {
             // recyclePool에서 "지금 voteCardData에 이미 떠 있지 않은" 카드만 고르므로, 어떤
             // 타이밍이든 같은 카드가 동시에 두 번 보이는 일이 구조적으로 불가능하다.
             voteCardData.append(recycled)
-            logIfDuplicate(after: "recyclePool 재활용", cardID: recycled.id)
         }
         Task { await refillPendingIfNeeded(for: currentType) }
-    }
-
-    // 임시 디버깅용 — voteCardData에 중복 id가 생기면 그 순간의 전체 상태를 찍는다.
-    @MainActor
-    private func logIfDuplicate(after label: String, cardID: Int) {
-        let ids = voteCardData.map(\.id)
-        guard Set(ids).count != ids.count else { return }
-        let buffer = buffers[currentType]
-        print("[CardStack] ⚠️ 중복 발생 — \(label) 직후, cardID=\(cardID)")
-        print("[CardStack]   voteCardData=\(ids)")
-        print("[CardStack]   pending=\(buffer?.pending.map(\.id) ?? [])")
-        print("[CardStack]   history=\(buffer?.history.map(\.id) ?? [])")
-        print("[CardStack]   displayed=\(buffer?.displayed.map(\.id) ?? [])")
     }
 
     // 왼쪽 스와이프(뒤로가기) 전용 — history 맨 뒤(가장 최근에 넘긴) 카드를 다시 맨 앞으로
@@ -170,7 +155,6 @@ class CardStackViewModel {
     func moveBackCardToFront() -> VoteCard? {
         guard let card = buffers[currentType]?.history.popLast() else { return nil }
         voteCardData.insert(card, at: 0)
-        logIfDuplicate(after: "moveBackCardToFront insert", cardID: card.id)
 
         guard voteCardData.count > visibleStackSize else { return nil }
         let overflow = voteCardData.removeLast()
@@ -220,7 +204,6 @@ class CardStackViewModel {
             while voteCardData.count < visibleStackSize, let next = buffers[type]?.pending.first {
                 buffers[type]?.pending.removeFirst()
                 voteCardData.append(next)
-                logIfDuplicate(after: "refillPendingIfNeeded top-up", cardID: next.id)
             }
         }
     }
