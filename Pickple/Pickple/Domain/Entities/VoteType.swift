@@ -9,7 +9,8 @@
 
 import Foundation
 
-enum VoteType: Equatable, Identifiable {
+// Hashable: CardStackViewModel이 타입별(찬반/AB) 카드 버퍼를 딕셔너리 키로 관리한다.
+enum VoteType: Equatable, Hashable, Identifiable {
     case forAgainst
     case ab
     case text
