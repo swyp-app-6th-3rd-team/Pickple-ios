@@ -34,14 +34,14 @@ struct CommunitySearchView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack {
                         Text(CommunityStrings.recentSearchesTitle)
-                            .pickpleTypography(.body01)
+                            .pickpleTypography(.body01_500)
                             .foregroundStyle(Color.neutral100)
 
                         Spacer()
 
                         Button(action: { communitySearchViewModel.clearAllRecentSearches() }) {
                             Text("모두 지우기")
-                                .pickpleTypography(.body02)
+                                .pickpleTypography(.body02_600)
                                 .foregroundStyle(Color.neutral40)
                         }
                     }
@@ -54,7 +54,7 @@ struct CommunitySearchView: View {
                                 HStack(spacing: 6) {
                                     Button(action: { communitySearchViewModel.selectRecentSearch(term) }) {
                                         Text(term)
-                                            .pickpleTypography(.body02)
+                                            .pickpleTypography(.body02_600)
                                             .foregroundStyle(Color.neutral70)
                                     }
                                     Button(action: { communitySearchViewModel.removeRecentSearch(term) }) {
@@ -94,11 +94,11 @@ struct CommunitySearchView: View {
                         
                         VStack(spacing: 4) {
                             Text("검색 결과가 없어요")
-                                .pickpleTypography(.title02)
+                                .pickpleTypography(.title02_600)
                                 .foregroundStyle(Color.neutral70)
                             
                             Text("다른 검색어를 입력해 보세요")
-                                .pickpleTypography(.body02)
+                                .pickpleTypography(.body02_600)
                                 .foregroundStyle(Color.neutral30)
                         }
                     }
@@ -113,7 +113,7 @@ struct CommunitySearchView: View {
                             .foregroundStyle(Color.yellow70)
                          + Text(CommunityStrings.searchResultSuffix)
                             .foregroundStyle(Color.neutral80))
-                            .pickpleTypography(.body01)
+                            .pickpleTypography(.body01_500)
                             .padding(.vertical, 12)
 
                         ForEach(communitySearchViewModel.results) { post in
@@ -134,6 +134,7 @@ struct CommunitySearchView: View {
         }
         .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
         .task {
             await communitySearchViewModel.loadPosts()
         }
@@ -162,11 +163,11 @@ private struct CommunitySearchField: View {
             ZStack(alignment: .leading) {
                 if text.isEmpty {
                     Text(CommunityStrings.searchPlaceholder)
-                        .pickpleTypography(.body01)
+                        .pickpleTypography(.body01_500)
                         .foregroundStyle(Color.neutral40)
                 }
                 TextField("", text: $text)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(Color.neutral100)
                     .submitLabel(.search)
                     .onSubmit(onSubmit)

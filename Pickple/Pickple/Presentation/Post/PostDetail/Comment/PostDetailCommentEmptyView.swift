@@ -13,9 +13,11 @@ struct PostDetailCommentEmptyView: View {
         VStack {
             
             Text(PostDetailStrings.commentEmptyMessage)
-                .pickpleTypography(.title02)
+                .pickpleTypography(.title02_600)
                 .foregroundStyle(Color.neutral30)
                 .padding(.top, 106)
+                .padding(.bottom, 189)
+                
         }
         .frame(maxWidth: .infinity)
     }

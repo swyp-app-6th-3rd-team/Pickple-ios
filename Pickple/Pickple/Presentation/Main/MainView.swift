@@ -13,12 +13,9 @@ struct MainView: View {
     @State private var cardStackViewModel: CardStackViewModel
     @Environment(MainRouter.self) private var mainRouter
     @Environment(\.appRequestLogin) private var appRequestLogin
-    @Environment(TabBarVisibilityController.self) private var tabBarVisibility
     @State private var isMissionExpanded = false
     @State private var showsBadgeLoginRequired = false
     var onRequestCommunityTab: (() -> Void)? = nil
-
-    private static let scrollDownThreshold: CGFloat = 20
 
     init(
         mainViewModel: MainViewModel = MainViewModel(),
@@ -45,9 +42,6 @@ struct MainView: View {
                     .onChange(of: mainViewModel.selectedType) { _, newValue in
                         cardStackViewModel.filterCards(by: newValue)
                     }
-                    
-                    Divider()
-                        .foregroundStyle(Color.navy10)
 
                     CardStackView(
                         cardStackViewModel: cardStackViewModel,
@@ -91,13 +85,6 @@ struct MainView: View {
                     .padding(.horizontal, 20)
 
 
-                }
-            }
-            .onScrollGeometryChange(for: CGFloat.self) { geometry in
-                geometry.contentOffset.y
-            } action: { _, newValue in
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    tabBarVisibility.isHidden = newValue > Self.scrollDownThreshold
                 }
             }
 
@@ -152,5 +139,4 @@ struct MainView: View {
         MainView()
     }
     .environment(MainRouter())
-    .environment(TabBarVisibilityController())
 }

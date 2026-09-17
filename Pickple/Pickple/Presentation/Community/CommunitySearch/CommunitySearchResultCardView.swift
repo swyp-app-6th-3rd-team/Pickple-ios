@@ -17,13 +17,13 @@ struct CommunitySearchResultCardView: View {
             VStack(alignment: .leading, spacing: 8) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(post.title)
-                        .pickpleTypography(.body01)
+                        .pickpleTypography(.body01_500)
                         .foregroundStyle(Color.black)
                         .lineLimit(1)
                     
                     //설명 공백 대비
                     Text(post.description.isEmpty ? " " : post.description)
-                        .pickpleTypography(.body02)
+                        .pickpleTypography(.body02_600)
                         .foregroundStyle(Color.neutral40)
                         .lineLimit(1)
                 }

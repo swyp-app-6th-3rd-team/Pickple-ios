@@ -19,11 +19,6 @@ struct CommunityPostListSection: View {
         } else {
             ScrollView {
                 LazyVStack(spacing: 20) {
-                    // ScrollViewReader가 최상단으로 스크롤할 때 목표로 삼는 자리 표시자.
-                    Color.clear
-                        .frame(height: 0)
-                        .id(CommunityViewModel.scrollTopAnchor)
-
                     ForEach(communityViewModel.displayedPosts) { post in
                         CommunityPostCardView(post: post)
                             // 리스트(LazyVStack) 레벨에서 주던 좌우 여백을 카드 자신에게 직접 준다.
@@ -36,13 +31,6 @@ struct CommunityPostListSection: View {
                             .task { await communityViewModel.loadMoreIfNeeded(currentPost: post) }
 
                     }
-                }
-            }
-            .onScrollGeometryChange(for: CGFloat.self) { geometry in
-                geometry.contentOffset.y
-            } action: { _, newValue in
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    communityViewModel.isScrolledDown = newValue > CommunityViewModel.scrollDownThreshold
                 }
             }
         }

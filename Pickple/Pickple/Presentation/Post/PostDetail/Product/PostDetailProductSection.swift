@@ -45,14 +45,14 @@ struct PostDetailProductInfo: View {
             if let purchaseURL = product.purchaseURL {
                 HStack(spacing: 8) {
                     Text(PostDetailStrings.purchaseLinkLabel)
-                        .pickpleTypography(.body02)
+                        .pickpleTypography(.body02_600)
                         .foregroundStyle(Color.neutral30)
                         .frame(width: 36, alignment: .leading)
 
                     if let purchaseLink = product.purchaseLink {
                         Link(destination: purchaseLink) {
                             Text(purchaseURL)
-                                .pickpleTypography(.body02)
+                                .pickpleTypography(.body02_600)
                                 .foregroundStyle(Color.blue60)
                                 .underline()
                                 .lineLimit(1)
@@ -60,7 +60,7 @@ struct PostDetailProductInfo: View {
                         }
                     } else {
                         Text(purchaseURL)
-                            .pickpleTypography(.body02)
+                            .pickpleTypography(.body02_600)
                             .foregroundStyle(Color.neutral100)
                             .underline()
                             .lineLimit(1)
@@ -79,12 +79,12 @@ private struct PostDetailProductInfoRow: View {
     var body: some View {
         HStack(spacing: 8) {
             Text(label)
-                .pickpleTypography(.body02)
+                .pickpleTypography(.body02_600)
                 .foregroundStyle(Color.neutral30)
                 .frame(width: 36, alignment: .leading)
 
             Text(value)
-                .pickpleTypography(.body01)
+                .pickpleTypography(.body01_500)
                 .foregroundStyle(Color.neutral100)
         }
     }
@@ -93,7 +93,7 @@ private struct PostDetailProductInfoRow: View {
 #Preview {
     VStack(alignment: .leading, spacing: 20) {
         PostDetailProductTabPicker(firstLabel: "상품A", secondLabel: "상품B", selectedTab: .constant(.first))
-        PostDetailProductInfo(product: PostDetailProduct(id: 1, name: "나이키 에어포스 흰색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/...", imageUrl: nil, displayOrder: 1))
+        PostDetailProductInfo(product: PostDetailProduct(id: 1, name: "나이키 에어포스 흰색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/...", imageUrls: [], displayOrder: 1))
     }
     .padding()
 }

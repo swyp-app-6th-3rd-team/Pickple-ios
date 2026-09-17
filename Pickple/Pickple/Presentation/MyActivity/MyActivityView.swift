@@ -14,8 +14,13 @@ struct MyActivityView: View {
     @Environment(MyPageRouter.self) private var myPageRouter
 
     @State private var isShown: Bool = false
-    @State private var selectedIndexTwo = 0
+    @State private var selectedIndexTwo: Int
     @State private var selectedValue = MyActivityStrings.latestSortOption
+
+    init(myActivityViewModel: MyActivityViewModel, initialTab: Int = 0) {
+        _myActivityViewModel = State(initialValue: myActivityViewModel)
+        _selectedIndexTwo = State(initialValue: initialTab)
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -73,6 +78,7 @@ struct MyActivityView: View {
         }
         .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
     }
 }
 

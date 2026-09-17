@@ -25,7 +25,7 @@ struct TopPickerRankingSection: View {
                 Button(action: onTapMore) {
                     HStack(spacing: 4) {
                         Text(MainStrings.more)
-                            .pickpleTypography(.body02)
+                            .pickpleTypography(.body02_500)
                             .foregroundStyle(Color.neutral40)
 
 
@@ -37,10 +37,11 @@ struct TopPickerRankingSection: View {
                     }
                 }
             }
+            .padding(.horizontal, 20)
 
             if rankings.isEmpty {
                 Text(MainStrings.rankingEmptyMessage)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(Color.neutral30)
                     .padding(.vertical, 60)
             } else {

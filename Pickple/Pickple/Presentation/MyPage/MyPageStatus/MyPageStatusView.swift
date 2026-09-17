@@ -10,10 +10,11 @@ import SwiftUI
 
 struct MyPageStatusView: View {
     let myPageViewModel: MyPageViewModel
-    
+    var onTapStat: (Int) -> Void = { _ in }
+
     var body: some View {
         VStack(spacing: 8) {
-            MyPageStatsView(myPageViewModel: myPageViewModel)
+            MyPageStatsView(myPageViewModel: myPageViewModel, onTapStat: onTapStat)
             
             MyPagePointsView(myPageViewModel: myPageViewModel)
             

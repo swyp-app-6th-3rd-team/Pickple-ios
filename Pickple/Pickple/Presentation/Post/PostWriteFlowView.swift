@@ -21,12 +21,8 @@ struct PostWriteFlowView: View {
     @State private var isCategoryExpanded = false
     @State private var showsLeaveConfirm = false
     @State private var showsFailureToast = false
-    @State private var isScrolledDown = false
 
     private let categoryOptions = PostViewStrings.categoryOptions
-
-    private static let topAnchor = "postWriteTop"
-    private static let scrollDownThreshold: CGFloat = 40
 
     var body: some View {
         ZStack {
@@ -53,29 +49,14 @@ struct PostWriteFlowView: View {
                         .animation(.easeInOut, value: postViewModel.requiredFieldsFilledCount)
                 }
 
-                ScrollViewReader { scrollProxy in
-                    ScrollView {
-                        topAnchorMarker
-
-                        PostWriteFlowStepContent(
-                            postViewModel: postViewModel,
-                            isCategoryExpanded: $isCategoryExpanded,
-                            categoryOptions: categoryOptions
-                        )
-                        .padding(.top, 28)
-                        .zIndex(isCategoryExpanded ? 1 : 0)
-                    }
-                    .onScrollGeometryChange(for: CGFloat.self) { geometry in
-                        geometry.contentOffset.y
-                    } action: { _, newValue in
-                        isScrolledDown = newValue > Self.scrollDownThreshold
-                    }
-                    .overlay(alignment: .bottomTrailing) {
-                        if isScrolledDown {
-                            scrollToTopButton(scrollProxy: scrollProxy)
-                        }
-                    }
-                    .animation(.easeInOut(duration: 0.2), value: isScrolledDown)
+                ScrollView {
+                    PostWriteFlowStepContent(
+                        postViewModel: postViewModel,
+                        isCategoryExpanded: $isCategoryExpanded,
+                        categoryOptions: categoryOptions
+                    )
+                    .padding(.top, 28)
+                    .zIndex(isCategoryExpanded ? 1 : 0)
                 }
                 .padding(.horizontal, 20)
 
@@ -103,32 +84,7 @@ struct PostWriteFlowView: View {
         }
         .pickpleToast(isPresented: $showsFailureToast, message: postViewModel.isEditing ? PostViewStrings.submitEditFailedToast : PostViewStrings.submitFailedToast)
         .navigationBarBackButtonHidden(true)
-    }
-
-    // ScrollViewReader가 최상단으로 스크롤할 때 목표로 삼는 자리 표시자 — 실제 오프셋
-    // 측정은 onScrollGeometryChange가 하므로 이 마커는 id만 있으면 된다.
-    private var topAnchorMarker: some View {
-        Color.clear
-            .frame(height: 0)
-            .id(Self.topAnchor)
-    }
-
-    private func scrollToTopButton(scrollProxy: ScrollViewProxy) -> some View {
-        Button(action: {
-            withAnimation {
-                scrollProxy.scrollTo(Self.topAnchor, anchor: .top)
-            }
-        }) {
-            Image("PickpleArrowUp")
-                .resizable()
-                .frame(width: 24, height: 24)
-                .foregroundStyle(Color.black)
-                .padding(16)
-                .background(Circle().foregroundStyle(Color.white))
-                .shadow(color: Color.black.opacity(0.12), radius: 6)
-        }
-        .padding(.bottom, 12)
-        .transition(.opacity.combined(with: .scale))
+        .toolbar(.hidden, for: .tabBar)
     }
 
     private func handleBack() {

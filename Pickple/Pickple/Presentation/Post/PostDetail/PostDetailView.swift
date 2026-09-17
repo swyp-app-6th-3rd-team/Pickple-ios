@@ -109,13 +109,19 @@ struct PostDetailView: View {
                         Divider()
                             .foregroundStyle(Color.navy10)
                         
-                        PostDetailCommentInputBar(text: $postDetailViewModel.commentInput, isFocused: $isCommentFieldFocused, isEditingComment: postDetailViewModel.isEditingComment) {
-                            if postDetailViewModel.isLoggedIn {
-                                Task { await postDetailViewModel.submitComment() }
-                            } else {
-                                loginRequiredDescription = PostDetailStrings.commentRequiredDescription
-                            }
-                        }
+                        PostDetailCommentInputBar(
+                            text: $postDetailViewModel.commentInput,
+                            isFocused: $isCommentFieldFocused,
+                            isEditingComment: postDetailViewModel.isEditingComment,
+                            onSubmit: {
+                                if postDetailViewModel.isLoggedIn {
+                                    Task { await postDetailViewModel.submitComment() }
+                                } else {
+                                    loginRequiredDescription = PostDetailStrings.commentRequiredDescription
+                                }
+                            },
+                            onCancel: { postDetailViewModel.cancelEditingComment() }
+                        )
                         .padding(.top, 16)
                         .padding(.horizontal, 20)
                         .shadow(color: Color.black.opacity(0.05), radius: 20, y: -2)
@@ -211,6 +217,7 @@ struct PostDetailView: View {
         .pickpleToast(isPresented: $showsSuccessToast, message: PostViewStrings.submitEditSucceededToast)
         .pickpleToast(isPresented: $showsDeleteFailureToast, message: PostDetailStrings.deleteFailedToast)
         .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
         .task {
             postDetailViewModel.isLoggedIn = isLoggedIn
             await postDetailViewModel.loadPostDetail()

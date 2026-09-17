@@ -14,14 +14,15 @@ struct CommunityView: View {
     @Environment(\.isLoggedIn) private var isLoggedIn
     @Environment(\.appRequestLogin) private var appRequestLogin
     @Environment(\.apiClient) private var apiClient
-    @Environment(TabBarVisibilityController.self) private var tabBarVisibility
     @State private var showsLoginRequired = false
     @State private var showsTypeSelection = false
     @State private var writeFlowType: VoteType?
     @State private var composePostViewModel = PostViewModel()
+    // 새 글 등록 성공 토스트는 이 화면이 아니라 상세 화면으로 push된 뒤에 보여야 해서,
+    // 이 화면 자신의 토스트가 아니라 상위(PickpleBottomNav의 NavigationStack)에서 띄운다.
+    var onPostCreated: () -> Void = {}
 
     var body: some View {
-        ScrollViewReader { scrollProxy in
             ZStack {
                 Color.white
                     .ignoresSafeArea()
@@ -51,23 +52,6 @@ struct CommunityView: View {
                     HStack {
                         Spacer()
                         VStack(spacing: 8) {
-                            if communityViewModel.isScrolledDown {
-                                Button(action: {
-                                    withAnimation {
-                                        scrollProxy.scrollTo(CommunityViewModel.scrollTopAnchor, anchor: .top)
-                                    }
-                                }) {
-                                    Image("PickpleArrowUp")
-                                        .resizable()
-                                        .frame(width: 24, height: 24)
-                                        .foregroundStyle(Color.black)
-                                        .padding(16)
-                                        .background(Circle().foregroundStyle(Color.white))
-                                        .shadow(color: Color.black.opacity(0.12), radius: 6)
-                                }
-                                .transition(.opacity.combined(with: .scale))
-                            }
-
                             Button(action: {
                                 if isLoggedIn {
                                     composePostViewModel = PostViewModel(postWriteRepository: RemotePostWriteRepository(apiClient: apiClient))
@@ -84,7 +68,6 @@ struct CommunityView: View {
                                     .background(Circle().foregroundStyle(Color.black))
                             }
                         }
-                        .animation(.easeInOut(duration: 0.2), value: communityViewModel.isScrolledDown)
                         .padding(.trailing, 20)
                         .padding(.bottom, 20)
                     }
@@ -109,11 +92,6 @@ struct CommunityView: View {
             .task {
                 await communityViewModel.loadPosts()
             }
-            .onChange(of: communityViewModel.isScrolledDown) { _, newValue in
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    tabBarVisibility.isHidden = newValue
-                }
-            }
             .onChange(of: communityViewModel.selectedCategory) { _, _ in
                 communityViewModel.isSortExpanded = false
                 Task { await communityViewModel.loadPosts() }
@@ -137,10 +115,10 @@ struct CommunityView: View {
                     // 커뮤니티 목록으로 돌아간다.
                     PostWriteFlowView(postViewModel: composePostViewModel, onPostSaved: { postId, type in
                         communityRouter.push(.postDetail(postId: postId, type: type))
+                        onPostCreated()
                     })
                 }
             }
-        }
     }
 }
 
@@ -148,12 +126,10 @@ struct CommunityView: View {
     CommunityView(communityViewModel: CommunityViewModel())
         .environment(CommunityRouter())
         .environment(\.isLoggedIn, false)
-        .environment(TabBarVisibilityController())
 }
 
 #Preview("로그인") {
     CommunityView(communityViewModel: CommunityViewModel())
         .environment(CommunityRouter())
         .environment(\.isLoggedIn, true)
-        .environment(TabBarVisibilityController())
 }

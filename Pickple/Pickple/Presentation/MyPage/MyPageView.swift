@@ -12,12 +12,9 @@ struct MyPageView: View {
     let myPageViewModel: MyPageViewModel
     @Environment(MyPageRouter.self) private var myPageRouter
     @Environment(\.appRequestLogin) private var appRequestLogin
-    @Environment(TabBarVisibilityController.self) private var tabBarVisibility
     @State private var showsLoginRequired = false
     @State private var showsMyPostsLoginRequired = false
     @State private var showsInfoLoginRequired = false
-
-    private static let scrollDownThreshold: CGFloat = 20
 
     var body: some View {
         ZStack {
@@ -31,7 +28,16 @@ struct MyPageView: View {
                     VStack(spacing: 0) {
                         MyPageProfileHeaderView(myPageViewModel: myPageViewModel, onLoginTapped: { showsLoginRequired = true })
 
-                        MyPageStatusView(myPageViewModel: myPageViewModel)
+                        MyPageStatusView(
+                            myPageViewModel: myPageViewModel,
+                            onTapStat: { tab in
+                                if myPageViewModel.isLoggedIn {
+                                    myPageRouter.push(.activity(initialTab: tab))
+                                } else {
+                                    showsMyPostsLoginRequired = true
+                                }
+                            }
+                        )
 
                         Rectangle()
                             .foregroundStyle(Color.neutral5)
@@ -42,7 +48,7 @@ struct MyPageView: View {
                             onTapPost: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) },
                             onTapMore: {
                                 if myPageViewModel.isLoggedIn {
-                                    myPageRouter.push(.activity)
+                                    myPageRouter.push(.activity(initialTab: 2))
                                 } else {
                                     showsMyPostsLoginRequired = true
                                 }
@@ -93,13 +99,6 @@ struct MyPageView: View {
 
                     }
 
-            }
-            .onScrollGeometryChange(for: CGFloat.self) { geometry in
-                geometry.contentOffset.y
-            } action: { _, newValue in
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    tabBarVisibility.isHidden = newValue > Self.scrollDownThreshold
-                }
             }
 
             if showsLoginRequired {
@@ -160,5 +159,4 @@ struct MyPageView: View {
 #Preview {
     MyPageView(myPageViewModel: MyPageViewModel())
         .environment(MyPageRouter())
-        .environment(TabBarVisibilityController())
 }

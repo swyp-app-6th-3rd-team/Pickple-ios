@@ -23,7 +23,7 @@ struct MyPageProfileEditView: View {
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("닉네임")
-                        .pickpleTypography(.body01)
+                        .pickpleTypography(.body01_500)
                         .foregroundStyle(Color.black)
                         .padding(.horizontal, 4)
                     
@@ -51,6 +51,7 @@ struct MyPageProfileEditView: View {
         }
         .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .tabBar)
     }
 }
 

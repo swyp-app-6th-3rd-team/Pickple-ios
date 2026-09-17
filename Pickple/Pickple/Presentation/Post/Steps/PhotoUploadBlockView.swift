@@ -36,14 +36,14 @@ struct PhotoUploadBlockView: View {
                             .background(
                                 Circle()
                                     .foregroundStyle(Color.neutral80)
-                                    .padding(4)
+                                    .padding(3)
                                     .background(
                                         Circle()
                                             .foregroundStyle(Color.white)
                                     )
                             )
                     }
-                    .offset(x: -4, y: -9)
+                    .offset(x: 9, y: -9)
                 }
             }
 
@@ -57,7 +57,7 @@ struct PhotoUploadBlockView: View {
                             .foregroundStyle(Color.neutral20)
 
                         Text("\(photos.count)/\(maxCount)")
-                            .pickpleTypography(.caption)
+                            .pickpleTypography(.caption_400)
                             .foregroundStyle(Color.neutral20)
                     }
                     .frame(width: 96, height: 96)

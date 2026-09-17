@@ -19,7 +19,7 @@ struct PhotoUploadSectionView: View {
     var isDisabled: Bool = false
     
     @State private var showsPicker = false
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             PhotoUploadTitleView(hintText: hintText)

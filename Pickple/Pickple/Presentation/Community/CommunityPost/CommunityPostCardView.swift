@@ -43,11 +43,11 @@ struct CommunityPostCardView: View {
             VStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(post.title)
-                        .pickpleTypography(.title02)
+                        .pickpleTypography(.title02_600)
                         .foregroundStyle(Color.black)
                     
                     Text(post.description)
-                        .pickpleTypography(.body02)
+                        .pickpleTypography(.body02_600)
                         .foregroundStyle(Color.neutral40)
                         .lineLimit(2)
                 }
@@ -56,7 +56,7 @@ struct CommunityPostCardView: View {
                 VStack(spacing: 0) {
                 HStack {
                     PostVoteCommentStats(type: post.type, voteCount: post.voteCount, commentCount: post.commentCount)
-                        .pickpleTypography(.label)
+                        .pickpleTypography(.label_600)
                         .foregroundStyle(Color.neutral30)
                     
                     Spacer()
@@ -65,7 +65,7 @@ struct CommunityPostCardView: View {
                         if let authorNickname = post.authorNickname {
                             HStack(spacing: 2) {
                                 Text(authorNickname)
-                                    .pickpleTypography(.caption) //폰트 미지정
+                                    .pickpleTypography(.caption_400) //폰트 미지정
                                     .foregroundStyle(Color.neutral40)
                                 
                                 if let authorLevel = post.authorLevel {
@@ -81,7 +81,7 @@ struct CommunityPostCardView: View {
                         }
                         
                         Text(post.createdAt.relativeTimeDescription)
-                            .pickpleTypography(.caption)// 폰트 미지정
+                            .pickpleTypography(.caption_400)// 폰트 미지정
                             .foregroundStyle(Color.neutral40)
                     }
                 }

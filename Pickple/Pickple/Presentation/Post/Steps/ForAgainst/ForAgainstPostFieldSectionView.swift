@@ -17,7 +17,7 @@ struct ForAgainstPostFieldSectionView: View {
     private var isPhotoFilled: Bool { postViewModel.product.hasPhoto }
     private var isPriceFilled: Bool { !postViewModel.product.price.isEmpty }
     private var isUrlFilled: Bool { !postViewModel.product.url.isEmpty }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             CategoryFieldBlock(postViewModel: postViewModel, isExpanded: .constant(false), options: categoryOptions)
@@ -34,7 +34,7 @@ struct ForAgainstPostFieldSectionView: View {
                     Text(PostViewStrings.requiredMark)
                         .foregroundStyle(Color.red60)
                 )
-                .pickpleTypography(.body01)
+                .pickpleTypography(.body01_500)
 
                 ProductNameFieldBlock(name: $postViewModel.product.name, maxLength: postViewModel.productNameMaxLength, isDisabled: postViewModel.isEditing)
             }
@@ -44,7 +44,7 @@ struct ForAgainstPostFieldSectionView: View {
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(PostViewStrings.price)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
 
                 ProductPriceFieldBlock(price: $postViewModel.product.price, isDisabled: postViewModel.isEditing, AB: "A")
             }
@@ -52,7 +52,7 @@ struct ForAgainstPostFieldSectionView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 Text(PostViewStrings.url)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
 
                 ProductURLFieldBlock(url: $postViewModel.product.url, isDisabled: postViewModel.isEditing)
             }

@@ -12,6 +12,7 @@ struct PostDetailCommentInputBar: View {
     var isFocused: FocusState<Bool>.Binding
     var isEditingComment: Bool
     let onSubmit: () -> Void
+    var onCancel: () -> Void = {}
     
     
     var body: some View {
@@ -27,7 +28,7 @@ struct PostDetailCommentInputBar: View {
                         axis: .vertical
                     )
                     .focused(isFocused)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(Color.neutral100)
                     .padding(.leading, 16)
                     .padding(.vertical, 8)
@@ -65,7 +66,7 @@ struct PostDetailCommentInputBar: View {
                         .foregroundStyle(Color.neutral40)
                     
                     Text("댓글 수정 중...")
-                        .pickpleTypography(.body02)
+                        .pickpleTypography(.body02_600)
                         .foregroundStyle(Color.neutral40)
                 }
                 .padding(.leading, 4)
@@ -80,7 +81,7 @@ struct PostDetailCommentInputBar: View {
                             axis: .vertical
                         )
                         .focused(isFocused)
-                        .pickpleTypography(.body01)
+                        .pickpleTypography(.body01_500)
                         .foregroundStyle(Color.neutral100)
                         .padding(.leading, 16)
                         .padding(.vertical, 8)
@@ -91,6 +92,19 @@ struct PostDetailCommentInputBar: View {
                         
                         
                         Spacer()
+                        
+                        ZStack {
+                            Circle()
+                                .frame(width: 40, height: 40)
+                                .foregroundStyle(Color.navy20)
+                            
+                            
+                            Image("PickpleX")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(Color.white)
+                        }
+                        .onTapGesture(perform: onCancel)
                         
                         ZStack {
                             Circle()
@@ -118,7 +132,7 @@ struct PostDetailCommentInputBar: View {
         @FocusState private var isFocused: Bool
         
         var body: some View {
-            PostDetailCommentInputBar(text: $text, isFocused: $isFocused, isEditingComment: false) {}
+            PostDetailCommentInputBar(text: $text, isFocused: $isFocused, isEditingComment: false, onSubmit: {})
         }
     }
     return PreviewWrapper()
@@ -128,9 +142,9 @@ struct PostDetailCommentInputBar: View {
     struct PreviewWrapper: View {
         @State private var text = "수정할 댓글 내용"
         @FocusState private var isFocused: Bool
-        
+
         var body: some View {
-            PostDetailCommentInputBar(text: $text, isFocused: $isFocused, isEditingComment: true) {}
+            PostDetailCommentInputBar(text: $text, isFocused: $isFocused, isEditingComment: true, onSubmit: {}, onCancel: {})
         }
     }
     return PreviewWrapper()

@@ -18,7 +18,12 @@ class PostDetailViewModel {
     var commentInput: String = ""
     var sortOption: String = PostDetailViewModel.sortOptions[0]
     var currentImageIndex = 0
-    var selectedProductTab: PostDetailVoteSide = .first
+    // A/B 탭 전환에 맞춰 캐러셀 사진도 같이 넘어가게(사진 자체의 수동 스와이프는 그대로 유지).
+    var selectedProductTab: PostDetailVoteSide = .first {
+        didSet {
+            currentImageIndex = selectedProductTab == .first ? 0 : 1
+        }
+    }
     var myProfileImageUrl: URL?
     // 한 게시글에 원픽은 하나만 가능하고 취소할 수 없다.
     var pickedCommentID: Int?
