@@ -130,7 +130,6 @@ class CardStackViewModel {
         if buffers[currentType]?.recyclePool.contains(where: { $0.id == card.id }) == false {
             buffers[currentType]?.recyclePool.append(card)
         }
-
         if let next = buffers[currentType]?.pending.first {
             buffers[currentType]?.pending.removeFirst()
             voteCardData.append(next)
