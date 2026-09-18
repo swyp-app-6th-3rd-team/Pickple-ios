@@ -85,6 +85,13 @@ enum PickpleTypography {
         size * letterSpacingPercent
     }
 
+    // SwiftUI .lineSpacing()은 폰트 기본 줄 높이 "위에 추가로" 더하는 값이라, Figma의
+    // "줄 높이 배수"(폰트 크기 * lineHeightPercent)와 그대로 안 맞는다 — 목표 줄 높이에서
+    // 폰트가 이미 갖고 있는 기본 줄 높이(uiFont.lineHeight)를 뺀 차이만 추가로 넘긴다.
+    var lineSpacing: CGFloat {
+        max(size * lineHeightPercent - uiFont.lineHeight, 0)
+    }
+
     // GeometryReader로 렌더링된 텍스트 폭을 측정해 상태에 반영하는 방식은 SwiftUI
     // 렌더링 타이밍에 따라 결과가 들쭉날쭉했다. NSString 기반으로 같은 폰트를 동기적으로
     // 측정하면 매 렌더링마다 항상 같은 값이 나와 그런 문제가 없다.
@@ -109,5 +116,9 @@ extension View {
         self
             .font(style.font)
             .tracking(style.tracking)
+            .lineSpacing(style.lineSpacing)
+            // .lineSpacing()은 각 줄 아래에만 붙어서 첫 줄 위쪽엔 안 생긴다 — Figma가 한 줄이어도
+            // line-height만큼 위아래로 공간을 갖는 것과 맞추려고 절반씩 위아래에 패딩으로 채운다.
+            .padding(.vertical, style.lineSpacing / 2)
     }
 }

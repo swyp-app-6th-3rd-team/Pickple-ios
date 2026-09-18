@@ -32,7 +32,6 @@ struct PostSummary: Identifiable {
     let products: [PostSummaryProduct]   // 인기 게시글(GET /posts/popular) 전용, 그 외엔 빈 배열
     let commenterCount: Int?   // 인기 게시글 전용(댓글 남긴 서로 다른 사용자 수). 그 외엔 nil — 화면에서 commentCount로 대체
 
-    //추후 API 스펙에 맞게 수정
 
     init(
         id: Int,
