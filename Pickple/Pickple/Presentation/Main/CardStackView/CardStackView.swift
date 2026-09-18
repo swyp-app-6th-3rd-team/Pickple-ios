@@ -137,6 +137,12 @@ struct CardStackView: View {
         // 덮는 실체 있는 UIView가 생겨 그 아래 투표 버튼 터치를 가로채 버렸다 —
         // UIGestureRecognizerRepresentable로 .gesture() 붙이면 덮는 뷰 없이 방향이 세로로
         // 확정되는 순간 인식기만 실패시켜 부모에게 터치를 넘기면서도 버튼은 그대로 눌린다.
+        //
+        // ZStack은 기본적으로 카드(333pt)에 맞춰 좁게 잡혀서, 화면 좌우의 빈 여백은 터치
+        // 영역 밖이었다 — 가로로 꽉 채우고 .contentShape로 그 빈 영역까지 히트테스트에
+        // 포함시켜서 카드 옆 빈 공간에서 시작한 스와이프도 반응하게 한다.
+        .frame(maxWidth: .infinity)
+        .contentShape(Rectangle())
         .gesture(
             DirectionalPanGesture(
                 onChanged: handleDragChanged,
