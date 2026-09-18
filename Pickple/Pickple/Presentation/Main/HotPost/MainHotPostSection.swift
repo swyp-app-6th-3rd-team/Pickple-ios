@@ -46,7 +46,7 @@ struct MainHotPostSection: View {
                     .padding(.vertical, 40)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
+                    LazyHStack(spacing: 12) {
                         ForEach(posts) { post in
                             Button(action: { onTapPost(post) }) {
                                 PostThumbnailCardView(post: post)
