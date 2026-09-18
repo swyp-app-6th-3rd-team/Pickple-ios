@@ -133,10 +133,12 @@ struct CardStackView: View {
         // 그때그때 cardStackViewModel.voteCardData.first로 조회한다.
         // SwiftUI DragGesture.onChanged 안에서 "세로면 무시"하는 가드만으로는 인식기 자체가
         // 터치를 계속 붙잡고 있어서 부모 ScrollView와 계속 경합했다(카드 위에서 세로 스크롤이
-        // 씹히거나 안 먹는 문제) — DirectionalPanGestureView가 방향이 세로로 확정되는 순간
-        // 인식기를 아예 실패시켜 터치를 부모에게 완전히 넘긴다.
-        .overlay(
-            DirectionalPanGestureView(
+        // 씹히거나 안 먹는 문제). UIViewRepresentable + .overlay()로 풀었더니 이번엔 카드를
+        // 덮는 실체 있는 UIView가 생겨 그 아래 투표 버튼 터치를 가로채 버렸다 —
+        // UIGestureRecognizerRepresentable로 .gesture() 붙이면 덮는 뷰 없이 방향이 세로로
+        // 확정되는 순간 인식기만 실패시켜 부모에게 터치를 넘기면서도 버튼은 그대로 눌린다.
+        .gesture(
+            DirectionalPanGesture(
                 onChanged: handleDragChanged,
                 onEnded: handleDragEnded
             )
