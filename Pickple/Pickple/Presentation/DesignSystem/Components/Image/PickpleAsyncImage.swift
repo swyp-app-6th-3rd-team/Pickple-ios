@@ -54,15 +54,22 @@ struct PickpleAsyncImage<Content: View, Placeholder: View>: View {
             return
         }
         guard let (data, _) = try? await URLSession.shared.data(from: url) else { return }
-        guard let downsampled = Self.downsample(data: data, to: targetSize) else { return }
+        // downsample은 ImageIO로 실제 디코딩까지 하는 CPU 작업이라, 그냥 이 뷰의(MainActor)
+        // .task 안에서 부르면 메인 스레드가 그동안 막혀 스크롤/애니메이션이 끊긴다 —
+        // detached Task로 빼서 백그라운드에서 계산하고 결과만 받아온다. UIScreen.main은
+        // 메인 스레드에서 미리 읽어 값만 넘긴다(nonisolated 함수 안에서 직접 참조하지 않는다).
+        let targetSize = targetSize
+        let scale = UIScreen.main.scale
+        guard let downsampled = await Task.detached(priority: .userInitiated, operation: {
+            Self.downsample(data: data, to: targetSize, scale: scale)
+        }).value else { return }
         await PickpleImageCache.shared.store(downsampled, for: url)
         uiImage = downsampled
     }
 
     // WWDC18 "Image and Graphics Best Practices" 권장 방식 — 원본을 전부 디코딩한 뒤
     // 축소하는 게 아니라, ImageIO가 파일에서 바로 목표 픽셀 크기로 썸네일을 뽑아낸다.
-    private static func downsample(data: Data, to pointSize: CGSize) -> UIImage? {
-        let scale = UIScreen.main.scale
+    private static nonisolated func downsample(data: Data, to pointSize: CGSize, scale: CGFloat) -> UIImage? {
         let maxPixelSize = max(pointSize.width, pointSize.height) * scale
         guard maxPixelSize > 0, let source = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }
 
