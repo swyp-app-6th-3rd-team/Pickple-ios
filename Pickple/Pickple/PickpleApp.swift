@@ -11,6 +11,7 @@ import KakaoSDKCommon
 
 @main
 struct PickpleApp: App {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var sessionViewModel: AppSessionViewModel
     private let loginViewModel: LoginViewModel
     private let profileRepository: ProfileRepository
@@ -40,9 +41,11 @@ struct PickpleApp: App {
             authRepository: authRepository,
             profileRepository: profileRepository,
             tokenStore: tokenStore,
-            refreshTokenStore: refreshTokenStore
+            refreshTokenStore: refreshTokenStore,
+            apiClient: apiClient
         )
         _sessionViewModel = State(initialValue: sessionViewModel)
+        apiClient.setSessionExpiredHandler { sessionViewModel.handleSessionExpired() }
 
         let loginViewModel = LoginViewModel(
             authRepository: authRepository,
@@ -91,6 +94,12 @@ struct PickpleApp: App {
             .dismissKeyboardOnTap()
             .task {
                 await sessionViewModel.restoreSession()
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                // 백그라운드에 오래 있으면 프로세스가 통째로 멈춰서 예약해둔 갱신 타이머가
+                // 못 돌았을 수 있다 — 포그라운드로 돌아올 때마다 다시 보정한다.
+                guard newPhase == .active else { return }
+                sessionViewModel.handleAppBecameActive()
             }
         }
     }

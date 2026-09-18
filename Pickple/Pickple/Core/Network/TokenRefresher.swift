@@ -23,6 +23,10 @@ final class TokenRefresher {
     private let tokenStore: InMemoryTokenStore
     private let performRefresh: @MainActor @Sendable (String) async throws -> AuthTokens
     private var inFlightTask: Task<String, Error>?
+    // 재발급이 완전히 실패했을 때(리프레시 토큰까지 무효) 상위(AppSessionViewModel)에 알려서
+    // 로그인 화면으로 돌려보내는 데 쓴다. APIClient 생성 시점엔 세션 뷰모델이 아직 없어서
+    // init에서 안 받고, 만들어진 뒤에 나중에 채워 넣는다(PickpleApp 참고).
+    var onRefreshFailed: (@MainActor () -> Void)?
 
     // nonisolated: APIClient.init(nonisolated 컨텍스트)에서 동기적으로 생성해야 한다 —
     // 여기선 값 저장만 하고 MainActor가 필요한 작업(재발급 로직)은 없어서 안전하다.
@@ -58,6 +62,7 @@ final class TokenRefresher {
             // 재발급 자체가 실패했다(refreshToken도 만료/무효) — 다음 로그인까지는 재시도해도
             // 어차피 또 실패하니, 저장된 refreshToken을 지워서 재로그인이 필요한 상태로 정리한다.
             refreshTokenStore.clear()
+            onRefreshFailed?()
             throw error
         }
     }

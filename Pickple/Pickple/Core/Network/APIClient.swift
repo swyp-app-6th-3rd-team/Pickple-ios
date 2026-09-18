@@ -14,6 +14,13 @@ protocol APIClientProtocol: Sendable {
     func request<T: Decodable>(_ endpoint: APIEndpoint) async throws -> T
     // returnObject를 쓰지 않는 응답 (로그아웃, 삭제 등)
     func requestVoid(_ endpoint: APIEndpoint) async throws
+    // accessToken이 실제로 만료되기 전에 미리 재발급을 시도한다(프로액티브 리프레시).
+    // 리프레시 토큰이 없거나 서버가 거부해도 조용히 넘어간다 — 그땐 실제 요청이 401을
+    // 맞았을 때의 반응형 재발급 경로가 다시 처리한다.
+    func refreshAccessTokenProactively() async
+    // 재발급이 완전히 실패했을 때(리프레시 토큰까지 무효) 호출할 콜백을 등록한다.
+    // AppSessionViewModel이 이걸로 로그인 화면 전환을 트리거한다.
+    func setSessionExpiredHandler(_ handler: @escaping @MainActor () -> Void)
 }
 
 // 모든 저장 프로퍼티가 let이고 URLSession·JSONDecoder·AccessTokenProviding(actor) 모두 동시성에 안전해 @unchecked Sendable로 선언한다.
@@ -45,7 +52,17 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
             self.tokenRefresher = TokenRefresher(refreshTokenStore: refreshTokenStore, tokenStore: tokenStore) { [decoder, baseURL, session] (refreshToken: String) async throws -> AuthTokens in
                 let body = try JSONEncoder().encode(MobileRefreshRequestDTO(refreshToken: refreshToken))
                 let endpoint = APIEndpoint(method: .post, path: "/auth/mobile/refresh", body: body, requiresAuth: false)
-                let (data, _) = try await Self.rawSend(endpoint, baseURL: baseURL, session: session, token: nil)
+                let (data, httpResponse) = try await Self.rawSend(endpoint, baseURL: baseURL, session: session, token: nil)
+                // send()와 달리 이 클로저는 상태코드를 안 보고 바로 AuthTokensDTO로 디코딩하려 했다 —
+                // 리프레시 토큰이 만료/무효라 서버가 에러 상태코드로 {code, message, returnObject: null}을
+                // 내려주면, non-optional인 AuthTokensDTO 디코딩이 실패해 서버가 준 진짜 이유(code/message)
+                // 대신 DecodingError만 보였다.
+                guard (200..<300).contains(httpResponse.statusCode) else {
+                    if let meta = try? decoder.decode(APIEnvelopeMeta.self, from: data) {
+                        throw APIError.server(code: meta.code, message: meta.message)
+                    }
+                    throw APIError.server(code: "HTTP_\(httpResponse.statusCode)", message: "토큰 재발급이 실패했습니다")
+                }
                 let dto = try decoder.decode(APIEnvelope<AuthTokensDTO>.self, from: data).returnObject
                 return AuthTokens(accessToken: dto.accessToken, refreshToken: dto.refreshToken)
             }
@@ -65,6 +82,14 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
 
     func requestVoid(_ endpoint: APIEndpoint) async throws {
         _ = try await send(endpoint)
+    }
+
+    func refreshAccessTokenProactively() async {
+        _ = try? await tokenRefresher?.refreshedAccessToken()
+    }
+
+    func setSessionExpiredHandler(_ handler: @escaping @MainActor () -> Void) {
+        tokenRefresher?.onRefreshFailed = handler
     }
 
     // 요청을 만들어 보내고, 성공(2xx)이면 응답 데이터를 그대로 돌려준다. 실패면 서버가 준 code/message를 담아 던진다.
