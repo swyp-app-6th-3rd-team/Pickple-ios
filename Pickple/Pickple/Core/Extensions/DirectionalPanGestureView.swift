@@ -85,10 +85,13 @@ struct DirectionalPanGesture: UIGestureRecognizerRepresentable {
     }
 
     final class Coordinator: NSObject, UIGestureRecognizerDelegate {
-        // 방향이 확정되기 전까지는 부모 ScrollView의 팬 제스처도 같이 인식되게 허용한다 —
-        // 그래야 우리 쪽이 .failed로 넘어가는 순간 부모가 이미 같이 추적하던 터치를 끊김 없이 이어받는다.
+        // 방향이 확정되기 전(.possible)까지는 부모 ScrollView의 팬 제스처도 같이 인식되게
+        // 허용한다 — 그래야 우리 쪽이 .failed로 넘어가는 순간 부모가 이미 같이 추적하던
+        // 터치를 끊김 없이 이어받는다. 가로로 확정되면(.began 이후) false로 바꿔서, 그
+        // 시점부턴 부모가 더 이상 동시에 추적하지 못하게 막는다 — 카드를 옆으로 끄는 동안
+        // 대각선으로 살짝 흔들려도 페이지가 같이 스크롤되지 않는다.
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-            true
+            gestureRecognizer.state == .possible
         }
     }
 }
