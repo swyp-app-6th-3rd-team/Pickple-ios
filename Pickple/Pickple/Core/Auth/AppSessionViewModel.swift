@@ -34,7 +34,7 @@ class AppSessionViewModel {
     // 성공 시 시작하고, 로그아웃 시 취소한다.
     private var proactiveRefreshTask: Task<Void, Never>?
     // 만료 시각 정각이 아니라 이만큼 여유를 두고 미리 갱신한다.
-    private let proactiveRefreshMargin: TimeInterval = 60
+    private let proactiveRefreshMargin: TimeInterval = 300
 
     init(
         authRepository: AuthRepository,
@@ -91,22 +91,41 @@ class AppSessionViewModel {
     private func scheduleNextProactiveRefresh() {
         proactiveRefreshTask?.cancel()
         proactiveRefreshTask = Task { [weak self] in
-            guard let self else { return }
-            guard let token = await tokenStore.accessToken(),
-                  let expiry = JWTExpiration.decode(token) else { return }
+            guard let self else {
+                print("[TokenRefresh] 프로액티브: self 해제됨 — 취소")
+                return
+            }
+            guard let token = await tokenStore.accessToken() else {
+                print("[TokenRefresh] 프로액티브: accessToken이 없음 — 취소")
+                return
+            }
+            guard let expiry = JWTExpiration.decode(token) else {
+                print("[TokenRefresh] 프로액티브: JWT exp 디코딩 실패 — 취소")
+                return
+            }
 
             let delay = expiry.timeIntervalSinceNow - proactiveRefreshMargin
+            print("[TokenRefresh] 프로액티브: \(Int(max(delay, 0)))초 뒤 갱신 예정 (만료 \(expiry))")
             if delay > 0 {
                 try? await Task.sleep(for: .seconds(delay))
-                guard !Task.isCancelled else { return }
+                guard !Task.isCancelled else {
+                    print("[TokenRefresh] 프로액티브: 예약 취소됨")
+                    return
+                }
             }
 
             await apiClient.refreshAccessTokenProactively()
+            let newToken = await tokenStore.accessToken()
+            if newToken == token {
+                print("[TokenRefresh] 프로액티브: 실패 — 토큰이 안 바뀜(리프레시 토큰 무효거나 네트워크 실패)")
+            } else {
+                print("[TokenRefresh] 프로액티브: 성공 — 새 토큰=\(newToken?.suffix(12) ?? "nil")")
+            }
 
             // 갱신이 실제로 새 토큰을 받아왔을 때만 다음 스케줄을 잡는다. 실패했으면(리프레시
             // 토큰까지 무효) 계속 돌려봐야 똑같이 실패하니 여기서 멈춘다 — 그 다음은 실제
             // 요청이 401을 맞았을 때의 반응형 재발급 경로가 처리한다.
-            guard !Task.isCancelled, await tokenStore.accessToken() != token else { return }
+            guard !Task.isCancelled, newToken != token else { return }
             scheduleNextProactiveRefresh()
         }
     }
@@ -115,6 +134,7 @@ class AppSessionViewModel {
     @MainActor
     func handleAppBecameActive() {
         guard sessionState == .loggedIn || sessionState == .needsProfileSetup else { return }
+        print("[TokenRefresh] 포그라운드 복귀 — 프로액티브 재예약")
         scheduleNextProactiveRefresh()
     }
 

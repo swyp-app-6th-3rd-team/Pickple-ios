@@ -112,8 +112,13 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
 
         guard (200..<300).contains(httpResponse.statusCode) else {
             if httpResponse.statusCode == 401 {
-                if !isRetry, token != nil, let tokenRefresher, (try? await tokenRefresher.refreshedAccessToken()) != nil {
-                    return try await send(endpoint, isRetry: true)
+                if !isRetry, token != nil, let tokenRefresher {
+                    print("[TokenRefresh] 반응형: \(endpoint.path) 401 — 갱신 후 재시도")
+                    if (try? await tokenRefresher.refreshedAccessToken()) != nil {
+                        print("[TokenRefresh] 반응형: 갱신 성공, \(endpoint.path) 재시도")
+                        return try await send(endpoint, isRetry: true)
+                    }
+                    print("[TokenRefresh] 반응형: 갱신 실패")
                 }
                 throw APIError.unauthorized
             }
