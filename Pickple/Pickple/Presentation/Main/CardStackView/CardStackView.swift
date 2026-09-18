@@ -131,7 +131,11 @@ struct CardStackView: View {
         // SwiftUI 제스처 인식기가 다음 터치를 못 받아 스택 전체가 멈추는 문제가 있었다. 안 바뀌는
         // 바깥 컨테이너(ZStack)에 고정으로 붙이고, "지금 맨 앞 카드가 뭔지"는 제스처 콜백 안에서
         // 그때그때 cardStackViewModel.voteCardData.first로 조회한다.
-        .gesture(dragGesture())
+        // .gesture()(exclusive) 대신 .simultaneousGesture()를 써서, 이 카드스택이 부모
+        // ScrollView의 세로 스크롤 팬 제스처를 독점하지 않게 한다 — 안 그러면 카드 영역
+        // 위에서는 위아래로 쓸어도 페이지 자체가 스크롤 안 되는 문제가 있었다. 방향 판별
+        // (onChanged 안의 가로/세로 비교)로 순수 세로 드래그에는 카드가 반응하지 않는다.
+        .simultaneousGesture(dragGesture())
     }
 
     // 맨 앞 카드(0)는 끄는 방향·거리에 비례해서 기운다(틴더 스타일) — maxDragRotationDegrees에서 클램프.
@@ -181,6 +185,10 @@ struct CardStackView: View {
     private func dragGesture() -> some Gesture {
         DragGesture()
             .onChanged { value in
+                // simultaneousGesture라 세로 스크롤 중에도 이 콜백이 같이 불린다 — 가로 움직임이
+                // 세로보다 뚜렷할 때만 카드에 반응해서, 페이지를 스크롤하는 동안 카드가 미세하게
+                // 흔들리거나 실수로 뒤로가기 미리보기가 끌려나오는 걸 막는다.
+                guard abs(value.translation.width) > abs(value.translation.height) else { return }
                 guard let cardID = cardStackViewModel.voteCardData.first?.id else { return }
                 if value.translation.width >= 0 {
                     // 오른쪽으로 끄는 중 — 기존 카드가 손가락을 그대로 따라간다(틴더 스타일 dismiss).
