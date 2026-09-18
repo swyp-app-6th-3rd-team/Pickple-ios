@@ -14,22 +14,36 @@ struct PostDetailImageCarousel: View {
     let images: [URL]
     let participantCount: Int
     @Binding var currentIndex: Int
+    @State private var scrollPosition: Int?
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            TabView(selection: $currentIndex) {
-                ForEach(Array(images.enumerated()), id: \.offset) { index, imageUrl in
-                    PickpleAsyncImage(url: imageUrl, targetSize: CGSize(width: UIScreen.main.bounds.width, height: 280)) { image in
-                        image.resizable().scaledToFill()
-                    } placeholder: {
-                        Image("MockAgainstPicture").resizable().scaledToFill()
+            // TabView(.page)는 부모 세로 ScrollView와 팬 제스처가 충돌해 페이지 중간에서 멈추는 SwiftUI 버그가 있어 가로 ScrollView 페이징으로 우회.
+            ScrollView(.horizontal) {
+                LazyHStack(spacing: 0) {
+                    ForEach(Array(images.enumerated()), id: \.offset) { index, imageUrl in
+                        PickpleAsyncImage(url: imageUrl, targetSize: CGSize(width: UIScreen.main.bounds.width, height: 280)) { image in
+                            image.resizable().scaledToFill()
+                        } placeholder: {
+                            Image("MockAgainstPicture").resizable().scaledToFill()
+                        }
+                        .frame(width: UIScreen.main.bounds.width, height: 280)
+                        .clipped()
                     }
-                    .tag(index)
-                    .clipped()
                 }
+                .scrollTargetLayout()
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
+            .scrollTargetBehavior(.paging)
+            .scrollIndicators(.hidden)
+            .scrollPosition(id: $scrollPosition)
             .frame(height: 280)
+            .onAppear { scrollPosition = currentIndex }
+            .onChange(of: scrollPosition) { _, newValue in
+                if let newValue { currentIndex = newValue }
+            }
+            .onChange(of: currentIndex) { _, newValue in
+                if scrollPosition != newValue { scrollPosition = newValue }
+            }
 
             HStack {
                 HStack(spacing: 4) {
