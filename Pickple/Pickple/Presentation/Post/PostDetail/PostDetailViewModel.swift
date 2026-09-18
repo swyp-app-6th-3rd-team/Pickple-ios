@@ -44,11 +44,15 @@ class PostDetailViewModel {
     static let sortOptions = ["최신순", "오래된 순"]
 
     var firstLabel: String {
-        post?.type == .ab ? PostDetailStrings.productAFallback : PostDetailStrings.voteSideFor
+        guard post?.type == .ab else { return PostDetailStrings.voteSideFor }
+        let name = post?.firstProduct?.name.trimmingCharacters(in: .whitespaces)
+        return name?.isEmpty == false ? name! : PostDetailStrings.productAFallback
     }
 
     var secondLabel: String {
-        post?.type == .ab ? PostDetailStrings.productBFallback : PostDetailStrings.voteSideAgainst
+        guard post?.type == .ab else { return PostDetailStrings.voteSideAgainst }
+        let name = post?.secondProduct?.name.trimmingCharacters(in: .whitespaces)
+        return name?.isEmpty == false ? name! : PostDetailStrings.productBFallback
     }
 
     var displayedProduct: PostDetailProduct? {
