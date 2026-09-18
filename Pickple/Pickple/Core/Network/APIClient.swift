@@ -20,6 +20,7 @@ protocol APIClientProtocol: Sendable {
     func refreshAccessTokenProactively() async
     // 재발급이 완전히 실패했을 때(리프레시 토큰까지 무효) 호출할 콜백을 등록한다.
     // AppSessionViewModel이 이걸로 로그인 화면 전환을 트리거한다.
+    @MainActor
     func setSessionExpiredHandler(_ handler: @escaping @MainActor () -> Void)
 }
 
@@ -88,6 +89,7 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
         _ = try? await tokenRefresher?.refreshedAccessToken()
     }
 
+    @MainActor
     func setSessionExpiredHandler(_ handler: @escaping @MainActor () -> Void) {
         tokenRefresher?.onRefreshFailed = handler
     }
