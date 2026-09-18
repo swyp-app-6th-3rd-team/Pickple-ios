@@ -31,11 +31,11 @@ struct MyBadgeGridItem: View {
 #Preview {
     HStack {
         MyBadgeGridItem(
-            badge: MyBadge(id: UUID(), title: "투표 꿈나무", iconOnName: "PickpleBadgeFirstPickOn", iconOffName: "PickpleBadgeFirstPickOff", isUnlocked: true, isNewlyUnlocked: false, unlockCondition: ""),
+            badge: MyBadge(id: UUID(), code: "FIRST_PICK", title: "투표 꿈나무", iconOnName: "PickpleBadgeFirstPickOn", iconOffName: "PickpleBadgeFirstPickOff", isUnlocked: true, unlockCondition: ""),
             action: {}
         )
         MyBadgeGridItem(
-            badge: MyBadge(id: UUID(), title: "투표 중독자", iconOnName: "PickpleBadgeAddictOn", iconOffName: "PickpleBadgeAddictOff", isUnlocked: false, isNewlyUnlocked: false, unlockCondition: ""),
+            badge: MyBadge(id: UUID(), code: "ADDICT", title: "투표 중독자", iconOnName: "PickpleBadgeAddictOn", iconOffName: "PickpleBadgeAddictOff", isUnlocked: false, unlockCondition: ""),
             action: {}
         )
     }

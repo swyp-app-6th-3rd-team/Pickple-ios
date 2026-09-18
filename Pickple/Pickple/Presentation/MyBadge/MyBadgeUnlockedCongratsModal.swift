@@ -52,11 +52,11 @@ struct MyBadgeUnlockedCongratsModal: View {
             MyBadgeUnlockedCongratsModal(
                 badge: MyBadge(
                     id: UUID(),
+                    code: "RAMPAGE",
                     title: "투표 폭주기관차",
                     iconOnName: "PickpleBadgeRampageOn",
                     iconOffName: "PickpleBadgeRampageOff",
                     isUnlocked: true,
-                    isNewlyUnlocked: true,
                     unlockCondition: ""
                 ),
                 onConfirm: {}
