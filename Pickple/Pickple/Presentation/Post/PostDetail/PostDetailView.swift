@@ -23,6 +23,10 @@ struct PostDetailView: View {
     @State private var loginRequiredDescription: String?
     @State private var commentToPick: Comment?
     @State private var commentMoreMenuTarget: Comment?
+    // 시트를 닫는 것(commentMoreMenuTarget = nil)과 동시에 isCommentFieldFocused = true를
+    // 주면, 시트 닫힘 애니메이션이 끝나기 전이라 포커스가 안 먹힌다 — 시트가 실제로 다
+    // 닫힌 뒤(.sheet의 onDismiss)에 포커스를 주도록 여기 기억해둔다.
+    @State private var pendingCommentEditFocus = false
     @State private var navigatesToEdit = false
     @State private var editingPostViewModel = PostViewModel()
     @FocusState private var isCommentFieldFocused: Bool
@@ -127,6 +131,7 @@ struct PostDetailView: View {
                         )
                         .padding(.top, 16)
                         .padding(.horizontal, 20)
+                        .padding(.bottom, 16)
                         .shadow(color: Color.black.opacity(0.05), radius: 20, y: -2)
                     }
                 }
@@ -185,13 +190,17 @@ struct PostDetailView: View {
                 onClose: { showsMoreMenu = false }
             )
         }
-        .sheet(item: $commentMoreMenuTarget) { comment in
+        .sheet(item: $commentMoreMenuTarget, onDismiss: {
+            guard pendingCommentEditFocus else { return }
+            pendingCommentEditFocus = false
+            isCommentFieldFocused = true
+        }) { comment in
             PostDetailCommentMoreMenuSheet(
                 isMine: postDetailViewModel.isMyComment(comment),
                 onEdit: {
-                    commentMoreMenuTarget = nil
                     postDetailViewModel.startEditingComment(comment)
-                    isCommentFieldFocused = true
+                    pendingCommentEditFocus = true
+                    commentMoreMenuTarget = nil
                 },
                 onDelete: {
                     commentMoreMenuTarget = nil
