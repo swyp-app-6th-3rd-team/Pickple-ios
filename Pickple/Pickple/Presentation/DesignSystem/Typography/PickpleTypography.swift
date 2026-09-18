@@ -51,17 +51,24 @@ enum PickpleTypography {
         }
     }
 
+    // ponytail: Figma 캡처와 값이 다 일치하고 폰트 로딩도 정상인데(SHA256까지 대조 완료)
+    // 실기기에서 전체적으로 1~2px 작아 보임 — Figma와 Core Text 렌더링 엔진 차이로 추정.
+    // 근본 원인이 아니라 임시 보정값이라 여기 한 곳에만 더한다. 원인 확정되면 제거.
+    private static let tempRenderingGapCompensation: CGFloat = 2
+
     var size: CGFloat {
+        let base: CGFloat
         switch self {
-        case .heading01: return 28
-        case .heading02: return 28
-        case .title01_600, .title01: return 20
-        case .title02_600, .title02_400: return 18
-        case .body01_600, .body01_500, .body01_400: return 16
-        case .body02_600, .body02_500, .body02_400: return 14
-        case .label_600, .label_500, .label_400: return 13
-        case .caption_600, .caption_400: return 12
+        case .heading01: base = 28
+        case .heading02: base = 28
+        case .title01_600, .title01: base = 20
+        case .title02_600, .title02_400: base = 18
+        case .body01_600, .body01_500, .body01_400: base = 16
+        case .body02_600, .body02_500, .body02_400: base = 14
+        case .label_600, .label_500, .label_400: base = 13
+        case .caption_600, .caption_400: base = 12
         }
+        return base + Self.tempRenderingGapCompensation
     }
 
     var lineHeightPercent: CGFloat {
