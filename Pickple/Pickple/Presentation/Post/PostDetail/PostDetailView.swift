@@ -101,6 +101,9 @@ struct PostDetailView: View {
                     // ScrollView 자체가 세이프에어리어 아래에서 시작해 위쪽이 비어 보인다.
                     // 찬반/A-B(GNB가 캐러셀 위에 떠 있는 타입)만 ScrollView 자체를 위로 확장한다.
                     .ignoresSafeArea(edges: post.type == .text ? [] : .top)
+                    .refreshable {
+                        await postDetailViewModel.loadComments()
+                    }
                 }
                                
                 VStack(spacing: 0) {
