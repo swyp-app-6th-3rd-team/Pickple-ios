@@ -131,11 +131,16 @@ struct CardStackView: View {
         // SwiftUI 제스처 인식기가 다음 터치를 못 받아 스택 전체가 멈추는 문제가 있었다. 안 바뀌는
         // 바깥 컨테이너(ZStack)에 고정으로 붙이고, "지금 맨 앞 카드가 뭔지"는 제스처 콜백 안에서
         // 그때그때 cardStackViewModel.voteCardData.first로 조회한다.
-        // .gesture()(exclusive) 대신 .simultaneousGesture()를 써서, 이 카드스택이 부모
-        // ScrollView의 세로 스크롤 팬 제스처를 독점하지 않게 한다 — 안 그러면 카드 영역
-        // 위에서는 위아래로 쓸어도 페이지 자체가 스크롤 안 되는 문제가 있었다. 방향 판별
-        // (onChanged 안의 가로/세로 비교)로 순수 세로 드래그에는 카드가 반응하지 않는다.
-        .simultaneousGesture(dragGesture())
+        // SwiftUI DragGesture.onChanged 안에서 "세로면 무시"하는 가드만으로는 인식기 자체가
+        // 터치를 계속 붙잡고 있어서 부모 ScrollView와 계속 경합했다(카드 위에서 세로 스크롤이
+        // 씹히거나 안 먹는 문제) — DirectionalPanGestureView가 방향이 세로로 확정되는 순간
+        // 인식기를 아예 실패시켜 터치를 부모에게 완전히 넘긴다.
+        .overlay(
+            DirectionalPanGestureView(
+                onChanged: handleDragChanged,
+                onEnded: handleDragEnded
+            )
+        )
     }
 
     // 맨 앞 카드(0)는 끄는 방향·거리에 비례해서 기운다(틴더 스타일) — maxDragRotationDegrees에서 클램프.
@@ -182,110 +187,104 @@ struct CardStackView: View {
     private let dragRotationDivisor: CGFloat = 20
     private let maxDragRotationDegrees: Double = 15
 
-    private func dragGesture() -> some Gesture {
-        DragGesture()
-            .onChanged { value in
-                // simultaneousGesture라 세로 스크롤 중에도 이 콜백이 같이 불린다 — 가로 움직임이
-                // 세로보다 뚜렷할 때만 카드에 반응해서, 페이지를 스크롤하는 동안 카드가 미세하게
-                // 흔들리거나 실수로 뒤로가기 미리보기가 끌려나오는 걸 막는다.
-                guard abs(value.translation.width) > abs(value.translation.height) else { return }
-                guard let cardID = cardStackViewModel.voteCardData.first?.id else { return }
-                if value.translation.width >= 0 {
-                    // 오른쪽으로 끄는 중 — 기존 카드가 손가락을 그대로 따라간다(틴더 스타일 dismiss).
-                    // 손가락이 완벽한 직선이 아니라 드래그 초반에 살짝 왼쪽으로 흔들렸다가
-                    // 바로잡는 경우가 있는데, 그 찰나에 세팅된 incomingBackCard를 여기서 안
-                    // 지우면 왼쪽 스와이프를 확정할 때만 지워지는 구조라 취소/오른쪽 스와이프
-                    // 후에도 이전 카드 오버레이가 zIndex(.infinity)로 계속 화면을 덮고 있었다.
-                    pulledInCardID = nil
-                    incomingBackCard = nil
-                    cardOffsets[cardID] = CGSize(width: value.translation.width, height: 0)
-                } else if let previous = cardStackViewModel.previousCard {
-                    // 왼쪽으로 끄는 중 — "뒤로가기". 기존 카드는 그 자리에 그대로 두고, 이전 카드를
-                    // 오른쪽 화면 밖(offscreenOffset)에서부터 손가락을 따라 끌고 들어오는 것처럼 보여준다.
-                    // 1:1로 추적하면 600pt를 다 끌어내려야 해서 화면 끝까지도 안 나오므로,
-                    // pullInDragMultiplier로 증폭해서 자연스러운 스와이프 거리 안에서 다 들어오게 한다.
-                    let incomingID = previous.id
-                    pulledInCardID = incomingID
-                    incomingBackCard = previous
-                    let pulledIn = max(offscreenOffset + value.translation.width * pullInDragMultiplier, 0)
-                    cardOffsets[incomingID] = CGSize(width: pulledIn, height: 0)
-                    cardOffsets.removeValue(forKey: cardID)
+    private func handleDragChanged(_ translation: CGSize) {
+        guard let cardID = cardStackViewModel.voteCardData.first?.id else { return }
+        if translation.width >= 0 {
+            // 오른쪽으로 끄는 중 — 기존 카드가 손가락을 그대로 따라간다(틴더 스타일 dismiss).
+            // 손가락이 완벽한 직선이 아니라 드래그 초반에 살짝 왼쪽으로 흔들렸다가
+            // 바로잡는 경우가 있는데, 그 찰나에 세팅된 incomingBackCard를 여기서 안
+            // 지우면 왼쪽 스와이프를 확정할 때만 지워지는 구조라 취소/오른쪽 스와이프
+            // 후에도 이전 카드 오버레이가 zIndex(.infinity)로 계속 화면을 덮고 있었다.
+            pulledInCardID = nil
+            incomingBackCard = nil
+            cardOffsets[cardID] = CGSize(width: translation.width, height: 0)
+        } else if let previous = cardStackViewModel.previousCard {
+            // 왼쪽으로 끄는 중 — "뒤로가기". 기존 카드는 그 자리에 그대로 두고, 이전 카드를
+            // 오른쪽 화면 밖(offscreenOffset)에서부터 손가락을 따라 끌고 들어오는 것처럼 보여준다.
+            // 1:1로 추적하면 600pt를 다 끌어내려야 해서 화면 끝까지도 안 나오므로,
+            // pullInDragMultiplier로 증폭해서 자연스러운 스와이프 거리 안에서 다 들어오게 한다.
+            let incomingID = previous.id
+            pulledInCardID = incomingID
+            incomingBackCard = previous
+            let pulledIn = max(offscreenOffset + translation.width * pullInDragMultiplier, 0)
+            cardOffsets[incomingID] = CGSize(width: pulledIn, height: 0)
+            cardOffsets.removeValue(forKey: cardID)
+        }
+    }
+
+    private func handleDragEnded(_ translation: CGSize) {
+        guard let cardID = cardStackViewModel.voteCardData.first?.id else { return }
+        let incomingID = cardStackViewModel.previousCard?.id
+
+        // 임계값 못 넘으면 스프링으로 제자리 복귀 (끌려오던 이전 카드는 다시 화면 밖으로).
+        guard abs(translation.width) > swipeThreshold else {
+            withAnimation(.spring()) {
+                cardOffsets.removeValue(forKey: cardID)
+                if let incomingID {
+                    cardOffsets[incomingID] = CGSize(width: offscreenOffset, height: 0)
                 }
             }
-            .onEnded { value in
-                guard let cardID = cardStackViewModel.voteCardData.first?.id else { return }
-                let incomingID = cardStackViewModel.previousCard?.id
+            pulledInCardID = nil
+            incomingBackCard = nil
+            return
+        }
 
-                // 임계값 못 넘으면 스프링으로 제자리 복귀 (끌려오던 이전 카드는 다시 화면 밖으로).
-                guard abs(value.translation.width) > swipeThreshold else {
-                    withAnimation(.spring()) {
-                        cardOffsets.removeValue(forKey: cardID)
-                        if let incomingID {
-                            cardOffsets[incomingID] = CGSize(width: offscreenOffset, height: 0)
-                        }
-                    }
-                    pulledInCardID = nil
-                    incomingBackCard = nil
-                    return
-                }
+        // 예전엔 데이터 이동(moveTopCardToBack/moveBackCardToFront)을 withAnimation의
+        // completion에서 실행했는데, SwiftUI는 값이 실제로 안 바뀌면(예: 빠르고 길게 끌어서
+        // 손을 떼기 전에 이미 목표값에 도달한 경우) completion을 아예 안 부를 수 있다.
+        // 그러면 다음 제스처를 막던 락이 영원히 풀리지 않아 스택 전체가 멈췄다.
+        // 이제 데이터는 여기서 곧바로(동기적으로) 옮긴다 — 그래야 completion이 불리든
+        // 안 불리든 다음 스와이프가 항상 즉시 반응한다. 이후 화면 밖으로 날아가거나
+        // 끌려오는 나머지 움직임은 순전히 눈요기용 애니메이션이라, 그 완료 시점이 언제든
+        // (또는 안 오든) 상호작용에는 전혀 영향이 없다.
+        let direction: CGFloat = translation.width > 0 ? 1 : -1
+        if direction > 0 {
+            // onChanged에서 이미 지워지지만(방향이 오른쪽이면), 방어적으로 한 번 더.
+            incomingBackCard = nil
+            let remaining = abs(offscreenOffset - (cardOffsets[cardID] ?? .zero).width)
+            let duration = remaining / flingVelocity
+            // moveTopCardToBack()이 부르는 즉시 이 카드는 voteCardData에서 빠져서
+            // ForEach가 뷰를 없애버리므로, 날아가는 동안 보여줄 스냅샷을 먼저 붙잡아둔다.
+            outgoingCard = cardStackViewModel.voteCardData.first
+            cardStackViewModel.moveTopCardToBack()
+            // 이 카드가 다음에 다시 앞으로 돌아왔을 때(재활용 등) 깨끗한 상태이도록,
+            // 애니메이션이 실제로 끝나는 시점에 오프셋을 정리하고 outgoingCard 스냅샷도
+            // 치운다 — 추정 duration으로 별도 타이머를 재는 대신, withAnimation의
+            // completion 콜백을 써서 실제 렌더 종료와 정확히 맞물리게 한다.
+            withAnimation(.easeOut(duration: duration)) {
+                cardOffsets[cardID] = CGSize(width: offscreenOffset, height: 0)
+            } completion: {
+                cardOffsets.removeValue(forKey: cardID)
+                outgoingCard = nil
+            }
+        } else {
+            // 왼쪽 스와이프(뒤로가기) — 이전 카드를 데이터상 즉시 맨 앞으로 올린다. index가
+            // 바로 바뀌므로 자연스러운 zIndex(index 0 = 최상단)만으로 다른 카드를 덮게 되어
+            // pulledInCardID를 더 유지할 필요가 없다. 마저 중앙까지 끌어오는 나머지 이동은
+            // 순전히 시각 효과일 뿐이다.
+            guard let incomingID else { return }
+            let remaining = (cardOffsets[incomingID] ?? .zero).width
+            let displaced = cardStackViewModel.moveBackCardToFront()
+            // 이제 이 카드가 실제로 voteCardData에 들어갔으니, ForEach가 이어서
+            // 그리도록(같은 cardOffsets를 계속 읽으므로 끊김 없이 이어짐) 오버레이는 치운다.
+            incomingBackCard = nil
+            pulledInCardID = nil
+            cardOffsets.removeValue(forKey: cardID)
+            withAnimation(.easeIn(duration: remaining / flingVelocity)) {
+                cardOffsets[incomingID] = .zero
+            } completion: {
+                cardOffsets.removeValue(forKey: incomingID)
+            }
 
-                // 예전엔 데이터 이동(moveTopCardToBack/moveBackCardToFront)을 withAnimation의
-                // completion에서 실행했는데, SwiftUI는 값이 실제로 안 바뀌면(예: 빠르고 길게 끌어서
-                // 손을 떼기 전에 이미 목표값에 도달한 경우) completion을 아예 안 부를 수 있다.
-                // 그러면 다음 제스처를 막던 락이 영원히 풀리지 않아 스택 전체가 멈췄다.
-                // 이제 데이터는 여기서 곧바로(동기적으로) 옮긴다 — 그래야 completion이 불리든
-                // 안 불리든 다음 스와이프가 항상 즉시 반응한다. 이후 화면 밖으로 날아가거나
-                // 끌려오는 나머지 움직임은 순전히 눈요기용 애니메이션이라, 그 완료 시점이 언제든
-                // (또는 안 오든) 상호작용에는 전혀 영향이 없다.
-                let direction: CGFloat = value.translation.width > 0 ? 1 : -1
-                if direction > 0 {
-                    // onChanged에서 이미 지워지지만(방향이 오른쪽이면), 방어적으로 한 번 더.
-                    incomingBackCard = nil
-                    let remaining = abs(offscreenOffset - (cardOffsets[cardID] ?? .zero).width)
-                    let duration = remaining / flingVelocity
-                    // moveTopCardToBack()이 부르는 즉시 이 카드는 voteCardData에서 빠져서
-                    // ForEach가 뷰를 없애버리므로, 날아가는 동안 보여줄 스냅샷을 먼저 붙잡아둔다.
-                    outgoingCard = cardStackViewModel.voteCardData.first
-                    cardStackViewModel.moveTopCardToBack()
-                    // 이 카드가 다음에 다시 앞으로 돌아왔을 때(재활용 등) 깨끗한 상태이도록,
-                    // 애니메이션이 실제로 끝나는 시점에 오프셋을 정리하고 outgoingCard 스냅샷도
-                    // 치운다 — 추정 duration으로 별도 타이머를 재는 대신, withAnimation의
-                    // completion 콜백을 써서 실제 렌더 종료와 정확히 맞물리게 한다.
-                    withAnimation(.easeOut(duration: duration)) {
-                        cardOffsets[cardID] = CGSize(width: offscreenOffset, height: 0)
-                    } completion: {
-                        cardOffsets.removeValue(forKey: cardID)
-                        outgoingCard = nil
-                    }
-                } else {
-                    // 왼쪽 스와이프(뒤로가기) — 이전 카드를 데이터상 즉시 맨 앞으로 올린다. index가
-                    // 바로 바뀌므로 자연스러운 zIndex(index 0 = 최상단)만으로 다른 카드를 덮게 되어
-                    // pulledInCardID를 더 유지할 필요가 없다. 마저 중앙까지 끌어오는 나머지 이동은
-                    // 순전히 시각 효과일 뿐이다.
-                    guard let incomingID else { return }
-                    let remaining = (cardOffsets[incomingID] ?? .zero).width
-                    let displaced = cardStackViewModel.moveBackCardToFront()
-                    // 이제 이 카드가 실제로 voteCardData에 들어갔으니, ForEach가 이어서
-                    // 그리도록(같은 cardOffsets를 계속 읽으므로 끊김 없이 이어짐) 오버레이는 치운다.
-                    incomingBackCard = nil
-                    pulledInCardID = nil
-                    cardOffsets.removeValue(forKey: cardID)
-                    withAnimation(.easeIn(duration: remaining / flingVelocity)) {
-                        cardOffsets[incomingID] = .zero
-                    } completion: {
-                        cardOffsets.removeValue(forKey: incomingID)
-                    }
-
-                    if let displaced {
-                        // .transition(.opacity)가 등장은 즉시, 퇴장은 여기서 애니메이션해준 대로
-                        // 페이드아웃시켜준다 — 별도 opacity 상태나 타이머 없이 SwiftUI에 맡긴다.
-                        displacedCard = displaced
-                        withAnimation(.easeOut(duration: 0.2)) {
-                            displacedCard = nil
-                        }
-                    }
+            if let displaced {
+                // .transition(.opacity)가 등장은 즉시, 퇴장은 여기서 애니메이션해준 대로
+                // 페이드아웃시켜준다 — 별도 opacity 상태나 타이머 없이 SwiftUI에 맡긴다.
+                displacedCard = displaced
+                withAnimation(.easeOut(duration: 0.2)) {
+                    displacedCard = nil
                 }
             }
+        }
     }
 }
 
