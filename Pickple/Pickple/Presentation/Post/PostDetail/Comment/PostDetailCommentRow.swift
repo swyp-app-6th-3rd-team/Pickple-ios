@@ -62,7 +62,7 @@ struct PostDetailCommentRow: View {
                     
                     //MARK: - OnePick
                     HStack(spacing: 4) {
-                        Image(isPicked ? "Gamification" : "PickpleOnePick")
+                        Image(isPicked ? "PickpleOnepickOn" : "PickpleOnepickOff")
                             .resizable()
                             .frame(width: 20, height: 20)
                         Text(PostDetailStrings.pickCount(comment.pickCount))

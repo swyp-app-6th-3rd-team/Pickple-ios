@@ -50,7 +50,7 @@ struct MyActivityCommentActivityRow: View {
             
             HStack {
                 HStack(spacing: 4) {
-                    Image("PickpleOnePick")
+                    Image("PickpleOnepickOff")
                         .resizable()
                         .frame(width: 20, height: 20)
                     Text(PostDetailStrings.pickCount(activity.pickCount))
