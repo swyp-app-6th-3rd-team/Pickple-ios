@@ -58,6 +58,9 @@ struct CommunityPostListSection: View {
                     communityViewModel.isScrolledDown = newValue > CommunityViewModel.scrollDownThreshold
                 }
             }
+            .refreshable {
+                await communityViewModel.loadPosts()
+            }
         }
     }
 }
