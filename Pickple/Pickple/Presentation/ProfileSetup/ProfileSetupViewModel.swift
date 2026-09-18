@@ -64,11 +64,13 @@ class ProfileSetupViewModel {
         !nickname.isEmpty
     }
     
+    // isCheckingNickname(서버 응답 대기 여부)이 아니라 포커스 여부로 판단한다 — .ing과
+    // .select가 시각적으로 동일(검은 테두리, 캡션 없음)해서, 디바운스 때문에 응답을 기다리는
+    // 동안만 "입력중"이 뜨던 걸 포커스 중엔 항상 뜨도록 바꿔도 결과가 보이는 순서는 그대로다.
     func textFieldState(_ isFocused: Bool) -> PickpleTextFieldStateType {
-        if isCheckingNickname { return .ing }
         if isNicknameDuplicate { return .error }
         if isNicknameAvailable { return .success }
-        if isFocused && nickname.isEmpty { return .select }
+        if isFocused { return .ing }
         return ._default
     }
 
