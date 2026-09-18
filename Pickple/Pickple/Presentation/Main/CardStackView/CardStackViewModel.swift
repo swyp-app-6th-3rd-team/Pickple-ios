@@ -39,6 +39,10 @@ class CardStackViewModel {
     private var buffers: [VoteType: CardBuffer] = [.forAgainst: CardBuffer(), .ab: CardBuffer()]
     private var currentType: VoteType = .forAgainst
     private var isFetchingMore = false
+    // loadCards()가 한 번이라도 성공적으로 불러왔는지 — 다른 화면 갔다가 홈으로 돌아올 때마다
+    // 새로 부르면 /posts/random이 매번 다른 카드를 뽑아주고 history/recyclePool도 리셋돼서
+    // 방금 보던 카드 스택이 통째로 바뀌어버렸다. 이미 불러온 게 있으면 그대로 유지한다.
+    private var hasLoadedCards = false
     // 화면(ZStack)에 동시에 그려서 스와이프 가능한 카드 수 — 현재 카드 1장 + 다음 카드 2장.
     // 넘긴 카드는 뒤로 순환시키지 않고 history로 옮기고, pending에서 새 카드를 하나 당겨와
     // 이 수를 유지한다. 너무 많이 쌓아두면(예전 무한 순환 방식처럼) 렌더링 비용이 계속
@@ -77,6 +81,9 @@ class CardStackViewModel {
     // pending에 채워둔다. 실제로 화면에 띄우는 건 filterCards(by:)가 한다.
     @MainActor
     func loadCards() async {
+        guard !hasLoadedCards else { return }
+        hasLoadedCards = true
+
         async let forAgainstPage = try? voteCardRepository.fetchCards(type: .forAgainst, cursor: nil)
         async let abPage = try? voteCardRepository.fetchCards(type: .ab, cursor: nil)
         let forAgainst = await forAgainstPage
