@@ -17,11 +17,21 @@ class PostDetailViewModel {
     var comments: [Comment] = []
     var commentInput: String = ""
     var sortOption: String = PostDetailViewModel.sortOptions[0]
-    var currentImageIndex = 0
-    // A/B 탭 전환에 맞춰 캐러셀 사진도 같이 넘어가게(사진 자체의 수동 스와이프는 그대로 유지).
+    // A/B 게시글은 작성 시 A 1장, B 1장 정확히 2장만 올라간다(ComparisonPhotoFieldBlock 참고)
+    // — images[0]=A, images[1]=B로 고정이라 탭 ↔ 사진 인덱스를 그대로 맞바꾸면 된다.
+    // 서로의 didSet이 상대를 다시 건드리는 순환을 막기 위해, 이미 맞는 상태면 아무것도 안 한다.
+    var currentImageIndex = 0 {
+        didSet {
+            let newTab: PostDetailVoteSide = currentImageIndex == 0 ? .first : .second
+            guard selectedProductTab != newTab else { return }
+            selectedProductTab = newTab
+        }
+    }
     var selectedProductTab: PostDetailVoteSide = .first {
         didSet {
-            currentImageIndex = selectedProductTab == .first ? 0 : 1
+            let newIndex = selectedProductTab == .first ? 0 : 1
+            guard currentImageIndex != newIndex else { return }
+            currentImageIndex = newIndex
         }
     }
     var myProfileImageUrl: URL?
