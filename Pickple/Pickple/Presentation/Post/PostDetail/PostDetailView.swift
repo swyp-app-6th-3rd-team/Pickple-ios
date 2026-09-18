@@ -125,8 +125,6 @@ struct PostDetailView: View {
                         .padding(.top, 16)
                         .padding(.horizontal, 20)
                         .shadow(color: Color.black.opacity(0.05), radius: 20, y: -2)
-                        // 하단 여백은 VStack이 자동으로 넣어주는 safe area(홈 인디케이터) 인셋만 쓴다.
-                        // 예전엔 여기에 .padding(.bottom, 42)를 더 얹어서 이중으로 떠 보였다.
                     }
                 }
             }

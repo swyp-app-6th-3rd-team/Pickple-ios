@@ -37,7 +37,6 @@ struct TopPickerRankingSection: View {
                     }
                 }
             }
-            .padding(.horizontal, 20)
 
             if rankings.isEmpty {
                 Text(MainStrings.rankingEmptyMessage)

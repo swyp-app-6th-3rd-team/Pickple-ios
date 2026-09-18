@@ -24,7 +24,6 @@ struct PostTypeSelectionSheet: View {
         .padding(.horizontal, 4)
         .padding(.horizontal, 20)
         .padding(.top, 42)
-        .padding(.bottom, 48)
         .background(Color.white)
 
     }

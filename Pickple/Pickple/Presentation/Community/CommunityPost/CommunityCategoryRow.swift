@@ -28,6 +28,8 @@ struct CommunityCategoryRow: View {
                     }
                 }
             }
+            .padding(.horizontal, 20)
+
 
         }
     }

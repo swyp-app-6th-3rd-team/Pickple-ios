@@ -21,7 +21,6 @@ struct CommunityHeaderView: View {
             )
 
             CommunityCategoryRow(selectedCategory: $communityViewModel.selectedCategory)
-                .padding(.horizontal, 20)
                 .padding(.top, 12)
                 .padding(.bottom, 8)
 

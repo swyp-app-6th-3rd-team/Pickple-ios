@@ -15,7 +15,7 @@ struct MyActivityVotedPostCardView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            HStack(alignment: .top) {
+            HStack {
                 VStack(alignment: .leading, spacing: 8) {
                     MyActivityPostCardTitle(title: post.title, decription: post.description)
 
@@ -37,7 +37,7 @@ struct MyActivityVotedPostCardView: View {
                     myProfileImageUrl: nil,
                     onVote: { _ in }
                 )
-                .frame(height: 48)
+                .frame(height: 40)
             }
         }
     }

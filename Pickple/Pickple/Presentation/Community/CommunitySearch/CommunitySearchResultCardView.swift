@@ -17,13 +17,13 @@ struct CommunitySearchResultCardView: View {
             VStack(alignment: .leading, spacing: 8) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(post.title)
-                        .pickpleTypography(.body01_500)
+                        .pickpleTypography(.body01_600)
                         .foregroundStyle(Color.black)
                         .lineLimit(1)
                     
                     //설명 공백 대비
                     Text(post.description.isEmpty ? " " : post.description)
-                        .pickpleTypography(.body02_600)
+                        .pickpleTypography(.body02_400)
                         .foregroundStyle(Color.neutral40)
                         .lineLimit(1)
                 }
@@ -39,7 +39,7 @@ struct CommunitySearchResultCardView: View {
                     
                     Text(post.createdAt.relativeTimeDescription)
                 }
-                //.pickpleTypography(.heading02) 폰트 미지정
+                .pickpleTypography(.label_500)
                 .foregroundStyle(Color.neutral30)
             }
             

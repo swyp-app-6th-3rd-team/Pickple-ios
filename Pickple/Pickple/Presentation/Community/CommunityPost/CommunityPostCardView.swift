@@ -48,7 +48,7 @@ struct CommunityPostCardView: View {
                         .foregroundStyle(Color.black)
                     
                     Text(post.description)
-                        .pickpleTypography(.body02_600)
+                        .pickpleTypography(.body02_400)
                         .foregroundStyle(Color.neutral40)
                         .lineLimit(2)
                 }
@@ -57,7 +57,6 @@ struct CommunityPostCardView: View {
                 VStack(spacing: 0) {
                 HStack {
                     PostVoteCommentStats(type: post.type, voteCount: post.voteCount, commentCount: post.commentCount)
-                        .pickpleTypography(.label_600)
                         .foregroundStyle(Color.neutral30)
                     
                     Spacer()
@@ -66,7 +65,7 @@ struct CommunityPostCardView: View {
                         if let authorNickname = post.authorNickname {
                             HStack(spacing: 2) {
                                 Text(authorNickname)
-                                    .pickpleTypography(.caption_400) //폰트 미지정
+                                    .pickpleTypography(.label_500)
                                     .foregroundStyle(Color.neutral40)
                                 
                                 if let authorLevel = post.authorLevel {
@@ -82,7 +81,7 @@ struct CommunityPostCardView: View {
                         }
                         
                         Text(post.createdAt.relativeTimeDescription)
-                            .pickpleTypography(.caption_400)// 폰트 미지정
+                            .pickpleTypography(.label_500)
                             .foregroundStyle(Color.neutral40)
                     }
                 }
