@@ -19,7 +19,7 @@ struct MyPageProfileEditView: View {
                        trailing: .none,
                        bar: false)
             VStack(spacing: 12) {
-                ProfileImageView(profileViewModel: profileViewModel)
+                ProfileImageView(profileViewModel: profileViewModel, size: 124)
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("닉네임")
