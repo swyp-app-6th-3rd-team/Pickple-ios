@@ -22,7 +22,10 @@ struct PostVoteCommentStatsDot: View {
                     Image("PickpleVote")
                         .resizable()
                         .frame(width: 16, height: 16)
+                        .foregroundStyle(Color.neutral30)
                     Text("\(voteCount)")
+                        .pickpleTypography(.label_500)
+                        .foregroundStyle(Color.neutral30)
                         .lineLimit(1)
                         .fixedSize()
                 }
@@ -34,7 +37,10 @@ struct PostVoteCommentStatsDot: View {
                 Image("PickpleComment")
                     .resizable()
                     .frame(width: 16, height: 16)
+                    .foregroundStyle(Color.neutral30)
                 Text("\(commentCount)")
+                    .pickpleTypography(.label_500)
+                    .foregroundStyle(Color.neutral30)
                     .lineLimit(1)
                     .fixedSize()
             }
@@ -50,7 +56,7 @@ struct PostVoteCommentStatsDot: View {
         PostVoteCommentStats(type: .text, voteCount: 0, commentCount: 5)
         PostVoteCommentStats(type: .forAgainst, voteCount: 12, commentCount: 4)
     }
-    .pickpleTypography(.label)
+    .pickpleTypography(.label_600)
     .foregroundStyle(Color.neutral30)
     .padding()
 }

@@ -12,7 +12,7 @@ struct ForAgainstWriteView: View {
     @Bindable var postViewModel: PostViewModel
     @Binding var isCategoryExpanded: Bool
     let categoryOptions: [String]
-    
+
     private var isNameFilled: Bool { postViewModel.product.hasName }
     private var isPhotoFilled: Bool { postViewModel.product.hasPhoto }
     private var isPriceFilled: Bool { !postViewModel.product.price.isEmpty }

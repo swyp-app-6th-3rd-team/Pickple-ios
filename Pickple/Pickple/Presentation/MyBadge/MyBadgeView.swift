@@ -40,7 +40,7 @@ struct MyBadgeView: View {
                             .foregroundStyle(Color.black)
 
                         Text(MyBadgeStrings.collectedCount(myBadgeViewModel.unlockedCount))
-                            .pickpleTypography(.body01)
+                            .pickpleTypography(.body01_500)
                             .foregroundStyle(Color.neutral40)
                     }
 
@@ -66,7 +66,7 @@ struct MyBadgeView: View {
         }
         .task {
             await myBadgeViewModel.loadMyBadges()
-            newlyUnlockedBadge = myBadgeViewModel.badges.first { $0.isNewlyUnlocked }
+            newlyUnlockedBadge = myBadgeViewModel.newlyUnlockedBadges.first
         }
         .sheet(item: $selectedBadge) { badge in
             MyBadgeUnlockConditionSheet(badge: badge) {
@@ -75,13 +75,13 @@ struct MyBadgeView: View {
         }
         .sheet(item: $newlyUnlockedBadge) { badge in
             MyBadgeUnlockedCongratsModal(badge: badge) {
+                myBadgeViewModel.confirmSeen(badge)
                 newlyUnlockedBadge = nil
-                //TODO: 확인 처리(서버에 확인 여부 반영 등) 연결 필요
             }
         }
         .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .tabBar)
+        .restoresSwipeBackGesture()
     }
 }
 

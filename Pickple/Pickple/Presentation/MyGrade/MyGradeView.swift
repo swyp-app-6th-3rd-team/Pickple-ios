@@ -35,15 +35,15 @@ struct MyGradeView: View {
                         HStack(spacing: 4) {
                             if let voteCount = myPageViewModel.userInfo?.voteCount {
                                 Text(MyGradeStrings.voteCountPrefix)
-                                    .pickpleTypography(.label)
+                                    .pickpleTypography(.label_600)
                                     .foregroundStyle(Color.neutral40)
 
                                 Text("\(voteCount)")
-                                    .pickpleTypography(.title02)
+                                    .pickpleTypography(.title02_600)
                                     .foregroundStyle(Color.black)
 
                                 Text(MyGradeStrings.voteCountSuffix)
-                                    .pickpleTypography(.body02)
+                                    .pickpleTypography(.body02_600)
                                     .foregroundStyle(Color.neutral40)
                             }
                         }
@@ -76,7 +76,7 @@ struct MyGradeView: View {
         }
         .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .tabBar)
+        .restoresSwipeBackGesture()
     }
 }
 

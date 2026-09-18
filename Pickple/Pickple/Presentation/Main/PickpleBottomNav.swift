@@ -11,12 +11,18 @@ import SwiftUI
 struct PickpleBottomNav: View {
     @Environment(\.apiClient) private var apiClient
     @Environment(\.isLoggedIn) private var isLoggedIn
-    @Environment(GuestVoteTracker.self) private var guestVoteTracker
     @State private var selectedTab = 0
     @State private var mainRouter = MainRouter()
     @State private var communityRouter = CommunityRouter()
     @State private var myPageRouter = MyPageRouter()
     @State private var myPageViewModel: MyPageViewModel
+    @State private var showsPostCreatedToast = false
+    @State private var showsMyPagePostCreatedToast = false
+    // 탭별 스크롤 다운 여부 — 각 루트 화면이 자기 스크롤 상태를 이걸로 올려보내고,
+    // 아래 .toolbar(_, for: .tabBar)가 path.isEmpty와 같이 봐서 하단 탭바를 숨긴다.
+    @State private var mainScrolledDown = false
+    @State private var communityScrolledDown = false
+    @State private var myPageScrolledDown = false
 
     init(myPageViewModel: MyPageViewModel = MyPageViewModel()) {
         _myPageViewModel = State(initialValue: myPageViewModel)
@@ -32,8 +38,9 @@ struct PickpleBottomNav: View {
                         pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient),
                         isLoggedIn: isLoggedIn
                     ),
-                    cardStackViewModel: CardStackViewModel(voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), isLoggedIn: isLoggedIn, guestVoteTracker: guestVoteTracker),
-                    onRequestCommunityTab: { selectedTab = 1 }
+                    cardStackViewModel: CardStackViewModel(voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient), userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient), isLoggedIn: isLoggedIn),
+                    onRequestCommunityTab: { selectedTab = 1 },
+                    isScrolledDown: $mainScrolledDown
                 )
                     .navigationDestination(for: MainRoute.self) { route in
                         switch route {
@@ -43,8 +50,7 @@ struct PickpleBottomNav: View {
                                 postDetailRepository: RemotePostDetailRepository(apiClient: apiClient, postId: postId),
                                 commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
                                 userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
-                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
-                                guestVoteTracker: guestVoteTracker
+                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient)
                             )
                         case .ranking:
                             MainRankingView(mainRankingViewModel: MainRankingViewModel(pickerRankingRepository: RemotePickerRankingRepository(apiClient: apiClient), isLoggedIn: isLoggedIn))
@@ -52,11 +58,19 @@ struct PickpleBottomNav: View {
                     }
             }
             .environment(mainRouter)
+            // 탭바 visibility를 상세화면 각자가 개별 선언하는 대신, push/pop 애니메이션과
+            // 같은 state(path)로 직접 계산한다 — 그래야 탭바 재노출이 pop과 같은 순간에
+            // 반응해서, 자식 화면의 toolbar 선언이 반영되길 기다리며 생기던 지연이 없어진다.
+            .toolbar(mainRouter.path.isEmpty && !mainScrolledDown ? .visible : .hidden, for: .tabBar)
             .tabItem { tabLabel(title: MainStrings.tabHome, icon: "PickpleHome", tag: 0) }
             .tag(0)
 
             NavigationStack(path: $communityRouter.path) {
-                CommunityView(communityViewModel: CommunityViewModel(communityRepository: RemoteCommunityRepository(apiClient: apiClient)))
+                CommunityView(
+                    communityViewModel: CommunityViewModel(communityRepository: RemoteCommunityRepository(apiClient: apiClient)),
+                    onPostCreated: { showsPostCreatedToast = true },
+                    onScrolledDownChange: { communityScrolledDown = $0 }
+                )
                     .navigationDestination(for: CommunityRoute.self) { route in
                         switch route {
                         case .postDetail(let postId, let type):
@@ -65,8 +79,7 @@ struct PickpleBottomNav: View {
                                 postDetailRepository: RemotePostDetailRepository(apiClient: apiClient, postId: postId),
                                 commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
                                 userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
-                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
-                                guestVoteTracker: guestVoteTracker
+                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient)
                             )
                         case .search:
                             CommunitySearchView(communitySearchViewModel: CommunitySearchViewModel(communityRepository: RemoteCommunityRepository(apiClient: apiClient)))
@@ -74,11 +87,20 @@ struct PickpleBottomNav: View {
                     }
             }
             .environment(communityRouter)
+            // 새 글 작성 성공 시 곧바로 상세 화면으로 push되는데, 토스트를 CommunityView
+            // 자신에게 달면 push된 화면에 가려 안 보인다 — push와 무관하게 계속 보이도록
+            // NavigationStack 바깥(탭 전체를 감싸는 이 레벨)에서 띄운다.
+            .pickpleToast(isPresented: $showsPostCreatedToast, message: PostViewStrings.submitSucceededToast)
+            .toolbar(communityRouter.path.isEmpty && !communityScrolledDown ? .visible : .hidden, for: .tabBar)
             .tabItem { tabLabel(title: MainStrings.tabCommunity, icon: "PickpleMessage", tag: 1) }
             .tag(1)
 
             NavigationStack(path: $myPageRouter.path) {
-                MyPageView(myPageViewModel: myPageViewModel)
+                MyPageView(
+                    myPageViewModel: myPageViewModel,
+                    isScrolledDown: $myPageScrolledDown,
+                    onPostCreated: { showsMyPagePostCreatedToast = true }
+                )
                     .navigationDestination(for: MyPageRoute.self) { route in
                         switch route {
                         case .profile:
@@ -89,21 +111,25 @@ struct PickpleBottomNav: View {
                             MyBadgeView(myBadgeViewModel: MyBadgeViewModel(myBadgeRepository: RemoteMyBadgeRepository(apiClient: apiClient)))
                         case .account:
                             MyAccountView()
-                        case .activity:
-                            MyActivityView(myActivityViewModel: MyActivityViewModel(userPostRepository: RemoteUserPostRepository(apiClient: apiClient)))
+                        case .activity(let initialTab):
+                            MyActivityView(myActivityViewModel: MyActivityViewModel(userPostRepository: RemoteUserPostRepository(apiClient: apiClient)), initialTab: initialTab)
                         case .postDetail(let postId, let type):
                             PostDetailView(
                                 voteType: type,
                                 postDetailRepository: RemotePostDetailRepository(apiClient: apiClient, postId: postId),
                                 commentRepository: RemoteCommentRepository(apiClient: apiClient, postId: postId),
                                 userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
-                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient),
-                                guestVoteTracker: guestVoteTracker
+                                voteCardRepository: RemoteVoteCardRepository(apiClient: apiClient)
                             )
                         }
                     }
             }
             .environment(myPageRouter)
+            // 새 글 작성 성공 시 곧바로 상세 화면으로 push되는데, 토스트를 MyPageView
+            // 자신에게 달면 push된 화면에 가려 안 보인다 — push와 무관하게 계속 보이도록
+            // NavigationStack 바깥(탭 전체를 감싸는 이 레벨)에서 띄운다.
+            .pickpleToast(isPresented: $showsMyPagePostCreatedToast, message: PostViewStrings.submitSucceededToast)
+            .toolbar(myPageRouter.path.isEmpty && !myPageScrolledDown ? .visible : .hidden, for: .tabBar)
             .tabItem { tabLabel(title: MainStrings.tabMyPage, icon: "PickpleUser", tag: 2) }
             .tag(2)
         }

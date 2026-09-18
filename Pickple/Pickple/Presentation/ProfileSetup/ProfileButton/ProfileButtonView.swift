@@ -18,8 +18,12 @@ struct ProfileButtonView: View {
             Text(ProfileSetupStrings.confirmButton)
         }
         .frame(maxWidth: .infinity) //반응형
-        .buttonStyle(.pickple(profileViewModel.isNicknameValid() ? .enabled : .disabled, 56))
-        .disabled(!profileViewModel.isNicknameValid() || profileViewModel.isSubmitting)
+        .buttonStyle(.pickple(isEnabled ? .enabled : .disabled, 56))
+        .disabled(!isEnabled)
+    }
+
+    private var isEnabled: Bool {
+        profileViewModel.isNicknameAvailable && !profileViewModel.isSubmitting
     }
 }
 

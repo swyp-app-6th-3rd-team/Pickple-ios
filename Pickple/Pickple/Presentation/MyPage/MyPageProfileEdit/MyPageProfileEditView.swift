@@ -19,11 +19,11 @@ struct MyPageProfileEditView: View {
                        trailing: .none,
                        bar: false)
             VStack(spacing: 12) {
-                ProfileImageView(profileViewModel: profileViewModel)
+                ProfileImageView(profileViewModel: profileViewModel, size: 124)
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("닉네임")
-                        .pickpleTypography(.body01)
+                        .pickpleTypography(.body01_500)
                         .foregroundStyle(Color.black)
                         .padding(.horizontal, 4)
                     
@@ -51,7 +51,7 @@ struct MyPageProfileEditView: View {
         }
         .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .tabBar)
+        .restoresSwipeBackGesture()
     }
 }
 

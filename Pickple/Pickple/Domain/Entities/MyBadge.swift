@@ -8,11 +8,13 @@ import Foundation
 
 struct MyBadge: Identifiable {
     let id: UUID
+    // 서버가 주는 안정적인 뱃지 식별자 — id(UUID)는 매 조회마다 새로 생성돼 기기에 저장해둘
+    // 키로 못 쓴다. "방금 해금된 뱃지"를 기억하려면 이 code로 비교한다.
+    let code: String
     let title: String           // "첫 PICK"
     let iconOnName: String      // 해금 상태 아이콘
     let iconOffName: String     // 잠금 상태 아이콘
     let isUnlocked: Bool
-    let isNewlyUnlocked: Bool   // 아직 확인 안 한, 방금 해금된 뱃지 — 진입 시 축하 모달 표시용
     let unlockCondition: String // "이 뱃지를 해제하려면 누적 투표 10회를 달성하세요."
 
     //추후 API 스펙에 맞게 수정

@@ -16,13 +16,17 @@ struct ProductNameFieldBlock: View {
     // 받음) 원래 값을 보여주기만 하고 편집은 막는다 — 디자인 확정 전까지는 투명도로만 표시.
     var isDisabled: Bool = false
 
+    @FocusState private var isFocused: Bool
+
     var body: some View {
             PickpleTextField(
                 text: $name,
                 type: .trailing,
                 placeholder: PostViewStrings.productNamePlaceholder,
-                trailingAccessory: .text("\(name.count)/\(maxLength)")
+                trailingAccessory: .text("\(name.count)/\(maxLength)"),
+                state: isFocused ? .ing : ._default
             )
+            .focused($isFocused)
             .onChange(of: name) { _, newValue in
                 if newValue.count > maxLength {
                     name = String(newValue.prefix(maxLength))

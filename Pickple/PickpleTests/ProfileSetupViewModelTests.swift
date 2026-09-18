@@ -92,6 +92,75 @@ final class ProfileSetupViewModelTests: XCTestCase {
         XCTAssertNotNil(viewModel.errorMessage)
     }
 
+    func test_submitProfile_whenNicknameDuplicate_failsAndMarksTextFieldError() async {
+        let spy = SpyProfileRepository()
+        spy.availability = NicknameAvailability(isAvailable: false, message: "이미 사용 중인 닉네임이에요")
+        let viewModel = ProfileSetupViewModel(profileRepository: spy)
+        viewModel.nickname = "picker"
+
+        let succeeded = await viewModel.submitProfile()
+
+        XCTAssertFalse(succeeded)
+        XCTAssertEqual(spy.registeredCalls.count, 0)
+        XCTAssertTrue(viewModel.isNicknameDuplicate)
+        XCTAssertEqual(viewModel.nicknameCaption(viewModel.textFieldState(false)), "이미 사용 중인 닉네임이에요")
+        XCTAssertEqual(viewModel.textFieldState(false), .error)
+    }
+
+    func test_resetNicknameDuplicateState_clearsDuplicateFlagAndMessage() async {
+        let spy = SpyProfileRepository()
+        spy.availability = NicknameAvailability(isAvailable: false, message: "이미 사용 중인 닉네임이에요")
+        let viewModel = ProfileSetupViewModel(profileRepository: spy)
+        viewModel.nickname = "picker"
+        _ = await viewModel.submitProfile()
+        XCTAssertTrue(viewModel.isNicknameDuplicate)
+
+        viewModel.resetNicknameDuplicateState()
+
+        XCTAssertFalse(viewModel.isNicknameDuplicate)
+        XCTAssertNil(viewModel.nicknameDuplicateMessage)
+        XCTAssertEqual(viewModel.textFieldState(false), ._default)
+    }
+
+    func test_nicknameDidChange_whenAvailable_enablesConfirmAfterDebounce() async {
+        let spy = SpyProfileRepository()
+        spy.availability = NicknameAvailability(isAvailable: true, message: "사용 가능한 닉네임")
+        let viewModel = ProfileSetupViewModel(profileRepository: spy)
+
+        viewModel.nickname = "picker"
+        viewModel.nicknameDidChange()
+        try? await Task.sleep(for: .milliseconds(50))
+
+        XCTAssertTrue(viewModel.isNicknameAvailable)
+        XCTAssertFalse(viewModel.isNicknameDuplicate)
+        XCTAssertEqual(viewModel.textFieldState(false), .success)
+    }
+
+    func test_nicknameDidChange_whenDuplicate_marksErrorAndKeepsConfirmDisabled() async {
+        let spy = SpyProfileRepository()
+        spy.availability = NicknameAvailability(isAvailable: false, message: "이미 사용 중인 닉네임이에요")
+        let viewModel = ProfileSetupViewModel(profileRepository: spy)
+
+        viewModel.nickname = "picker"
+        viewModel.nicknameDidChange()
+        try? await Task.sleep(for: .milliseconds(50))
+
+        XCTAssertFalse(viewModel.isNicknameAvailable)
+        XCTAssertTrue(viewModel.isNicknameDuplicate)
+        XCTAssertEqual(viewModel.nicknameDuplicateMessage, "이미 사용 중인 닉네임이에요")
+    }
+
+    func test_nicknameDidChange_whenUnchangedFromOriginal_skipsNetworkCheck() async {
+        let spy = SpyProfileRepository()
+        let viewModel = ProfileSetupViewModel(profileRepository: spy)
+        await viewModel.loadCurrentProfile()   // originalNickname = "picker" (SpyProfileRepository 기준)
+
+        viewModel.nicknameDidChange()
+
+        XCTAssertTrue(viewModel.isNicknameAvailable)
+        XCTAssertFalse(viewModel.isCheckingNickname)
+    }
+
     func test_updateProfile_withNewImage_uploadsThenUpdatesWithReturnedURL() async {
         let spy = SpyProfileRepository()
         spy.uploadResult = .success("https://cdn.pickple.app/profile/updated.jpg")

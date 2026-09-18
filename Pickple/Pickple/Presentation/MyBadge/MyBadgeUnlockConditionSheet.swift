@@ -25,14 +25,14 @@ struct MyBadgeUnlockConditionSheet: View {
                     .frame(width: 87, height: 82)
                 
                 Text(badge.unlockCondition)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(Color.black)
                     .multilineTextAlignment(.center)
             }
             
             Button(action: onConfirm) {
                 Text(MyBadgeStrings.confirm)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(Color.white)
                     .frame(maxWidth: .infinity, minHeight: 52)
                     .background(Color.black)
@@ -53,11 +53,11 @@ struct MyBadgeUnlockConditionSheet: View {
             MyBadgeUnlockConditionSheet(
                 badge: MyBadge(
                     id: UUID(),
+                    code: "FIRST_PICK",
                     title: "첫 PICK",
                     iconOnName: "PickpleBadgeFirstPickOn",
                     iconOffName: "PickpleBadgeFirstPickOff",
                     isUnlocked: false,
-                    isNewlyUnlocked: false,
                     unlockCondition: "이 뱃지를 해제하려면\n누적 투표 10회를 달성하세요."
                 ),
                 onConfirm: {}

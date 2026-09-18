@@ -26,7 +26,10 @@ struct CardView: View {
         VStack(spacing: 22) {
             ZStack(alignment: .topLeading) {
                     cardImage
+                    .frame(width: 333, height: 526)
+                    .scaledToFill()
                     .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .shadow(color: Color.black.opacity(0.08), radius: 12)
 
                     bottomGradient
                     .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -39,12 +42,20 @@ struct CardView: View {
                             .frame(width: 16, height: 16)
                         
                         Text("\(data.participantCount)명 투표중")
-                            .pickpleTypography(.label)
+                            .pickpleTypography(.label_600)
                             .foregroundStyle(Color.white)
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
-                    .background(Color.black.opacity(0.4))
+                    // 캡슐에 .blur()를 바로 걸면 둥근 양 끝이 안쪽으로 침식돼 찌그러져 보인다.
+                    // 캡슐을 blur 반경(8)만큼 미리 키워서 블러를 걸고, 원래 크기로 다시
+                    // 잘라내면 침식된 가장자리만 잘려나가고 보이는 부분은 멀쩡하게 남는다.
+                    .background(
+                        Capsule()
+                            .foregroundStyle(Color.black.opacity(0.4))
+                            .padding(-8)
+                            .blur(radius: 8)
+                    )
                     .clipShape(Capsule())
                     .padding(16)
                     
@@ -53,11 +64,11 @@ struct CardView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(data.productName)
-                                .pickpleTypography(.title02)
+                                .pickpleTypography(.title02_600)
                                 .foregroundStyle(Color.white)
 
                             Text(data.concernText)
-                                .pickpleTypography(.body02)
+                                .pickpleTypography(.body02_600)
                                 .foregroundStyle(Color.neutral10)
                                 .lineLimit(1)
                         }
@@ -107,10 +118,10 @@ struct CardView: View {
     }
 
     private func productImage(_ url: URL?) -> some View {
-        AsyncImage(url: url) { image in
-            image.resizable()
+        PickpleAsyncImage(url: url, targetSize: CGSize(width: 333, height: 526)) { image in
+            image.resizable().scaledToFill()
         } placeholder: {
-            Image("MockAgainstPicture").resizable()
+            Image("MockAgainstPicture").resizable().scaledToFill()
         }
     }
 

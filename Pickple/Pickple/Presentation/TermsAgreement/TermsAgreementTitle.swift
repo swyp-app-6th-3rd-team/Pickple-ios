@@ -17,7 +17,7 @@ struct TermsAgreementTitle: View {
                     .foregroundStyle(Color.black)
 
                     Text(TermsAgreementStrings.welcomeDescription)
-                        .pickpleTypography(.body01)
+                        .pickpleTypography(.body01_500)
                         .foregroundStyle(Color.neutral60)
             }
             Spacer()

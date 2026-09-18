@@ -13,6 +13,8 @@ struct ABWriteView: View {
     @Binding var isCategoryExpanded: Bool
     let categoryOptions: [String]
 
+    @FocusState private var isTopicFocused: Bool
+
     private var isANameFilled: Bool { postViewModel.productA.hasName }
     private var isBNameFilled: Bool { postViewModel.productB.hasName }
     private var areNamesFilled: Bool { isANameFilled && isBNameFilled }
@@ -38,21 +40,23 @@ struct ABWriteView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 (Text(PostViewStrings.topic) + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
 
                 PickpleTextField(
                     text: $postViewModel.topic,
                     type: .trailing,
                     placeholder: PostViewStrings.topicText,
-                    trailingAccessory: .text("\(postViewModel.topic.count)/\(postViewModel.topicMaxLength)")
+                    trailingAccessory: .text("\(postViewModel.topic.count)/\(postViewModel.topicMaxLength)"),
+                    state: isTopicFocused ? .ing : ._default
                 )
+                .focused($isTopicFocused)
                 .onChange(of: postViewModel.topic) { _, newValue in
                     if newValue.count > postViewModel.topicMaxLength {
                         postViewModel.topic = String(newValue.prefix(postViewModel.topicMaxLength))
                     }
                 }
             }
-            
+
             // 수정 모드는 상품명/사진/가격/URL이 PATCH로 반영되지 않아(카테고리/제목(=주제)/설명만
             // 지원) 원래 값을 보여주기만 하고 편집을 막는다 — 순차 공개도 건너뛰고 한꺼번에 보여준다.
             ProductNameSectionView(postViewModel: postViewModel)

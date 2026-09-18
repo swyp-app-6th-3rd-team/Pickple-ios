@@ -14,8 +14,13 @@ struct MyActivityView: View {
     @Environment(MyPageRouter.self) private var myPageRouter
 
     @State private var isShown: Bool = false
-    @State private var selectedIndexTwo = 0
+    @State private var selectedTabIndex: Int
     @State private var selectedValue = MyActivityStrings.latestSortOption
+
+    init(myActivityViewModel: MyActivityViewModel, initialTab: Int = 0) {
+        _myActivityViewModel = State(initialValue: myActivityViewModel)
+        _selectedTabIndex = State(initialValue: initialTab)
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -26,7 +31,7 @@ struct MyActivityView: View {
                 bar: false
             )
 
-            PickpleTabBar(tabs: MyActivityStrings.tabs, selectedIndex: $selectedIndexTwo)
+            PickpleTabBar(tabs: MyActivityStrings.tabs, selectedIndex: $selectedTabIndex)
 
             HStack {
                 PickpleSortButton(isExpanded: .constant(false), selectedValue: $selectedValue, options: MyActivityStrings.sortOptions)
@@ -39,7 +44,7 @@ struct MyActivityView: View {
             .padding(.vertical, 12)
             .zIndex(1)
             
-            switch selectedIndexTwo {
+            switch selectedTabIndex {
             case 0:
                 MyActivityListView(
                     items: myActivityViewModel.sorted(myActivityViewModel.votedPosts, by: selectedValue),
@@ -73,7 +78,7 @@ struct MyActivityView: View {
         }
         .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .tabBar)
+        .restoresSwipeBackGesture()
     }
 }
 

@@ -30,26 +30,33 @@ struct MainHotPostSection: View {
                             .resizable()
                             .frame(width: 16, height: 16)
                     }
-                    .pickpleTypography(.body02)
+                    .pickpleTypography(.body02_600)
                     .foregroundStyle(Color.neutral40)
                 }
             }
+            .padding(.horizontal, 20)
+
             
             if posts.isEmpty {
                 //임시 디자인
                 Text(MainStrings.hotPostEmptyMessage)
-                    .pickpleTypography(.body02)
+                    .pickpleTypography(.body02_600)
                     .foregroundStyle(Color.neutral40)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 40)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
+                    LazyHStack(spacing: 12) {
                         ForEach(posts) { post in
-                            PostThumbnailCardView(post: post)
-                                .onTapGesture { onTapPost(post) }
+                            Button(action: { onTapPost(post) }) {
+                                PostThumbnailCardView(post: post)
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
                         }
+
                     }
+                    .padding(.horizontal, 20)
                 }
             }
         }

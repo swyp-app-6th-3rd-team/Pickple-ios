@@ -50,15 +50,15 @@ private struct MyPagePointsHeaderRow: View {
                     .frame(width: 20, height: 20)
 
                 Text(MyPageStrings.currentPoints)
-                    .pickpleTypography(.body02)
+                    .pickpleTypography(.body02_400)
                     .foregroundStyle(Color.white)
             }
 
             Spacer()
 
             if let points {
-                Text("\(points)")
-                    .pickpleTypography(.body02)
+                Text("\(points)P")
+                    .pickpleTypography(.body02_600)
                     .foregroundStyle(Color.white)
             }
         }
@@ -91,6 +91,7 @@ private struct MyPagePointsLevelFooter: View {
                     }
 
                     Text(level.map { "LV. \($0)" } ?? "-")
+                        .pickpleTypography(.body02_600)
                         .foregroundStyle(Color.neutral100)
                 }
 
@@ -99,10 +100,10 @@ private struct MyPagePointsLevelFooter: View {
                 if let pointsToNextLevel {
                     HStack(spacing: 3) {
                         Text(MyPageStrings.nextLevel)
-                            .pickpleTypography(.label)
+                            .pickpleTypography(.label_400)
 
                         Text("\(pointsToNextLevel)P")
-                            .pickpleTypography(.body02)
+                            .pickpleTypography(.body02_600)
                     }
                     .foregroundStyle(Color.neutral70)
                 }

@@ -27,21 +27,35 @@ struct MyPageProfileHeaderView: View {
                     // 서버가 실제 사진을 안 줬을 때(기본 프로필)는 캐릭터 이미지 뒤에 흰 배경
                     // 원을 깔아준다 — 캐릭터 이미지 자체의 크기(scaledToFill)는 실제 사진과 동일하게
                     // 유지하고, 투명한 부분에 navy60 배경이 아니라 흰색이 보이게 하는 목적.
-                    AsyncImage(url: myPageViewModel.userInfo?.profileImageUrl) { image in
-                        image.resizable().scaledToFill()
-                    } placeholder: {
-                        ZStack {
-                            Circle().fill(Color.white)
-                            Image("PickpleCharacter").resizable().scaledToFill()
+                    HStack(alignment: .top, spacing: 0) {
+                        Image("PickpleDeco")
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .offset(x: -0.5)
+                        
+                        HStack(alignment: .bottom, spacing: 0) {
+                        PickpleAsyncImage(url: myPageViewModel.userInfo?.profileImageUrl, targetSize: CGSize(width: 84, height: 84)) { image in
+                            image.resizable().scaledToFill()
+                        } placeholder: {
+                            ZStack {
+                                Circle().fill(Color.white)
+                                Image("PickpleCharacter").resizable().scaledToFill()
+                            }
                         }
+                        .frame(width: 84, height: 84)
+                        .clipShape(Circle())
+                            
+                            Image("PickpleDeco")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .offset(x: 0.5)
                     }
-                    .frame(width: 84, height: 84)
-                    .clipShape(Circle())
+                }
 
                     HStack(spacing: 4) {
                         if let nickname = myPageViewModel.userInfo?.nickname {
                             Text(nickname)
-                                .pickpleTypography(.title02)
+                                .pickpleTypography(.title02_600)
                                 .foregroundStyle(Color.white)
                         }
                         Image("PickpleEdit")
@@ -66,7 +80,7 @@ struct MyPageProfileHeaderView: View {
                                 .frame(maxWidth: .infinity, minHeight: 56)
                                 .foregroundStyle(Color.yellow60)
                             Text("로그인")
-                                .pickpleTypography(.title02)
+                                .pickpleTypography(.title02_600)
                                 .foregroundStyle(Color.navy60)
                         }
                         .padding(.horizontal, 20)

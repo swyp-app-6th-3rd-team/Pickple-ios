@@ -22,7 +22,7 @@ struct TermsToggleRow: View {
             Toggle(isOn: $isOn) {}
 
             Text(title)
-                .pickpleTypography(.body02)
+                .pickpleTypography(.body02_600)
                 .foregroundStyle(Color.neutral80)
                 
             Spacer()
@@ -30,7 +30,7 @@ struct TermsToggleRow: View {
             if showsViewButton {
                 Link(destination: URL(string: url)!) {
                     Text(TermsAgreementStrings.viewButton)
-                        .pickpleTypography(.body02)
+                        .pickpleTypography(.body02_600)
                         .underline()
                         .foregroundStyle(Color.neutral40)
                 }
@@ -46,7 +46,7 @@ struct TermsToggleRow: View {
         TermsToggleRow(isOn: $isOn, title: TermsAgreementStrings.personalDataTitle, url: "")
         TermsToggleRow(isOn: $isOn, title: TermsAgreementStrings.pushNotificationTitle, showsViewButton: false)
     }
-    .pickpleTypography(.body02)
+    .pickpleTypography(.body02_600)
     .foregroundStyle(Color.neutral80)
     .padding()
 }

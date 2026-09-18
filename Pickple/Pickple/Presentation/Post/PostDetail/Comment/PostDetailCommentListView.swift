@@ -28,7 +28,7 @@ struct PostDetailCommentListView: View {
                 .overlay {
                     VStack(spacing: 16) {
                         Text(PostDetailStrings.commentViewRequiredDescription)
-                            .pickpleTypography(.body02) //폰트 미지정
+                            .pickpleTypography(.body02_600) //폰트 미지정
                             .foregroundStyle(Color.neutral70)
 
                         Button(action: onLoginRequired) {
@@ -41,7 +41,7 @@ struct PostDetailCommentListView: View {
                                     }
                                     .frame(width: 113, height: 48)
                                 Text("로그인하기")
-                                    .pickpleTypography(.body01)
+                                    .pickpleTypography(.body01_500)
                                     .foregroundStyle(Color.black)
                             }
                         }
@@ -51,6 +51,7 @@ struct PostDetailCommentListView: View {
             PostDetailCommentEmptyView()
         } else {
             commentRows
+                
         }
     }
     
@@ -68,6 +69,12 @@ struct PostDetailCommentListView: View {
                     onPickTapped: { onPickTapped(comment) }
                 )
                 .padding(.vertical, 20)
+                .background(
+                    // 부모(PostDetailContent)가 좌우 20을 이미 줘서, 배경도 화면 끝까지 채우려면
+                    // 그만큼 반대로 빼줘야 한다.
+                    (comment.id == postDetailViewModel.editingCommentID ? Color.neutral15 : Color.clear)
+                        .padding(.horizontal, -20)
+                )
 
                 Divider()
                     .foregroundStyle(Color.navy10)
@@ -109,7 +116,6 @@ struct PostDetailCommentListView: View {
         onCommentMoreTapped: { _ in },
         onLoginRequired: {}
     )
-    .padding()
     .task { await viewModel.loadComments() }
 }
 
@@ -121,6 +127,5 @@ struct PostDetailCommentListView: View {
         onCommentMoreTapped: { _ in },
         onLoginRequired: {}
     )
-    .padding()
     .task { await viewModel.loadComments() }
 }

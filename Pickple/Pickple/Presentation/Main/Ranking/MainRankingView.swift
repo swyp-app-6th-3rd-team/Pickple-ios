@@ -72,7 +72,7 @@ struct MainRankingView: View {
             if mainRankingViewModel.rankings.isEmpty {
                 Spacer()
                 Text(MainStrings.rankingEmptyMessage)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(Color.neutral30)
                 Spacer()
             } else {
@@ -137,7 +137,7 @@ struct MainRankingView: View {
         }
         .background(Color.white.ignoresSafeArea())
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .tabBar)
+        .restoresSwipeBackGesture()
         .task {
             await mainRankingViewModel.loadInitial()
             await mainRankingViewModel.loadMyRanking()

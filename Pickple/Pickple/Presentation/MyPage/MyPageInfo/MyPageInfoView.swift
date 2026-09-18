@@ -18,7 +18,7 @@ struct MyPageInfoView: View {
         VStack(spacing: 0) {
             HStack {
                 Text(MyPageStrings.infoSectionTitle)
-                    .pickpleTypography(.body02)
+                    .pickpleTypography(.body02_600)
                     .foregroundStyle(Color.neutral40)
 
                 Spacer()

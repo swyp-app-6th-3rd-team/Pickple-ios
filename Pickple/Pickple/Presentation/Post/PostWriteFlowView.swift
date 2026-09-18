@@ -50,22 +50,23 @@ struct PostWriteFlowView: View {
                 }
 
                 ScrollView {
-                    PostWriteFlowStepContent(
-                        postViewModel: postViewModel,
-                        isCategoryExpanded: $isCategoryExpanded,
-                        categoryOptions: categoryOptions
-                    )
-                    .padding(.top, 28)
-                    .zIndex(isCategoryExpanded ? 1 : 0)
-                }
-                .padding(.horizontal, 20)
+                    VStack(spacing: 0) {
+                        PostWriteFlowStepContent(
+                            postViewModel: postViewModel,
+                            isCategoryExpanded: $isCategoryExpanded,
+                            categoryOptions: categoryOptions
+                        )
+                        .zIndex(isCategoryExpanded ? 1 : 0)
 
-                PostWriteFlowButtonRow(
-                    title: postViewModel.isEditing ? PostViewStrings.submitEdit : PostViewStrings.submit,
-                    isEnabled: postViewModel.canSubmit,
-                    onSubmit: handleSubmit
-                )
-                .padding(.horizontal, 20)
+                        PostWriteFlowButtonRow(
+                            title: postViewModel.isEditing ? PostViewStrings.submitEdit : PostViewStrings.submit,
+                            isEnabled: postViewModel.canSubmit,
+                            onSubmit: handleSubmit
+                        )
+                    }
+                    .padding(.top, 28)
+                    .padding(.horizontal, 20)
+                }
             }
             
 
@@ -84,7 +85,12 @@ struct PostWriteFlowView: View {
         }
         .pickpleToast(isPresented: $showsFailureToast, message: postViewModel.isEditing ? PostViewStrings.submitEditFailedToast : PostViewStrings.submitFailedToast)
         .navigationBarBackButtonHidden(true)
+        .restoresSwipeBackGesture()
         .toolbar(.hidden, for: .tabBar)
+        // 이 화면은 커뮤니티 탭에서 .fullScreenCover로도 뜨는데, 모달 프레젠테이션은 앱
+        // 루트와 별개의 뷰 계층이라 루트에 건 dismissKeyboardOnTap()이 여기까지 전파되지
+        // 않는다 — 이 화면 자체에도 걸어준다.
+        .dismissKeyboardOnTap()
     }
 
     private func handleBack() {

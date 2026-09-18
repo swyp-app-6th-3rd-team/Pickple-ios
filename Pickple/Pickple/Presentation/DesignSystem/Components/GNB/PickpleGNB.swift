@@ -25,7 +25,7 @@ struct PickpleGNBSlotView: View {
             Color.clear.frame(width: 24, height: 24)
         case .text(let text):
             Text(text)
-                .pickpleTypography(.title01)
+                .pickpleTypography(.title01_600)
                 .foregroundStyle(Color.black)
         case .image(let image):
             image

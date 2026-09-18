@@ -17,7 +17,7 @@ struct ProfileTitleView: View {
                     .foregroundStyle(Color.black)
                 
                 Text(ProfileSetupStrings.profileGuideText)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(Color.neutral60)
             }
         }

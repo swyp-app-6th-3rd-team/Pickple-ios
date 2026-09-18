@@ -29,6 +29,7 @@ enum PostDetailStrings {
     static let voteRequiredDescription = "간편 로그인 후 더 많은 투표에\n참여해 보세요"
     static let commentRequiredDescription = "간편 로그인 후 댓글을\n작성할 수 있어요"
     static let commentViewRequiredDescription = "로그인 후 열람할 수 있어요"
+    static let moreMenuRequiredDescription = "로그인 후 이용할 수 있어요"
     static let cancel = "취소"
     static let login = "로그인"
 

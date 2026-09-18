@@ -58,7 +58,10 @@ struct PostDetailContent: View {
                 
 
                 PostDetailCommentSectionHeader(
-                    count: postDetailViewModel.comments.count,
+                    // 게스트는 댓글 목록 조회 자체가 막혀 있어 comments가 항상 []이라, 그 개수 대신
+                    // 게시글의 실제 댓글 수(post.commentCount, 서버가 게시글 상세와 함께 내려주는
+                    // 활성 댓글 건수)를 보여준다.
+                    count: postDetailViewModel.isLoggedIn ? postDetailViewModel.comments.count : post.commentCount,
                     sortOption: $postDetailViewModel.sortOption,
                     isSortExpanded: $isSortExpanded
                 )
@@ -103,8 +106,8 @@ struct PostDetailContent: View {
                 selectedOptionId: nil,
                 voterCount: 3,
                 products: [
-                    PostDetailProduct(id: 1, name: "나이키 에어포스 흰색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/...", imageUrl: nil, displayOrder: 1),
-                    PostDetailProduct(id: 2, name: "나이키 에어포스 검은색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/...", imageUrl: nil, displayOrder: 2)
+                    PostDetailProduct(id: 1, name: "나이키 에어포스 흰색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/...", imageUrls: [], displayOrder: 1),
+                    PostDetailProduct(id: 2, name: "나이키 에어포스 검은색", price: 135_000, purchaseURL: "11pcs.11st.co.kr/...", imageUrls: [], displayOrder: 2)
                 ],
                 options: [
                     PostDetailVoteOption(optionId: 1, label: nil, productId: 1, displayOrder: 1, voteCount: nil, percentage: nil),

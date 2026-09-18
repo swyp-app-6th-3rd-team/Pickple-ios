@@ -5,6 +5,7 @@
 //  Created by 박윤수 on 9/3/26.
 //
 import Foundation
+import SwiftUI
 
 @Observable
 class CommunityViewModel {
@@ -14,6 +15,12 @@ class CommunityViewModel {
     var selectedCategory: String = CommunityViewModel.categories[0]
     var sortOption: String = CommunityViewModel.sortOptions[0]
     var isSortExpanded: Bool = false
+    // 목록 스크롤을 최상단에서 일정 이상 내렸는지 — 최상단 이동 버튼 노출에 쓴다.
+    var isScrolledDown: Bool = false
+    // 최상단 이동 버튼이 쓰는 스크롤 위치 — ScrollViewReader+scrollTo(id:)의 구식 API 대신,
+    // 같은 세대(iOS 17+)에 나온 ScrollPosition으로 CommunityPostListSection의 ScrollView와
+    // 직접 바인딩한다.
+    var scrollPosition = ScrollPosition()
 
     private var nextCursor: String?
     private(set) var hasNext: Bool = false
@@ -21,7 +28,7 @@ class CommunityViewModel {
 
     static let categories = ["전체", "패션/잡화", "전자제품", "생활용품", "뷰티", "기타"]
     static let sortOptions = ["최신순", "오래된 순"]
-    static let scrollTopAnchor = "communityTop"
+    static let scrollDownThreshold: CGFloat = 20
 
     // "오래된 순"은 서버 sort 파라미터(LATEST|POPULAR)에 대응하는 값이 없어서, 이때만 전체
     // 페이지를 다 받아와 클라이언트에서 오름차순으로 뒤집는다. "최신순"은 서버가 이미 그 순서로

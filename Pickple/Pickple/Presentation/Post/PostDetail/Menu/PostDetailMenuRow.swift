@@ -24,7 +24,7 @@ struct PostDetailMenuRow: View {
                     .foregroundStyle(tint)
 
                 Text(title)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(tint)
 
                 Spacer()

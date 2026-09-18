@@ -23,7 +23,7 @@ struct MyPagePostView: View {
 
             //MARK: - Post
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
+                LazyHStack(spacing: 12) {
                     if myPageViewModel.posts.isEmpty {
                         MyPagePostCardEmptyView(action: onTapAddPost)
                     }

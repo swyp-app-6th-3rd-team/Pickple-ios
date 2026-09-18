@@ -17,10 +17,10 @@ struct ComparisonPhotoFieldBlock: View {
         VStack(alignment: .leading, spacing: 20) {
             VStack(alignment: .leading, spacing: 0) {
                 (Text(PostViewStrings.photo) + Text(" ") + Text(PostViewStrings.requiredMark).foregroundStyle(Color.red60))
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                 
                 Text("각각 1장씩 업로드")
-                    .pickpleTypography(.body02)
+                    .pickpleTypography(.body02_600)
                     .foregroundStyle(Color.neutral40)
             }
             .padding(.horizontal, 4)
@@ -69,7 +69,7 @@ private struct ComparisonPhotoSlot: View {
                             .foregroundStyle(Color.neutral20)
 
                         Text(label)
-                            .pickpleTypography(.caption)
+                            .pickpleTypography(.caption_400)
                             .foregroundStyle(Color.neutral20)
                     }
                     .frame(width: 96, height: 96)
@@ -81,7 +81,9 @@ private struct ComparisonPhotoSlot: View {
                 }
             }
         }
-        .sheet(isPresented: $showsPicker) {
+        // .sheet를 쓰면 직전에 포커스돼 있던 텍스트필드(상품명 등)의 키보드가 채 안 내려간 상태로
+        // present와 겹쳐서 열리자마자 바로 dismiss돼버렸다. fullScreenCover로 바꿔서 해결.
+        .fullScreenCover(isPresented: $showsPicker) {
             CustomPhotoPickerView(onSelect: { images in
                 guard let image = images.first else { return }
                 photos = [image]

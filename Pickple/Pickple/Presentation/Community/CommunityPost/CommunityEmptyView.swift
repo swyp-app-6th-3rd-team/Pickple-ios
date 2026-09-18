@@ -17,7 +17,7 @@ struct CommunityEmptyView: View {
                 .shadow(color: Color.black.opacity(0.3), radius: 4)
             
             Text(CommunityStrings.emptyMessage)
-                .pickpleTypography(.title02)
+                .pickpleTypography(.title02_600)
                 .foregroundStyle(Color.neutral30)
         }
     }

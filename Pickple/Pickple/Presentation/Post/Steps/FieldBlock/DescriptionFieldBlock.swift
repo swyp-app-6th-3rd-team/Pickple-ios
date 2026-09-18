@@ -13,17 +13,20 @@ import SwiftUI
 struct DescriptionFieldBlock: View {
     @Binding var text: String
     let maxLength: Int
-    
+
+    @FocusState private var isFocused: Bool
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(PostViewStrings.description)
-                .pickpleTypography(.body01)
+                .pickpleTypography(.body01_500)
             
             TextEditor(text: $text)
-                .pickpleTypography(.body01)
+                .pickpleTypography(.body01_500)
                 .foregroundStyle(Color.neutral100)
                 .scrollContentBackground(.hidden)
                 .frame(maxWidth: .infinity, minHeight: 180)
+                .focused($isFocused)
                 .onChange(of: text) { _, newValue in
                     if newValue.count > maxLength {
                         text = String(newValue.prefix(maxLength))
@@ -32,21 +35,21 @@ struct DescriptionFieldBlock: View {
                 .overlay(alignment: .top) {
                     if text.isEmpty {
                         Text(PostViewStrings.descriptionPlaceholder)
-                            .pickpleTypography(.body01)
+                            .pickpleTypography(.body01_500)
                             .foregroundStyle(Color.neutral40)
                             .allowsHitTesting(false)
                     }
                 }
                 .overlay(alignment: .bottomTrailing) {
                     Text("\(text.count)/\(maxLength)")
-                        .pickpleTypography(.body02)
+                        .pickpleTypography(.body02_600)
                         .foregroundStyle(Color.neutral40)
                 }
             .padding(.vertical, 15)
             .padding(.horizontal, 20)
             .overlay {
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.navy10, lineWidth: 1)
+                    .stroke(isFocused ? PickpleTextFieldStateType.ing.borderColor : Color.navy10, lineWidth: 1)
             }
             
         }

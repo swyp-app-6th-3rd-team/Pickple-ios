@@ -35,7 +35,7 @@ struct MyPageInfoRow: View {
                     .foregroundStyle(Color.neutral30)
 
                 Text(title)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(Color.black)
             }
 

@@ -15,13 +15,13 @@ struct MyActivityPostCardTitle: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title)
                 .lineLimit(1)
-                .pickpleTypography(.body01)
+                .pickpleTypography(.body01_600)
                 .foregroundStyle(Color.black)
             
             //설명 공백 대비
             Text(decription.isEmpty ? " " : decription)
                 .lineLimit(1)
-                .pickpleTypography(.body02)
+                .pickpleTypography(.body02_400)
                 .foregroundStyle(Color.neutral40)
         }
     }

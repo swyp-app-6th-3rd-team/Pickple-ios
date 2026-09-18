@@ -21,7 +21,7 @@ struct PostThumbnailCardView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .clipped()
 
-                PostTypeBadge(type: post.type, iconSize: 16, typography: .label, horizontalPadding: 10)
+                PostTypeBadge(type: post.type, iconSize: 16, typography: .label_600, horizontalPadding: 10)
                     .padding(10)
             }
 
@@ -29,11 +29,11 @@ struct PostThumbnailCardView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(post.category)
-                            .pickpleTypography(.caption)
+                            .pickpleTypography(.caption_400)
                             .foregroundStyle(Color.neutral50)
 
                         Text(post.title)
-                            .pickpleTypography(.body01)
+                            .pickpleTypography(.body01_600)
                             .foregroundStyle(Color.black)
                             .lineLimit(1)
                     }
@@ -43,16 +43,13 @@ struct PostThumbnailCardView: View {
                 HStack(spacing: 8) {
                     // 인기 게시글(commenterCount 있음)은 댓글 남긴 인원으로, 그 외엔 기존 댓글 건수로 표시.
                     PostVoteCommentStats(type: post.type, voteCount: post.voteCount, commentCount: post.commenterCount ?? post.commentCount)
-                        .pickpleTypography(.caption)
-                        .foregroundStyle(Color.neutral20)
-
                     Spacer()
 
                     if showsAuthorNickname, let authorNickname = post.authorNickname {
                         HStack(spacing: 8) {
                             HStack(spacing: 2) {
                                 Text(authorNickname)
-                                    .pickpleTypography(.caption)
+                                    .pickpleTypography(.caption_400)
                                     .foregroundStyle(Color.neutral40)
 
                                 if let authorLevel = post.authorLevel {
@@ -69,8 +66,8 @@ struct PostThumbnailCardView: View {
 
                     Text(post.createdAt.relativeTimeDescription)
                         .lineLimit(1)
-                        .pickpleTypography(.caption)
-                        .foregroundStyle(Color.neutral20)
+                        .pickpleTypography(.label_500)
+                        .foregroundStyle(Color.neutral30)
                 }
                 .padding(.horizontal, 2)
             }
@@ -79,7 +76,7 @@ struct PostThumbnailCardView: View {
     }
 
     private func thumbnailImage(url: URL?) -> some View {
-        AsyncImage(url: url) { image in
+        PickpleAsyncImage(url: url, targetSize: CGSize(width: 160, height: 160)) { image in
             image.resizable().scaledToFill()
         } placeholder: {
             Image("McokMyPostPicture").resizable().scaledToFill()

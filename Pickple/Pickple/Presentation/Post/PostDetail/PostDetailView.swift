@@ -36,16 +36,14 @@ struct PostDetailView: View {
         postDetailRepository: PostDetailRepository? = nil,
         commentRepository: CommentRepository,
         userInfoRepository: UserInfoRepository,
-        voteCardRepository: VoteCardRepository,
-        guestVoteTracker: GuestVoteTracker = GuestVoteTracker()
+        voteCardRepository: VoteCardRepository
     ) {
         _postDetailViewModel = State(initialValue: PostDetailViewModel(
             voteType: voteType,
             postDetailRepository: postDetailRepository,
             commentRepository: commentRepository,
             userInfoRepository: userInfoRepository,
-            voteCardRepository: voteCardRepository,
-            guestVoteTracker: guestVoteTracker
+            voteCardRepository: voteCardRepository
         ))
     }
     
@@ -69,7 +67,13 @@ struct PostDetailView: View {
                         PostDetailContent(
                             post: post,
                             postDetailViewModel: postDetailViewModel,
-                            onMoreTapped: { showsMoreMenu = true },
+                            onMoreTapped: {
+                                if isLoggedIn {
+                                    showsMoreMenu = true
+                                } else {
+                                    loginRequiredDescription = PostDetailStrings.moreMenuRequiredDescription
+                                }
+                            },
                             onVote: { side in
                                 Task {
                                     if await postDetailViewModel.vote(side) {
@@ -97,6 +101,9 @@ struct PostDetailView: View {
                     // ScrollView 자체가 세이프에어리어 아래에서 시작해 위쪽이 비어 보인다.
                     // 찬반/A-B(GNB가 캐러셀 위에 떠 있는 타입)만 ScrollView 자체를 위로 확장한다.
                     .ignoresSafeArea(edges: post.type == .text ? [] : .top)
+                    .refreshable {
+                        await postDetailViewModel.loadComments()
+                    }
                 }
                                
                 VStack(spacing: 0) {
@@ -105,18 +112,22 @@ struct PostDetailView: View {
                         Divider()
                             .foregroundStyle(Color.navy10)
                         
-                        PostDetailCommentInputBar(text: $postDetailViewModel.commentInput, isFocused: $isCommentFieldFocused, isEditingComment: postDetailViewModel.isEditingComment) {
-                            if postDetailViewModel.isLoggedIn {
-                                Task { await postDetailViewModel.submitComment() }
-                            } else {
-                                loginRequiredDescription = PostDetailStrings.commentRequiredDescription
-                            }
-                        }
+                        PostDetailCommentInputBar(
+                            text: $postDetailViewModel.commentInput,
+                            isFocused: $isCommentFieldFocused,
+                            isEditingComment: postDetailViewModel.isEditingComment,
+                            onSubmit: {
+                                if postDetailViewModel.isLoggedIn {
+                                    Task { await postDetailViewModel.submitComment() }
+                                } else {
+                                    loginRequiredDescription = PostDetailStrings.commentRequiredDescription
+                                }
+                            },
+                            onCancel: { postDetailViewModel.cancelEditingComment() }
+                        )
                         .padding(.top, 16)
                         .padding(.horizontal, 20)
                         .shadow(color: Color.black.opacity(0.05), radius: 20, y: -2)
-                        // 하단 여백은 VStack이 자동으로 넣어주는 safe area(홈 인디케이터) 인셋만 쓴다.
-                        // 예전엔 여기에 .padding(.bottom, 42)를 더 얹어서 이중으로 떠 보였다.
                     }
                 }
             }
@@ -207,7 +218,7 @@ struct PostDetailView: View {
         .pickpleToast(isPresented: $showsSuccessToast, message: PostViewStrings.submitEditSucceededToast)
         .pickpleToast(isPresented: $showsDeleteFailureToast, message: PostDetailStrings.deleteFailedToast)
         .navigationBarBackButtonHidden(true)
-        .toolbar(.hidden, for: .tabBar)
+        .restoresSwipeBackGesture()
         .task {
             postDetailViewModel.isLoggedIn = isLoggedIn
             await postDetailViewModel.loadPostDetail()

@@ -21,7 +21,7 @@ struct MainTitle: View {
                        trailing: .button(icon: Image("PickpleAlertOff"), action: { /* 알림 기능 미구현 */ })
             )
             
-            MainToggleButton(isOn: $isOn, onTitle: MainStrings.abToggleOnTitle, offTitle: MainStrings.abToggleOffTitle)
+            MainToggleButton(isOn: $isOn, onTitle: MainStrings.abToggleOffTitle, offTitle: MainStrings.abToggleOnTitle)
         }
         .frame(maxWidth: .infinity, minHeight: 56)
     }

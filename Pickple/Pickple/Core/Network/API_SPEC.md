@@ -336,7 +336,7 @@ LV.1~LV.5의 승급 필요 조건을 낮은 등급부터 돌려준다.
   - `voted` 불리언 — 이 게시글에 투표한 적 있는지. 게스트는 항상 false(R-11)
   - `selectedOptionId` 정수(int64) 선택 — 내가 고른 선택지. 미투표면 null
   - `voterCount` 정수(int64) — 투표한 사람 수(재투표해도 안 늘어남, R-09·R-22)
-  - `products` 배열 — 상품. 찬반 1개, A/B 2개(R-02). 각 항목: `id`, `name`, `price`(int64, 선택 입력이라 없을 수 있음), `linkUrl`(문자열 선택), `imageUrl`(문자열 선택, 상품당 1장 R-03), `displayOrder`(1=A, 2=B)
+  - `products` 배열 — 상품. 찬반 1개, A/B 2개(R-02). 각 항목: `id`, `name`, `price`(int64, 선택 입력이라 없을 수 있음), `linkUrl`(문자열 선택), `imageUrl`(문자열 선택, 대표 사진 1장 — `imageUrls`의 첫 값과 동일), `imageUrls`(문자열 배열, 2026-09-17 신규, Issue #181/PR #182 — 해당 상품에 등록된 전체 사진. 찬반 1~3장, A/B는 상품당 1장. 사진 없는 상품은 `imageUrl: null`·`imageUrls: []`로 오고 항목 자체는 남음. 서버가 정한 순서 그대로 쓰면 됨), `displayOrder`(1=A, 2=B)
   - `options` 배열 — 정확히 둘(R-04). 각 항목: `optionId`, `label`(찬반만, A/B는 null), `productId`(A/B만, 찬반은 null), `displayOrder`, `voteCount`(int64, **투표 안 했으면 필드 자체가 없음**), `percentage`(int32, **투표 안 했으면 필드 자체가 없음**, 반올림 때문에 두 값 합이 100이 아닐 수 있음)
 
 ### PATCH /posts/{id} — 게시글 수정 (신규 확인, 2026-09-10)

@@ -27,7 +27,7 @@ struct PickpleConfirmDialog: View {
 
                 if let description {
                     Text(description)
-                        .pickpleTypography(.body01)
+                        .pickpleTypography(.body01_500)
                         .foregroundStyle(Color.neutral70)
                         .multilineTextAlignment(.center)
                 }
@@ -36,7 +36,7 @@ struct PickpleConfirmDialog: View {
             HStack(spacing: 8) {
                 Button(action: onCancel) {
                     Text(cancelTitle)
-                        .pickpleTypography(.body01)
+                        .pickpleTypography(.body01_500)
                         .foregroundStyle(Color.neutral50)
                         .frame(maxWidth: .infinity, minHeight: 52)
                         .background(Color.neutral5) //버튼 색 미정
@@ -45,7 +45,7 @@ struct PickpleConfirmDialog: View {
 
                 Button(action: onConfirm) {
                     Text(confirmTitle)
-                        .pickpleTypography(.body01)
+                        .pickpleTypography(.body01_500)
                         .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity, minHeight: 52)
                         .background(Color.black)

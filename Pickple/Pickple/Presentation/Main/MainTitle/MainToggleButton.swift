@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/5/26.
 // 1차 점검 완료 - 9월 12일
+// 폰트 수정 예정
 
 import SwiftUI
 
@@ -12,8 +13,6 @@ struct MainToggleButton: View {
     let onTitle: String
     let offTitle: String
     
-    private let width: CGFloat = 96
-    private let height: CGFloat = 32
     private let speed: Double = 0.2
 
     // 선택 캡슐이 두 버튼 사이를 슬라이딩하는 것처럼 보이게 하려면, 서로 다른 두 위치의
@@ -21,16 +20,11 @@ struct MainToggleButton: View {
     @Namespace private var selectionNamespace
 
     var body: some View {
-        ZStack(alignment: .center) {
-            //배경 캡슐
-            Capsule()
-                .foregroundStyle(Color.neutral5)
-                .frame(width: 96, height: 32)
-
             HStack(spacing: -4) {
                 Button(action: { isOn = false }) {
                     Text(onTitle)
-                        .pickpleTypography(.body02)
+                        .pickpleTypography(.body02_600)
+                        .frame(width: 24, height: 20)
 
                         .foregroundStyle(isOn ? Color.neutral20 : Color.yellow60)
                         .padding(.horizontal, 12)
@@ -43,11 +37,13 @@ struct MainToggleButton: View {
                             }
                         }
                 }
+                
 
                 Button(action: { isOn = true })
                 {
                     Text(offTitle)
-                        .pickpleTypography(.body02)
+                        .pickpleTypography(.body02_600)
+                        .frame(width: 24, height: 20)
                         .foregroundStyle(isOn ? Color.yellow60 : Color.neutral20)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 4)
@@ -60,9 +56,13 @@ struct MainToggleButton: View {
                         }
                 }
             }
-        }
+            .padding(2)
+            .background(
+                Capsule()
+                    .foregroundStyle(Color.neutral5)
+            )
+        
         .animation(.easeInOut(duration: speed), value: isOn)
-        .frame(width: width, height: height)
     }
 }
 

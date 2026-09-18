@@ -16,15 +16,20 @@ struct MainView: View {
     @State private var isMissionExpanded = false
     @State private var showsBadgeLoginRequired = false
     var onRequestCommunityTab: (() -> Void)? = nil
-    
+    // 아래로 스크롤하면 하단 탭바를 숨기는 데 쓴다 — PickpleBottomNav가 각 탭 루트의
+    // 스크롤 상태를 이걸로 전달받아 .toolbar(_, for: .tabBar) 노출 여부에 같이 반영한다.
+    var isScrolledDown: Binding<Bool> = .constant(false)
+
     init(
         mainViewModel: MainViewModel = MainViewModel(),
         cardStackViewModel: CardStackViewModel = CardStackViewModel(),
-        onRequestCommunityTab: (() -> Void)? = nil
+        onRequestCommunityTab: (() -> Void)? = nil,
+        isScrolledDown: Binding<Bool> = .constant(false)
     ) {
         _mainViewModel = State(initialValue: mainViewModel)
         _cardStackViewModel = State(initialValue: cardStackViewModel)
         self.onRequestCommunityTab = onRequestCommunityTab
+        self.isScrolledDown = isScrolledDown
     }
     
     var body: some View {
@@ -34,64 +39,66 @@ struct MainView: View {
                     .ignoresSafeArea()
             }
             
-            ScrollView {
-                VStack(spacing: 0) {
-                    VStack {
-                        MainTitle(isOn: mainViewModel.isABSelected)
-                    }
+            VStack(spacing: 0) {
+                MainTitle(isOn: mainViewModel.isABSelected)
                     .onChange(of: mainViewModel.selectedType) { _, newValue in
                         cardStackViewModel.filterCards(by: newValue)
                     }
-                    
-                    Divider()
-                        .foregroundStyle(Color.navy10)
 
-                    CardStackView(
-                        cardStackViewModel: cardStackViewModel,
-                        onTapCard: { card in
-                            mainRouter.push(.postDetail(postId: card.id, type: card.type))
-                        },
-                        onVoteCompleted: {
-                            Task { await mainViewModel.reloadMissions() }
+                ScrollView {
+                    VStack(spacing: 0) {
+                        CardStackView(
+                            cardStackViewModel: cardStackViewModel,
+                            onTapCard: { card in
+                                mainRouter.push(.postDetail(postId: card.id, type: card.type))
+                            },
+                            onVoteCompleted: {
+                                Task { await mainViewModel.reloadMissions() }
+                            }
+                        )
+                        .padding(.top, 30) //윗 간격
+                        .padding(.horizontal, 20)
+
+                        BadgeMissionSection(
+                            isLoggedIn: mainViewModel.isLoggedIn,
+                            missions: mainViewModel.missions,
+                            isExpanded: $isMissionExpanded,
+                            onLoginTapped: { showsBadgeLoginRequired = true }
+                        )
+                        .padding(.top, 30) //카드 + 미션 간격
+                        .padding(.horizontal, 20)
+
+                        MainHotPostSection(
+                            posts: mainViewModel.hotPosts,
+                            onTapPost: { post in
+                                mainRouter.push(.postDetail(postId: post.id, type: post.type))
+                            },
+                            onTapMore: {
+                                onRequestCommunityTab?()
+                            }
+                        )
+                        .padding(.top, 50) //미션 + 핫투표 간격
+
+                        TopPickerRankingSection(
+                            rankings: mainViewModel.topRankings,
+                            onTapMore: { mainRouter.push(.ranking) }
+                        )
+                        .padding(.top, 50) //핫투표 + 랭킹 간격
+                        .padding(.horizontal, 20)
+                    }
+                    .onScrollDirectionChange { scrolledDown in
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isScrolledDown.wrappedValue = scrolledDown
                         }
-                    )
-                    .padding(.top, 30) //윗 간격
-                    .padding(.horizontal, 20)
-                    
-                    BadgeMissionSection(
-                        isLoggedIn: mainViewModel.isLoggedIn,
-                        missions: mainViewModel.missions,
-                        isExpanded: $isMissionExpanded,
-                        onLoginTapped: { showsBadgeLoginRequired = true }
-                    )
-                    .padding(.top, 30) //카드 + 미션 간격
-                    .padding(.horizontal, 20)
-
-                    
-                    
-                    MainHotPostSection(
-                        posts: mainViewModel.hotPosts,
-                        onTapPost: { post in
-                            mainRouter.push(.postDetail(postId: post.id, type: post.type))
-                        },
-                        onTapMore: {
-                            onRequestCommunityTab?()
-                        }
-                    )
-                    .padding(.top, 50) //미션 + 핫투표 간격
-                    .padding(.horizontal, 20)
-                    
-                    TopPickerRankingSection(
-                        rankings: mainViewModel.topRankings,
-                        onTapMore: { mainRouter.push(.ranking) }
-                    )
-                    .padding(.top, 50) //핫투표 + 랭킹 간격
-                    .padding(.horizontal, 20)
-
-                    
+                    }
+                }
+                // 카드스택을 한 번 불러온 뒤로는 재사용하도록 바꿔서, 새 카드를 보고 싶을 때
+                // 쓸 수 있는 수단이 없어졌다 — 당겨서 새로고침으로 직접 다시 뽑을 수 있게 한다.
+                .refreshable {
+                    await cardStackViewModel.refreshCards()
                 }
             }
-            
+
             if cardStackViewModel.showsLoginRequired {
                 PickpleDialogOverlay {
                     PickpleConfirmDialog(

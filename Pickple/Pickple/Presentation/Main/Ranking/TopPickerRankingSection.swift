@@ -17,7 +17,7 @@ struct TopPickerRankingSection: View {
             //MARK: - Title
             HStack {
                 Text(MainStrings.topRankingSectionTitle)
-                    .pickpleTypography(.title01)
+                    .pickpleTypography(.title01_600)
                     .foregroundStyle(Color.black)
 
                 Spacer()
@@ -25,7 +25,7 @@ struct TopPickerRankingSection: View {
                 Button(action: onTapMore) {
                     HStack(spacing: 4) {
                         Text(MainStrings.more)
-                            .pickpleTypography(.body02)
+                            .pickpleTypography(.body02_500)
                             .foregroundStyle(Color.neutral40)
 
 
@@ -40,7 +40,7 @@ struct TopPickerRankingSection: View {
 
             if rankings.isEmpty {
                 Text(MainStrings.rankingEmptyMessage)
-                    .pickpleTypography(.body01)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(Color.neutral30)
                     .padding(.vertical, 60)
             } else {
@@ -50,7 +50,7 @@ struct TopPickerRankingSection: View {
                             .padding(.vertical, 16)
 
                         Divider()
-                            .foregroundStyle(Color.navy10)
+                            .foregroundColor(Color("#FF5733")) // 임시 적용
                     }
                 }
             }

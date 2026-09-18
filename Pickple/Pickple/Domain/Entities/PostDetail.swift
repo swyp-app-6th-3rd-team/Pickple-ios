@@ -11,7 +11,8 @@ struct PostDetailProduct: Identifiable {
     let name: String
     let price: Int?
     let purchaseURL: String?
-    let imageUrl: URL?
+    // 상품에 등록된 전체 사진(서버가 정한 순서). 찬반은 1~3장, A/B는 상품당 1장(R-03).
+    let imageUrls: [URL]
     let displayOrder: Int
 
     // 구매처 문자열에 스킴이 없으면 https를 붙여서 실제로 열 수 있는 URL로 만든다.
@@ -70,10 +71,9 @@ struct PostDetail: Identifiable {
 
     var participantCount: Int { vote?.voterCount ?? 0 }
 
-    // 캐러셀용 사진 목록 — 찬반은 상품 1장, A/B는 상품마다 1장씩(R-03). 상품당 여러 장은
-    // 서버가 지원하지 않는다(첫 등록 사진만 옴).
+    // 캐러셀용 사진 목록 — 찬반은 상품 1개의 사진 1~3장, A/B는 상품(A·B) 순서로 각 1장씩.
     var images: [URL] {
-        (vote?.products ?? []).compactMap(\.imageUrl)
+        (vote?.products ?? []).flatMap(\.imageUrls)
     }
 
     // 찬반: firstProduct만 사용. A/B: firstProduct=상품A, secondProduct=상품B. 일반: 둘 다 nil.

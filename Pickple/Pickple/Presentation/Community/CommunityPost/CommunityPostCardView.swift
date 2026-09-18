@@ -9,6 +9,7 @@
 // 분리 바 확인 필요(리소스 및 색상)
 
 import SwiftUI
+import UIKit
 
 struct CommunityPostCardView: View {
     let post: PostSummary
@@ -43,11 +44,11 @@ struct CommunityPostCardView: View {
             VStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(post.title)
-                        .pickpleTypography(.title02)
+                        .pickpleTypography(.title02_600)
                         .foregroundStyle(Color.black)
                     
                     Text(post.description)
-                        .pickpleTypography(.body02)
+                        .pickpleTypography(.body02_400)
                         .foregroundStyle(Color.neutral40)
                         .lineLimit(2)
                 }
@@ -56,7 +57,6 @@ struct CommunityPostCardView: View {
                 VStack(spacing: 0) {
                 HStack {
                     PostVoteCommentStats(type: post.type, voteCount: post.voteCount, commentCount: post.commentCount)
-                        .pickpleTypography(.label)
                         .foregroundStyle(Color.neutral30)
                     
                     Spacer()
@@ -65,7 +65,7 @@ struct CommunityPostCardView: View {
                         if let authorNickname = post.authorNickname {
                             HStack(spacing: 2) {
                                 Text(authorNickname)
-                                    .pickpleTypography(.caption) //폰트 미지정
+                                    .pickpleTypography(.label_500)
                                     .foregroundStyle(Color.neutral40)
                                 
                                 if let authorLevel = post.authorLevel {
@@ -81,7 +81,7 @@ struct CommunityPostCardView: View {
                         }
                         
                         Text(post.createdAt.relativeTimeDescription)
-                            .pickpleTypography(.caption)// 폰트 미지정
+                            .pickpleTypography(.label_500)
                             .foregroundStyle(Color.neutral40)
                     }
                 }
@@ -128,7 +128,7 @@ struct CommunityPostCardView: View {
     private func thumbnailImage(url: URL?) -> some View {
         Color.neutral10
             .overlay {
-                AsyncImage(url: url) { image in
+                PickpleAsyncImage(url: url, targetSize: CGSize(width: UIScreen.main.bounds.width, height: 150)) { image in
                     image.resizable().scaledToFill()
                 } placeholder: {
                     Image("McokMyPostPicture").resizable().scaledToFill()

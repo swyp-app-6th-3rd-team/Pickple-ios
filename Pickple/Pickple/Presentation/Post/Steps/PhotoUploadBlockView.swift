@@ -9,13 +9,13 @@ import SwiftUI
 
 struct PhotoUploadBlockView: View {
     @State private var showsPicker = false
-    
+
     @Binding var photos: [UIImage]
-    
+
     let maxCount: Int
-    
+
     var isDisabled: Bool = false
-    
+
     var body: some View {
         HStack(spacing: 8) {
             ForEach(Array(photos.enumerated()), id: \.offset) { index, image in
@@ -26,18 +26,27 @@ struct PhotoUploadBlockView: View {
                         .frame(width: 96, height: 96)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                         .clipped()
-                    
+
                     Button(action: { photos.remove(at: index) }) {
-                        Image("PickpleClose")
+                        Image("PickpleX")
                             .resizable()
-                            .frame(width: 12, height: 12)
+                            .frame(width: 16, height: 16)
+                            .foregroundStyle(Color.white)
                             .padding(6)
-                            .background(Circle().foregroundStyle(Color.white))
+                            .background(
+                                Circle()
+                                    .foregroundStyle(Color.neutral80)
+                                    .padding(3)
+                                    .background(
+                                        Circle()
+                                            .foregroundStyle(Color.white)
+                                    )
+                            )
                     }
-                    .padding(4)
+                    .offset(x: 9, y: -9)
                 }
             }
-            
+
             if photos.count < maxCount {
                 Button(action: { showsPicker = true }) {
                     VStack(spacing: 4) {
@@ -46,9 +55,9 @@ struct PhotoUploadBlockView: View {
                             .scaledToFit()
                             .frame(width: 24, height: 24)
                             .foregroundStyle(Color.neutral20)
-                        
+
                         Text("\(photos.count)/\(maxCount)")
-                            .pickpleTypography(.caption)
+                            .pickpleTypography(.caption_400)
                             .foregroundStyle(Color.neutral20)
                     }
                     .frame(width: 96, height: 96)
@@ -60,7 +69,9 @@ struct PhotoUploadBlockView: View {
                 }
             }
         }
-        .sheet(isPresented: $showsPicker) {
+        // .sheet를 쓰면 직전에 포커스돼 있던 텍스트필드(상품명 등)의 키보드가 채 안 내려간 상태로
+        // present와 겹쳐서 열리자마자 바로 dismiss돼버렸다. fullScreenCover로 바꿔서 해결.
+        .fullScreenCover(isPresented: $showsPicker) {
             CustomPhotoPickerView(
                 selectionLimit: maxCount - photos.count,
                 onSelect: { images in photos.append(contentsOf: images) }
@@ -68,7 +79,7 @@ struct PhotoUploadBlockView: View {
         }
         .disabled(isDisabled)
     }
-    
+
 }
 
 

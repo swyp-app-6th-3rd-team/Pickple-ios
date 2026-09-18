@@ -29,17 +29,25 @@ class AppSessionViewModel {
     private let profileRepository: ProfileRepository
     private let tokenStore: InMemoryTokenStore
     private let refreshTokenStore: RefreshTokenStoring
+    private let apiClient: APIClientProtocol
+    // accessToken이 실제로 만료되기 전에 미리 갱신을 예약해두는 작업. 로그인/세션 복원
+    // 성공 시 시작하고, 로그아웃 시 취소한다.
+    private var proactiveRefreshTask: Task<Void, Never>?
+    // 만료 시각 정각이 아니라 이만큼 여유를 두고 미리 갱신한다.
+    private let proactiveRefreshMargin: TimeInterval = 60
 
     init(
         authRepository: AuthRepository,
         profileRepository: ProfileRepository,
         tokenStore: InMemoryTokenStore,
-        refreshTokenStore: RefreshTokenStoring
+        refreshTokenStore: RefreshTokenStoring,
+        apiClient: APIClientProtocol
     ) {
         self.authRepository = authRepository
         self.profileRepository = profileRepository
         self.tokenStore = tokenStore
         self.refreshTokenStore = refreshTokenStore
+        self.apiClient = apiClient
     }
 
     // 로그인 없이 앱을 둘러보는 상태로 전환한다. PickpleBottomNav는 그대로 보여주되,
@@ -73,6 +81,49 @@ class AppSessionViewModel {
             // 프로필 조회 실패해도 로그인 자체는 성공했으니, 사용자를 막지 않고 일단 메인으로 보낸다.
             sessionState = .loggedIn
         }
+        scheduleNextProactiveRefresh()
+    }
+
+    // accessToken이 실제로 만료되기 전에 미리 재발급을 예약한다. 앱이 백그라운드로 오래
+    // 있으면(프로세스가 통째로 멈춰서) 이 타이머가 못 돌 수 있어서, handleAppBecameActive()가
+    // 포그라운드로 돌아올 때마다 다시 불러 보정한다.
+    @MainActor
+    private func scheduleNextProactiveRefresh() {
+        proactiveRefreshTask?.cancel()
+        proactiveRefreshTask = Task { [weak self] in
+            guard let self else { return }
+            guard let token = await tokenStore.accessToken(),
+                  let expiry = JWTExpiration.decode(token) else { return }
+
+            let delay = expiry.timeIntervalSinceNow - proactiveRefreshMargin
+            if delay > 0 {
+                try? await Task.sleep(for: .seconds(delay))
+                guard !Task.isCancelled else { return }
+            }
+
+            await apiClient.refreshAccessTokenProactively()
+
+            // 갱신이 실제로 새 토큰을 받아왔을 때만 다음 스케줄을 잡는다. 실패했으면(리프레시
+            // 토큰까지 무효) 계속 돌려봐야 똑같이 실패하니 여기서 멈춘다 — 그 다음은 실제
+            // 요청이 401을 맞았을 때의 반응형 재발급 경로가 처리한다.
+            guard !Task.isCancelled, await tokenStore.accessToken() != token else { return }
+            scheduleNextProactiveRefresh()
+        }
+    }
+
+    // 앱이 포그라운드로 돌아올 때마다 호출한다(PickpleApp의 scenePhase 관찰).
+    @MainActor
+    func handleAppBecameActive() {
+        guard sessionState == .loggedIn || sessionState == .needsProfileSetup else { return }
+        scheduleNextProactiveRefresh()
+    }
+
+    // 재발급(프로액티브든 반응형이든)이 리프레시 토큰까지 무효해서 완전히 실패했을 때
+    // APIClient(TokenRefresher)가 호출한다 — 조용히 계속 실패하는 대신 로그인 화면으로 보낸다.
+    @MainActor
+    func handleSessionExpired() {
+        guard sessionState == .loggedIn || sessionState == .needsProfileSetup else { return }
+        Task { await clearLocalSession() }
     }
 
     // 앱 시작 시 Keychain에 남아있는 refreshToken으로 accessToken을 재발급받아 자동 로그인한다.
@@ -122,6 +173,7 @@ class AppSessionViewModel {
 
     @MainActor
     private func clearLocalSession() async {
+        proactiveRefreshTask?.cancel()
         await SessionTokenPersistence.clear(tokenStore: tokenStore, refreshTokenStore: refreshTokenStore)
         sessionState = .loggedOut
     }

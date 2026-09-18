@@ -11,6 +11,7 @@ import SwiftUI
 
 struct ProfileImageView: View {
     let profileViewModel: ProfileSetupViewModel
+    var size: CGFloat = 160
 
     var body: some View {
         VStack(spacing: 40) {
@@ -18,7 +19,8 @@ struct ProfileImageView: View {
                 selectedImage: profileViewModel.selectedImage,
                 type: .onCamera,
                 onSelect: { image in profileViewModel.setSelectedImage(image) },
-                existingImageUrl: profileViewModel.existingImageUrl
+                existingImageUrl: profileViewModel.existingImageUrl,
+                size: size
             )
         }
     }

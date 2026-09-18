@@ -41,11 +41,11 @@ struct BadgeMissionSection: View {
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(MainStrings.badgeMissionTitle)
-                            .pickpleTypography(.body01)
+                            .pickpleTypography(.body01_600)
                             .foregroundStyle(Color.black)
 
                         Text(isLoggedIn ? MainStrings.badgeMissionSubtitleLoggedIn : MainStrings.badgeMissionSubtitleGuest)
-                            .pickpleTypography(.caption) //폰트 미지정 임시 적용
+                            .pickpleTypography(.label_500)
                             .foregroundStyle(Color.blue60)
                     }
 
@@ -75,7 +75,7 @@ struct BadgeMissionSection: View {
                 } else {
                     Button(action: onLoginTapped) {
                         Text(MainStrings.badgeMissionSubtitleGuest)
-                            .pickpleTypography(.body01)
+                            .pickpleTypography(.body01_500)
                             .foregroundStyle(Color.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
