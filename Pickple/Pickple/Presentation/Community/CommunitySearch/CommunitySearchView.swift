@@ -46,6 +46,8 @@ struct CommunitySearchView: View {
                         }
                     }
                     .padding(.vertical, 12)
+                    .padding(.horizontal,20)
+
                     
                     if !communitySearchViewModel.recentSearches.isEmpty {
                         // 최근 검색어가 쌓여서 화면 폭을 넘으면, 일반 HStack은 pill들을
@@ -80,14 +82,16 @@ struct CommunitySearchView: View {
                                             Capsule()
                                                 .stroke(Color.navy10)
                                         })
+                                
                             }
+                            .padding(.horizontal,20)
+
                         }
                         .padding(.vertical, 6)
                     }
                     
                     Spacer()
                 }
-                .padding(.horizontal,20)
                 .padding(.vertical, 6)
             } else {
                 VStack(alignment: .leading, spacing: 0) {

@@ -73,14 +73,6 @@ struct PostDetailImageCarousel: View {
             .padding(.horizontal, 20)
             .padding(.bottom, 12)
 
-            HStack(spacing: 4) {
-                ForEach(0..<images.count, id: \.self) { index in
-                    Circle()
-                        .fill(index == currentIndex ? Color.white : Color.white.opacity(0.4))
-                        .frame(width: 6, height: 6)
-                }
-            }
-            .padding(.bottom)
         }
         .ignoresSafeArea(edges: .top)
     }

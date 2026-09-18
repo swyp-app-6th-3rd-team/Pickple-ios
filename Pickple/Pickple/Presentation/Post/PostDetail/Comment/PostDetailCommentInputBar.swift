@@ -17,8 +17,6 @@ struct PostDetailCommentInputBar: View {
     
     var body: some View {
         if !isEditingComment {
- 
-                
                 HStack(spacing: 0) {
                     TextField(
                         "",

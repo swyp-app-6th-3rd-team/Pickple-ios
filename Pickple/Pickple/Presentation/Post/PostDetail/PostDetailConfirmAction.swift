@@ -23,7 +23,7 @@ enum PostDetailConfirmAction {
 
     var description: String {
         switch self {
-        case .delete: "게시글을 삭제하면 다시는\n볼 수 없어요"
+        case .delete: "게시글을 삭제하면\n다시는 볼 수 없어요"
         case .report: "이유없이 신고 시 활동이\n제한될 수 있어요"
         case .block: "차단하면 이 게시자의 모든 게시물을\n다시는 볼 수 없어요"
         }

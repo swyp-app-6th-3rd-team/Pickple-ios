@@ -51,10 +51,6 @@ struct MyPageView: View {
                             }
                         )
 
-                        Rectangle()
-                            .foregroundStyle(Color.neutral5)
-                            .frame(height: 4)
-
                         MyPagePostView(
                             myPageViewModel: myPageViewModel,
                             onTapPost: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) },

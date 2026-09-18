@@ -13,50 +13,53 @@ import SwiftUI
 struct DescriptionFieldBlock: View {
     @Binding var text: String
     let maxLength: Int
-
+    
     @FocusState private var isFocused: Bool
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(PostViewStrings.description)
                 .pickpleTypography(.body01_500)
             
-            TextEditor(text: $text)
-                .pickpleTypography(.body01_500)
-                .foregroundStyle(Color.neutral100)
-                .scrollContentBackground(.hidden)
-                .frame(maxWidth: .infinity, minHeight: 180)
-                .focused($isFocused)
-                .onChange(of: text) { _, newValue in
-                    if newValue.count > maxLength {
-                        text = String(newValue.prefix(maxLength))
+            ZStack(alignment: .top) {
+                TextEditor(text: $text)
+                    .pickpleTypography(.body01_400)
+                    .foregroundStyle(Color.neutral100)
+                    .scrollContentBackground(.hidden)
+                    .frame(maxWidth: .infinity, minHeight: 180)
+                    .focused($isFocused)
+                    .padding(.horizontal, 10)
+                    .padding(.top, 7)
+                    .onChange(of: text) { _, newValue in
+                        if newValue.count > maxLength {
+                            text = String(newValue.prefix(maxLength))
+                        }
                     }
-                }
-                .overlay(alignment: .top) {
-                    if text.isEmpty {
-                        Text(PostViewStrings.descriptionPlaceholder)
-                            .pickpleTypography(.body01_500)
+                    .overlay(alignment: .bottomTrailing) {
+                        Text("\(text.count)/\(maxLength)")
+                            .pickpleTypography(.body02_400)
                             .foregroundStyle(Color.neutral40)
-                            .allowsHitTesting(false)
+                            .padding(.trailing, 20)
+                            .padding(.bottom, 15)
                     }
-                }
-                .overlay(alignment: .bottomTrailing) {
-                    Text("\(text.count)/\(maxLength)")
-                        .pickpleTypography(.body02_600)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(isFocused ? PickpleTextFieldStateType.ing.borderColor : Color.navy10, lineWidth: 1)
+                    }
+                
+                if text.isEmpty {
+                    Text(PostViewStrings.descriptionPlaceholder)
+                        .pickpleTypography(.body01_400)
                         .foregroundStyle(Color.neutral40)
+                        .allowsHitTesting(false)
+                        .padding(.top, 15)
+
                 }
-            .padding(.vertical, 15)
-            .padding(.horizontal, 20)
-            .overlay {
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(isFocused ? PickpleTextFieldStateType.ing.borderColor : Color.navy10, lineWidth: 1)
             }
-            
         }
     }
 }
 
 #Preview {
     DescriptionFieldBlock(text: .constant(""), maxLength: 300)
-        .padding()
 }

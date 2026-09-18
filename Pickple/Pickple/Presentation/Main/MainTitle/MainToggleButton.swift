@@ -24,7 +24,6 @@ struct MainToggleButton: View {
                 Button(action: { isOn = false }) {
                     Text(onTitle)
                         .pickpleTypography(.body02_600)
-                        .frame(width: 24, height: 20)
 
                         .foregroundStyle(isOn ? Color.neutral20 : Color.yellow60)
                         .padding(.horizontal, 12)
@@ -43,7 +42,6 @@ struct MainToggleButton: View {
                 {
                     Text(offTitle)
                         .pickpleTypography(.body02_600)
-                        .frame(width: 24, height: 20)
                         .foregroundStyle(isOn ? Color.yellow60 : Color.neutral20)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 4)

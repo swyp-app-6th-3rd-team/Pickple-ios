@@ -52,9 +52,9 @@ enum PickpleTypography {
     }
 
     // ponytail: Figma 캡처와 값이 다 일치하고 폰트 로딩도 정상인데(SHA256까지 대조 완료)
-    // 실기기에서 전체적으로 1~2px 작아 보임 — Figma와 Core Text 렌더링 엔진 차이로 추정.
-    // 근본 원인이 아니라 임시 보정값이라 여기 한 곳에만 더한다. 원인 확정되면 제거.
-    private static let tempRenderingGapCompensation: CGFloat = 2
+    // 실기기에서 전체적으로 작아 보임 — Figma와 Core Text 렌더링 엔진 차이로 추정.
+    // 근본 원인이 아니라 임시 보정값이라 여기 한 곳에만 곱한다. 원인 확정되면 제거.
+    private static let tempRenderingGapScale: CGFloat = 1.06
 
     var size: CGFloat {
         let base: CGFloat
@@ -68,7 +68,7 @@ enum PickpleTypography {
         case .label_600, .label_500, .label_400: base = 13
         case .caption_600, .caption_400: base = 12
         }
-        return base + Self.tempRenderingGapCompensation
+        return base * Self.tempRenderingGapScale
     }
 
     var lineHeightPercent: CGFloat {

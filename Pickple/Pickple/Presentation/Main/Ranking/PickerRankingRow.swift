@@ -58,6 +58,8 @@ struct PickerRankingRow: View {
                     .pickpleTypography(.body01_600)
                     .foregroundStyle(Color.black)
             }
+            .padding(.leading, 12)
+            .padding(.trailing, 16)
         }
     }
 
