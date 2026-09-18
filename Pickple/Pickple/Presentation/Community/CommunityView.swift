@@ -48,16 +48,22 @@ struct CommunityView: View {
                             onScrolledDownChange(scrolledDown)
                         }
                     )
-                    // 게시글 탭 등 목록 안의 제스처를 막지 않고 같이 받아서, 드롭박스가 펼쳐진 채로
-                    // 게시글을 눌러도 닫기+이동이 한 번의 탭으로 끝나게 한다.
-                    .simultaneousGesture(
-                        TapGesture().onEnded {
-                            if communityViewModel.isSortExpanded {
+                }
+                // 헤더의 빈 공간(정렬 버튼 옆)까지 포함해서 화면 어디를 탭해도 드롭박스가
+                // 접히게 한다. 게시글 탭 등 다른 제스처는 simultaneousGesture라 막지 않아서,
+                // 드롭박스가 펼쳐진 채로 게시글을 눌러도 닫기+이동이 한 번의 탭으로 끝난다.
+                // Spacer 같은 실제로 안 그려지는 빈 공간은 contentShape 없이는 애초에
+                // 히트테스트 영역이 아니라 제스처 자체가 인식되지 않는다.
+                .contentShape(Rectangle())
+                .simultaneousGesture(
+                    TapGesture().onEnded {
+                        if communityViewModel.isSortExpanded {
+                            withAnimation(.spring()) {
                                 communityViewModel.isSortExpanded = false
                             }
                         }
-                    )
-                }
+                    }
+                )
 
                 VStack {
                     Spacer()

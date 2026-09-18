@@ -50,23 +50,37 @@ struct PostWriteFlowView: View {
                 }
 
                 ScrollView {
-                    VStack(spacing: 0) {
-                        PostWriteFlowStepContent(
-                            postViewModel: postViewModel,
-                            isCategoryExpanded: $isCategoryExpanded,
-                            categoryOptions: categoryOptions
-                        )
-                        .zIndex(isCategoryExpanded ? 1 : 0)
-
-                        PostWriteFlowButtonRow(
-                            title: postViewModel.isEditing ? PostViewStrings.submitEdit : PostViewStrings.submit,
-                            isEnabled: postViewModel.canSubmit,
-                            onSubmit: handleSubmit
-                        )
-                    }
+                    PostWriteFlowStepContent(
+                        postViewModel: postViewModel,
+                        isCategoryExpanded: $isCategoryExpanded,
+                        categoryOptions: categoryOptions
+                    )
+                    .zIndex(isCategoryExpanded ? 1 : 0)
                     .padding(.top, 28)
                     .padding(.horizontal, 20)
                 }
+                // 배경(Color.white)에 onTapGesture를 걸었더니 ScrollView가 빈 공간까지
+                // 포함해서 자기 프레임 전체를 스크롤 제스처용으로 히트테스트하고 있어서
+                // 터치가 배경까지 안 내려왔다 — dismissKeyboardOnTap()처럼 simultaneousGesture로
+                // ScrollView 자체에 걸면 스크롤을 막지 않으면서 탭도 같이 인식된다.
+                .simultaneousGesture(
+                    TapGesture().onEnded {
+                        if isCategoryExpanded {
+                            withAnimation(.spring()) {
+                                isCategoryExpanded = false
+                            }
+                        }
+                    }
+                )
+
+                // 필드가 순차 공개되면서 게시 버튼이 계속 밀려 내려가지 않게, 스크롤 영역
+                // 밖으로 빼서 화면 하단에 고정한다.
+                PostWriteFlowButtonRow(
+                    title: postViewModel.isEditing ? PostViewStrings.submitEdit : PostViewStrings.submit,
+                    isEnabled: postViewModel.canSubmit,
+                    onSubmit: handleSubmit
+                )
+                .padding(.horizontal, 20)
             }
             
 
