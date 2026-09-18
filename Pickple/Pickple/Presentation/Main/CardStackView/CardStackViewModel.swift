@@ -93,6 +93,18 @@ class CardStackViewModel {
         buffers[.ab] = CardBuffer(pending: ab?.items ?? [], cursor: ab?.nextCursor, hasNext: ab?.hasNext ?? false)
     }
 
+    // 당겨서 새로고침 전용 — loadCards()는 이미 불러온 뒤엔 아무것도 안 하니, 버퍼를 완전히
+    // 비우고 hasLoadedCards도 내려서 /posts/random을 강제로 다시 불러오게 한다.
+    @MainActor
+    func refreshCards() async {
+        hasLoadedCards = false
+        buffers[.forAgainst] = CardBuffer()
+        buffers[.ab] = CardBuffer()
+        await loadCards()
+        fillDisplayed(for: currentType)
+        voteCardData = buffers[currentType]?.displayed ?? []
+    }
+
     // 홈 화면 상단 찬반/AB 탭 전환 시 호출된다. 지금 보고 있던 타입의 스택 상태를 스냅샷으로
     // 저장해두고, 전환할 타입의 스냅샷을 복원한다 — 처음 보는 타입이면 pending에서 채운다.
     @MainActor

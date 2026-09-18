@@ -92,6 +92,11 @@ struct MainView: View {
                         }
                     }
                 }
+                // 카드스택을 한 번 불러온 뒤로는 재사용하도록 바꿔서, 새 카드를 보고 싶을 때
+                // 쓸 수 있는 수단이 없어졌다 — 당겨서 새로고침으로 직접 다시 뽑을 수 있게 한다.
+                .refreshable {
+                    await cardStackViewModel.refreshCards()
+                }
             }
 
             if cardStackViewModel.showsLoginRequired {
