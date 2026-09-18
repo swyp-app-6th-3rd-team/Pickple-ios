@@ -86,7 +86,7 @@ struct PickpleProfile: View {
 
     private var cameraBadge: some View {
         Circle()
-            .frame(width: 40, height: 40)
+            .frame(width: 32, height: 32)
             .foregroundStyle(Color.white)
             .overlay {
                 Image("PickpleCamera")

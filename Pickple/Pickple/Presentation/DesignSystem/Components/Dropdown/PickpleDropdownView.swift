@@ -24,7 +24,7 @@ struct PickpleDropdownView: View {
             }) {
                 HStack {
                     Text(selectedValue)
-                        .pickpleTypography(.body02_600)
+                        .pickpleTypography(.body01_400)
                         .foregroundStyle(selectedValue == PostViewStrings.categoryPlaceholder ? Color.neutral40 : Color.black)
                         
                     Spacer()

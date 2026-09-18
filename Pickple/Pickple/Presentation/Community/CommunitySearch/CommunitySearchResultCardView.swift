@@ -20,12 +20,14 @@ struct CommunitySearchResultCardView: View {
                         .pickpleTypography(.body01_600)
                         .foregroundStyle(Color.black)
                         .lineLimit(1)
+                        .border(Color.black)
                     
                     //설명 공백 대비
                     Text(post.description.isEmpty ? " " : post.description)
                         .pickpleTypography(.body02_400)
                         .foregroundStyle(Color.neutral40)
                         .lineLimit(1)
+                        .border(Color.black)
                 }
                 
                 HStack(spacing: 4) {
@@ -41,6 +43,7 @@ struct CommunitySearchResultCardView: View {
                 }
                 .pickpleTypography(.label_500)
                 .foregroundStyle(Color.neutral30)
+                .border(Color.black)
             }
             
             Spacer()

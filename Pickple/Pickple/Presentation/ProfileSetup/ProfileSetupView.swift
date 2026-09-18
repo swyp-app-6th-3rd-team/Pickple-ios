@@ -42,6 +42,7 @@ struct ProfileSetupView: View {
                 showsTermsAgreement = true
             })
             .padding(.horizontal, 20)
+            .padding(.bottom, 16)
         }
         .alert(ProfileSetupStrings.registerFailedTitle, isPresented: Binding(
             get: { profileViewModel.errorMessage != nil },

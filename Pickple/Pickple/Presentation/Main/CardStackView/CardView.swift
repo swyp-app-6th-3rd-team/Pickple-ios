@@ -68,7 +68,7 @@ struct CardView: View {
                                 .foregroundStyle(Color.white)
 
                             Text(data.concernText)
-                                .pickpleTypography(.body02_600)
+                                .pickpleTypography(.body02_400)
                                 .foregroundStyle(Color.neutral10)
                                 .lineLimit(1)
                         }
