@@ -26,14 +26,23 @@ class ProfileSetupViewModel {
     var isNicknameAvailable = false
     // 중복확인 요청이 아직 응답을 기다리는 중인지 — 텍스트필드에 "작성중" 상태를 보여주는 데 쓴다.
     var isCheckingNickname = false
-    // 입력이 바뀔 때마다 이전 요청을 취소하고 새로 확인한다(디바운스 없이 매 입력마다 바로 요청).
+    // 입력이 바뀔 때마다 이전 요청(대기 중이던 디바운스 포함)을 취소하고 새로 예약한다.
     private var nicknameCheckTask: Task<Void, Never>?
+    // 입력마다 바로 확인하면 타이핑 중 글자마다 버튼이 껐다 켜졌다 깜빡였다 — 입력이 잠깐
+    // 멈춘 뒤에만 실제로 확인하도록 짧게 디바운스한다.
+    private let nicknameCheckDebounce: Duration = .milliseconds(300)
 
     let nicknameMaxLength = 5
     private let profileRepository: ProfileRepository
     // 수정 화면 진입 시 loadCurrentProfile()로 불러온 원래 닉네임. 중복 확인을 건너뛸지
     // 판단하는 기준으로만 쓴다(신규 등록 플로우에서는 nil로 남아 항상 검사한다).
     private var originalNickname: String?
+    // 마지막으로 서버에 확인해본 닉네임과 그 결과. 특수문자를 눌렀다가 필터링으로 결국
+    // 이미 확인해본 값 그대로 돌아온 경우(예: "abc" 뒤에 "!") 서버를 다시 안 부르고 이
+    // 결과를 그대로 복원한다 — nicknameDidChange() 한 번의 호출 안에서 리셋과 복원이
+    // 같이 끝나므로 화면엔 깜빡임 없이 최종 상태만 보인다.
+    private var lastCheckedNickname: String?
+    private var lastCheckedAvailability: NicknameAvailability?
 
     init(profileRepository: ProfileRepository = MockProfileRepository()) {
         self.profileRepository = profileRepository
@@ -77,9 +86,10 @@ class ProfileSetupViewModel {
         nicknameDuplicateMessage = nil
     }
 
-    // 텍스트필드가 바뀔 때마다(키 입력마다) 호출된다. 디바운스 없이 바로 중복확인을 실행하되,
-    // 이전 요청이 아직 응답을 안 받았으면 취소하고 새 값으로 다시 요청한다(응답이 입력 순서와
-    // 다르게 도착해서 최신 입력값 결과를 옛날 응답이 덮어쓰는 걸 방지).
+    // 텍스트필드가 바뀔 때마다(키 입력마다) 호출된다. 이전 요청(대기 중이던 디바운스 포함)을
+    // 취소하고, 짧게 기다렸다가(nicknameCheckDebounce) 그 사이 입력이 없었으면 그때 확인한다
+    // — 응답이 입력 순서와 다르게 도착해서 최신 입력값 결과를 옛날 응답이 덮어쓰는 것도
+    // 같은 취소 로직으로 함께 막힌다.
     @MainActor
     func nicknameDidChange() {
         resetNicknameDuplicateState()
@@ -96,8 +106,21 @@ class ProfileSetupViewModel {
             return
         }
 
+        if nickname == lastCheckedNickname, let result = lastCheckedAvailability {
+            if result.isAvailable {
+                isNicknameAvailable = true
+            } else {
+                isNicknameDuplicate = true
+                nicknameDuplicateMessage = result.message
+            }
+            return
+        }
+
         nicknameCheckTask = Task { [weak self] in
-            await self?.checkNicknameAvailability()
+            guard let self else { return }
+            try? await Task.sleep(for: self.nicknameCheckDebounce)
+            guard !Task.isCancelled else { return }
+            await self.checkNicknameAvailability()
         }
     }
 
@@ -109,6 +132,8 @@ class ProfileSetupViewModel {
         guard let availability = try? await profileRepository.checkNicknameAvailability(nickname) else { return }
         guard !Task.isCancelled else { return }
         print("[닉네임 중복확인] \"\(nickname)\" -> \(availability.isAvailable ? "사용 가능" : "중복") (message: \(availability.message))")
+        lastCheckedNickname = nickname
+        lastCheckedAvailability = availability
         if availability.isAvailable {
             isNicknameAvailable = true
         } else {
