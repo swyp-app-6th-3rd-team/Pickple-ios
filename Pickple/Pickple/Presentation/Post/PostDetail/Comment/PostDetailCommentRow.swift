@@ -83,10 +83,9 @@ struct PostDetailCommentRow: View {
                     .foregroundStyle(Color.neutral30)
             }
         }
+
         .padding(8)
-        .background(
-                isEditing ? Color.neutral15 : Color.clear
-        )
+
     }
 }
 
