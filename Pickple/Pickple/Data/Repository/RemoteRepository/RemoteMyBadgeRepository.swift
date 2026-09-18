@@ -36,7 +36,7 @@ struct RemoteMyBadgeRepository: MyBadgeRepository {
                 iconOnName: iconFamily.onIconName,
                 iconOffName: iconFamily.offIconName,
                 isUnlocked: $0.acquired,
-                unlockCondition: "이 뱃지를 해제하려면\n\($0.description) 달성하세요."
+                unlockCondition: $0.description
             )
         }
     }
