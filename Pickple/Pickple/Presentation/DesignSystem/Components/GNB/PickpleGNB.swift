@@ -36,6 +36,9 @@ struct PickpleGNBSlotView: View {
                 icon
                     .resizable()
                     .frame(width: 24, height: 24)
+                    // 아이콘 자체는 24pt 그대로 두고, 터치 영역만 상하좌우 6pt씩 넓혀서 36pt로.
+                    .padding(6)
+                    .contentShape(Rectangle())
             }
         }
     }
