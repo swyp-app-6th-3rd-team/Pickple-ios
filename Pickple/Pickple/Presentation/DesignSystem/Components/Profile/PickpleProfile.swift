@@ -58,17 +58,16 @@ struct PickpleProfile: View {
                     PickpleAsyncImage(url: existingImageUrl, targetSize: CGSize(width: 124, height: 124)) { image in
                         image.resizable().scaledToFill()
                     } placeholder: {
-                        Image("PickpleCharacter").resizable().scaledToFill()
+                        // TEMP: 기본 이미지가 제대로 내려오는지 눈으로 확인하려고 흰 원으로 임시 교체
+                        Color.white
                     }
                     .frame(width: 124, height: 124)
                     .clipShape(Circle())
                 } else {
-                    Image("PickpleCharacter")
-                        .resizable()
-                        .scaledToFill()
+                    // TEMP: 기본 이미지가 제대로 내려오는지 눈으로 확인하려고 흰 원으로 임시 교체
+                    Circle()
+                        .fill(Color.white)
                         .frame(width: 124, height: 124)
-                        .clipShape(Circle())
-                        .foregroundStyle(Color.neutral20)
                 }
             }
             .overlay {

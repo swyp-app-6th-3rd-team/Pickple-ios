@@ -56,7 +56,7 @@ struct PickpleAsyncImage<Content: View, Placeholder: View>: View {
         let downloadStart = Date()
         guard let (data, _) = try? await URLSession.shared.data(from: url) else { return }
         let downloadMs = Date().timeIntervalSince(downloadStart) * 1000
-        print("[ImageDownload] \(url.lastPathComponent) \(data.count)bytes \(String(format: "%.0f", downloadMs))ms")
+        print("[ImageDownload] \(url.lastPathComponent) target=\(Int(targetSize.width))x\(Int(targetSize.height)) \(data.count)bytes \(String(format: "%.0f", downloadMs))ms")
         // downsample은 ImageIO로 실제 디코딩까지 하는 CPU 작업이라, 그냥 이 뷰의(MainActor)
         // .task 안에서 부르면 메인 스레드가 그동안 막혀 스크롤/애니메이션이 끊긴다 —
         // detached Task로 빼서 백그라운드에서 계산하고 결과만 받아온다. UIScreen.main은
