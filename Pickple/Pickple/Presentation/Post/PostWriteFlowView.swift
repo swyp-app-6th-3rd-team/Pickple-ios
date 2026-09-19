@@ -49,15 +49,27 @@ struct PostWriteFlowView: View {
                         .animation(.easeInOut, value: postViewModel.requiredFieldsFilledCount)
                 }
 
-                ScrollView {
-                    PostWriteFlowStepContent(
-                        postViewModel: postViewModel,
-                        isCategoryExpanded: $isCategoryExpanded,
-                        categoryOptions: categoryOptions
-                    )
-                    .zIndex(isCategoryExpanded ? 1 : 0)
-                    .padding(.top, 28)
-                    .padding(.horizontal, 20)
+                ScrollViewReader { scrollProxy in
+                    ScrollView {
+                        PostWriteFlowStepContent(
+                            postViewModel: postViewModel,
+                            isCategoryExpanded: $isCategoryExpanded,
+                            categoryOptions: categoryOptions
+                        )
+                        .zIndex(isCategoryExpanded ? 1 : 0)
+                        .padding(.top, 28)
+                        .padding(.horizontal, 20)
+                    }
+                    // "설명"(TextEditor) 필드는 박스가 큰데(180pt) 커서 위치를 계속
+                    // 따라가는 iOS 기본 스크롤이 어색해서, 포커스되는 순간 필드 박스 자체
+                    // 기준으로 한 번만 스크롤한다 — ScrollToFieldKey는 그 필드에서
+                    // ForAgainstPostFieldSectionView 등 중간 화면들을 거치지 않고 바로 올라온다.
+                    .onPreferenceChange(ScrollToFieldKey.self) { fieldID in
+                        guard let fieldID else { return }
+                        withAnimation {
+                            scrollProxy.scrollTo(fieldID, anchor: .top)
+                        }
+                    }
                 }
                 // 배경(Color.white)에 onTapGesture를 걸었더니 ScrollView가 빈 공간까지
                 // 포함해서 자기 프레임 전체를 스크롤 제스처용으로 히트테스트하고 있어서
@@ -72,6 +84,13 @@ struct PostWriteFlowView: View {
                         }
                     }
                 )
+                // 포커스된 입력 필드가 키보드에 가려지지 않고 키보드 위 16pt 지점에 보이게 한다.
+                // 필드마다 흩어진 FocusState를 하나로 합치지 않고, ScrollView 아래쪽에 키보드
+                // 높이만큼 safeAreaInset을 예약해서 그 영역을 "스크롤 불가 영역"으로 만드는
+                // 식이라, 개별 필드 로직(검증/글자수 제한/순차 공개 등)은 전혀 안 건드린다 —
+                // iOS가 이미 갖고 있는 "포커스된 입력창을 보이는 영역 안으로 스크롤" 동작이
+                // 이 여백을 기준으로 알아서 동작한다.
+                .keyboardAwareBottomInset()
 
                 // 필드가 순차 공개되면서 게시 버튼이 계속 밀려 내려가지 않게, 스크롤 영역
                 // 밖으로 빼서 화면 하단에 고정한다.
@@ -125,6 +144,24 @@ struct PostWriteFlowView: View {
                 showsFailureToast = true
             }
         }
+    }
+}
+
+// 게시 버튼(ScrollView 밖, 화면 하단 고정)은 키보드가 뜨면 시스템이 이미 자동으로 키보드
+// 위까지 밀어올려준다 — 그래서 키보드 높이를 따로 추적할 필요 없이, 그 버튼과 스크롤
+// 콘텐츠 사이에 16pt 여백만 예약하면 포커스된 필드가 "버튼 위 16pt"에 보이게 된다.
+private struct KeyboardAwareBottomInsetModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .safeAreaInset(edge: .bottom) {
+                Color.clear.frame(height: 16)
+            }
+    }
+}
+
+private extension View {
+    func keyboardAwareBottomInset() -> some View {
+        modifier(KeyboardAwareBottomInsetModifier())
     }
 }
 
