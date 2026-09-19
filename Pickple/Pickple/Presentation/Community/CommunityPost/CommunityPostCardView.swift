@@ -131,7 +131,7 @@ struct CommunityPostCardView: View {
                 PickpleAsyncImage(url: url, targetSize: CGSize(width: UIScreen.main.bounds.width, height: 150)) { image in
                     image.resizable().scaledToFill()
                 } placeholder: {
-                    Image("McokMyPostPicture").resizable().scaledToFill()
+                    Color.navy10
                 }
             }
             .clipped()

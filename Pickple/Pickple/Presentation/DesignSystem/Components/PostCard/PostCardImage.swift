@@ -21,9 +21,7 @@ struct PostCardImage: View {
                     .resizable()
                     .scaledToFill()
             } placeholder: {
-                Image("McokMyPostPicture")
-                    .resizable()
-                    .scaledToFill()
+                Color.navy10
             }
             .frame(width: 72, height: 72)
             .clipShape(RoundedRectangle(cornerRadius: 8))

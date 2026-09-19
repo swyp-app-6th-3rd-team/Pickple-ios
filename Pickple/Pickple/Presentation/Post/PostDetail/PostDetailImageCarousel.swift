@@ -25,7 +25,7 @@ struct PostDetailImageCarousel: View {
                         PickpleAsyncImage(url: imageUrl, targetSize: CGSize(width: UIScreen.main.bounds.width, height: 280)) { image in
                             image.resizable().scaledToFill()
                         } placeholder: {
-                            Image("MockAgainstPicture").resizable().scaledToFill()
+                            Color.navy10
                         }
                         .frame(width: UIScreen.main.bounds.width, height: 280)
                         .clipped()

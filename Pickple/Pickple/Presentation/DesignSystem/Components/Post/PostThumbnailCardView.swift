@@ -79,7 +79,7 @@ struct PostThumbnailCardView: View {
         PickpleAsyncImage(url: url, targetSize: CGSize(width: 160, height: 160)) { image in
             image.resizable().scaledToFill()
         } placeholder: {
-            Image("McokMyPostPicture").resizable().scaledToFill()
+            Color.navy10
         }
     }
 }
