@@ -47,7 +47,6 @@ struct PostDetailProductInfo: View {
                     Text(PostDetailStrings.purchaseLinkLabel)
                         .pickpleTypography(.body02_600)
                         .foregroundStyle(Color.neutral30)
-                        .frame(width: 36, alignment: .leading)
 
                     if let purchaseLink = product.purchaseLink {
                         Link(destination: purchaseLink) {
@@ -81,7 +80,6 @@ private struct PostDetailProductInfoRow: View {
             Text(label)
                 .pickpleTypography(.body02_600)
                 .foregroundStyle(Color.neutral30)
-                .frame(width: 36, alignment: .leading)
 
             Text(value)
                 .pickpleTypography(.body01_500)
