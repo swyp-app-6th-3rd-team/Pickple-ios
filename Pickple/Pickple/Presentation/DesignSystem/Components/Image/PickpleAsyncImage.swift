@@ -64,25 +64,46 @@ struct PickpleAsyncImage<Content: View, Placeholder: View>: View {
         let targetSize = targetSize
         let scale = UIScreen.main.scale
         guard let downsampled = await Task.detached(priority: .userInitiated, operation: {
-            Self.downsample(data: data, to: targetSize, scale: scale)
+            pickpleDownsample(data: data, to: targetSize, scale: scale)
         }).value else { return }
         await PickpleImageCache.shared.store(downsampled, for: url)
         uiImage = downsampled
     }
+}
 
-    // WWDC18 "Image and Graphics Best Practices" 권장 방식 — 원본을 전부 디코딩한 뒤
-    // 축소하는 게 아니라, ImageIO가 파일에서 바로 목표 픽셀 크기로 썸네일을 뽑아낸다.
-    private static nonisolated func downsample(data: Data, to pointSize: CGSize, scale: CGFloat) -> UIImage? {
-        let maxPixelSize = max(pointSize.width, pointSize.height) * scale
-        guard maxPixelSize > 0, let source = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }
+// WWDC18 "Image and Graphics Best Practices" 권장 방식 — 원본을 전부 디코딩한 뒤
+// 축소하는 게 아니라, ImageIO가 파일에서 바로 목표 픽셀 크기로 썸네일을 뽑아낸다.
+// PickpleAsyncImage(제네릭 타입)와 아래 PickpleImagePrefetcher(비제네릭)가 같이 쓰기
+// 위해 타입 안에 두지 않고 파일 스코프 함수로 뺐다.
+private nonisolated func pickpleDownsample(data: Data, to pointSize: CGSize, scale: CGFloat) -> UIImage? {
+    let maxPixelSize = max(pointSize.width, pointSize.height) * scale
+    guard maxPixelSize > 0, let source = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }
 
-        let options: [CFString: Any] = [
-            kCGImageSourceCreateThumbnailFromImageAlways: true,
-            kCGImageSourceShouldCacheImmediately: true,
-            kCGImageSourceCreateThumbnailWithTransform: true,
-            kCGImageSourceThumbnailMaxPixelSize: maxPixelSize
-        ]
-        guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else { return nil }
-        return UIImage(cgImage: cgImage, scale: scale, orientation: .up)
+    let options: [CFString: Any] = [
+        kCGImageSourceCreateThumbnailFromImageAlways: true,
+        kCGImageSourceShouldCacheImmediately: true,
+        kCGImageSourceCreateThumbnailWithTransform: true,
+        kCGImageSourceThumbnailMaxPixelSize: maxPixelSize
+    ]
+    guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else { return nil }
+    return UIImage(cgImage: cgImage, scale: scale, orientation: .up)
+}
+
+// 리스트를 스크롤하기 전에 다음에 보일 이미지를 미리 받아 PickpleImageCache를 데워둔다 —
+// 실제로 그릴 필요는 없으니 화면에 안 보이는 상태로 다운로드+다운샘플만 해서 캐시에
+// 넣어두면, 해당 셀이 실제로 나타날 때 캐시 히트로 바로 뜬다. 캐시에 이미 있으면 스킵.
+// 스크롤이 빨라 놓친 프리패치는 그냥 낭비될 뿐 버그는 아니라 취소 처리는 하지 않는다
+// (ponytail: 낭비 감수, 체감상 문제 되면 Task 핸들을 들고 있다가 취소하는 걸로 보강).
+enum PickpleImagePrefetcher {
+    static func prefetch(urls: [URL], targetSize: CGSize) {
+        let scale = UIScreen.main.scale
+        for url in urls {
+            Task.detached(priority: .utility) {
+                if await PickpleImageCache.shared.image(for: url) != nil { return }
+                guard let (data, _) = try? await URLSession.shared.data(from: url) else { return }
+                guard let downsampled = pickpleDownsample(data: data, to: targetSize, scale: scale) else { return }
+                await PickpleImageCache.shared.store(downsampled, for: url)
+            }
+        }
     }
 }

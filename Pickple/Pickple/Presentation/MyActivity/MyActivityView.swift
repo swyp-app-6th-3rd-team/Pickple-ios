@@ -50,7 +50,10 @@ struct MyActivityView: View {
                     MyActivityListView(
                         items: myActivityViewModel.sorted(myActivityViewModel.votedPosts, by: selectedValue),
                         onReachEnd: { post in Task { await myActivityViewModel.loadMoreVotedPostsIfNeeded(currentPost: post) } },
-                        onTapItem: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) }
+                        onTapItem: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) },
+                        // MyActivityVotedPostCardView는 타입과 무관하게 항상 thumbnailUrl 한 장만 쓴다
+                        // (CommunityPostCardView와 달리 A/B에서도 product 이미지로 안 바뀜).
+                        prefetchImageURLs: { $0.thumbnailUrl.map { [$0] } ?? [] }
                     ) { post in
                         MyActivityVotedPostCardView(post: post)
                     }
@@ -59,7 +62,8 @@ struct MyActivityView: View {
                 case 1:
                     MyActivityListView(
                         items: myActivityViewModel.sorted(myActivityViewModel.commentedActivities, by: selectedValue),
-                        onTapItem: { activity in myPageRouter.push(.postDetail(postId: activity.referencedPost.id, type: activity.referencedPost.type)) }
+                        onTapItem: { activity in myPageRouter.push(.postDetail(postId: activity.referencedPost.id, type: activity.referencedPost.type)) },
+                        prefetchImageURLs: { activity in activity.referencedPost.thumbnailUrl.map { [$0] } ?? [] }
                     ) { activity in
                         MyActivityCommentActivityRow(activity: activity)
                     }
@@ -68,7 +72,8 @@ struct MyActivityView: View {
                     MyActivityListView(
                         items: myActivityViewModel.sorted(myActivityViewModel.writtenPosts, by: selectedValue),
                         onReachEnd: { post in Task { await myActivityViewModel.loadMoreWrittenPostsIfNeeded(currentPost: post) } },
-                        onTapItem: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) }
+                        onTapItem: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) },
+                        prefetchImageURLs: { $0.thumbnailUrl.map { [$0] } ?? [] }
                     ) { post in
                         MyActivityWrittenPostCardView(post: post)
                     }

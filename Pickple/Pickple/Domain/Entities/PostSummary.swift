@@ -74,6 +74,20 @@ extension PostSummary {
     func productImageUrl(displayOrder: Int) -> URL? {
         products.first(where: { $0.displayOrder == displayOrder })?.imageUrl
     }
+
+    // 카드가 실제로 그리는 이미지 URL 목록 — 리스트 프리패치 대상 선정에 쓴다
+    // (CommunityPostCardView가 타입별로 고르는 로직과 동일: 일반 글은 없음, A/B는 두 장,
+    // 그 외엔 대표 사진 한 장).
+    var displayedImageURLs: [URL] {
+        switch type {
+        case .text:
+            return []
+        case .ab:
+            return [productImageUrl(displayOrder: 1), productImageUrl(displayOrder: 2)].compactMap { $0 }
+        default:
+            return [thumbnailUrl].compactMap { $0 }
+        }
+    }
 }
 
 extension PostSummary {
