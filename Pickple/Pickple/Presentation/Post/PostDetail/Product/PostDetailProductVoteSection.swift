@@ -20,8 +20,8 @@ struct PostDetailProductVoteSection: View {
             VStack(alignment: .leading, spacing: 20) {
                 if post.type == .ab {
                     PostDetailProductTabPicker(
-                        firstLabel: postDetailViewModel.firstLabel,
-                        secondLabel: postDetailViewModel.secondLabel,
+                        firstLabel: PostDetailStrings.productAFallback,
+                        secondLabel: PostDetailStrings.productBFallback,
                         selectedTab: $postDetailViewModel.selectedProductTab
                     )
                 }
