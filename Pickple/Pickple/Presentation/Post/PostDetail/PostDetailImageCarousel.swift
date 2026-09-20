@@ -22,12 +22,19 @@ struct PostDetailImageCarousel: View {
             ScrollView(.horizontal) {
                 LazyHStack(spacing: 0) {
                     ForEach(Array(images.enumerated()), id: \.offset) { index, imageUrl in
+                        // 페이지 너비는 UIScreen.main.bounds.width(기기 전체 화면 너비)가 아니라
+                        // 실제 스크롤 컨테이너 너비를 써야 한다 — 아이패드 분할화면처럼 앱이 전체
+                        // 화면을 못 쓰는 경우 둘이 달라져서, scrollTargetBehavior(.paging)이 계산하는
+                        // 페이지 폭과 이 프레임 폭이 어긋나 사진 한 장이 페이지 하나로 안 끊겼다.
+                        // targetSize(다운샘플링 해상도)는 픽셀 값이 필요해 그대로 화면 너비를 쓴다 —
+                        // 실제보다 살짝 크게 디코딩될 뿐이라 그 상황에서도 버그는 아니다.
                         PickpleAsyncImage(url: imageUrl, targetSize: CGSize(width: UIScreen.main.bounds.width, height: 280)) { image in
                             image.resizable().scaledToFill()
                         } placeholder: {
                             Color.navy10
                         }
-                        .frame(width: UIScreen.main.bounds.width, height: 280)
+                        .containerRelativeFrame(.horizontal)
+                        .frame(height: 280)
                         .clipped()
                     }
                 }
