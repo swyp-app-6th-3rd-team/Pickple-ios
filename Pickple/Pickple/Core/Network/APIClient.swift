@@ -101,24 +101,28 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
         var token: String?
         if endpoint.requiresAuth {
             guard let requiredToken = await tokenProvider.accessToken() else {
+                print("[TokenRefresh] 요청 준비: \(endpoint.path) — accessToken 없음(nil), 즉시 실패")
                 throw APIError.unauthorized
             }
             token = requiredToken
         } else if endpoint.attachesAuthIfAvailable {
             token = await tokenProvider.accessToken()
         }
+        Self.logTokenState(for: endpoint, token: token, isRetry: isRetry)
 
+        let requestStart = Date()
         let (data, httpResponse) = try await Self.rawSend(endpoint, baseURL: baseURL, session: session, token: token)
+        print("[TokenRefresh] 요청 완료: \(endpoint.path) — \(Int(Date().timeIntervalSince(requestStart) * 1000))ms 소요, status=\(httpResponse.statusCode)")
 
         guard (200..<300).contains(httpResponse.statusCode) else {
             if httpResponse.statusCode == 401 {
                 if !isRetry, token != nil, let tokenRefresher {
-                    print("[TokenRefresh] 반응형: \(endpoint.path) 401 — 갱신 후 재시도")
+                    print("[TokenRefresh] 반응형: \(endpoint.path) 401 — 갱신 후 재시도 (\(Date()))")
                     if (try? await tokenRefresher.refreshedAccessToken()) != nil {
-                        print("[TokenRefresh] 반응형: 갱신 성공, \(endpoint.path) 재시도")
+                        print("[TokenRefresh] 반응형: 갱신 성공, \(endpoint.path) 재시도 (\(Date()))")
                         return try await send(endpoint, isRetry: true)
                     }
-                    print("[TokenRefresh] 반응형: 갱신 실패")
+                    print("[TokenRefresh] 반응형: 갱신 실패 (\(Date()))")
                 }
                 throw APIError.unauthorized
             }
@@ -129,6 +133,23 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
         }
 
         return (data, httpResponse)
+    }
+
+    // 요청 시점에 붙는 토큰의 상태(만료까지 남은 시간)를 남긴다 — "앱을 오래 켜둔 뒤
+    // 게시글을 작성하면 가끔 실패한다"는 제보를 좁혀보기 위해, 업로드처럼 오래 걸리는
+    // 요청 도중 토큰이 갱신되거나 만료 임박 상태로 실려나가는지 시간 순서로 확인한다.
+    private static func logTokenState(for endpoint: APIEndpoint, token: String?, isRetry: Bool) {
+        let now = Date()
+        guard let token else {
+            print("[TokenRefresh] 요청 준비: \(endpoint.path) — 토큰 없이 전송 (isRetry=\(isRetry), \(now))")
+            return
+        }
+        if let expiry = JWTExpiration.decode(token) {
+            let remaining = Int(expiry.timeIntervalSince(now))
+            print("[TokenRefresh] 요청 준비: \(endpoint.path) — 토큰=\(token.suffix(12)) 만료까지 \(remaining)초(만료 \(expiry)) isRetry=\(isRetry) 현재시각=\(now)")
+        } else {
+            print("[TokenRefresh] 요청 준비: \(endpoint.path) — 토큰=\(token.suffix(12)) exp 디코딩 실패 isRetry=\(isRetry) 현재시각=\(now)")
+        }
     }
 
     // send()의 순수 HTTP 부분(요청 조립 + 전송)만 떼어낸 static 버전 — TokenRefresher에 넘기는

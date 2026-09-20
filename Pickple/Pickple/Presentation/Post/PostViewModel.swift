@@ -216,6 +216,8 @@ class PostViewModel {
             }
             submitState = .succeeded
         } catch {
+            // 상품 몇 개 중 어떤 이미지가 실패했는지까지는 구분 안 하고 일단 원인만 남긴다.
+            print("[PostSubmit] 게시글 제출 실패: \(error)")
             submitState = .failed
         }
     }
