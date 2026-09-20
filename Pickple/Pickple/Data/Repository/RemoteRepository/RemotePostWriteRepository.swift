@@ -50,9 +50,12 @@ struct RemotePostWriteRepository: PostWriteRepository {
         description: String?,
         products: [PostWriteProductDraft]
     ) async throws -> Int {
+        print("[PostSubmit] createPost 시작 — 상품 \(products.count)개, \(Date())")
         var productRequests: [PostCreateProductRequestDTO] = []
-        for product in products {
+        for (index, product) in products.enumerated() {
+            let uploadStart = Date()
             let itemContainerId = try await uploadImages(product.photos)
+            print("[PostSubmit] 상품[\(index)] 이미지 \(product.photos.count)장 업로드 완료 — \(Int(Date().timeIntervalSince(uploadStart) * 1000))ms, \(Date())")
             productRequests.append(
                 PostCreateProductRequestDTO(
                     itemContainerId: itemContainerId,
@@ -72,6 +75,7 @@ struct RemotePostWriteRepository: PostWriteRepository {
         )
         let body = try JSONEncoder().encode(requestBody)
 
+        print("[PostSubmit] POST /posts 요청 시작 — \(Date())")
         let endpoint = APIEndpoint(method: .post, path: "/posts", body: body, requiresAuth: true)
         let response: PostCreateResponseDTO = try await apiClient.request(endpoint)
         return response.postId

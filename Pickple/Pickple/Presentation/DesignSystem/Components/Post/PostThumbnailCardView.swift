@@ -42,7 +42,7 @@ struct PostThumbnailCardView: View {
 
                 HStack(spacing: 8) {
                     // 인기 게시글(commenterCount 있음)은 댓글 남긴 인원으로, 그 외엔 기존 댓글 건수로 표시.
-                    PostVoteCommentStats(type: post.type, voteCount: post.voteCount, commentCount: post.commenterCount ?? post.commentCount)
+                    PostVoteCommentStats(type: post.type, voteCount: post.voteCount, commentCount: post.commentCount)
                     Spacer()
 
                     if showsAuthorNickname, let authorNickname = post.authorNickname {
@@ -79,7 +79,7 @@ struct PostThumbnailCardView: View {
         PickpleAsyncImage(url: url, targetSize: CGSize(width: 160, height: 160)) { image in
             image.resizable().scaledToFill()
         } placeholder: {
-            Image("McokMyPostPicture").resizable().scaledToFill()
+            Color.navy10
         }
     }
 }

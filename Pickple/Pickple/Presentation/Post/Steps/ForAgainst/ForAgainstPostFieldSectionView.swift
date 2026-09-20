@@ -37,6 +37,9 @@ struct ForAgainstPostFieldSectionView: View {
                 .pickpleTypography(.body01_500)
 
                 ProductNameFieldBlock(name: $postViewModel.product.name, maxLength: postViewModel.productNameMaxLength, isDisabled: postViewModel.isEditing)
+                    // 아래 순차 공개 섹션들을 위해 이 뷰 전체에 걸린 .animation(value: isNameFilled)이
+                    // 상품명 입력 중 플레이스홀더가 사라지는 것까지 같이 애니메이션시켜서 껐다.
+                    .transaction { $0.animation = nil }
             }
 
             PhotoUploadSectionView(photos: $postViewModel.product.photos, maxCount: 3, hintText: PostViewStrings.photoHintUpToThree, isDisabled: postViewModel.isEditing)

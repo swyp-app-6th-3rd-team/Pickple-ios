@@ -22,7 +22,9 @@ struct PickpleGNBSlotView: View {
     var body: some View {
         switch content {
         case .none:
-            Color.clear.frame(width: 24, height: 24)
+            // .button 슬롯이 터치 영역 확장(패딩 6씩)으로 36x36이 됐다 — 가운데 텍스트가
+            // 양쪽 Spacer로 균형을 맞추는 구조라, 빈 슬롯도 같은 36x36이어야 안 밀린다.
+            Color.clear.frame(width: 36, height: 36)
         case .text(let text):
             Text(text)
                 .pickpleTypography(.title01_600)
@@ -36,6 +38,9 @@ struct PickpleGNBSlotView: View {
                 icon
                     .resizable()
                     .frame(width: 24, height: 24)
+                    // 아이콘 자체는 24pt 그대로 두고, 터치 영역만 상하좌우 6pt씩 넓혀서 36pt로.
+                    .padding(6)
+                    .contentShape(Rectangle())
             }
         }
     }

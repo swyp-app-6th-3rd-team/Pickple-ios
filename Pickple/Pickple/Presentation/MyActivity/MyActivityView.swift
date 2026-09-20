@@ -44,39 +44,60 @@ struct MyActivityView: View {
             .padding(.vertical, 12)
             .zIndex(1)
             
-            switch selectedTabIndex {
-            case 0:
-                MyActivityListView(
-                    items: myActivityViewModel.sorted(myActivityViewModel.votedPosts, by: selectedValue),
-                    onReachEnd: { post in Task { await myActivityViewModel.loadMoreVotedPostsIfNeeded(currentPost: post) } },
-                    onTapItem: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) }
-                ) { post in
-                    MyActivityVotedPostCardView(post: post)
-                }
-                .task { await myActivityViewModel.loadVotedPosts() }
+            Group {
+                switch selectedTabIndex {
+                case 0:
+                    MyActivityListView(
+                        items: myActivityViewModel.sorted(myActivityViewModel.votedPosts, by: selectedValue),
+                        onReachEnd: { post in Task { await myActivityViewModel.loadMoreVotedPostsIfNeeded(currentPost: post) } },
+                        onTapItem: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) },
+                        // MyActivityVotedPostCardView는 타입과 무관하게 항상 thumbnailUrl 한 장만 쓴다
+                        // (CommunityPostCardView와 달리 A/B에서도 product 이미지로 안 바뀜).
+                        prefetchImageURLs: { $0.thumbnailUrl.map { [$0] } ?? [] }
+                    ) { post in
+                        MyActivityVotedPostCardView(post: post)
+                    }
+                    .task { await myActivityViewModel.loadVotedPosts() }
 
-            case 1:
-                MyActivityListView(
-                    items: myActivityViewModel.sorted(myActivityViewModel.commentedActivities, by: selectedValue),
-                    onTapItem: { activity in myPageRouter.push(.postDetail(postId: activity.referencedPost.id, type: activity.referencedPost.type)) }
-                ) { activity in
-                    MyActivityCommentActivityRow(activity: activity)
+                case 1:
+                    MyActivityListView(
+                        items: myActivityViewModel.sorted(myActivityViewModel.commentedActivities, by: selectedValue),
+                        onTapItem: { activity in myPageRouter.push(.postDetail(postId: activity.referencedPost.id, type: activity.referencedPost.type)) },
+                        prefetchImageURLs: { activity in activity.referencedPost.thumbnailUrl.map { [$0] } ?? [] }
+                    ) { activity in
+                        MyActivityCommentActivityRow(activity: activity)
+                    }
+                    .task { await myActivityViewModel.loadCommentedPosts() }
+                case 2:
+                    MyActivityListView(
+                        items: myActivityViewModel.sorted(myActivityViewModel.writtenPosts, by: selectedValue),
+                        onReachEnd: { post in Task { await myActivityViewModel.loadMoreWrittenPostsIfNeeded(currentPost: post) } },
+                        onTapItem: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) },
+                        prefetchImageURLs: { $0.thumbnailUrl.map { [$0] } ?? [] }
+                    ) { post in
+                        MyActivityWrittenPostCardView(post: post)
+                    }
+                    .task { await myActivityViewModel.loadWrittenPosts() }
+                default:
+                    EmptyView()
                 }
-                .task { await myActivityViewModel.loadCommentedPosts() }
-            case 2:
-                MyActivityListView(
-                    items: myActivityViewModel.sorted(myActivityViewModel.writtenPosts, by: selectedValue),
-                    onReachEnd: { post in Task { await myActivityViewModel.loadMoreWrittenPostsIfNeeded(currentPost: post) } },
-                    onTapItem: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) }
-                ) { post in
-                    MyActivityWrittenPostCardView(post: post)
-                }
-                .task { await myActivityViewModel.loadWrittenPosts() }
-            default:
-                EmptyView()
             }
         }
         .background(Color.white.ignoresSafeArea())
+        // 정렬 드롭박스가 펼쳐진 채로 화면 어디를 탭해도(리스트 밖의 헤더 빈 공간 포함)
+        // 접히게 한다. 리스트/버튼의 탭·스크롤 제스처는 simultaneousGesture라 막지 않는다.
+        // Spacer처럼 실제로 안 그려지는 빈 공간은 contentShape 없이는 히트테스트 영역이
+        // 아니라 제스처 자체가 인식되지 않는다.
+        .contentShape(Rectangle())
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                if isShown {
+                    withAnimation(.spring()) {
+                        isShown = false
+                    }
+                }
+            }
+        )
         .navigationBarBackButtonHidden(true)
         .restoresSwipeBackGesture()
     }

@@ -51,10 +51,6 @@ struct MyGradeView: View {
                         MyPagePointsView(myPageViewModel: myPageViewModel)
                     }
                     .padding(.bottom, 16)
-
-                    Rectangle()
-                        .frame(height: 4)
-                        .foregroundStyle(Color.neutral5)
                     
                     VStack(spacing: 0) {
                         ForEach(gradeViewModel.grades) { grade in

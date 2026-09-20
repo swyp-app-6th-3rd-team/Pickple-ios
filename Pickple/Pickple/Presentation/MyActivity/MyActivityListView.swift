@@ -16,6 +16,10 @@ struct MyActivityListView<Item: Identifiable, RowContent: View>: View {
     var onReachEnd: (Item) -> Void = { _ in }
     // 카드를 탭했을 때 호출 — 참조 게시글 상세로 이동시키는 트리거용(기본은 no-op).
     var onTapItem: (Item) -> Void = { _ in }
+    // 다음 카드들이 쓸 이미지를 미리 받아둘 때 쓴다 — 이미지가 없는 아이템(댓글 활동)은
+    // 기본값(빈 배열)을 그대로 두면 된다.
+    var prefetchImageURLs: (Item) -> [URL] = { _ in [] }
+    var prefetchTargetSize: CGSize = CGSize(width: 72, height: 72)
     @ViewBuilder let row: (Item) -> RowContent
 
     var body: some View {
@@ -40,6 +44,7 @@ struct MyActivityListView<Item: Identifiable, RowContent: View>: View {
                             if item.id == items.last?.id {
                                 onReachEnd(item)
                             }
+                            prefetchUpcomingImages(after: item)
                         }
                         Divider()
                             .foregroundStyle(Color.navy10)
@@ -47,6 +52,12 @@ struct MyActivityListView<Item: Identifiable, RowContent: View>: View {
                 }
             }
         }
+    }
+
+    private func prefetchUpcomingImages(after item: Item) {
+        guard let index = items.firstIndex(where: { $0.id == item.id }) else { return }
+        let urls = items[index...].dropFirst().prefix(3).flatMap { prefetchImageURLs($0) }
+        PickpleImagePrefetcher.prefetch(urls: urls, targetSize: prefetchTargetSize)
     }
 }
 

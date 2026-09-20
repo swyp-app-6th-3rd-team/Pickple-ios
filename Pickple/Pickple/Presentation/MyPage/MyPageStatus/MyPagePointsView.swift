@@ -109,14 +109,12 @@ private struct MyPagePointsLevelFooter: View {
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 14)
+            .padding(.top, 14)
 
             if let pointsToNextLevel, let currentPoints {
-                ProgressView(value: Double(currentPoints), total: Double(currentPoints + pointsToNextLevel))
-                    .progressViewStyle(LinearProgressViewStyle(tint: Color.yellow60))
+                MyPageLevelProgressBar(value: Double(currentPoints), total: Double(currentPoints + pointsToNextLevel))
                     .padding(.horizontal, 16)
                     .padding(.bottom, 14)
-                    .frame(maxWidth: .infinity, minHeight: 8, maxHeight: 8)
             }
         }
         .background(
@@ -128,6 +126,33 @@ private struct MyPagePointsLevelFooter: View {
                 }
         )
         .frame(maxWidth: .infinity)
+    }
+}
+
+// ProgressView(.linear)는 두께/모양이 플랫폼 기본값을 따라가서 정확히 8pt 두께의
+// 캡슐 모양을 보장 못 한다 — 트랙/채움 둘 다 Capsule로 직접 그린다.
+private struct MyPageLevelProgressBar: View {
+    let value: Double
+    let total: Double
+    private let height: CGFloat = 8
+
+    private var progress: CGFloat {
+        guard total > 0 else { return 0 }
+        return CGFloat(min(max(value / total, 0), 1))
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color.navy10)
+
+                Capsule()
+                    .fill(Color.yellow60)
+                    .frame(width: geometry.size.width * progress)
+            }
+        }
+        .frame(height: height)
     }
 }
 

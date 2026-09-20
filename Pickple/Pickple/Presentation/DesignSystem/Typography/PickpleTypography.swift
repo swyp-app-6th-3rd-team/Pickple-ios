@@ -51,23 +51,30 @@ enum PickpleTypography {
         }
     }
 
+    // ponytail: Figma 캡처와 값이 다 일치하고 폰트 로딩도 정상인데(SHA256까지 대조 완료)
+    // 실기기에서 전체적으로 작아 보임 — Figma와 Core Text 렌더링 엔진 차이로 추정.
+    // 근본 원인이 아니라 임시 보정값이라 여기 한 곳에만 곱한다. 원인 확정되면 제거.
+    private static let tempRenderingGapScale: CGFloat = 1.06
+
     var size: CGFloat {
+        let base: CGFloat
         switch self {
-        case .heading01: return 28
-        case .heading02: return 24
-        case .title01_600, .title01: return 20
-        case .title02_600, .title02_400: return 18
-        case .body01_600, .body01_500, .body01_400: return 16
-        case .body02_600, .body02_500, .body02_400: return 14
-        case .label_600, .label_500, .label_400: return 13
-        case .caption_600, .caption_400: return 12
+        case .heading01: base = 28
+        case .heading02: base = 28
+        case .title01_600, .title01: base = 20
+        case .title02_600, .title02_400: base = 18
+        case .body01_600, .body01_500, .body01_400: base = 16
+        case .body02_600, .body02_500, .body02_400: base = 14
+        case .label_600, .label_500, .label_400: base = 13
+        case .caption_600, .caption_400: base = 12
         }
+        return base * Self.tempRenderingGapScale
     }
 
     var lineHeightPercent: CGFloat {
         switch self {
-        case .heading01: return 1.35
-        case .heading02, .title01,.title01_600: return 1.40
+        case .heading01, .heading02: return 1.35
+        case .title01, .title01_600: return 1.40
         case .title02_600, .title02_400, .body02_600, .body02_500, .body02_400: return 1.45
         case .body01_600, .body01_500, .body01_400, .caption_600, .caption_400: return 1.50
         case .label_600, .label_500, .label_400: return 1.40
@@ -83,6 +90,13 @@ enum PickpleTypography {
 
     var tracking: CGFloat {
         size * letterSpacingPercent
+    }
+
+    // SwiftUI .lineSpacing()은 폰트 기본 줄 높이 "위에 추가로" 더하는 값이라, Figma의
+    // "줄 높이 배수"(폰트 크기 * lineHeightPercent)와 그대로 안 맞는다 — 목표 줄 높이에서
+    // 폰트가 이미 갖고 있는 기본 줄 높이(uiFont.lineHeight)를 뺀 차이만 추가로 넘긴다.
+    var lineSpacing: CGFloat {
+        max(size * lineHeightPercent - uiFont.lineHeight, 0)
     }
 
     // GeometryReader로 렌더링된 텍스트 폭을 측정해 상태에 반영하는 방식은 SwiftUI
@@ -109,5 +123,9 @@ extension View {
         self
             .font(style.font)
             .tracking(style.tracking)
+            .lineSpacing(style.lineSpacing)
+            // .lineSpacing()은 각 줄 아래에만 붙어서 첫 줄 위쪽엔 안 생긴다 — Figma가 한 줄이어도
+            // line-height만큼 위아래로 공간을 갖는 것과 맞추려고 절반씩 위아래에 패딩으로 채운다.
+            .padding(.vertical, style.lineSpacing / 2)
     }
 }

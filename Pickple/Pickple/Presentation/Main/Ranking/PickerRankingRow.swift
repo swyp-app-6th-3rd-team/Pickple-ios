@@ -55,9 +55,11 @@ struct PickerRankingRow: View {
                 Spacer()
                 
                 Text("\(ranking.points)P")
-                    .pickpleTypography(.body01_400)
+                    .pickpleTypography(.body01_600)
                     .foregroundStyle(Color.black)
             }
+            .padding(.leading, 12)
+            .padding(.trailing, 16)
         }
     }
 

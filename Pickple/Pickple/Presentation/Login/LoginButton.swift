@@ -61,7 +61,7 @@ struct LoginButton: View {
         Button(action: action) {
             ZStack {
                 Text(provider.title)
-                    .pickpleTypography(.body02_600)
+                    .pickpleTypography(.title02_600)
                     .foregroundStyle(provider.foregroundColor)
 
                 if let icon = provider.icon {
@@ -74,10 +74,10 @@ struct LoginButton: View {
             // 배경 도형에 직접 frame을 걸면 Shape가 남는 공간을 다 채우려는 기본 동작 때문에 높이가 부풀 수 있다.
             .frame(maxWidth: .infinity, minHeight: 56)
             .background(provider.backgroundColor)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay {
                 if let borderColor = provider.borderColor {
-                    RoundedRectangle(cornerRadius: 16)
+                    RoundedRectangle(cornerRadius: 8)
                         .stroke(borderColor, lineWidth: 1)
                 }
             }

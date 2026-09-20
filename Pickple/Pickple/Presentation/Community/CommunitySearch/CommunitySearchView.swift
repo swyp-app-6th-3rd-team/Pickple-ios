@@ -46,6 +46,8 @@ struct CommunitySearchView: View {
                         }
                     }
                     .padding(.vertical, 12)
+                    .padding(.horizontal,20)
+
                     
                     if !communitySearchViewModel.recentSearches.isEmpty {
                         // 최근 검색어가 쌓여서 화면 폭을 넘으면, 일반 HStack은 pill들을
@@ -80,14 +82,16 @@ struct CommunitySearchView: View {
                                             Capsule()
                                                 .stroke(Color.navy10)
                                         })
+                                
                             }
+                            .padding(.horizontal,20)
+
                         }
                         .padding(.vertical, 6)
                     }
                     
                     Spacer()
                 }
-                .padding(.horizontal,20)
                 .padding(.vertical, 6)
             } else {
                 VStack(alignment: .leading, spacing: 0) {
@@ -138,7 +142,8 @@ struct CommunitySearchView: View {
                                                 .contentShape(Rectangle())
                                         }
                                         .buttonStyle(.plain)
-                                        
+                                        .task { prefetchUpcomingImages(after: post) }
+
                                         Divider()
                                             .foregroundStyle(Color.navy10)
                                     }
@@ -161,6 +166,14 @@ struct CommunitySearchView: View {
                 communitySearchViewModel.clearSearch()
             }
         }
+    }
+
+    // 검색 결과는 페이지네이션 없이 한 번에 다 뜨는 목록이라, 다음 3장을 미리 받아둔다 —
+    // CommunitySearchResultCardView(PostCardImage, 72x72)와 같은 target size.
+    private func prefetchUpcomingImages(after post: PostSummary) {
+        guard let index = communitySearchViewModel.results.firstIndex(where: { $0.id == post.id }) else { return }
+        let urls = communitySearchViewModel.results[index...].dropFirst().prefix(3).compactMap { $0.thumbnailUrl }
+        PickpleImagePrefetcher.prefetch(urls: urls, targetSize: CGSize(width: 72, height: 72))
     }
 }
 

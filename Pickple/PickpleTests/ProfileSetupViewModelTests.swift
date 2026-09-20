@@ -129,7 +129,9 @@ final class ProfileSetupViewModelTests: XCTestCase {
 
         viewModel.nickname = "picker"
         viewModel.nicknameDidChange()
-        try? await Task.sleep(for: .milliseconds(50))
+        // ProfileSetupViewModel.nicknameCheckDebounce(300ms)보다 넉넉히 길게 기다린다 —
+        // 짧으면 디바운스가 끝나기 전에 검증해버려 간헐적으로 실패한다.
+        try? await Task.sleep(for: .milliseconds(400))
 
         XCTAssertTrue(viewModel.isNicknameAvailable)
         XCTAssertFalse(viewModel.isNicknameDuplicate)
@@ -143,7 +145,7 @@ final class ProfileSetupViewModelTests: XCTestCase {
 
         viewModel.nickname = "picker"
         viewModel.nicknameDidChange()
-        try? await Task.sleep(for: .milliseconds(50))
+        try? await Task.sleep(for: .milliseconds(400))
 
         XCTAssertFalse(viewModel.isNicknameAvailable)
         XCTAssertTrue(viewModel.isNicknameDuplicate)

@@ -33,7 +33,7 @@ struct MyPagePostView: View {
                                 PostThumbnailCardView(post: post)
                             }
                             .frame(width: 160, height: 238)
-
+                            .task { prefetchUpcomingImages(after: post) }
                         }
                     }
                 }
@@ -45,6 +45,13 @@ struct MyPagePostView: View {
         }
         .padding(.vertical, 16)
         .background(Color.white)
+    }
+
+    // 가로 캐러셀이라 다음 3장을 미리 받아둔다 — PostThumbnailCardView와 같은 target size.
+    private func prefetchUpcomingImages(after post: PostSummary) {
+        guard let index = myPageViewModel.posts.firstIndex(where: { $0.id == post.id }) else { return }
+        let urls = myPageViewModel.posts[index...].dropFirst().prefix(3).compactMap { $0.thumbnailUrl }
+        PickpleImagePrefetcher.prefetch(urls: urls, targetSize: CGSize(width: 160, height: 160))
     }
 }
 

@@ -21,7 +21,7 @@ struct PostWriteFlowButtonRow: View {
         }
         .buttonStyle(.pickple(isEnabled ? .enabled : .disabled, 52))
         .disabled(!isEnabled)
-        .padding(.top ,50)
-        .padding(.bottom, 24)
+        .padding(.top, 16)
+        .padding(.bottom, 16)
     }
 }

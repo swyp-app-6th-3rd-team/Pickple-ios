@@ -32,7 +32,6 @@ struct PostSummary: Identifiable {
     let products: [PostSummaryProduct]   // 인기 게시글(GET /posts/popular) 전용, 그 외엔 빈 배열
     let commenterCount: Int?   // 인기 게시글 전용(댓글 남긴 서로 다른 사용자 수). 그 외엔 nil — 화면에서 commentCount로 대체
 
-    //추후 API 스펙에 맞게 수정
 
     init(
         id: Int,
@@ -74,6 +73,20 @@ extension PostSummary {
     // 호출부(CommunityPostCardView)가 nil을 "그 자리 비워두기"로 그린다(API_SPEC 기준, B로 대신 채우지 않음).
     func productImageUrl(displayOrder: Int) -> URL? {
         products.first(where: { $0.displayOrder == displayOrder })?.imageUrl
+    }
+
+    // 카드가 실제로 그리는 이미지 URL 목록 — 리스트 프리패치 대상 선정에 쓴다
+    // (CommunityPostCardView가 타입별로 고르는 로직과 동일: 일반 글은 없음, A/B는 두 장,
+    // 그 외엔 대표 사진 한 장).
+    var displayedImageURLs: [URL] {
+        switch type {
+        case .text:
+            return []
+        case .ab:
+            return [productImageUrl(displayOrder: 1), productImageUrl(displayOrder: 2)].compactMap { $0 }
+        default:
+            return [thumbnailUrl].compactMap { $0 }
+        }
     }
 }
 

@@ -20,7 +20,7 @@ struct CommunitySearchResultCardView: View {
                         .pickpleTypography(.body01_600)
                         .foregroundStyle(Color.black)
                         .lineLimit(1)
-                    
+
                     //설명 공백 대비
                     Text(post.description.isEmpty ? " " : post.description)
                         .pickpleTypography(.body02_400)
@@ -45,7 +45,7 @@ struct CommunitySearchResultCardView: View {
             
             Spacer()
             
-            PostCardImage(type: post.type)
+            PostCardImage(url: post.thumbnailUrl, type: post.type)
         }
         .padding(.vertical, 20)
 

@@ -19,7 +19,12 @@ struct ProfileTextFieldView: View {
     }
 
     var body: some View {
-        VStack {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("닉네임")
+                .pickpleTypography(.body01_500)
+                .foregroundStyle(Color.black)
+                .padding(.horizontal, 4)
+            
             PickpleTextField(
                 text: $profileViewModel.nickname,
                 type: .both,

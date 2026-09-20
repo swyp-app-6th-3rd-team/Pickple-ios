@@ -52,13 +52,22 @@ private struct ComparisonPhotoSlot: View {
                     .clipped()
 
                 Button(action: { photos = [] }) {
-                    Image("PickpleClose")
+                    Image("PickpleX")
                         .resizable()
-                        .frame(width: 12, height: 12)
+                        .frame(width: 16, height: 16)
+                        .foregroundStyle(Color.white)
                         .padding(6)
-                        .background(Circle().foregroundStyle(Color.white))
+                        .background(
+                            Circle()
+                                .foregroundStyle(Color.neutral80)
+                                .padding(3)
+                                .background(
+                                    Circle()
+                                        .foregroundStyle(Color.white)
+                                )
+                        )
                 }
-                .padding(4)
+                .offset(x: 9, y: -9)
             } else {
                 Button(action: { showsPicker = true }) {
                     VStack(spacing: 4) {

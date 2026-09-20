@@ -7,6 +7,7 @@
 // 1차 점검 완료 - 9월 12일
 
 import SwiftUI
+import UIKit
 
 struct CommunityPostListSection: View {
     @Bindable var communityViewModel: CommunityViewModel
@@ -39,7 +40,10 @@ struct CommunityPostListSection: View {
                                 .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
-                        .task { await communityViewModel.loadMoreIfNeeded(currentPost: post) }
+                        .task {
+                            await communityViewModel.loadMoreIfNeeded(currentPost: post)
+                            prefetchUpcomingImages(after: post)
+                        }
                     }
                 }
                 .onScrollDirectionChange { scrolledDown in
@@ -62,6 +66,14 @@ struct CommunityPostListSection: View {
                 await communityViewModel.loadPosts()
             }
         }
+    }
+
+    // 현재 카드 기준 다음 3장의 카드가 쓸 이미지를 미리 받아 캐시를 데워둔다 —
+    // CommunityPostCardView와 같은 target size를 써야 캐시가 재사용된다.
+    private func prefetchUpcomingImages(after post: PostSummary) {
+        guard let index = communityViewModel.displayedPosts.firstIndex(where: { $0.id == post.id }) else { return }
+        let urls = communityViewModel.displayedPosts[index...].dropFirst().prefix(3).flatMap { $0.displayedImageURLs }
+        PickpleImagePrefetcher.prefetch(urls: urls, targetSize: CGSize(width: UIScreen.main.bounds.width, height: 150))
     }
 }
 

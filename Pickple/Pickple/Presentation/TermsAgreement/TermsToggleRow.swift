@@ -22,7 +22,7 @@ struct TermsToggleRow: View {
             Toggle(isOn: $isOn) {}
 
             Text(title)
-                .pickpleTypography(.body02_600)
+                .pickpleTypography(.title01_600)
                 .foregroundStyle(Color.neutral80)
                 
             Spacer()
@@ -30,7 +30,7 @@ struct TermsToggleRow: View {
             if showsViewButton {
                 Link(destination: URL(string: url)!) {
                     Text(TermsAgreementStrings.viewButton)
-                        .pickpleTypography(.body02_600)
+                        .pickpleTypography(.body02_400)
                         .underline()
                         .foregroundStyle(Color.neutral40)
                 }

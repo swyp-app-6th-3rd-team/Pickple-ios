@@ -68,7 +68,7 @@ struct CardView: View {
                                 .foregroundStyle(Color.white)
 
                             Text(data.concernText)
-                                .pickpleTypography(.body02_600)
+                                .pickpleTypography(.body02_400)
                                 .foregroundStyle(Color.neutral10)
                                 .lineLimit(1)
                         }
@@ -121,7 +121,7 @@ struct CardView: View {
         PickpleAsyncImage(url: url, targetSize: CGSize(width: 333, height: 526)) { image in
             image.resizable().scaledToFill()
         } placeholder: {
-            Image("MockAgainstPicture").resizable().scaledToFill()
+            Color.navy10
         }
     }
 

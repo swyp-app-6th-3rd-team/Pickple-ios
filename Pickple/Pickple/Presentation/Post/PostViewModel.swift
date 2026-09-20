@@ -104,6 +104,7 @@ class PostViewModel {
     // 받음) 기존 사진도 다시 채워주지 않아서(PostViewModel.editing(_:) 참고), 상품 정보의
     // 유효성은 검사하지 않는다.
     var canSubmit: Bool {
+        guard submitState != .submitting else { return false }
         guard !isEditing else { return isBasicInfoValid }
         switch selectedType {
         case .forAgainst:
@@ -190,6 +191,7 @@ class PostViewModel {
 
     @MainActor
     func submitPost() async {
+        guard submitState != .submitting else { return }
         submitState = .submitting
         do {
             if let editingPostId {
@@ -214,6 +216,8 @@ class PostViewModel {
             }
             submitState = .succeeded
         } catch {
+            // 상품 몇 개 중 어떤 이미지가 실패했는지까지는 구분 안 하고 일단 원인만 남긴다.
+            print("[PostSubmit] 게시글 제출 실패: \(error)")
             submitState = .failed
         }
     }

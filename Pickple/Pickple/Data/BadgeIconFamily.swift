@@ -11,11 +11,11 @@ import Foundation
 // 공통으로 내려주는 code("안정 식별자") → 아이콘 에셋 매핑. 두 API가 각각
 // Off/On 아이콘만 다르게 쓸 뿐 같은 code 규칙을 공유해서 한 곳에 모아둔다.
 //
-// code 네이밍 규칙은 실제 로그인 응답으로 "TOTAL_VOTE_10"·"DAILY_VOTE_20" 두 개가
-// {conditionType}_{임계값} 패턴과 정확히 일치하는 걸 확인했다(2026-09-10). STREAK_7/30은
-// 이 계정이 아직 그 단계(일일투표 20·30개를 먼저 다 채워야 미션 2 사다리에서 그다음
-// 순서로 나타남 — 기능명세서 "미션 2" 참고)에 도달하지 않아서 실제 값을 직접 보지는
-// 못했지만, 같은 패턴일 거라 추정해서 둔다.
+// code 네이밍 규칙은 {conditionType}_{임계값} 패턴 — 실제 로그인 응답으로 전부 확인 완료
+// (2026-09-19). STREAK 계열은 conditionType이 "STREAK"가 아니라 "STREAK_VOTE"라 code가
+// "STREAK_VOTE_7"/"STREAK_VOTE_30"으로 온다(추측했던 "STREAK_7"/"STREAK_30"과 다름 —
+// 이 추측값 때문에 둘 다 default의 hasPrefix("STREAK")에 걸려 attendance로 뭉쳐 보이던
+// 버그가 있었다).
 enum BadgeIconFamily: String {
     case firstPick = "FirstPick"
     case sprout = "Sprout"
@@ -34,10 +34,10 @@ enum BadgeIconFamily: String {
         case "TOTAL_VOTE_1000": return .master
         case "DAILY_VOTE_20": return .hunter
         case "DAILY_VOTE_30": return .rampage
-        case "STREAK_7": return .attendance
-        case "STREAK_30": return .addict
+        case "STREAK_VOTE_7": return .attendance
+        case "STREAK_VOTE_30": return .addict
         default:
-            // 정확한 임계값 접미사(_7/_30)까지는 못 맞혀도, code가 STREAK로 시작하면 최소한
+            // 정확한 임계값 접미사(_7/_30)까지는 못 맞혀도, code가 STREAK 계열이면 최소한
             // ladderPosition은 값이 나오도록 한다.
             return code.hasPrefix("STREAK") ? .attendance : .firstPick
         }

@@ -76,8 +76,10 @@ struct PostDetailCommentListView: View {
                         .padding(.horizontal, -20)
                 )
 
-                Divider()
-                    .foregroundStyle(Color.navy10)
+                if comment.id != postDetailViewModel.sortedComments.last?.id {
+                    Divider()
+                        .foregroundStyle(Color.navy10)
+                }
             }
         }
     }

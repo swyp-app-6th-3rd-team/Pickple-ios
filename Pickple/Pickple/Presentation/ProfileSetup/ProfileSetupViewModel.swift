@@ -64,11 +64,13 @@ class ProfileSetupViewModel {
         !nickname.isEmpty
     }
     
+    // isCheckingNickname(서버 응답 대기 여부)이 아니라 포커스 여부로 판단한다 — .ing과
+    // .select가 시각적으로 동일(검은 테두리, 캡션 없음)해서, 디바운스 때문에 응답을 기다리는
+    // 동안만 "입력중"이 뜨던 걸 포커스 중엔 항상 뜨도록 바꿔도 결과가 보이는 순서는 그대로다.
     func textFieldState(_ isFocused: Bool) -> PickpleTextFieldStateType {
-        if isCheckingNickname { return .ing }
         if isNicknameDuplicate { return .error }
         if isNicknameAvailable { return .success }
-        if isFocused && nickname.isEmpty { return .select }
+        if isFocused { return .ing }
         return ._default
     }
 
@@ -131,7 +133,6 @@ class ProfileSetupViewModel {
         defer { isCheckingNickname = false }
         guard let availability = try? await profileRepository.checkNicknameAvailability(nickname) else { return }
         guard !Task.isCancelled else { return }
-        print("[닉네임 중복확인] \"\(nickname)\" -> \(availability.isAvailable ? "사용 가능" : "중복") (message: \(availability.message))")
         lastCheckedNickname = nickname
         lastCheckedAvailability = availability
         if availability.isAvailable {
@@ -169,7 +170,6 @@ class ProfileSetupViewModel {
             // 판정해버린다. 그러면 사진만 바꾸는 수정조차 매번 중복 에러로 실패하던 문제가 있었다.
             if nickname != originalNickname {
                 let availability = try await profileRepository.checkNicknameAvailability(nickname)
-                print("[닉네임 중복확인] \"\(nickname)\" -> \(availability.isAvailable ? "사용 가능" : "중복") (message: \(availability.message))")
                 guard availability.isAvailable else {
                     isNicknameDuplicate = true
                     nicknameDuplicateMessage = availability.message

@@ -43,14 +43,20 @@ final class TokenRefresher {
     // 새 accessToken을 반환한다. 이미 재발급이 진행 중이면 그 결과를 같이 기다린다.
     func refreshedAccessToken() async throws -> String {
         if let inFlightTask {
+            print("[TokenRefresh] 이미 진행 중인 갱신에 합류 (\(Date()))")
             return try await inFlightTask.value
         }
 
         let task = Task<String, Error> {
-            guard let refreshToken = refreshTokenStore.load() else { throw APIError.unauthorized }
+            guard let refreshToken = refreshTokenStore.load() else {
+                print("[TokenRefresh] refreshToken을 Keychain에서 못 읽음 (\(Date()))")
+                throw APIError.unauthorized
+            }
+            print("[TokenRefresh] /auth/mobile/refresh 요청 시작 (\(Date()))")
             let tokens = try await performRefresh(refreshToken)
             await tokenStore.update(tokens.accessToken)
             try refreshTokenStore.save(tokens.refreshToken)
+            print("[TokenRefresh] /auth/mobile/refresh 완료 — 새 토큰=\(tokens.accessToken.suffix(12)) (\(Date()))")
             return tokens.accessToken
         }
         inFlightTask = task
@@ -61,6 +67,7 @@ final class TokenRefresher {
         } catch {
             // 재발급 자체가 실패했다(refreshToken도 만료/무효) — 다음 로그인까지는 재시도해도
             // 어차피 또 실패하니, 저장된 refreshToken을 지워서 재로그인이 필요한 상태로 정리한다.
+            print("[TokenRefresh] 갱신 실패 — refreshToken 정리, 세션 만료 처리: \(error) (\(Date()))")
             refreshTokenStore.clear()
             onRefreshFailed?()
             throw error
