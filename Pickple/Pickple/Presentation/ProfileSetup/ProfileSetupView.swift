@@ -19,7 +19,7 @@ struct ProfileSetupView: View {
     var body: some View {
         VStack(spacing: 40) {
             HStack {
-                ProfileSetupTitle
+                profileSetupTitle
                     .padding(.horizontal, 20)
                     .padding(.top, 56)
                 
@@ -67,24 +67,22 @@ struct ProfileSetupView: View {
                 .presentationDetents([.height(482)])
         }
     }
-}
-
-// MARK: - ProfileSetupTitle
-@ViewBuilder
-var ProfileSetupTitle: some View {
-    HStack {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(ProfileSetupStrings.profileTitle)
-                .pickpleTypography(.heading02)
-                .foregroundStyle(Color.black)
-            
-            Text(ProfileSetupStrings.profileGuideText)
-                .pickpleTypography(.body01_500)
-                .foregroundStyle(Color.neutral60)
+    
+    // MARK: - ProfileSetupTitle
+    private var profileSetupTitle: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(ProfileSetupStrings.profileTitle)
+                    .pickpleTypography(.heading02)
+                    .foregroundStyle(Color.black)
+                
+                Text(ProfileSetupStrings.profileGuideText)
+                    .pickpleTypography(.body01_500)
+                    .foregroundStyle(Color.neutral60)
+            }
         }
     }
 }
-
 
 
 #Preview {
