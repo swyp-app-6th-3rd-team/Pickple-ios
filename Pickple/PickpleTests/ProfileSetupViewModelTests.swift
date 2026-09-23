@@ -113,9 +113,9 @@ final class ProfileSetupViewModelTests: XCTestCase {
 
         viewModel.nickname = "picker"
         viewModel.nicknameDidChange()
-        // ProfileSetupViewModel.nicknameCheckDebounce(300ms)보다 넉넉히 길게 기다린다 —
+        // ProfileSetupViewModel.nicknameCheckDebounce(500ms)보다 넉넉히 길게 기다린다 —
         // 짧으면 디바운스가 끝나기 전에 검증해버려 간헐적으로 실패한다.
-        try? await Task.sleep(for: .milliseconds(400))
+        try? await Task.sleep(for: .milliseconds(700))
 
         XCTAssertEqual(viewModel.isNicknameAvailable, true)
     }
@@ -127,7 +127,7 @@ final class ProfileSetupViewModelTests: XCTestCase {
 
         viewModel.nickname = "picker"
         viewModel.nicknameDidChange()
-        try? await Task.sleep(for: .milliseconds(400))
+        try? await Task.sleep(for: .milliseconds(700))
 
         XCTAssertEqual(viewModel.isNicknameAvailable, false)
         XCTAssertEqual(viewModel.nicknameCheckMessage, "이미 사용 중인 닉네임이에요")
