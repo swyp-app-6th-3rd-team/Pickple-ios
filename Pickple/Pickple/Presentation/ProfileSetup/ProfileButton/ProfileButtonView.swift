@@ -23,7 +23,7 @@ struct ProfileButtonView: View {
     }
 
     private var isEnabled: Bool {
-        profileViewModel.isNicknameAvailable && !profileViewModel.isSubmitting
+        profileViewModel.isNicknameAvailable == true && !profileViewModel.isSubmitting
     }
 }
 

@@ -14,39 +14,32 @@ struct ProfileTextFieldView: View {
 
     @FocusState private var isFocused: Bool
 
+    // isNicknameAvailable이 true인데 nicknameCheckMessage가 비어있으면, 서버 확인 없이
+    // "원래 쓰던 닉네임 그대로"라 건너뛴 경우다(ProfileSetupViewModel.nicknameDidChange()의
+    // originalNickname 분기) — 이때는 성공으로 확정 표시하지 않고 그냥 포커스 기준으로만
+    // 보여준다. 실제로 서버 확인을 거친 성공/실패는 항상 메시지가 채워져 있다.
     private var state: PickpleTextFieldStateType {
-        profileViewModel.textFieldState(isFocused)
+        if let isAvailable = profileViewModel.isNicknameAvailable, !profileViewModel.nicknameCheckMessage.isEmpty {
+            return isAvailable ? .success : .error
+        }
+        return isFocused ? .ing : ._default
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("닉네임")
-                .pickpleTypography(.body01_500)
-                .foregroundStyle(Color.black)
-                .padding(.horizontal, 4)
-            
-            PickpleTextField(
-                text: $profileViewModel.nickname,
-                type: .both,
-                placeholder: ProfileSetupStrings.nicknameText,
-                trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)"),
-                caption: profileViewModel.nicknameCaption(state),
-                state: state
-            )
-        }
-        .frame(maxWidth: .infinity) //반응형
+        PickpleTextField(
+            text: $profileViewModel.nickname,
+            placeholder: ProfileSetupStrings.nicknameText,
+            trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)"),
+            title: ProfileSetupStrings.nickname,
+            caption: profileViewModel.nicknameCheckMessage,
+            state: state
+        )
         .focused($isFocused)
-        // TextField를 $profileViewModel.nickname에 직접 바인딩해야 한다 — 커스텀
-        // Binding(get:set:)으로 감싸면 특수문자를 걸러내도 TextField(UIKit 내부 버퍼)가
-        // 강제로 재동기화되지 않아 화면에 방금 입력한 특수문자가 그대로 남는 문제가 있었다.
-        // 필터링 왕복(원본→필터링값)으로 onChange가 두 번 불려도, "이미 확인해본 값
-        // 그대로면 복원만 하고 서버는 다시 안 부르는" 처리는 nicknameDidChange() 안에서
-        // 한다 — 여기서는 그냥 매번 부르면 된다.
         .onChange(of: profileViewModel.nickname) { _, newValue in
             let filtered = profileViewModel.filteredNickname(newValue)
             if filtered != newValue {
                 profileViewModel.nickname = filtered
-                return   // 필터링으로 값이 다시 바뀌면 이 onChange가 한 번 더 불려서 그때 확인한다.
+                return
             }
             profileViewModel.nicknameDidChange()
         }
