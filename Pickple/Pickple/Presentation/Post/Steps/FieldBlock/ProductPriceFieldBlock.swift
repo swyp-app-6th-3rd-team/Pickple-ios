@@ -24,7 +24,6 @@ struct ProductPriceFieldBlock: View {
         VStack(alignment: .leading, spacing: 8) {
             PickpleTextField(
                 text: $displayText,
-                type: .trailing,
                 placeholder: "\(AB) 가격을 입력해 주세요",
                 trailingAccessory: .text(PostViewStrings.priceUnit),
                 state: isFocused ? .ing : ._default

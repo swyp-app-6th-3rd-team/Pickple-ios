@@ -19,12 +19,15 @@ struct MyPageProfileEditView: View {
                        trailing: .none,
                        bar: false)
             VStack(spacing: 12) {
-                ProfileImageView(profileViewModel: profileViewModel)
-                
+                PickpleProfile(
+                    selectedImage: profileViewModel.selectedImage,
+                    type: .onCamera,
+                    onSelect: { image in profileViewModel.setSelectedImage(image) },
+                    existingImageUrl: profileViewModel.existingImageUrl
+                )                
                 
                 ProfileTextFieldView(profileViewModel: profileViewModel)
                     .padding(.horizontal, 20)
-                
             }
             
             Spacer()

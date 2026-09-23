@@ -102,24 +102,8 @@ final class ProfileSetupViewModelTests: XCTestCase {
 
         XCTAssertFalse(succeeded)
         XCTAssertEqual(spy.registeredCalls.count, 0)
-        XCTAssertTrue(viewModel.isNicknameDuplicate)
-        XCTAssertEqual(viewModel.nicknameCaption(viewModel.textFieldState(false)), "이미 사용 중인 닉네임이에요")
-        XCTAssertEqual(viewModel.textFieldState(false), .error)
-    }
-
-    func test_resetNicknameDuplicateState_clearsDuplicateFlagAndMessage() async {
-        let spy = SpyProfileRepository()
-        spy.availability = NicknameAvailability(isAvailable: false, message: "이미 사용 중인 닉네임이에요")
-        let viewModel = ProfileSetupViewModel(profileRepository: spy)
-        viewModel.nickname = "picker"
-        _ = await viewModel.submitProfile()
-        XCTAssertTrue(viewModel.isNicknameDuplicate)
-
-        viewModel.resetNicknameDuplicateState()
-
-        XCTAssertFalse(viewModel.isNicknameDuplicate)
-        XCTAssertNil(viewModel.nicknameDuplicateMessage)
-        XCTAssertEqual(viewModel.textFieldState(false), ._default)
+        XCTAssertEqual(viewModel.isNicknameAvailable, false)
+        XCTAssertEqual(viewModel.nicknameCheckMessage, "이미 사용 중인 닉네임이에요")
     }
 
     func test_nicknameDidChange_whenAvailable_enablesConfirmAfterDebounce() async {
@@ -129,13 +113,11 @@ final class ProfileSetupViewModelTests: XCTestCase {
 
         viewModel.nickname = "picker"
         viewModel.nicknameDidChange()
-        // ProfileSetupViewModel.nicknameCheckDebounce(300ms)보다 넉넉히 길게 기다린다 —
+        // ProfileSetupViewModel.nicknameCheckDebounce(500ms)보다 넉넉히 길게 기다린다 —
         // 짧으면 디바운스가 끝나기 전에 검증해버려 간헐적으로 실패한다.
-        try? await Task.sleep(for: .milliseconds(400))
+        try? await Task.sleep(for: .milliseconds(700))
 
-        XCTAssertTrue(viewModel.isNicknameAvailable)
-        XCTAssertFalse(viewModel.isNicknameDuplicate)
-        XCTAssertEqual(viewModel.textFieldState(false), .success)
+        XCTAssertEqual(viewModel.isNicknameAvailable, true)
     }
 
     func test_nicknameDidChange_whenDuplicate_marksErrorAndKeepsConfirmDisabled() async {
@@ -145,11 +127,10 @@ final class ProfileSetupViewModelTests: XCTestCase {
 
         viewModel.nickname = "picker"
         viewModel.nicknameDidChange()
-        try? await Task.sleep(for: .milliseconds(400))
+        try? await Task.sleep(for: .milliseconds(700))
 
-        XCTAssertFalse(viewModel.isNicknameAvailable)
-        XCTAssertTrue(viewModel.isNicknameDuplicate)
-        XCTAssertEqual(viewModel.nicknameDuplicateMessage, "이미 사용 중인 닉네임이에요")
+        XCTAssertEqual(viewModel.isNicknameAvailable, false)
+        XCTAssertEqual(viewModel.nicknameCheckMessage, "이미 사용 중인 닉네임이에요")
     }
 
     func test_nicknameDidChange_whenUnchangedFromOriginal_skipsNetworkCheck() async {
@@ -159,8 +140,7 @@ final class ProfileSetupViewModelTests: XCTestCase {
 
         viewModel.nicknameDidChange()
 
-        XCTAssertTrue(viewModel.isNicknameAvailable)
-        XCTAssertFalse(viewModel.isCheckingNickname)
+        XCTAssertEqual(viewModel.isNicknameAvailable, true)
     }
 
     func test_updateProfile_withNewImage_uploadsThenUpdatesWithReturnedURL() async {

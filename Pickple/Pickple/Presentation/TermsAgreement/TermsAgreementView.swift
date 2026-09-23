@@ -25,7 +25,7 @@ struct TermsAgreementView: View {
     var body: some View {
             
         VStack(alignment: .leading, spacing: 40) {
-            TermsAgreementTitle()
+            TermsAgreementTitle
             
             VStack(alignment: .leading, spacing: 20) {
                 TermsToggleAllSection(
@@ -61,7 +61,25 @@ struct TermsAgreementView: View {
         .padding(.top, 46)
         .background(Color.white)
     }
+    
+    //MARK: - TermsAgreementTitle
+    private var TermsAgreementTitle: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(TermsAgreementStrings.welcomeTitle)
+                    .pickpleTypography(.title01)
+                    .foregroundStyle(Color.black)
+                
+                Text(TermsAgreementStrings.welcomeDescription)
+                    .pickpleTypography(.body01_500)
+                    .foregroundStyle(Color.neutral60)
+            }
+            Spacer()
+        }
+    }
 }
+
+
 
 #Preview {
     TermsAgreementView(profileViewModel: ProfileSetupViewModel())

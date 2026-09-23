@@ -93,7 +93,6 @@ private nonisolated func pickpleDownsample(data: Data, to pointSize: CGSize, sca
 // 실제로 그릴 필요는 없으니 화면에 안 보이는 상태로 다운로드+다운샘플만 해서 캐시에
 // 넣어두면, 해당 셀이 실제로 나타날 때 캐시 히트로 바로 뜬다. 캐시에 이미 있으면 스킵.
 // 스크롤이 빨라 놓친 프리패치는 그냥 낭비될 뿐 버그는 아니라 취소 처리는 하지 않는다
-// (ponytail: 낭비 감수, 체감상 문제 되면 Task 핸들을 들고 있다가 취소하는 걸로 보강).
 enum PickpleImagePrefetcher {
     static func prefetch(urls: [URL], targetSize: CGSize) {
         let scale = UIScreen.main.scale

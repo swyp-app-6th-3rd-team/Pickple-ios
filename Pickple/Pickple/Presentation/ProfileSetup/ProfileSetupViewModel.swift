@@ -4,45 +4,38 @@
 //
 //  Created by 박윤수 on 8/26/26.
 //
+//
+// 1. 입력 중 / 기본 / 사용 가능 / 사용 불가능 상태에 따른 입력창 UI 변경
+// 2. 중복 체크 및 사용 가능 기능
+// 3. 닉네임 수정의 경우 기존 닉네임 대입
+// 4. 글자 수 제한
+// 5. 특수문자 입력(띄어쓰기 포함)X
+
+// 변화 체크(didChange) -> 중복 체크(isNickname)
+
 import SwiftUI
 import UIKit
 
 @Observable
 class ProfileSetupViewModel {
     var selectedImage: Image?
-    // 실제 업로드(POST /images)를 붙일 때 raw 이미지가 필요해서 표시용 Image와 별도로 들고 있는다.
     var selectedUIImage: UIImage?
-    // 수정 화면 진입 시 서버에 저장된 기존 프로필 사진. 새 사진을 고르기 전까지 이걸 보여준다.
     var existingImageUrl: URL?
     var nickname: String = ""
     var isSubmitting = false
     var errorMessage: String?
-    // 닉네임을 입력할 때마다(nicknameDidChange) 서버 중복확인이 실패하면 세팅한다.
-    // 닉네임을 다시 입력하면 resetNicknameDuplicateState()로 리셋되어 재확인 전까지
-    // 화면에 남지 않는다.
-    var isNicknameDuplicate = false
-    var nicknameDuplicateMessage: String?
-    // 서버가 "사용 가능"이라고 확인해준 상태에만 true — 확인 버튼은 이 값을 보고 활성화된다.
-    var isNicknameAvailable = false
-    // 중복확인 요청이 아직 응답을 기다리는 중인지 — 텍스트필드에 "작성중" 상태를 보여주는 데 쓴다.
-    var isCheckingNickname = false
-    // 입력이 바뀔 때마다 이전 요청(대기 중이던 디바운스 포함)을 취소하고 새로 예약한다.
-    private var nicknameCheckTask: Task<Void, Never>?
-    // 입력마다 바로 확인하면 타이핑 중 글자마다 버튼이 껐다 켜졌다 깜빡였다 — 입력이 잠깐
-    // 멈춘 뒤에만 실제로 확인하도록 짧게 디바운스한다.
-    private let nicknameCheckDebounce: Duration = .milliseconds(300)
-
+    var nicknameCheckMessage: String = ""
+    var isNicknameAvailable: Bool?
+    
     let nicknameMaxLength = 5
-    private let profileRepository: ProfileRepository
-    // 수정 화면 진입 시 loadCurrentProfile()로 불러온 원래 닉네임. 중복 확인을 건너뛸지
-    // 판단하는 기준으로만 쓴다(신규 등록 플로우에서는 nil로 남아 항상 검사한다).
+    
+    private var nicknameCheckTask: Task<Void, Never>?
     private var originalNickname: String?
-    // 마지막으로 서버에 확인해본 닉네임과 그 결과. 특수문자를 눌렀다가 필터링으로 결국
-    // 이미 확인해본 값 그대로 돌아온 경우(예: "abc" 뒤에 "!") 서버를 다시 안 부르고 이
-    // 결과를 그대로 복원한다 — nicknameDidChange() 한 번의 호출 안에서 리셋과 복원이
-    // 같이 끝나므로 화면엔 깜빡임 없이 최종 상태만 보인다.
     private var lastCheckedNickname: String?
     private var lastCheckedAvailability: NicknameAvailability?
+    
+    private let nicknameCheckDebounce: Duration = .milliseconds(500)
+    private let profileRepository: ProfileRepository
 
     init(profileRepository: ProfileRepository = MockProfileRepository()) {
         self.profileRepository = profileRepository
@@ -63,58 +56,26 @@ class ProfileSetupViewModel {
     func isNicknameValid() -> Bool {
         !nickname.isEmpty
     }
-    
-    // isCheckingNickname(서버 응답 대기 여부)이 아니라 포커스 여부로 판단한다 — .ing과
-    // .select가 시각적으로 동일(검은 테두리, 캡션 없음)해서, 디바운스 때문에 응답을 기다리는
-    // 동안만 "입력중"이 뜨던 걸 포커스 중엔 항상 뜨도록 바꿔도 결과가 보이는 순서는 그대로다.
-    func textFieldState(_ isFocused: Bool) -> PickpleTextFieldStateType {
-        if isNicknameDuplicate { return .error }
-        if isNicknameAvailable { return .success }
-        if isFocused { return .ing }
-        return ._default
-    }
 
-    func nicknameCaption(_ state: PickpleTextFieldStateType) -> String {
-        switch state {
-        case .error: return nicknameDuplicateMessage ?? ProfileSetupStrings.error
-        case .success: return ProfileSetupStrings.success
-        default: return ""
-        }
-    }
-
-    // 닉네임을 다시 입력하기 시작하면 이전 중복확인 결과는 더 이상 유효하지 않으므로 지운다.
-    func resetNicknameDuplicateState() {
-        isNicknameDuplicate = false
-        nicknameDuplicateMessage = nil
-    }
-
-    // 텍스트필드가 바뀔 때마다(키 입력마다) 호출된다. 이전 요청(대기 중이던 디바운스 포함)을
-    // 취소하고, 짧게 기다렸다가(nicknameCheckDebounce) 그 사이 입력이 없었으면 그때 확인한다
-    // — 응답이 입력 순서와 다르게 도착해서 최신 입력값 결과를 옛날 응답이 덮어쓰는 것도
-    // 같은 취소 로직으로 함께 막힌다.
+    // 텍스트 입력창의 텍스트가 변했는가?
+    // 수정의 경우 원래 닉네임과 같을 경우 변하지 않은 것으로 처리
     @MainActor
     func nicknameDidChange() {
-        resetNicknameDuplicateState()
-        isNicknameAvailable = false
+        isNicknameAvailable = nil
         nicknameCheckTask?.cancel()
 
         guard isNicknameValid() else { return }
 
-        // 본인이 원래 쓰던 닉네임 그대로면 중복확인을 건너뛴다 — GET /users/nickname/availability는
-        // 익명 조회라 서버가 "지금 이 닉네임의 주인이 나"라는 걸 몰라서, 안 바뀐 본인 닉네임도
-        // "이미 사용 중"으로 판정해버린다.
+        // 본인이 원래 쓰던 닉네임 그대로면 중복확인을 건너뛴다
         if nickname == originalNickname {
             isNicknameAvailable = true
             return
         }
 
+        // 마지막 닉네임과 비교 후 닉네임 사용 가능 상태 업데이트
         if nickname == lastCheckedNickname, let result = lastCheckedAvailability {
-            if result.isAvailable {
-                isNicknameAvailable = true
-            } else {
-                isNicknameDuplicate = true
-                nicknameDuplicateMessage = result.message
-            }
+            isNicknameAvailable = result.isAvailable
+            nicknameCheckMessage = result.message
             return
         }
 
@@ -128,19 +89,12 @@ class ProfileSetupViewModel {
 
     @MainActor
     private func checkNicknameAvailability() async {
-        guard !Task.isCancelled else { return }
-        isCheckingNickname = true
-        defer { isCheckingNickname = false }
         guard let availability = try? await profileRepository.checkNicknameAvailability(nickname) else { return }
         guard !Task.isCancelled else { return }
         lastCheckedNickname = nickname
         lastCheckedAvailability = availability
-        if availability.isAvailable {
-            isNicknameAvailable = true
-        } else {
-            isNicknameDuplicate = true
-            nicknameDuplicateMessage = availability.message
-        }
+        isNicknameAvailable = availability.isAvailable
+        nicknameCheckMessage = availability.message
     }
 
     // 등록/수정 둘 다 "닉네임 유효성 확인 → 중복 검사 → (새 사진 있으면 업로드) → 실제 저장 호출"
@@ -165,18 +119,16 @@ class ProfileSetupViewModel {
         isSubmitting = true
         defer { isSubmitting = false }
         do {
-            // 닉네임을 안 바꿨으면 중복 확인을 건너뛴다 — GET /users/nickname/availability는 익명 조회라
-            // 서버가 "지금 이 닉네임의 주인이 나"라는 걸 몰라서, 안 바뀐 본인 닉네임도 "이미 사용 중"으로
-            // 판정해버린다. 그러면 사진만 바꾸는 수정조차 매번 중복 에러로 실패하던 문제가 있었다.
+            // 닉네임을 안 바꿨으면 중복 확인을 건너뛴다
             if nickname != originalNickname {
                 let availability = try await profileRepository.checkNicknameAvailability(nickname)
                 guard availability.isAvailable else {
-                    isNicknameDuplicate = true
-                    nicknameDuplicateMessage = availability.message
+                    isNicknameAvailable = false
+                    nicknameCheckMessage = availability.message
                     return false
                 }
             }
-            // 새로 고른 사진이 없으면 nil을 보낸다 — 서버가 기존 사진을 그대로 유지한다(API_SPEC 기준).
+            // 새로 고른 사진이 없으면 nil을 보낸다
             var uploadedImageUrl: String?
             if let selectedUIImage {
                 uploadedImageUrl = try await profileRepository.uploadProfileImage(selectedUIImage)
@@ -194,7 +146,7 @@ class ProfileSetupViewModel {
         do {
             let profile = try await profileRepository.fetchMyProfile()
             nickname = profile.nickname ?? ""
-            originalNickname = profile.nickname
+            originalNickname = nickname
             existingImageUrl = profile.profileImageUrl.flatMap(URL.init(string:))
         } catch {
             errorMessage = error.localizedDescription
