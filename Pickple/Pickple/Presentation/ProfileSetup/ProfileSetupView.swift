@@ -18,10 +18,8 @@ struct ProfileSetupView: View {
     
     var body: some View {
         VStack(spacing: 40) {
-            //Spacer()
             HStack {
-                //XMARK: - Title
-                ProfileTitleView()
+                ProfileSetupTitle
                     .padding(.horizontal, 20)
                     .padding(.top, 56)
                 
@@ -29,7 +27,12 @@ struct ProfileSetupView: View {
             }
             
             //XMARK: - Profile Image
-            ProfileImageView(profileViewModel: profileViewModel)
+            PickpleProfile(
+                selectedImage: profileViewModel.selectedImage,
+                type: .onCamera,
+                onSelect: { image in profileViewModel.setSelectedImage(image) },
+                existingImageUrl: profileViewModel.existingImageUrl
+            )
             
             //MARK: - TextField
             ProfileTextFieldView(profileViewModel: profileViewModel)
@@ -66,6 +69,21 @@ struct ProfileSetupView: View {
     }
 }
 
+// MARK: - ProfileSetupTitle
+@ViewBuilder
+var ProfileSetupTitle: some View {
+    HStack {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(ProfileSetupStrings.profileTitle)
+                .pickpleTypography(.heading02)
+                .foregroundStyle(Color.black)
+            
+            Text(ProfileSetupStrings.profileGuideText)
+                .pickpleTypography(.body01_500)
+                .foregroundStyle(Color.neutral60)
+        }
+    }
+}
 
 
 
