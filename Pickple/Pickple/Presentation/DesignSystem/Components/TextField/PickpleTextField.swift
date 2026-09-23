@@ -8,67 +8,49 @@
 
 import SwiftUI
 
-enum PickpleTextFieldAccessory {
+enum PickpleTextFieldAccessory: Equatable {
     case none
     case text(String)
-    case image(Image)
-}
-
-enum PickpleTextFieldType {
-    case leading   // L
-    case trailing  // R
-    case both      // L+R
-
-    var showLeadingAccessory: Bool {
-        switch self {
-        case .leading, .both: return true
-        case .trailing: return false
-        }
-    }
-
-    var showTrailingAccessory: Bool {
-        switch self {
-        case .trailing, .both: return true
-        case .leading: return false
-        }
-    }
 }
 
 enum PickpleTextFieldStateType: Equatable {
     case _default
     case ing
-    case complete
     case error
     case success
-    case select
-
-    // _default는 기존 PickpleTextField가 쓰던 navy10을 그대로 유지 (이미 실제 화면에 쓰이고 있어서 시각적 변경 방지)
+    
     var borderColor: Color {
         switch self {
         case ._default: return Color.navy10
         case .ing: return Color.black
-        case .complete: return Color.navy10
-        case .error: return Color.red60
-        case .success: return Color.black
-        case .select: return Color.black
-        }
-    }
-
-    var captionColor: Color {
-        switch self {
-        case ._default: return Color.clear
-        case .ing: return Color.clear
-        case .complete: return Color.clear
         case .error: return Color.red60
         case .success: return Color.green60
-        case .select: return Color.clear
+        }
+    }
+    
+    var captionColor: Color {
+        switch self {
+        case .error: return Color.red60
+        case .success: return Color.green60
+        default: return Color.clear
+            
+        }
+    }
+    
+    // 캡션은 에러/성공 상태에서만 의미가 있다 — 호출부가 다른 상태에서 caption을
+    // 실수로 비워서 안 넘겨도(또는 빈 문자열이 아니어도), 여기서 한 번 더 막아서
+    // 투명한 텍스트가 자리(spacing+줄 높이)만 차지하는 걸 방지한다.
+    var showsCaption: Bool {
+        switch self {
+        case .error, .success: return true
+        case ._default, .ing: return false
         }
     }
 }
 
 struct PickpleTextFieldAccessoryView: View {
     let accessory: PickpleTextFieldAccessory
-
+    
     var body: some View {
         switch accessory {
         case .none:
@@ -77,87 +59,80 @@ struct PickpleTextFieldAccessoryView: View {
             Text(text)
                 .pickpleTypography(.body02_600)
                 .foregroundStyle(Color.neutral40)
-        case .image(let image):
-            image
-                .resizable()
-                .frame(width: 20, height: 20)
         }
     }
 }
 
 struct PickpleTextField: View {
     @Binding var text: String
-
-    // TODO: type과 leadingAccessory/trailingAccessory가 서로 안 맞게 넘어와도
-    // 컴파일 에러 없이 조용히 빈 자리만 남는다 (예: type: .both인데 leadingAccessory 누락).
-    // 호출부에서 항상 짝을 맞춰서 넘길 것. 나중에 여유 있으면 accessory의 .none 여부로
-    // 노출을 판단하도록 바꿔서 type을 없애는 리팩토링 검토
-    let type: PickpleTextFieldType
+    
     let placeholder: String
-    var leadingAccessory: PickpleTextFieldAccessory = .none
     var trailingAccessory: PickpleTextFieldAccessory = .none
+    var title: String = ""
     var caption: String = ""
     var state: PickpleTextFieldStateType = ._default
     
-
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 20) {
-                if type.showLeadingAccessory {
-                    PickpleTextFieldAccessoryView(accessory: leadingAccessory)
-                }
-
-                ZStack(alignment: .leading) {
-                    if text.isEmpty {
-                        Text(placeholder)
-                    }
-                    TextField("", text: $text)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-                        .foregroundStyle(Color.neutral100)
-                    //실제 터치 영역 미변동 추후 확인 예정
-
-                }
-                .pickpleTypography(.body01_500)
-                .foregroundStyle(Color.neutral40)
-
-                if type.showTrailingAccessory {
-                    PickpleTextFieldAccessoryView(accessory: trailingAccessory)
-                }
-            }
-            .padding(.horizontal, 20)
-            .frame(maxWidth: .infinity, minHeight: 56, maxHeight: 56) //Fill Width & Fixed Height
-            .overlay {
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(state.borderColor, lineWidth: 1)
-            }
-
-            if !caption.isEmpty {
-                Text(caption)
-                    .foregroundStyle(state.captionColor)
+        VStack(alignment: .leading, spacing: 8) {
+            
+            if !title.isEmpty {
+                Text(title)
+                    .pickpleTypography(.body02_600)
+                    .foregroundStyle(Color.neutral100)
                     .padding(.horizontal, 4)
             }
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    ZStack(alignment: .leading) {
+                        if text.isEmpty {
+                            Text(placeholder)
+                        }
+                        TextField("", text: $text)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .frame(height: 24)
+                            .foregroundStyle(Color.neutral100)
+                    }
+                    .pickpleTypography(.body01_500)
+                    .foregroundStyle(Color.neutral40)
+                    
+                    Spacer()
+                    
+                    if trailingAccessory != .none {
+                        PickpleTextFieldAccessoryView(accessory: trailingAccessory)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 15)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(state.borderColor, lineWidth: 1)
+                }
+                
+                if state.showsCaption, !caption.isEmpty {
+                    Text(caption)
+                        .foregroundStyle(state.captionColor)
+                        .padding(.horizontal, 4)
+                }
+            }
+            
         }
     }
 }
 
 #Preview {
     VStack(spacing: 20) {
-        // L
-        PickpleTextField(text: .constant(""), type: .leading, placeholder: "Text")
-
-        // R
-        PickpleTextField(text: .constant(""), type: .trailing, placeholder: "", trailingAccessory: .text("Text"))
-
-        // L + R(text)
-        PickpleTextField(text: .constant(""), type: .both, placeholder: "Text", trailingAccessory: .text("Text"))
-
-        // L + R(image)
-        PickpleTextField(text: .constant(""), type: .both, placeholder: "Text", trailingAccessory: .image(Image(systemName: "xmark.circle.fill")))
-
+        // 액세서리 없음
+        PickpleTextField(text: .constant(""), placeholder: "Text")
+        
+        // 트레일링 텍스트 액세서리
+        PickpleTextField(text: .constant(""), placeholder: "", trailingAccessory: .text("Text"))
+        
         // 상태별 (에러/성공/설명)
-        PickpleTextField(text: .constant("error"), type: .leading, placeholder: "Text", caption: "error", state: .error)
-        PickpleTextField(text: .constant("success"), type: .leading, placeholder: "Text", caption: "success", state: .success)
-        PickpleTextField(text: .constant(""), type: .leading, placeholder: "Text", state: .select)
+        PickpleTextField(text: .constant("error"), placeholder: "Text", caption: "error", state: .error)
+        
+        PickpleTextField(text: .constant("success"), placeholder: "Text", caption: "success", state: .success)
+        
+        PickpleTextField(text: .constant("success"), placeholder: "Text", title: "test")
     }
-    .padding()
 }

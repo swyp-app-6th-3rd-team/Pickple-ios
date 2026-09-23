@@ -21,7 +21,6 @@ struct ProductURLFieldBlock: View {
         VStack(alignment: .leading, spacing: 8) {
             PickpleTextField(
                 text: $url,
-                type: .leading,
                 placeholder: "\(AB) " + PostViewStrings.urlPlaceholder,
                 state: isFocused ? .ing : ._default
             )
