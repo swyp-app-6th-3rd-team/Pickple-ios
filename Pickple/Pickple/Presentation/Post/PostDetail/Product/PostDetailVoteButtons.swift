@@ -26,7 +26,7 @@ struct PostDetailVoteButtons: View {
     // .onChange(of: votedSide)가 아예 안 불려서 계속 false로 남았었다 — 그래서
     // init에서 시작값을 votedSide 유무에 맞춰 바로 잡는다.
     @State private var showsGaugeFill: Bool
-    private let appearAnimationDuration: Double = 0.2
+    private let appearAnimationDuration: Double = 0.1
 
     private var isVoted: Bool { votedSide != nil }
 
