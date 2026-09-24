@@ -22,6 +22,10 @@ struct MyActivityView: View {
         _selectedTabIndex = State(initialValue: initialTab)
     }
 
+    private var sortOrder: ActivitySortOrder {
+        selectedValue == MyActivityStrings.latestSortOption ? .latest : .oldest
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             PickpleGNB(
@@ -48,7 +52,7 @@ struct MyActivityView: View {
                 switch selectedTabIndex {
                 case 0:
                     MyActivityListView(
-                        items: myActivityViewModel.sorted(myActivityViewModel.votedPosts, by: selectedValue),
+                        items: myActivityViewModel.votedPosts,
                         onReachEnd: { post in Task { await myActivityViewModel.loadMoreVotedPostsIfNeeded(currentPost: post) } },
                         onTapItem: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) },
                         // MyActivityVotedPostCardView는 타입과 무관하게 항상 thumbnailUrl 한 장만 쓴다
@@ -57,29 +61,41 @@ struct MyActivityView: View {
                     ) { post in
                         MyActivityVotedPostCardView(post: post)
                     }
-                    .task { await myActivityViewModel.loadVotedPosts() }
+                    .task { await myActivityViewModel.loadVotedPosts(sort: sortOrder) }
 
                 case 1:
                     MyActivityListView(
-                        items: myActivityViewModel.sorted(myActivityViewModel.commentedActivities, by: selectedValue),
+                        items: myActivityViewModel.commentedActivities,
                         onTapItem: { activity in myPageRouter.push(.postDetail(postId: activity.referencedPost.id, type: activity.referencedPost.type)) },
                         prefetchImageURLs: { activity in activity.referencedPost.thumbnailUrl.map { [$0] } ?? [] }
                     ) { activity in
                         MyActivityCommentActivityRow(activity: activity)
                     }
-                    .task { await myActivityViewModel.loadCommentedPosts() }
+                    .task { await myActivityViewModel.loadCommentedPosts(sort: sortOrder) }
                 case 2:
                     MyActivityListView(
-                        items: myActivityViewModel.sorted(myActivityViewModel.writtenPosts, by: selectedValue),
+                        items: myActivityViewModel.writtenPosts,
                         onReachEnd: { post in Task { await myActivityViewModel.loadMoreWrittenPostsIfNeeded(currentPost: post) } },
                         onTapItem: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) },
                         prefetchImageURLs: { $0.thumbnailUrl.map { [$0] } ?? [] }
                     ) { post in
                         MyActivityWrittenPostCardView(post: post)
                     }
-                    .task { await myActivityViewModel.loadWrittenPosts() }
+                    .task { await myActivityViewModel.loadWrittenPosts(sort: sortOrder) }
                 default:
                     EmptyView()
+                }
+            }
+            // 정렬 옵션을 바꾸면 현재 보고 있는 탭만 새 sort로 다시 처음부터 불러온다 —
+            // 서버가 정렬을 해주므로 클라이언트에서 다시 섞을 필요가 없다.
+            .onChange(of: selectedValue) { _, _ in
+                Task {
+                    switch selectedTabIndex {
+                    case 0: await myActivityViewModel.loadVotedPosts(sort: sortOrder)
+                    case 1: await myActivityViewModel.loadCommentedPosts(sort: sortOrder)
+                    case 2: await myActivityViewModel.loadWrittenPosts(sort: sortOrder)
+                    default: break
+                    }
                 }
             }
         }

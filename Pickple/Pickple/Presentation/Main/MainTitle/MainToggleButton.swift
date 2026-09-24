@@ -9,11 +9,9 @@
 import SwiftUI
 
 struct MainToggleButton: View {
-    @Binding var isOn: Bool
-    let onTitle: String
-    let offTitle: String
+    @Binding var selectedType: VoteType
     
-    private let speed: Double = 0.2
+    private let speed: Double = 0.1
 
     // 선택 캡슐이 두 버튼 사이를 슬라이딩하는 것처럼 보이게 하려면, 서로 다른 두 위치의
     // Capsule을 같은 id로 표시해서 SwiftUI가 하나의 도형이 이동하는 것으로 보간하게 한다.
@@ -21,15 +19,14 @@ struct MainToggleButton: View {
 
     var body: some View {
             HStack(spacing: -4) {
-                Button(action: { isOn = false }) {
-                    Text(onTitle)
+                Button(action: { selectedType = .forAgainst }) {
+                    Text(MainStrings.abToggleOffTitle)
                         .pickpleTypography(.body02_600)
-
-                        .foregroundStyle(isOn ? Color.neutral20 : Color.yellow60)
+                        .foregroundStyle(selectedType == .forAgainst ? Color.yellow60 : Color.neutral20)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 4)
                         .background {
-                            if !isOn {
+                            if selectedType == .forAgainst {
                                 Capsule()
                                     .foregroundStyle(Color.navy60)
                                     .matchedGeometryEffect(id: "selection", in: selectionNamespace)
@@ -38,15 +35,15 @@ struct MainToggleButton: View {
                 }
                 
 
-                Button(action: { isOn = true })
+                Button(action: { selectedType = .ab })
                 {
-                    Text(offTitle)
+                    Text(MainStrings.abToggleOnTitle)
                         .pickpleTypography(.body02_600)
-                        .foregroundStyle(isOn ? Color.yellow60 : Color.neutral20)
+                        .foregroundStyle(selectedType == .ab ? Color.yellow60 : Color.neutral20)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 4)
                         .background {
-                            if isOn {
+                            if selectedType == .ab {
                                 Capsule()
                                     .foregroundStyle(Color.navy60)
                                     .matchedGeometryEffect(id: "selection", in: selectionNamespace)
@@ -60,12 +57,12 @@ struct MainToggleButton: View {
                     .foregroundStyle(Color.neutral5)
             )
         
-        .animation(.easeInOut(duration: speed), value: isOn)
+        .animation(.easeInOut(duration: speed), value: selectedType)
     }
 }
 
 #Preview {
-    @Previewable @State var isOn = false
-    MainToggleButton(isOn: $isOn, onTitle: "찬반", offTitle: "AB")
+    @Previewable @State var selectedType: VoteType = .ab
+    MainToggleButton(selectedType: $selectedType)
 }
 

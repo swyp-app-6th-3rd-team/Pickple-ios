@@ -16,7 +16,6 @@ struct PostDetailContent: View {
     let onPickTapped: (Comment) -> Void
     let onCommentMoreTapped: (Comment) -> Void
     let onLoginRequired: () -> Void
-    @Binding var isSortExpanded: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -61,9 +60,7 @@ struct PostDetailContent: View {
                     // 게스트는 댓글 목록 조회 자체가 막혀 있어 comments가 항상 []이라, 그 개수 대신
                     // 게시글의 실제 댓글 수(post.commentCount, 서버가 게시글 상세와 함께 내려주는
                     // 활성 댓글 건수)를 보여준다.
-                    count: postDetailViewModel.isLoggedIn ? postDetailViewModel.comments.count : post.commentCount,
-                    sortOption: $postDetailViewModel.sortOption,
-                    isSortExpanded: $isSortExpanded
+                    count: postDetailViewModel.isLoggedIn ? postDetailViewModel.comments.count : post.commentCount
                 )
                 .padding(.horizontal, 20)
                 .padding(.top, 20)
@@ -84,8 +81,6 @@ struct PostDetailContent: View {
 
 #Preview {
     struct PreviewWrapper: View {
-        @State private var isSortExpanded = false
-
         let post = PostDetail(
             id: 1,
             type: .ab,
@@ -130,8 +125,7 @@ struct PostDetailContent: View {
                     onVote: { _ in },
                     onPickTapped: { _ in },
                     onCommentMoreTapped: { _ in },
-                    onLoginRequired: {},
-                    isSortExpanded: $isSortExpanded
+                    onLoginRequired: {}
                 )
             }
         }

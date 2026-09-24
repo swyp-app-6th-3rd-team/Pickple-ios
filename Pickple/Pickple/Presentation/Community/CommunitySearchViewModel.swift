@@ -41,7 +41,7 @@ class CommunitySearchViewModel {
         var cursor: String?
         do {
             while true {
-                let page = try await communityRepository.fetchPosts(category: nil, cursor: cursor)
+                let page = try await communityRepository.fetchPosts(category: nil, sort: .latest, cursor: cursor)
                 all += page.items
                 guard page.hasNext, let next = page.nextCursor else { break }
                 cursor = next

@@ -13,9 +13,16 @@ struct PostPage {
     let hasNext: Bool
 }
 
+// GET /posts의 sort 파라미터(API_SPEC 기준) — LATEST/POPULAR만 있고 OLDEST는 없다.
+// CommunityViewModel의 "오래된 순" 옵션은 이 제약 때문에 임시로 .popular에 매핑된다.
+enum PostSortOption: String {
+    case latest = "LATEST"
+    case popular = "POPULAR"
+}
+
 protocol CommunityRepository {
     // category: 서버 enum 코드(FASHION 등). nil이면 전체. cursor: 이전 페이지의 nextCursor, nil이면 첫 페이지.
-    func fetchPosts(category: String?, cursor: String?) async throws -> PostPage
+    func fetchPosts(category: String?, sort: PostSortOption, cursor: String?) async throws -> PostPage
     // 홈 화면 "인기 게시글" 섹션 전용 (GET /posts/popular)
     func fetchPopularPosts() async throws -> [PostSummary]
 }

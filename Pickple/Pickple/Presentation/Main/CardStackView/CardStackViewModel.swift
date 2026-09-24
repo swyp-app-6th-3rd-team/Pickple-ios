@@ -7,20 +7,11 @@
 import Foundation
 
 // 타입(찬반/AB)별로 독립적으로 관리하는 카드 상태 — 탭을 오가도 서로 진행 상태가 안 섞인다.
-// pending: 서버에서 받아왔지만 아직 화면에 보여준 적 없는 카드.
-// history: 뒤로가기 전용 스택(LIFO) — 가장 최근에 넘긴 카드부터 popLast()로 꺼낸다.
-// recyclePool: 콘텐츠 소진(hasNext=false) 시 순환 재활용 전용 — history와 별개로 독립
-// 운영한다. 처음엔 이 둘을 history 하나로 같이 썼는데(뒤로가기는 popLast, 재활용은
-// removeFirst), 같은 배열을 서로 다른 용도로 양쪽에서 파먹다 보니 voteCardData에 카드
-// id가 중복되는 버그가 생겼다 — 용도별로 완전히 분리해서 재활용 쪽은 "지금 화면에 이미
-// 떠 있는 카드는 절대 안 고른다"는 조건 하나로 안전하게 만든다.
-// displayed: 이 타입이 화면에 없는 동안(다른 탭을 보는 동안) 보관해두는 스택 스냅샷 —
-// 다시 이 탭으로 돌아왔을 때 그대로 복원한다.
 private struct CardBuffer {
-    var pending: [VoteCard] = []
-    var history: [VoteCard] = []
-    var recyclePool: [VoteCard] = []
-    var displayed: [VoteCard] = []
+    var pending: [VoteCard] = [] //서버에서 받아왔지만 아직 화면에 보여준 적 없는 카드.
+    var history: [VoteCard] = [] //뒤로가기 전용 스택(LIFO) — 가장 최근에 넘긴 카드부터 popLast()로 꺼낸다.
+    var recyclePool: [VoteCard] = [] //콘텐츠 소진 시 순환 재활용 전용 — history와 별개로 독립
+    var displayed: [VoteCard] = [] //이 타입이 화면에 없는 동안(다른 탭을 보는 동안) 보관해두는 스택 스냅샷
     var cursor: String?
     var hasNext = false
 }
@@ -39,15 +30,10 @@ class CardStackViewModel {
     private var buffers: [VoteType: CardBuffer] = [.forAgainst: CardBuffer(), .ab: CardBuffer()]
     private var currentType: VoteType = .forAgainst
     private var isFetchingMore = false
-    // loadCards()가 한 번이라도 성공적으로 불러왔는지 — 다른 화면 갔다가 홈으로 돌아올 때마다
-    // 새로 부르면 /posts/random이 매번 다른 카드를 뽑아주고 history/recyclePool도 리셋돼서
-    // 방금 보던 카드 스택이 통째로 바뀌어버렸다. 이미 불러온 게 있으면 그대로 유지한다.
-    private var hasLoadedCards = false
-    // 화면(ZStack)에 동시에 그려서 스와이프 가능한 카드 수 — 현재 카드 1장 + 다음 카드 2장.
-    // 넘긴 카드는 뒤로 순환시키지 않고 history로 옮기고, pending에서 새 카드를 하나 당겨와
-    // 이 수를 유지한다. 너무 많이 쌓아두면(예전 무한 순환 방식처럼) 렌더링 비용이 계속
-    // 커지다가 빠르게 넘길 때 반응이 멈추는 문제가 있었다.
-    private let visibleStackSize = 3
+   
+    private var hasLoadedCards = false  // loadCards()가 한 번이라도 성공적으로 불러왔는지 — 보던 컨텐츠 유지
+    
+    private let visibleStackSize = 3 // 화면(ZStack)에 동시에 그려서 스와이프 가능한 카드 수 — 현재 카드 1장 + 다음 카드 2장.
 
     var voteCardData: [VoteCard] = []
     // 왼쪽 스와이프(뒤로가기)로 돌아올 카드를 미리보기용으로 들여다본다 — history에서 실제로

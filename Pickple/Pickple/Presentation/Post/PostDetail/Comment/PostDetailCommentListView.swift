@@ -57,7 +57,7 @@ struct PostDetailCommentListView: View {
     
     private var commentRows: some View {
         VStack(alignment: .leading, spacing: 0) {
-            ForEach(postDetailViewModel.sortedComments) { comment in
+            ForEach(postDetailViewModel.displayedComments) { comment in
                 PostDetailCommentRow(
                     comment: comment,
                     isPicked: postDetailViewModel.isPicked(comment.id),
@@ -76,7 +76,7 @@ struct PostDetailCommentListView: View {
                         .padding(.horizontal, -20)
                 )
 
-                if comment.id != postDetailViewModel.sortedComments.last?.id {
+                if comment.id != postDetailViewModel.displayedComments.last?.id {
                     Divider()
                         .foregroundStyle(Color.navy10)
                 }

@@ -10,7 +10,7 @@
 import SwiftUI
 
 struct MainTitle: View {
-    @Binding var isOn: Bool
+    @Binding var selectedType: VoteType
     var hasUnreadNotification: Bool = true
     
     var body: some View {
@@ -21,13 +21,13 @@ struct MainTitle: View {
                        trailing: .button(icon: Image("PickpleAlertOff"), action: { /* 알림 기능 미구현 */ })
             )
             
-            MainToggleButton(isOn: $isOn, onTitle: MainStrings.abToggleOffTitle, offTitle: MainStrings.abToggleOnTitle)
+            MainToggleButton(selectedType: $selectedType)
         }
         .frame(maxWidth: .infinity, minHeight: 56)
     }
 }
 
 #Preview {
-    @Previewable @State var isOn = false
-    MainTitle(isOn: $isOn)
+    @Previewable @State var selectedType: VoteType = .ab
+    MainTitle(selectedType: $selectedType)
 }

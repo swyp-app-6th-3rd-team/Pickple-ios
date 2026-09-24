@@ -10,8 +10,6 @@ import SwiftUI
 
 struct PostDetailCommentSectionHeader: View {
     let count: Int
-    @Binding var sortOption: String
-    @Binding var isSortExpanded: Bool
 
     var body: some View {
         HStack {
@@ -26,14 +24,6 @@ struct PostDetailCommentSectionHeader: View {
 }
 
 #Preview {
-    struct PreviewWrapper: View {
-        @State private var sortOption = "최신순"
-        @State private var isSortExpanded = false
-
-        var body: some View {
-            PostDetailCommentSectionHeader(count: 3, sortOption: $sortOption, isSortExpanded: $isSortExpanded)
-                .padding()
-        }
-    }
-    return PreviewWrapper()
+    PostDetailCommentSectionHeader(count: 3)
+        .padding()
 }

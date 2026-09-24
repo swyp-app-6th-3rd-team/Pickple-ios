@@ -5,7 +5,6 @@
 //  Created by 박윤수 on 8/31/26.
 //
 import Foundation
-import SwiftUI
 
 @Observable
 class MainViewModel {
@@ -20,21 +19,6 @@ class MainViewModel {
 
     private(set) var isLoggedIn: Bool
 
-    var selectedTypeIndex: Binding<Int> {
-        Binding(
-            get: { self.selectedType == .forAgainst ? 0 : 1 },
-            set: { self.selectedType = $0 == 0 ? .forAgainst : .ab }
-        )
-    }
-
-    // MainToggleButton(찬반/AB)용 — selectedTypeIndex와 같은 값을 Bool로 노출한다.
-    var isABSelected: Binding<Bool> {
-        Binding(
-            get: { self.selectedType == .ab },
-            set: { self.selectedType = $0 ? .ab : .forAgainst }
-        )
-    }
-
     init(
         badgeMissionRepository: BadgeMissionRepository = MockBadgeMissionRepository(),
         communityRepository: CommunityRepository = MockCommunityRepository(),
@@ -47,9 +31,6 @@ class MainViewModel {
         self.isLoggedIn = isLoggedIn
     }
 
-    // @Observable 프로퍼티를 갱신하는 메서드라 여기에만 MainActor를 명시한다(CLAUDE.md 규칙) —
-    // 클래스 전체를 MainActor로 격리하면 init까지 격리돼서 MainView의 기본 파라미터 값
-    // 평가 시점(MainActor 컨텍스트가 보장 안 됨)과 충돌한다.
     @MainActor
     func loadHomeData() async {
         // 홈 화면 한 섹션 실패로 전체를 막지 않기 위해 실패하면 빈 배열로 둔다.
@@ -58,16 +39,11 @@ class MainViewModel {
         async let rankingsResult = try? pickerRankingRepository.fetchTopRankings()
 
         missions = await missionsResult ?? []
-        // "지금 핫한 투표" 섹션 — 이름 그대로 투표 가능한 게시글(찬반/AB)만 대상이다.
-        // GET /posts/popular는 일반 게시글도 인기점수(투표+댓글수)에 포함해서 주므로,
-        // 일반 게시글은 여기서 걸러낸 뒤 상위 10개를 자른다.
-        hotPosts = Array((await popularPostsResult ?? []).filter { $0.type != .text }.prefix(10))
+        hotPosts = Array((await popularPostsResult ?? []).filter { $0.type != .text })
         topRankings = await rankingsResult ?? []
     }
 
-    // 투표 직후 미션 진행도만 다시 불러온다 — 명세서 "투표 시 미션 2의 상태바가
-    // 즉시 변경됨" 요건. hotPosts/topRankings까지 같이 다시 부르는 loadHomeData()를
-    // 매 투표마다 부르면 불필요한 네트워크 호출이 늘어서 이 부분만 따로 뺐다.
+    // 투표 직후 미션 진행도만 다시 불러온다
     @MainActor
     func reloadMissions() async {
         missions = (try? await badgeMissionRepository.fetchInProgressMissions()) ?? []

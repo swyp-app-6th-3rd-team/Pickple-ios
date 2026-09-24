@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct PickpleBottomNav: View {
+struct PickpleTabView: View {
     @Environment(\.apiClient) private var apiClient
     @Environment(\.isLoggedIn) private var isLoggedIn
     @State private var selectedTab = 0
@@ -18,11 +18,10 @@ struct PickpleBottomNav: View {
     @State private var myPageViewModel: MyPageViewModel
     @State private var showsPostCreatedToast = false
     @State private var showsMyPagePostCreatedToast = false
-    // 탭별 스크롤 다운 여부 — 각 루트 화면이 자기 스크롤 상태를 이걸로 올려보내고,
-    // 아래 .toolbar(_, for: .tabBar)가 path.isEmpty와 같이 봐서 하단 탭바를 숨긴다.
+    // 탭별로 개별 적용 — 아래로 스크롤하면 하단 탭바를 숨긴다.
     @State private var mainScrolledDown = false
-    @State private var communityScrolledDown = false
     @State private var myPageScrolledDown = false
+    @State private var communityScrolledDown = false
 
     init(myPageViewModel: MyPageViewModel = MyPageViewModel()) {
         _myPageViewModel = State(initialValue: myPageViewModel)
@@ -69,7 +68,7 @@ struct PickpleBottomNav: View {
                 CommunityView(
                     communityViewModel: CommunityViewModel(communityRepository: RemoteCommunityRepository(apiClient: apiClient)),
                     onPostCreated: { showsPostCreatedToast = true },
-                    onScrolledDownChange: { communityScrolledDown = $0 }
+                    isScrolledDown: $communityScrolledDown
                 )
                     .navigationDestination(for: CommunityRoute.self) { route in
                         switch route {
@@ -98,8 +97,8 @@ struct PickpleBottomNav: View {
             NavigationStack(path: $myPageRouter.path) {
                 MyPageView(
                     myPageViewModel: myPageViewModel,
-                    isScrolledDown: $myPageScrolledDown,
-                    onPostCreated: { showsMyPagePostCreatedToast = true }
+                    onPostCreated: { showsMyPagePostCreatedToast = true },
+                    isScrolledDown: $myPageScrolledDown
                 )
                     .navigationDestination(for: MyPageRoute.self) { route in
                         switch route {
@@ -137,12 +136,7 @@ struct PickpleBottomNav: View {
         // 탭을 떠날 때 그 탭의 네비게이션 스택을 비워둔다 — 그래야 다른 탭에 갔다가 다시
         // 돌아왔을 때 마지막에 보던 상세 화면이 아니라 항상 목록(루트)부터 보인다.
         .onChange(of: selectedTab) { oldValue, _ in
-            // 애니메이션을 꺼도 안 됐다 — 문제는 우리 쪽 애니메이션이 아니라, 탭 전환
-            // 트랜지션이 아직 화면에 보이는 도중에 리셋이 일어나 그 전환 중에 상세→목록
-            // 전환이 그대로 보이는 것이었다. 탭 전환이 끝날 시간을 준 뒤(그 탭이 안 보이게
-            // 된 뒤) 리셋하면 안 보이게 된다.
             Task {
-                try? await Task.sleep(for: .milliseconds(400))
                 switch oldValue {
                 case 0: mainRouter.path.removeAll()
                 case 1: communityRouter.path.removeAll()
@@ -165,5 +159,5 @@ struct PickpleBottomNav: View {
 }
 
 #Preview {
-    PickpleBottomNav()
+    PickpleTabView()
 }

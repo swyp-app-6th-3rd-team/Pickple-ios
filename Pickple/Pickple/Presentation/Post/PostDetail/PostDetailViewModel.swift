@@ -16,7 +16,6 @@ class PostDetailViewModel {
     var post: PostDetail?
     var comments: [Comment] = []
     var commentInput: String = ""
-    var sortOption: String = PostDetailViewModel.sortOptions[0]
     // A/B 게시글은 작성 시 A 1장, B 1장 정확히 2장만 올라간다(ComparisonPhotoFieldBlock 참고)
     // — images[0]=A, images[1]=B로 고정이라 탭 ↔ 사진 인덱스를 그대로 맞바꾸면 된다.
     // 서로의 didSet이 상대를 다시 건드리는 순환을 막기 위해, 이미 맞는 상태면 아무것도 안 한다.
@@ -40,8 +39,6 @@ class PostDetailViewModel {
     var editingCommentID: Int?
 
     var isLoggedIn: Bool
-
-    static let sortOptions = ["최신순", "오래된 순"]
 
     var firstLabel: String {
         guard post?.type == .ab else { return PostDetailStrings.voteSideFor }
@@ -75,8 +72,10 @@ class PostDetailViewModel {
         comment.mine
     }
 
-    var sortedComments: [Comment] {
-        return PostSortOrder.sorted(comments, ascending: sortOption == PostDetailViewModel.sortOptions[1]) { $0.createdAt }
+    // 정렬 토글 없이 항상 최신순 — 서버는 (created_at, id) 오름차순(오래된 순)으로 전체를
+    // 한 번에 주므로(API_SPEC, sort 파라미터 자체가 없음) 뒤집어서 보여준다.
+    var displayedComments: [Comment] {
+        Array(comments.reversed())
     }
 
     init(

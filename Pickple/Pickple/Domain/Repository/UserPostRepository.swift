@@ -13,9 +13,16 @@ struct UserPostPage {
     let hasNext: Bool
 }
 
+// GET /users/me/activities/votes·comments·posts 공통 sort 파라미터(API_SPEC 기준).
+// POPULAR은 아직 화면에 쓰는 정렬 옵션이 없어서 뺐다 — 필요해지면 추가.
+enum ActivitySortOrder: String {
+    case latest = "LATEST"
+    case oldest = "OLDEST"
+}
+
 protocol UserPostRepository {
     func fetchMyPosts() async throws -> [PostSummary]
-    func fetchVotedPosts(cursor: String?) async -> UserPostPage
-    func fetchCommentedPosts() async -> [MyCommentActivity]
-    func fetchWrittenPosts(cursor: String?) async -> UserPostPage
+    func fetchVotedPosts(cursor: String?, sort: ActivitySortOrder) async -> UserPostPage
+    func fetchCommentedPosts(sort: ActivitySortOrder) async -> [MyCommentActivity]
+    func fetchWrittenPosts(cursor: String?, sort: ActivitySortOrder) async -> UserPostPage
 }

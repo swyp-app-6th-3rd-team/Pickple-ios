@@ -7,12 +7,10 @@
 
 import Foundation
 
-// 앱 전체의 세션 상태. 게스트(둘러보기)와 완전 로그인은 둘 다 PickpleBottomNav를 보여주지만
-// 실제 인증 여부가 다르므로 Bool 하나로 합치지 않고 별도 케이스로 분리한다.
+// 앱 전체의 세션 상태.
 enum SessionState: Equatable {
     case loggedOut
     case guest
-    // 로그인은 됐지만 닉네임 등록 전(GET /users/me의 nickname == nil)이라 프로필 설정 화면을 보여줘야 하는 상태.
     case needsProfileSetup
     case loggedIn
 }

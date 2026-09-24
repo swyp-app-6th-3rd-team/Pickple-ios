@@ -54,8 +54,8 @@ struct MockUserPostRepository: UserPostRepository {
         ]
     }
 
-    func fetchVotedPosts(cursor: String?) async -> UserPostPage {
-        UserPostPage(items: votedPosts, nextCursor: nil, hasNext: false)
+    func fetchVotedPosts(cursor: String?, sort: ActivitySortOrder) async -> UserPostPage {
+        UserPostPage(items: sort == .oldest ? votedPosts.reversed() : votedPosts, nextCursor: nil, hasNext: false)
     }
 
     private var votedPosts: [PostSummary] {
@@ -123,8 +123,8 @@ struct MockUserPostRepository: UserPostRepository {
         ]
     }
 
-    func fetchCommentedPosts() async -> [MyCommentActivity] {
-        [
+    func fetchCommentedPosts(sort: ActivitySortOrder) async -> [MyCommentActivity] {
+        let activities: [MyCommentActivity] = [
             MyCommentActivity(
                 id: 301,
                 content: "그것도 괜찮아보이지만 차라리 같은 흰 색으로 두 켤레 살거면 다른 모델로 사는편이 좋지 않을까?",
@@ -168,9 +168,11 @@ struct MockUserPostRepository: UserPostRepository {
                 )
             ),
         ]
+        return sort == .oldest ? activities.reversed() : activities
     }
 
-    func fetchWrittenPosts(cursor: String?) async -> UserPostPage {
-        UserPostPage(items: await fetchMyPosts(), nextCursor: nil, hasNext: false)
+    func fetchWrittenPosts(cursor: String?, sort: ActivitySortOrder) async -> UserPostPage {
+        let posts = await fetchMyPosts()
+        return UserPostPage(items: sort == .oldest ? posts.reversed() : posts, nextCursor: nil, hasNext: false)
     }
 }

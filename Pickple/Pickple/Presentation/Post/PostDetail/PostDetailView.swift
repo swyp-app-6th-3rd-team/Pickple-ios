@@ -15,7 +15,6 @@ struct PostDetailView: View {
     @Environment(\.appRequestLogin) private var appRequestLogin
     @Environment(\.apiClient) private var apiClient
     
-    @State private var isSortExpanded = false
     @State private var showsSuccessToast = false
     @State private var showsDeleteFailureToast = false
     @State private var showsMoreMenu = false
@@ -95,8 +94,7 @@ struct PostDetailView: View {
                             },
                             onLoginRequired: {
                                 loginRequiredDescription = PostDetailStrings.commentViewRequiredDescription
-                            },
-                            isSortExpanded: $isSortExpanded
+                            }
                         )
                     }
                     .coordinateSpace(name: "postDetailScroll")
