@@ -4,8 +4,9 @@
 //
 //  Created by 박윤수 on 9/1/26.
 //
-// 투표 버튼의 기본 색상 확인 필요
 // 1차 점검 완료 - 9월 12일
+// 여기도 블러처리 어케해야하누
+
 import SwiftUI
 
 struct CardView: View {
@@ -25,16 +26,22 @@ struct CardView: View {
     var body: some View {
         VStack(spacing: 22) {
             ZStack(alignment: .topLeading) {
-                    cardImage
-                    .frame(width: 333, height: 526)
-                    .scaledToFill()
+                if data.type == .ab {
+                    VStack(spacing: 0) {
+                        image(data.imageUrl)
+                        image(data.secondImageUrl)
+                    }
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .shadow(color: Color.black.opacity(0.08), radius: 12)
-
-                    bottomGradient
+                } else {
+                    image(data.imageUrl)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .shadow(color: Color.black.opacity(0.08), radius: 12)
+                }
+                bottomGradient
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .allowsHitTesting(false)
-
+                
                 VStack(alignment: .leading) {
                     HStack(spacing: 4) {
                         Image("PickpleFire")
@@ -47,14 +54,11 @@ struct CardView: View {
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
-                    // 캡슐에 .blur()를 바로 걸면 둥근 양 끝이 안쪽으로 침식돼 찌그러져 보인다.
-                    // 캡슐을 blur 반경(8)만큼 미리 키워서 블러를 걸고, 원래 크기로 다시
-                    // 잘라내면 침식된 가장자리만 잘려나가고 보이는 부분은 멀쩡하게 남는다.
                     .background(
                         Capsule()
                             .foregroundStyle(Color.black.opacity(0.4))
                             .padding(-8)
-                            .blur(radius: 8)
+                        //.blur(radius: 8)
                     )
                     .clipShape(Capsule())
                     .padding(16)
@@ -66,7 +70,7 @@ struct CardView: View {
                             Text(data.productName)
                                 .pickpleTypography(.title02_600)
                                 .foregroundStyle(Color.white)
-
+                            
                             Text(data.concernText)
                                 .pickpleTypography(.body02_400)
                                 .foregroundStyle(Color.neutral10)
@@ -91,35 +95,40 @@ struct CardView: View {
                         
                     }
                 }
-
-                }
-            .frame(width: 333, height: 526) //카드 뷰의 크기는 고정
-
-                .contentShape(Rectangle())
-                .onTapGesture(perform: onTapBody)
+                
             }
+            .frame(width: 333, height: 526) //카드 뷰의 크기는 고정
+            .contentShape(Rectangle())
+            .onTapGesture(perform: onTapBody)
         }
-
-    @ViewBuilder
-    private var cardImage: some View {
-        if data.type == .ab {
-            VStack(spacing: 0) {
-                productImage(data.imageUrl)
-                productImage(data.secondImageUrl)
+    }
+    
+    //MARK: - Image
+    private func image(_ url: URL?) -> some View {
+        if data.type == .forAgainst {
+            PickpleAsyncImage(url: url, targetSize: CGSize(width: 333, height: 526)) { image in
+                image
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 333, height: 526)
+                    .clipped()
+            } placeholder: {
+                Color.navy10
             }
         } else {
-            productImage(data.imageUrl)
+            PickpleAsyncImage(url: url, targetSize: CGSize(width: 333, height: 263)) { image in
+                image
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 333, height: 263)
+                    .clipped()
+            } placeholder: {
+                Color.navy10
+            }
         }
     }
-
-    private func productImage(_ url: URL?) -> some View {
-        PickpleAsyncImage(url: url, targetSize: CGSize(width: 333, height: 526)) { image in
-            image.resizable().scaledToFill()
-        } placeholder: {
-            Color.navy10
-        }
-    }
-
+    
+    //MARK: - bottomGradient
     private var bottomGradient: some View {
         VStack(spacing: 0) {
             Spacer()
@@ -134,7 +143,7 @@ struct CardView: View {
             .frame(height: 152)
         }
     }
-
+    
 }
 
 #Preview("찬반 픽") {
