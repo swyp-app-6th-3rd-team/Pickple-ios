@@ -64,7 +64,7 @@ struct ProfileSetupView: View {
             
                 .interactiveDismissDisabled()
                 .presentationDragIndicator(.visible)
-                .presentationDetents([.height(482)])
+                .presentationDetents([.height(516)])
         }
     }
     
