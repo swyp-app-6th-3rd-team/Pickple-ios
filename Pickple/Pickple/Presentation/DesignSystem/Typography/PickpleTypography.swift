@@ -4,8 +4,6 @@
 //
 //  Created by 박윤수 on 8/29/26.
 //
-//  TODO: Pretendard 폰트 파일(.otf/.ttf) 프로젝트 추가 및 Info.plist UIAppFonts 등록 필요
-//  - 등록 전까지 .custom() 폰트 이름이 매칭되지 않아 시스템 기본 폰트로 폴백됨
 //
 
 import SwiftUI
@@ -51,7 +49,7 @@ enum PickpleTypography {
         }
     }
 
-    private static let tempRenderingGapScale: CGFloat = 1.06 // 폰트 크기 보정값
+    private static let tempRenderingGapScale: CGFloat = 1.065 // 폰트 크기 보정값
 
     var size: CGFloat {
         let base: CGFloat

@@ -42,8 +42,8 @@ struct PostScrollDTO: Decodable {
 struct RemoteCommunityRepository: CommunityRepository {
     let apiClient: APIClientProtocol
 
-    func fetchPosts(category: String?, cursor: String?) async throws -> PostPage {
-        var queryItems: [URLQueryItem] = []
+    func fetchPosts(category: String?, sort: PostSortOption, cursor: String?) async throws -> PostPage {
+        var queryItems: [URLQueryItem] = [URLQueryItem(name: "sort", value: sort.rawValue)]
         if let category {
             queryItems.append(URLQueryItem(name: "category", value: category))
         }

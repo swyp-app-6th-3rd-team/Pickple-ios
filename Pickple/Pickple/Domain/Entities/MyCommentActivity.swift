@@ -21,7 +21,7 @@ struct MyCommentActivity: Identifiable {
 
 struct MyCommentActivityPostReference: Identifiable {
     let id: Int
-    let type: VoteType       // 참조 게시글 타입 아이콘 표시용
+    let type: VoteType
     let title: String
     let thumbnailUrl: URL?
     let voteCount: Int

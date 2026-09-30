@@ -16,6 +16,4 @@ struct MyBadge: Identifiable {
     let iconOffName: String     // 잠금 상태 아이콘
     let isUnlocked: Bool
     let unlockCondition: String // 서버 description 그대로. 예: "누적 투표 10회"
-
-    //추후 API 스펙에 맞게 수정
 }

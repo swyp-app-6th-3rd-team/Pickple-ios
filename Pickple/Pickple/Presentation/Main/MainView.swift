@@ -16,8 +16,8 @@ struct MainView: View {
     @State private var isMissionExpanded = false
     @State private var showsBadgeLoginRequired = false
     var onRequestCommunityTab: (() -> Void)? = nil
-    // 아래로 스크롤하면 하단 탭바를 숨기는 데 쓴다 — PickpleBottomNav가 각 탭 루트의
-    // 스크롤 상태를 이걸로 전달받아 .toolbar(_, for: .tabBar) 노출 여부에 같이 반영한다.
+    // 아래로 스크롤하면 하단 탭바를 숨기는 데 쓴다 — PickpleTabView가 이걸로 전달받아
+    // .toolbar(_, for: .tabBar) 노출 여부에 같이 반영한다.
     var isScrolledDown: Binding<Bool> = .constant(false)
 
     init(
@@ -34,13 +34,11 @@ struct MainView: View {
     
     var body: some View {
         ZStack {
-            VStack {
                 Color.white
                     .ignoresSafeArea()
-            }
             
             VStack(spacing: 0) {
-                MainTitle(isOn: mainViewModel.isABSelected)
+                MainTitle(selectedType: $mainViewModel.selectedType)
                     .onChange(of: mainViewModel.selectedType) { _, newValue in
                         cardStackViewModel.filterCards(by: newValue)
                     }
@@ -86,12 +84,9 @@ struct MainView: View {
                         .padding(.top, 50) //핫투표 + 랭킹 간격
                         .padding(.horizontal, 20)
                     }
-                    .onScrollDirectionChange { scrolledDown in
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isScrolledDown.wrappedValue = scrolledDown
-                        }
-                    }
+                    
                 }
+                .onTabBarHideScroll(isScrolledDown: isScrolledDown)
                 // 카드스택을 한 번 불러온 뒤로는 재사용하도록 바꿔서, 새 카드를 보고 싶을 때
                 // 쓸 수 있는 수단이 없어졌다 — 당겨서 새로고침으로 직접 다시 뽑을 수 있게 한다.
                 .refreshable {

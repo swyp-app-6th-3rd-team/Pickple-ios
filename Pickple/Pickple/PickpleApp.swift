@@ -70,7 +70,7 @@ struct PickpleApp: App {
                             onCompleted: { sessionViewModel.handleProfileRegistered() }
                         )
                     case .loggedIn, .guest:
-                        PickpleBottomNav(
+                        PickpleTabView(
                             myPageViewModel: MyPageViewModel(
                                 userInfoRepository: RemoteUserInfoRepository(apiClient: apiClient),
                                 userPostRepository: RemoteUserPostRepository(apiClient: apiClient),

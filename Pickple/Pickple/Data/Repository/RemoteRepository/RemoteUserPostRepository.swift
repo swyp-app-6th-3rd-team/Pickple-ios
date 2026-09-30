@@ -96,8 +96,8 @@ struct RemoteUserPostRepository: UserPostRepository {
 
     // 2026-09-13부터 GET /users/me/activities/votes가 selectedOptionId/options를 직접 줘서,
     // 게시글마다 상세를 따로 불러 채우던 N+1 워크어라운드가 필요 없어졌다.
-    func fetchVotedPosts(cursor: String?) async -> UserPostPage {
-        var queryItems: [URLQueryItem] = []
+    func fetchVotedPosts(cursor: String?, sort: ActivitySortOrder) async -> UserPostPage {
+        var queryItems: [URLQueryItem] = [URLQueryItem(name: "sort", value: sort.rawValue)]
         if let cursor {
             queryItems.append(URLQueryItem(name: "cursor", value: cursor))
         }
@@ -118,11 +118,11 @@ struct RemoteUserPostRepository: UserPostRepository {
     // 게시글마다 댓글 목록을 따로 불러 mine==true를 거르던 N+1 워크어라운드가 필요 없어졌다.
     // 서버가 게시글당 대표 댓글 하나만 주므로(§3 동작 변경), 한 게시글에 내 댓글이 여러 개여도
     // 이제 한 줄로만 보인다 — 예전(댓글마다 한 줄)과 달라진 표시 단위다.
-    func fetchCommentedPosts() async -> [MyCommentActivity] {
+    func fetchCommentedPosts(sort: ActivitySortOrder) async -> [MyCommentActivity] {
         var items: [MyCommentActivity] = []
         var cursor: String?
         while true {
-            var queryItems: [URLQueryItem] = []
+            var queryItems: [URLQueryItem] = [URLQueryItem(name: "sort", value: sort.rawValue)]
             if let cursor {
                 queryItems.append(URLQueryItem(name: "cursor", value: cursor))
             }
@@ -135,8 +135,8 @@ struct RemoteUserPostRepository: UserPostRepository {
         return items
     }
 
-    func fetchWrittenPosts(cursor: String?) async -> UserPostPage {
-        var queryItems: [URLQueryItem] = []
+    func fetchWrittenPosts(cursor: String?, sort: ActivitySortOrder) async -> UserPostPage {
+        var queryItems: [URLQueryItem] = [URLQueryItem(name: "sort", value: sort.rawValue)]
         if let cursor {
             queryItems.append(URLQueryItem(name: "cursor", value: cursor))
         }

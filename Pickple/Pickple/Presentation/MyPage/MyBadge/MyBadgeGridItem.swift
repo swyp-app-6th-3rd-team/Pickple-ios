@@ -1,0 +1,42 @@
+//
+//  MyBadgeGridItem.swift
+//  Pickple
+//
+//  Created by 박윤수 on 9/3/26.
+//
+// 1차 점검 완료 - 9월 13일
+
+import SwiftUI
+
+struct MyBadgeGridItem: View {
+    let badge: MyBadge
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Image(badge.isUnlocked ? badge.iconOnName : badge.iconOffName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 87, height: 82)
+
+                Text(badge.title)
+                    .pickpleTypography(.body01_500)
+                    .foregroundStyle(badge.isUnlocked ? Color.black : Color.neutral40)
+            }
+        }
+    }
+}
+
+#Preview {
+    HStack {
+        MyBadgeGridItem(
+            badge: MyBadge(id: UUID(), code: "FIRST_PICK", title: "투표 꿈나무", iconOnName: "PickpleBadgeFirstPickOn", iconOffName: "PickpleBadgeFirstPickOff", isUnlocked: true, unlockCondition: ""),
+            action: {}
+        )
+        MyBadgeGridItem(
+            badge: MyBadge(id: UUID(), code: "ADDICT", title: "투표 중독자", iconOnName: "PickpleBadgeAddictOn", iconOffName: "PickpleBadgeAddictOff", isUnlocked: false, unlockCondition: ""),
+            action: {}
+        )
+    }
+}

@@ -16,9 +16,6 @@ struct MyPageView: View {
     @State private var showsLoginRequired = false
     @State private var showsMyPostsLoginRequired = false
     @State private var showsInfoLoginRequired = false
-    // 아래로 스크롤하면 하단 탭바를 숨기는 데 쓴다 — PickpleBottomNav가 이걸로 전달받아
-    // .toolbar(_, for: .tabBar) 노출 여부에 같이 반영한다.
-    var isScrolledDown: Binding<Bool> = .constant(false)
     // "새 투표 올리기"를 커뮤니티 작성 버튼과 동일하게 동작시키는 데 쓴다 — 유형 선택
     // 시트 → 작성 화면(fullScreenCover) → 성공 시 상세로 push + 토스트, 순서까지 같다.
     @State private var showsTypeSelection = false
@@ -27,6 +24,9 @@ struct MyPageView: View {
     // 새 글 등록 성공 토스트는 이 화면이 아니라 상세 화면으로 push된 뒤에 보여야 해서,
     // 이 화면 자신의 토스트가 아니라 상위(PickpleBottomNav의 NavigationStack)에서 띄운다.
     var onPostCreated: () -> Void = {}
+    // 아래로 스크롤하면 하단 탭바를 숨기는 데 쓴다 — PickpleTabView가 이걸로 전달받아
+    // .toolbar(_, for: .tabBar) 노출 여부에 같이 반영한다.
+    var isScrolledDown: Binding<Bool> = .constant(false)
 
     var body: some View {
         ZStack {
@@ -110,13 +110,9 @@ struct MyPageView: View {
                         )
 
                     }
-                    .onScrollDirectionChange { scrolledDown in
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isScrolledDown.wrappedValue = scrolledDown
-                        }
-                    }
 
             }
+            .onTabBarHideScroll(isScrolledDown: isScrolledDown)
 
             if showsLoginRequired {
                 PickpleDialogOverlay {

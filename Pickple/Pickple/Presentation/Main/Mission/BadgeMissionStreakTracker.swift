@@ -69,13 +69,13 @@ struct BadgeMissionStreakTracker: View {
     private func dayCircle(_ day: Int) -> some View {
         let imageName: String
         if day == target {
-            imageName = "Property 1=Last"
+            imageName = "PickpleMissionLast"
         } else if day < current {
-            imageName = "Property 1=Check"
+            imageName = "PickpleMissionCheck"
         } else if day == current {
-            imageName = "Property 1=Today"
+            imageName = "PickpleMissionToday"
         } else {
-            imageName = "Property 1=Disable"
+            imageName = "PickpleMissionDisable"
         }
 
         return Image(imageName)

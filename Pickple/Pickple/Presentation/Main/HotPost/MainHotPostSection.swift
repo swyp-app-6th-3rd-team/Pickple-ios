@@ -30,7 +30,7 @@ struct MainHotPostSection: View {
                             .resizable()
                             .frame(width: 16, height: 16)
                     }
-                    .pickpleTypography(.body02_600)
+                    .pickpleTypography(.body02_500)
                     .foregroundStyle(Color.neutral40)
                 }
             }
