@@ -23,9 +23,7 @@ private struct TabBarHideOnScrollModifier: ViewModifier {
             // 최상단 근처(당겨서 새로고침 포함)에서는 항상 탭바를 보여준다.
             guard newOffset > 0 else {
                 lastToggleOffset = newOffset
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    isScrolledDown.wrappedValue = false
-                }
+                isScrolledDown.wrappedValue = false
                 return
             }
 
@@ -33,9 +31,7 @@ private struct TabBarHideOnScrollModifier: ViewModifier {
             guard abs(delta) > threshold else { return }
 
             lastToggleOffset = newOffset
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isScrolledDown.wrappedValue = delta > 0
-            }
+            isScrolledDown.wrappedValue = delta > 0
         }
     }
 }

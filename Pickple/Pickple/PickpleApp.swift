@@ -55,6 +55,10 @@ struct PickpleApp: App {
         loginViewModel.onLoginSuccess = { Task { await sessionViewModel.handleLoginSuccess() } }
         loginViewModel.onGuestContinue = { sessionViewModel.continueAsGuest() }
         self.loginViewModel = loginViewModel
+
+        // AnalyticsService.shared는 static let이라 처음 접근하는 시점에 만들어진다.
+        // autocapture(세션/앱 생명주기 등)가 앱 시작 시점부터 잡히도록, 여기서 한 번 미리 접근해둔다.
+        _ = AnalyticsService.shared
     }
 
     var body: some Scene {

@@ -48,6 +48,7 @@ struct LoginView: View {
             Text(loginViewModel.errorMessage ?? "")
         }
     }
+        
 }
 
 

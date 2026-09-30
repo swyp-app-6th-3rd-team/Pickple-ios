@@ -129,26 +129,4 @@ extension PostSummary {
             commenterCount: commenterCount
         )
     }
-
-    // 목록 조회로는 voteResult가 안 채워져서(스펙에 없음), 상세 조회로 얻은 값을 나중에
-    // 채워 넣을 때 쓰는 복사본 생성 헬퍼.
-    func withVoteResult(_ voteResult: PostVoteResult?) -> PostSummary {
-        PostSummary(
-            id: id,
-            type: type,
-            category: category,
-            title: title,
-            description: description,
-            thumbnailUrl: thumbnailUrl,
-            authorNickname: authorNickname,
-            authorLevel: authorLevel,
-            authorProfileImageUrl: authorProfileImageUrl,
-            voteCount: voteCount,
-            commentCount: commentCount,
-            createdAt: createdAt,
-            voteResult: voteResult,
-            products: products,
-            commenterCount: commenterCount
-        )
-    }
 }
