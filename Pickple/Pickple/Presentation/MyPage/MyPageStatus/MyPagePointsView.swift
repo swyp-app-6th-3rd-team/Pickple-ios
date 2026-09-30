@@ -87,7 +87,7 @@ private struct MyPagePointsLevelFooter: View {
                             .resizable()
                             .frame(width: 20, height: 20)
                     } else {
-                        Image("badge")
+                        Image("PickpleGradeBadge")
                     }
 
                     Text(level.map { "LV. \($0)" } ?? "-")
