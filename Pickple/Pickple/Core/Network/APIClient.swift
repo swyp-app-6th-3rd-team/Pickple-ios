@@ -156,12 +156,15 @@ final class APIClient: APIClientProtocol, @unchecked Sendable {
     // 재발급 클로저가 init 시점에 만들어지는데, 그 안에서 self의 인스턴스 메서드(send)를 쓰면
     // "self가 아직 다 초기화되지 않았다"는 제약에 걸려서 정적으로 필요한 값만 받아 처리한다.
     private static func rawSend(_ endpoint: APIEndpoint, baseURL: URL, session: URLSession, token: String?) async throws -> (Data, HTTPURLResponse) {
+        //1단계: baseURL + endpoint.path 합쳐서 → components 시작점 만들기
         guard var components = URLComponents(url: baseURL.appendingPathComponent(endpoint.path), resolvingAgainstBaseURL: false) else {
             throw APIError.invalidURL
         }
+        //2단계: components에 쿼리 파라미터 추가 (있으면)
         if !endpoint.queryItems.isEmpty {
             components.queryItems = endpoint.queryItems
         }
+        //3단계: components.url로 최종 완성된 URL 꺼내기
         guard let url = components.url else {
             throw APIError.invalidURL
         }
