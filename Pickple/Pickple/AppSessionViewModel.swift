@@ -68,15 +68,20 @@ class AppSessionViewModel {
     // 프로필 설정 화면에서 등록 완료했을 때 호출 — 신규 가입자는 그 화면 안에서 약관 동의 모달을 거친 뒤 호출된다.
     func handleProfileRegistered() {
         sessionState = .loggedIn
+        AnalyticsService.track("onboarding_completed") //온보딩 완료 트래킹
     }
 
     @MainActor
     private func resolveProfileState() async {
         do {
             let profile = try await profileRepository.fetchMyProfile()
-            sessionState = (profile.nickname == nil) ? .needsProfileSetup : .loggedIn
+            if profile.nickname == nil {
+                sessionState = .needsProfileSetup
+                AnalyticsService.track("onboarding_started")  //온보딩 시작 트래킹
+            } else {
+                sessionState = .loggedIn
+            }
         } catch {
-            // 프로필 조회 실패해도 로그인 자체는 성공했으니, 사용자를 막지 않고 일단 메인으로 보낸다.
             sessionState = .loggedIn
         }
         scheduleNextProactiveRefresh()
