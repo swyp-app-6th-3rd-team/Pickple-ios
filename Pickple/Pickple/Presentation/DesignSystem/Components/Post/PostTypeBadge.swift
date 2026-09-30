@@ -56,8 +56,7 @@ struct PostTypeBadge: View {
         PostTypeBadge(type: .text)
         PostTypeBadge(type: .forAgainst)
         PostTypeBadge(type: .ab, iconSize: 14, typography: .caption_400, horizontalPadding: 8)
-        PostTypeBadge(type: .forAgainst, iconSize: 14, typography: .caption_400, textColor: .green80, backgroundColor: .green20)
+
     }
-    .padding()
     .background(Color.neutral10)
 }

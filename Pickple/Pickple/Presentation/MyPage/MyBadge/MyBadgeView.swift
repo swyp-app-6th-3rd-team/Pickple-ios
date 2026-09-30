@@ -27,11 +27,9 @@ struct MyBadgeView: View {
             PickpleGNB(
                 leading: .button(icon: Image("PickpleArrowLeft"), action: { dismiss() }),
                 center: .text(MyBadgeStrings.title),
-                trailing: .none
+                trailing: .none,
+                bar: true
             )
-            Rectangle()
-                .frame(height: 1)
-                .foregroundStyle(Color.neutral5)
 
                 VStack(spacing: 24) {
                     VStack(spacing: 4) {

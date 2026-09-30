@@ -57,7 +57,6 @@ struct MyGradeView: View {
                             MyGradeRow(grade: grade)
                             Divider()
                                 .foregroundStyle(Color.navy10)
-
                         }
                     }
                     .padding(.horizontal, 20)

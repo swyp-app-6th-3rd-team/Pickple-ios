@@ -27,6 +27,4 @@ struct VoteCard: Identifiable {
     var votedSide: PostDetailVoteSide? = nil
 
     var isVoted: Bool { firstPercentage != nil }
-
-    //추후 API 스펙에 맞게 수정
 }

@@ -14,14 +14,14 @@ struct MyBadgeGridItem: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
+            VStack(spacing: 4) {
                 Image(badge.isUnlocked ? badge.iconOnName : badge.iconOffName)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 80, height: 80)
+                    .frame(width: 87, height: 82)
 
                 Text(badge.title)
-                    .pickpleTypography(.caption_400)
+                    .pickpleTypography(.body01_500)
                     .foregroundStyle(badge.isUnlocked ? Color.black : Color.neutral40)
             }
         }
