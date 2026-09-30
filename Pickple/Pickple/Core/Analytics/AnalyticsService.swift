@@ -35,13 +35,15 @@ import Foundation
 import AmplitudeSwift
 
 enum AnalyticsService {
-    static let shared = Amplitude(configuration: Configuration(
-        apiKey: "d757c0356c9d55aa07877451c0e17f2d",
-        autocapture: [
-            .sessions
-            
-        ]
-    ))
+    static let shared: Amplitude = {
+        guard let apiKey = Bundle.main.infoDictionary?["AMPLITUDE_API_KEY"] as? String else {
+            fatalError("Info.plist에 AMPLITUDE_API_KEY가 없습니다 — Config.xcconfig 설정을 확인하세요")
+        }
+        return Amplitude(configuration: Configuration(
+            apiKey: apiKey,
+            autocapture: [.sessions]
+        ))
+    }()
 
     static func track(_ eventName: String, properties: [String: Any] = [:]) {
         shared.track(eventType: eventName, eventProperties: properties)
