@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		F842C548304C846D0072BE56 /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = F842C547304C846D0072BE56 /* KakaoSDKAuth */; };
 		F842C54A304C84720072BE56 /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = F842C549304C84720072BE56 /* KakaoSDKUser */; };
+		F8A68BA5306D4038006983B0 /* AmplitudeSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F8A68BA4306D4038006983B0 /* AmplitudeSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F8A68BA5306D4038006983B0 /* AmplitudeSwift in Frameworks */,
 				F842C54A304C84720072BE56 /* KakaoSDKUser in Frameworks */,
 				F842C548304C846D0072BE56 /* KakaoSDKAuth in Frameworks */,
 			);
@@ -142,6 +144,7 @@
 			packageProductDependencies = (
 				F842C547304C846D0072BE56 /* KakaoSDKAuth */,
 				F842C549304C84720072BE56 /* KakaoSDKUser */,
+				F8A68BA4306D4038006983B0 /* AmplitudeSwift */,
 			);
 			productName = Pickple;
 			productReference = F8341670303C163500E86704 /* Pickple.app */;
@@ -227,6 +230,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				F842C543304C79D60072BE56 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
+				F8A68BA3306D402D006983B0 /* XCRemoteSwiftPackageReference "Amplitude-Swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F8341671303C163500E86704 /* Products */;
@@ -633,6 +637,14 @@
 				minimumVersion = 2.29.0;
 			};
 		};
+		F8A68BA3306D402D006983B0 /* XCRemoteSwiftPackageReference "Amplitude-Swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/amplitude/Amplitude-Swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -645,6 +657,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F842C543304C79D60072BE56 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
 			productName = KakaoSDKUser;
+		};
+		F8A68BA4306D4038006983B0 /* AmplitudeSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8A68BA3306D402D006983B0 /* XCRemoteSwiftPackageReference "Amplitude-Swift" */;
+			productName = AmplitudeSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
