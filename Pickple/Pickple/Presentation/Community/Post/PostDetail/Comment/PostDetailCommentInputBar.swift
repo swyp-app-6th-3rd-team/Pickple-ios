@@ -17,40 +17,40 @@ struct PostDetailCommentInputBar: View {
     
     var body: some View {
         if !isEditingComment {
-                HStack(spacing: 0) {
-                    TextField(
-                        "",
-                        text: $text,
-                        prompt: Text(PostDetailStrings.commentPlaceholder)
-                            .foregroundStyle(Color.neutral40),
-                        axis: .vertical
-                    )
-                    .focused(isFocused)
-                    .pickpleTypography(.body01_500)
-                    .foregroundStyle(Color.neutral100)
-                    .padding(.leading, 16)
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .foregroundStyle(Color.neutral5)
-                    )
+            HStack(spacing: 0) {
+                TextField(
+                    "",
+                    text: $text,
+                    prompt: Text(PostDetailStrings.commentPlaceholder)
+                        .foregroundStyle(Color.neutral40),
+                    axis: .vertical
+                )
+                .focused(isFocused)
+                .pickpleTypography(.body01_400)
+                .foregroundStyle(Color.neutral100)
+                .padding(.leading, 16)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .foregroundStyle(Color.neutral5)
+                )
+                
+                
+                Spacer()
+                
+                ZStack {
+                    Circle()
+                        .frame(width: 40, height: 40)
+                        .foregroundStyle(Color.yellow60)
                     
                     
-                    Spacer()
-                    
-                    ZStack {
-                        Circle()
-                            .frame(width: 40, height: 40)
-                            .foregroundStyle(Color.yellow60)
-                        
-                        
-                        Image("PickpleSubmit")
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .foregroundStyle(Color.navy60)
-                    }
-                    .onTapGesture(perform: onSubmit)
+                    Image("PickpleSubmit")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(Color.navy60)
                 }
+                .onTapGesture(perform: onSubmit)
+            }
             
             .ignoresSafeArea(edges: .bottom)
             
@@ -68,59 +68,58 @@ struct PostDetailCommentInputBar: View {
                         .foregroundStyle(Color.neutral40)
                 }
                 .padding(.leading, 4)
-
+                
+                
+                HStack {
+                    TextField(
+                        "",
+                        text: $text,
+                        prompt: Text(PostDetailStrings.commentPlaceholder)
+                            .foregroundStyle(Color.neutral40),
+                        axis: .vertical
+                    )
+                    .focused(isFocused)
+                    .pickpleTypography(.body01_400)
+                    .foregroundStyle(Color.neutral100)
+                    .padding(.leading, 16)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .foregroundStyle(Color.neutral5)
+                    )
                     
-                    HStack {
-                        TextField(
-                            "",
-                            text: $text,
-                            prompt: Text(PostDetailStrings.commentPlaceholder)
-                                .foregroundStyle(Color.neutral40),
-                            axis: .vertical
-                        )
-                        .focused(isFocused)
-                        .pickpleTypography(.body01_500)
-                        .foregroundStyle(Color.neutral100)
-                        .padding(.leading, 16)
-                        .padding(.vertical, 8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 20)
-                                .foregroundStyle(Color.neutral5)
-                        )
+                    
+                    Spacer()
+                    
+                    ZStack {
+                        Circle()
+                            .frame(width: 40, height: 40)
+                            .foregroundStyle(Color.navy20)
                         
                         
-                        Spacer()
-                        
-                        ZStack {
-                            Circle()
-                                .frame(width: 40, height: 40)
-                                .foregroundStyle(Color.navy20)
-                            
-                            
-                            Image("PickpleX")
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .foregroundStyle(Color.white)
-                        }
-                        .onTapGesture(perform: onCancel)
-                        
-                        ZStack {
-                            Circle()
-                                .frame(width: 40, height: 40)
-                                .foregroundStyle(Color.yellow60)
-                            
-                            
-                            Image("PickpleSubmit")
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .foregroundStyle(Color.navy60)
-                        }
-                        .onTapGesture(perform: onSubmit)
+                        Image("PickpleX")
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(Color.white)
                     }
+                    .onTapGesture(perform: onCancel)
+                    
+                    ZStack {
+                        Circle()
+                            .frame(width: 40, height: 40)
+                            .foregroundStyle(Color.yellow60)
+                        
+                        
+                        Image("PickpleSubmit")
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundStyle(Color.navy60)
+                    }
+                    .onTapGesture(perform: onSubmit)
+                }
                 
             }
         }
-        
     }
 }
 
