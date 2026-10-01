@@ -213,6 +213,7 @@ class PostViewModel {
                     description: normalizedDescription.isEmpty ? nil : normalizedDescription,
                     products: submittedProducts
                 )
+                AnalyticsService.track("post_created")
             }
             submitState = .succeeded
         } catch {

@@ -35,7 +35,7 @@ struct PostDetailCommentRow: View {
                 )
                     HStack(spacing: 2) {
                     Text(comment.authorNickname)
-                        .pickpleTypography(.body01_500)
+                        .pickpleTypography(.body01_600)
                         .foregroundStyle(Color.neutral80)
                         
                     
@@ -54,7 +54,7 @@ struct PostDetailCommentRow: View {
             
             //MARK: - Content
             Text(comment.content)
-                .pickpleTypography(.body01_500)
+                .pickpleTypography(.body01_400)
                 .foregroundStyle(Color.neutral80)
 
             HStack {
@@ -79,7 +79,7 @@ struct PostDetailCommentRow: View {
                 Spacer()
                 //XMARK: - Time
                 Text(comment.createdAt.relativeTimeDescription)
-                    .pickpleTypography(.caption_400)
+                    .pickpleTypography(.label_500)
                     .foregroundStyle(Color.neutral30)
             }
         }

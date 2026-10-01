@@ -130,6 +130,7 @@ struct PostDetailView: View {
                         .padding(.top, 16)
                         .padding(.horizontal, 20)
                         .padding(.bottom, 16)
+                        .background(Color.white.ignoresSafeArea(edges: .bottom))
                         .shadow(color: Color.black.opacity(0.05), radius: 20, y: -2)
                     }
                 }

@@ -61,7 +61,7 @@ struct CommunitySearchView: View {
                                         Button(action: { communitySearchViewModel.selectRecentSearch(term) }) {
                                             Text(term)
                                                 .lineLimit(1)
-                                                .pickpleTypography(.body02_600)
+                                                .pickpleTypography(.body02_500)
                                                 .foregroundStyle(Color.neutral70)
                                         }
                                         Button(action: { communitySearchViewModel.removeRecentSearch(term) }) {
@@ -80,7 +80,7 @@ struct CommunitySearchView: View {
                                         .foregroundStyle(Color.white)
                                         .overlay {
                                             Capsule()
-                                                .stroke(Color.navy10)
+                                                .strokeBorder(Color.navy10)
                                         })
                                 
                             }
@@ -95,8 +95,6 @@ struct CommunitySearchView: View {
                 .padding(.vertical, 6)
             } else {
                 VStack(alignment: .leading, spacing: 0) {
-                    // 결과가 0건이어도 "검색결과 0건" 헤더는 그대로 보여준다 — 결과 유무와
-                    // 무관하게 항상 노출.
                     (Text(CommunityStrings.searchResultPrefix)
                         .foregroundStyle(Color.neutral80)
                      + Text("\(communitySearchViewModel.results.count)")
@@ -206,6 +204,7 @@ private struct CommunitySearchField: View {
                     Image("PickpleErase")
                         .resizable()
                         .frame(width: 24, height: 24)
+                        .foregroundStyle(Color.neutral50)
                     
                 }
             }

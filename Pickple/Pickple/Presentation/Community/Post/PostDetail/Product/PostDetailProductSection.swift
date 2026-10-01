@@ -30,28 +30,32 @@ struct PostDetailProductTabPicker: View {
     }
 }
 
-// 상품명/가격/구매처 정보 블록.
+// 상품명/가격/구매처 정보 블록. 라벨 글자 수가 달라도(가격 2자) 값 열이 맞도록 Grid로 정렬한다.
 struct PostDetailProductInfo: View {
     let product: PostDetailProduct
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            PostDetailProductInfoRow(label: PostDetailStrings.productNameLabel, value: product.name)
+        Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
+            GridRow {
+                label(PostDetailStrings.productNameLabel)
+                value(product.name)
+            }
 
             if let price = product.price {
-                PostDetailProductInfoRow(label: PostDetailStrings.priceLabel, value: "\(price.formatted())원")
+                GridRow {
+                    label(PostDetailStrings.priceLabel)
+                    value("\(price.formatted())원")
+                }
             }
 
             if let purchaseURL = product.purchaseURL {
-                HStack(spacing: 8) {
-                    Text(PostDetailStrings.purchaseLinkLabel)
-                        .pickpleTypography(.body02_600)
-                        .foregroundStyle(Color.neutral30)
+                GridRow {
+                    label(PostDetailStrings.purchaseLinkLabel, typography: .body02_500)
 
                     if let purchaseLink = product.purchaseLink {
                         Link(destination: purchaseLink) {
                             Text(purchaseURL)
-                                .pickpleTypography(.body02_600)
+                                .pickpleTypography(.body02_400)
                                 .foregroundStyle(Color.blue60)
                                 .underline()
                                 .lineLimit(1)
@@ -59,7 +63,7 @@ struct PostDetailProductInfo: View {
                         }
                     } else {
                         Text(purchaseURL)
-                            .pickpleTypography(.body02_600)
+                            .pickpleTypography(.body02_400)
                             .foregroundStyle(Color.neutral100)
                             .underline()
                             .lineLimit(1)
@@ -69,22 +73,17 @@ struct PostDetailProductInfo: View {
             }
         }
     }
-}
 
-private struct PostDetailProductInfoRow: View {
-    let label: String
-    let value: String
+    private func label(_ text: String, typography: PickpleTypography = .body02_500) -> some View {
+        Text(text)
+            .pickpleTypography(typography)
+            .foregroundStyle(Color.neutral30)
+    }
 
-    var body: some View {
-        HStack(spacing: 8) {
-            Text(label)
-                .pickpleTypography(.body02_600)
-                .foregroundStyle(Color.neutral30)
-
-            Text(value)
-                .pickpleTypography(.body01_500)
-                .foregroundStyle(Color.neutral100)
-        }
+    private func value(_ text: String) -> some View {
+        Text(text)
+            .pickpleTypography(.body01_600)
+            .foregroundStyle(Color.neutral100)
     }
 }
 

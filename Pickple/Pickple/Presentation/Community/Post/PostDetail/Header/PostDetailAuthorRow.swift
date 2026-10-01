@@ -51,15 +51,13 @@ struct PostDetailAuthorRow: View {
                     HStack(spacing: 4) {
                         Text("\(Self.dateFormatter.string(from: createdAt))")
                             .foregroundStyle(Color.neutral30)
-                        //폰트 미지정
                         Text("·")
                             .foregroundStyle(Color.neutral10)
                         
                         Text("\(createdAt.relativeTimeDescription)")
                             .foregroundStyle(Color.neutral30)
-                        // 폰트 미지정
                     }
-                    .pickpleTypography(.caption_400)
+                    .pickpleTypography(.label_500)
                     
                 }
             }
