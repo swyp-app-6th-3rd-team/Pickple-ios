@@ -24,7 +24,7 @@ struct PostDetailHeaderRow: View {
 
             Button(action: onMoreTapped) {
                 Image("PickpleMenu")
-                    .foregroundStyle(Color.neutral50)
+                    .foregroundStyle(Color.neutral30)
             }
         }
     }

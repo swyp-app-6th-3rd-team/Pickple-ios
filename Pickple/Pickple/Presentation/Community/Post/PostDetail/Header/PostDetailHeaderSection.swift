@@ -29,7 +29,7 @@ struct PostDetailHeaderSection: View {
 
             //설명 공백 대비
             Text(post.description.isEmpty ? " " : post.description)
-                .pickpleTypography(.body01_500)
+                .pickpleTypography(.body01_400)
                 .foregroundStyle(Color.neutral50)
         }
     }
