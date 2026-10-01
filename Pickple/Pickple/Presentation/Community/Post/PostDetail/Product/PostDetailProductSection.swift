@@ -50,7 +50,7 @@ struct PostDetailProductInfo: View {
 
             if let purchaseURL = product.purchaseURL {
                 GridRow {
-                    label(PostDetailStrings.purchaseLinkLabel, typography: .body02_600)
+                    label(PostDetailStrings.purchaseLinkLabel, typography: .body02_500)
 
                     if let purchaseLink = product.purchaseLink {
                         Link(destination: purchaseLink) {
