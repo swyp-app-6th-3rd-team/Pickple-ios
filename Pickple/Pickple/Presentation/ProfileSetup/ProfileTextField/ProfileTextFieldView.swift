@@ -29,10 +29,10 @@ struct ProfileTextFieldView: View {
         PickpleTextField(
             text: $profileViewModel.nickname,
             placeholder: ProfileSetupStrings.nicknameText,
-            trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)"),
             title: ProfileSetupStrings.nickname,
             caption: profileViewModel.nicknameCheckMessage,
-            state: state
+            state: state,
+            trailingText: "\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)"
         )
         .focused($isFocused)
         .onChange(of: profileViewModel.nickname) { _, newValue in
