@@ -40,11 +40,10 @@ private extension View {
 struct MainRankingView: View {
     @State private var mainRankingViewModel: MainRankingViewModel
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.appRequestLogin) private var appRequestLogin
+    @Environment(\.showLoginPrompt) private var showLoginPrompt
 
     @State private var scrollContainerHeight: CGFloat = 0
     @State private var myRankRowFrame: CGRect = .zero
-    @State private var showsLoginRequired = false
 
     init(mainRankingViewModel: MainRankingViewModel = MainRankingViewModel()) {
         _mainRankingViewModel = State(initialValue: mainRankingViewModel)
@@ -126,7 +125,7 @@ struct MainRankingView: View {
                                 .rankingFloatingCardStyle()
                         }
                     } else {
-                        MainRankingGuestRow(onLoginTapped: { showsLoginRequired = true })
+                        MainRankingGuestRow(onLoginTapped: { showLoginPrompt(.main) })
                             .padding(.horizontal, 20)
                             .padding(.vertical, myRankCardVerticalPadding)
                             .rankingFloatingCardStyle()
@@ -141,21 +140,6 @@ struct MainRankingView: View {
         .task {
             await mainRankingViewModel.loadInitial()
             await mainRankingViewModel.loadMyRanking()
-        }
-        .overlay {
-            if showsLoginRequired {
-                PickpleConfirmDialog(
-                    title: MainStrings.loginRequiredTitle,
-                    description: MainStrings.loginRequiredDescription,
-                    cancelTitle: MainStrings.cancel,
-                    confirmTitle: MainStrings.login,
-                    onCancel: { showsLoginRequired = false },
-                    onConfirm: {
-                        showsLoginRequired = false
-                        appRequestLogin()
-                    }
-                )
-            }
         }
     }
 }

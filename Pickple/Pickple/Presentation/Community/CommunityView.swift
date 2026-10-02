@@ -12,9 +12,8 @@ struct CommunityView: View {
     @State var communityViewModel: CommunityViewModel
     @Environment(CommunityRouter.self) private var communityRouter
     @Environment(\.isLoggedIn) private var isLoggedIn
-    @Environment(\.appRequestLogin) private var appRequestLogin
+    @Environment(\.showLoginPrompt) private var showLoginPrompt
     @Environment(\.apiClient) private var apiClient
-    @State private var showsLoginRequired = false
     @State private var showsTypeSelection = false
     @State private var writeFlowType: VoteType?
     @State private var composePostViewModel = PostViewModel()
@@ -70,7 +69,7 @@ struct CommunityView: View {
                                     composePostViewModel = PostViewModel(postWriteRepository: RemotePostWriteRepository(apiClient: apiClient))
                                     showsTypeSelection = true
                                 } else {
-                                    showsLoginRequired = true
+                                    showLoginPrompt(.community)
                                 }
                             }) {
                                 Image("PickpleWriting")
@@ -85,20 +84,6 @@ struct CommunityView: View {
                         .padding(.trailing, 20)
                         .padding(.bottom, 20)
                     }
-                }
-
-                if showsLoginRequired {
-                    PickpleConfirmDialog(
-                        title: CommunityStrings.loginRequiredTitle,
-                        description: CommunityStrings.loginRequiredDescription,
-                        cancelTitle: CommunityStrings.cancel,
-                        confirmTitle: CommunityStrings.login,
-                        onCancel: { showsLoginRequired = false },
-                        onConfirm: {
-                            showsLoginRequired = false
-                            appRequestLogin()
-                        }
-                    )
                 }
             }
             // .task는 이 화면이 다시 나타날 때마다(상세화면 갔다가 뒤로가기 등) 재실행된다
