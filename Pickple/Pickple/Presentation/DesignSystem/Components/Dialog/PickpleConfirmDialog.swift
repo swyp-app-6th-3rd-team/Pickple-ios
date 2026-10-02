@@ -22,7 +22,7 @@ struct PickpleConfirmDialog: View {
         VStack(spacing: 20) {
             VStack(spacing: 8) {
                 Text(title)
-                    .pickpleTypography(.title01)
+                    .pickpleTypography(.title01_600)
                     .foregroundStyle(Color.black)
 
                 if let description {

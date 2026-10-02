@@ -15,7 +15,7 @@ struct MyPagePostTitleView: View {
         //XMARK: - Title
         HStack {
             Text(MyPageStrings.myPostsTitle)
-                .pickpleTypography(.title01)
+                .pickpleTypography(.title01_600)
                 .foregroundStyle(Color.black)
 
             Spacer()

@@ -68,7 +68,7 @@ struct MyPageProfileHeaderView: View {
                                 Text("투표를 해 주세요!")
                                 
                             }
-                            .pickpleTypography(.title01)
+                            .pickpleTypography(.title01_600)
                             .foregroundStyle(Color.white)
                             .padding(.horizontal, 20)
                             
