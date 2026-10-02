@@ -8,7 +8,7 @@ import Foundation
 
 @Observable
 class MyActivityViewModel {
-    private var userPostRepository: UserPostRepository
+    private let userPostRepository: UserPostRepository
 
     var votedPosts: [PostSummary] = []                        // 투표
     var commentedActivities: [MyCommentActivity] = []          // 댓글
@@ -28,6 +28,7 @@ class MyActivityViewModel {
         self.userPostRepository = userPostRepository
     }
 
+    @MainActor
     func loadVotedPosts(sort: ActivitySortOrder) async {
         votedSort = sort
         let page = await userPostRepository.fetchVotedPosts(cursor: nil, sort: sort)
@@ -38,6 +39,7 @@ class MyActivityViewModel {
 
     // 화면에 보이는 마지막 카드가 나타났을 때 호출 — 정렬은 마지막으로 loadVotedPosts에 넘긴
     // 값(votedSort)을 그대로 이어서 쓴다.
+    @MainActor
     func loadMoreVotedPostsIfNeeded(currentPost post: PostSummary) async {
         guard post.id == votedPosts.last?.id, votedHasNext, !isLoadingMoreVoted, let cursor = votedCursor else { return }
         isLoadingMoreVoted = true
@@ -48,10 +50,12 @@ class MyActivityViewModel {
         votedHasNext = page.hasNext
     }
 
+    @MainActor
     func loadCommentedPosts(sort: ActivitySortOrder) async {
         commentedActivities = await userPostRepository.fetchCommentedPosts(sort: sort)
     }
 
+    @MainActor
     func loadWrittenPosts(sort: ActivitySortOrder) async {
         writtenSort = sort
         let page = await userPostRepository.fetchWrittenPosts(cursor: nil, sort: sort)
@@ -60,6 +64,7 @@ class MyActivityViewModel {
         writtenHasNext = page.hasNext
     }
 
+    @MainActor
     func loadMoreWrittenPostsIfNeeded(currentPost post: PostSummary) async {
         guard post.id == writtenPosts.last?.id, writtenHasNext, !isLoadingMoreWritten, let cursor = writtenCursor else { return }
         isLoadingMoreWritten = true
