@@ -34,14 +34,8 @@ struct TermsAgreementView: View {
                     pushNotificationOn: $pushNotificationOn
                 )
                 
-                TermsToggleSection(
-                    personalDataOn: $personalDataOn,
-                    serviceTermsOn: $serviceTermsOn,
-                    pushNotificationOn: $pushNotificationOn
-                )
+                TermsToggleSection
             }
-            
-            
             Button(action: {
                 Task {
                     if await profileViewModel.submitProfile() {
@@ -75,6 +69,15 @@ struct TermsAgreementView: View {
                     .foregroundStyle(Color.neutral60)
             }
             Spacer()
+        }
+    }
+    
+    //MARK: - TermsToggleSection
+    private var TermsToggleSection: some View {
+        VStack(spacing: 16) {
+            TermsToggleRow(isOn: $personalDataOn, title: TermsAgreementStrings.personalDataTitle, url: TermsAgreementStrings.privacy)
+            TermsToggleRow(isOn: $serviceTermsOn, title: TermsAgreementStrings.serviceTermsTitle, url: TermsAgreementStrings.ToU)
+            TermsToggleRow(isOn: $pushNotificationOn, title: TermsAgreementStrings.pushNotificationTitle, showsViewButton: false)
         }
     }
 }
