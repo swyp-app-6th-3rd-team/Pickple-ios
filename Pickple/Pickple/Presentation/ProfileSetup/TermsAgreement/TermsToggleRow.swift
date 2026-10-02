@@ -15,7 +15,6 @@ struct TermsToggleRow: View {
     let title: String
     var showsViewButton: Bool = true
     var url: String = ""
-    var onViewTapped: () -> Void = {}
 
     var body: some View {
         HStack(spacing: 8) {
