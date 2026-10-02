@@ -5,6 +5,7 @@
 //  Created by 박윤수 on 9/9/26.
 //
 // 1차 점검 완료 - 9월 13일
+// 1차 리팩토링 완료 - 10월 2일
 
 import SwiftUI
 
@@ -13,6 +14,7 @@ struct TermsToggleAllSection: View {
     @Binding var serviceTermsOn: Bool
     @Binding var pushNotificationOn: Bool
 
+    //추후 약관 동의 api 제공 시 분리 예정
     private var allOn: Binding<Bool> {
         Binding(
             get: { personalDataOn && serviceTermsOn && pushNotificationOn },

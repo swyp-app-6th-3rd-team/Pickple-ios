@@ -32,7 +32,7 @@ struct MyPageProfileEditView: View {
             
             Spacer()
             
-            ProfileButtonView(
+            ProfileConfirmButton(
                 profileViewModel: profileViewModel,
                 onCompleted: {
                     Task {

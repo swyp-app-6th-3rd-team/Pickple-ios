@@ -1,23 +1,23 @@
 //
-//  ProfileButtonView.swift
+//  ProfileConfirmButton.swift
 //  Pickple
 //
 //  Created by 박윤수 on 9/1/26.
 //
 // 1차 점검 완료 - 9월 12일
+// 1차 리팩토링 완료 - 10월 2일
 
 
 import SwiftUI
 
-struct ProfileButtonView: View {
+struct ProfileConfirmButton: View {
     let profileViewModel: ProfileSetupViewModel
     var onCompleted: () -> Void = {}
 
     var body: some View {
-        Button(action: { onCompleted() }) {
+        Button(action: onCompleted) {
             Text(ProfileSetupStrings.confirmButton)
         }
-        .frame(maxWidth: .infinity) //반응형
         .buttonStyle(.pickple(isEnabled ? .enabled : .disabled, 56))
         .disabled(!isEnabled)
     }
@@ -28,5 +28,5 @@ struct ProfileButtonView: View {
 }
 
 #Preview {
-    ProfileButtonView(profileViewModel: ProfileSetupViewModel())
+    ProfileConfirmButton(profileViewModel: ProfileSetupViewModel())
 }

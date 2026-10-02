@@ -38,8 +38,8 @@ struct TextStepOneView: View {
                 PickpleTextField(
                     text: $postViewModel.title,
                     placeholder: PostViewStrings.titlePlaceholder,
-                    trailingAccessory: .text("\(postViewModel.title.count)/\(postViewModel.titleMaxLength)"),
-                    state: isTitleFocused ? .ing : ._default
+                    state: isTitleFocused ? .ing : ._default,
+                    trailingText: ("\(postViewModel.title.count)/\(postViewModel.titleMaxLength)")
                 )
                 .focused($isTitleFocused)
                 .onChange(of: postViewModel.title) { _, newValue in

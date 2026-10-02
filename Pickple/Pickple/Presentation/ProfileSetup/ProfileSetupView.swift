@@ -5,6 +5,7 @@
 //  Created by 박윤수 on 8/26/26.
 //
 // 1차 점검 완료 - 9월 12일
+// 1차 리팩토링 완료 - 10월 2일
 
 
 import SwiftUI
@@ -26,7 +27,7 @@ struct ProfileSetupView: View {
                 Spacer()
             }
             
-            //XMARK: - Profile Image
+            //MARK: - Profile Image
             PickpleProfile(
                 selectedImage: profileViewModel.selectedImage,
                 type: .onCamera,
@@ -40,8 +41,8 @@ struct ProfileSetupView: View {
             
             Spacer()
             
-            //XMARK: - Button
-            ProfileButtonView(profileViewModel: profileViewModel, onCompleted: {
+            //MARK: - Button
+            ProfileConfirmButton(profileViewModel: profileViewModel, onCompleted: {
                 showsTermsAgreement = true
             })
             .padding(.horizontal, 20)

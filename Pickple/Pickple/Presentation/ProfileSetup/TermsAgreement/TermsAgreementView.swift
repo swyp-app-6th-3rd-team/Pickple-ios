@@ -6,6 +6,7 @@
 //
 //MARK: - 완료
 // 1차 점검 완료 - 9월 13일
+// 1차 리팩토링 완료 - 10월 2일
 
 import SwiftUI
 
@@ -34,14 +35,8 @@ struct TermsAgreementView: View {
                     pushNotificationOn: $pushNotificationOn
                 )
                 
-                TermsToggleSection(
-                    personalDataOn: $personalDataOn,
-                    serviceTermsOn: $serviceTermsOn,
-                    pushNotificationOn: $pushNotificationOn
-                )
+                termsToggleSection
             }
-            
-            
             Button(action: {
                 Task {
                     if await profileViewModel.submitProfile() {
@@ -51,7 +46,6 @@ struct TermsAgreementView: View {
             }) {
                 Text(TermsAgreementStrings.startButton)
             }
-            .frame(maxWidth: .infinity)
             .buttonStyle(.pickple(isRequiredAgreed ? .enabled : .disabled, 56))
             .disabled(!isRequiredAgreed)
             
@@ -75,6 +69,15 @@ struct TermsAgreementView: View {
                     .foregroundStyle(Color.neutral60)
             }
             Spacer()
+        }
+    }
+    
+    //MARK: - TermsToggleSection
+    private var termsToggleSection: some View {
+        VStack(spacing: 16) {
+            TermsToggleRow(isOn: $personalDataOn, title: TermsAgreementStrings.personalDataTitle, url: TermsAgreementStrings.privacy)
+            TermsToggleRow(isOn: $serviceTermsOn, title: TermsAgreementStrings.serviceTermsTitle, url: TermsAgreementStrings.ToU)
+            TermsToggleRow(isOn: $pushNotificationOn, title: TermsAgreementStrings.pushNotificationTitle, showsViewButton: false)
         }
     }
 }

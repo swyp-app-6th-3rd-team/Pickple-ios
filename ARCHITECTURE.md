@@ -18,12 +18,12 @@ Core        → 화면 하나에 속하지 않는 공용 인프라(Router 베이
 
 화면 단위로 폴더가 나뉘어 있다: `Main`(+ `CardStackView`/`HotPost`/`Mission`/`Ranking` 하위), `Community`, `MyPage`(+ `Extra`/`Info`/`Post`/`Profile`/`Status` 하위), `MyAccount`, `MyActivity`, `MyBadge`, `MyGrade`, `Post`(+ `PostDetail`/`Steps` 하위), `Login`, `DesignSystem`(공용 컴포넌트).
 
-**뷰가 50줄을 넘거나 다른 파일에서도 쓰이면 분리한다**(CLAUDE.md 규칙). 화면 하나가 커지면 `PostDetailView.swift`처럼 View 자체 + 그 화면에서만 쓰는 하위 뷰/타입이 한 파일에 뒤섞이기 쉬운데, 이번에 아래처럼 정리했다:
+**뷰 분리는 줄 수·사용 횟수가 아니라 가독성과 변경 단위로 판단한다**(CLAUDE.md 규칙, 2026-10-02 변경 — 이전엔 "50줄 초과 또는 두 곳 이상 사용 시 분리"). 화면 하나가 커지면 `PostDetailView.swift`처럼 View 자체 + 그 화면에서만 쓰는 하위 뷰/타입이 한 파일에 뒤섞이기 쉬운데, 이번에 아래처럼 정리했다:
 
 - `PostDetailView.swift` (346줄 → 225줄): `CarouselBottomKey`(PreferenceKey), `PostDetailConfirmAction`(enum), `PostDetailContent`(스크롤 본문)를 각각 별도 파일로 뺐다.
 - `PostWriteFlowView.swift` (164줄): `PostWriteFlowStepContent`, `PostWriteFlowButtonRow`를 별도 파일로 뺐다.
 
-기준: **화면의 최상위 진입점(NavigationDestination이 되는 View)만 `XxxView.swift`에 남기고, 그 화면에서만 쓰는 하위 조각도 각자 파일로.** private 접근제어자는 같은 파일 안에서만 의미가 있으므로, 분리하면서 `private` → 기본(internal)으로 바꿔야 한다.
+기준: **같이 바뀌어야 하는 공용 뷰는 별도 파일, 우연히 비슷하거나 작은 조각은 각 화면에 따로, 한 화면 안의 조각은 계산 프로퍼티나 같은 파일의 `private struct`로.** 위 두 정리는 이전 기준(하위 조각도 각자 파일로)으로 한 것이라, 지금 기준으로는 화면 안 조각을 파일로 빼는 건 필수가 아니다(예: `TermsAgreementView.TermsToggleSection`은 계산 프로퍼티). 별도 파일로 뺄 땐 `private` → 기본(internal)으로 바꿔야 한다.
 
 ## 네비게이션 — 두 패턴이 공존한다
 
@@ -41,9 +41,9 @@ final class MyPageRouter: Router<MyPageRoute> {}
 
 두 패턴이 섞여 있는 건 지금 Router 패턴으로 옮겨가는 중이라 자연스러운 상태다. 화면 하나에 목적지가 여러 개로 늘어나면(지금 `MainView`처럼) Router로 옮기는 걸 고려하고, 목적지가 1~2개뿐이면 기존 bool 패턴이 더 간단하다.
 
-## ViewModel — 문서와 실제가 다른 지점
+## ViewModel — `@Observable`
 
-`CLAUDE.md`는 "`@Observable` 기반 MVVM"이라 명시하지만, 실제로 화면 ViewModel 10개는 전부 `ObservableObject` + `@Published`(Combine 기반)다. `@Observable`은 이번에 추가한 Router 3개뿐이다. iOS 17+ 타겟이라 `@Observable`로 전환 자체는 가능하지만, 기존 ViewModel 10개를 한 번에 옮기는 건 손댈 파일이 많고 UI 쪽 재검증이 필요해서 이번 정리 범위에 넣지 않았다. 새 ViewModel을 추가할 땐 `@Observable`을 쓰고, 기존 것들은 건드릴 일이 생겼을 때 그 김에 옮기는 정도가 현실적이다.
+ViewModel과 Router는 전부 `@Observable`(Observation, iOS 17+)이다. `ObservableObject`/`@Published`/`@StateObject`/`@ObservedObject`/`@EnvironmentObject`는 더 이상 쓰지 않는다(2026-10-02 기준 0곳). 뷰에서는 소유하면 `@State`, 읽기만 하면 `let`, 바인딩이 필요하면 `@Bindable`, 주입은 `@Environment(Type.self)`로 받는다.
 
 ## 공용 컴포넌트 (`DesignSystem/Components`)
 
@@ -69,6 +69,5 @@ CLAUDE.md는 "하드코딩된 문자열·색상 금지"를 명시한다. 색상�
 ## 알고 있지만 이번에 안 건드린 것
 
 - **확인 모달 4종 통합** — 위 참고. UI 스타일 판단 필요.
-- **ViewModel 전체 `@Observable` 전환** — 범위가 크고 UI 재검증 필요.
 - **네비게이션 두 패턴 통일** — 아직 자연스러운 과도기.
 - **Mock 데이터 리터럴 중복** — 실 API 연동 때 자연 소멸.

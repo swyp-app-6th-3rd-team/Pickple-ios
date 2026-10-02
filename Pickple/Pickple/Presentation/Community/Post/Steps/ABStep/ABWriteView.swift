@@ -45,8 +45,8 @@ struct ABWriteView: View {
                 PickpleTextField(
                     text: $postViewModel.topic,
                     placeholder: PostViewStrings.topicText,
-                    trailingAccessory: .text("\(postViewModel.topic.count)/\(postViewModel.topicMaxLength)"),
-                    state: isTopicFocused ? .ing : ._default
+                    state: isTopicFocused ? .ing : ._default,
+                    trailingText: "\(postViewModel.topic.count)/\(postViewModel.topicMaxLength)"
                 )
                 .focused($isTopicFocused)
                 .onChange(of: postViewModel.topic) { _, newValue in

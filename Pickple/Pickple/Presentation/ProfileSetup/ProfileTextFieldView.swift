@@ -5,6 +5,7 @@
 //  Created by 박윤수 on 9/1/26.
 //
 // 1차 점검 완료 - 9월 12일
+// 1차 리팩토링 완료 - 10월 2일
 
 
 import SwiftUI
@@ -29,10 +30,10 @@ struct ProfileTextFieldView: View {
         PickpleTextField(
             text: $profileViewModel.nickname,
             placeholder: ProfileSetupStrings.nicknameText,
-            trailingAccessory: .text("\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)"),
             title: ProfileSetupStrings.nickname,
             caption: profileViewModel.nicknameCheckMessage,
-            state: state
+            state: state,
+            trailingText: "\(profileViewModel.nickname.count)/\(profileViewModel.nicknameMaxLength)"
         )
         .focused($isFocused)
         .onChange(of: profileViewModel.nickname) { _, newValue in

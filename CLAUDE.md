@@ -5,12 +5,12 @@ iOS 클라이언트는 1인 개발. 서버·DB는 별도 백엔드 팀이 담당
 
 ## 스택
 
-- Swift 6, iOS 18.0+ / SwiftUI 전용 (UIKit은 불가피할 때만, 사유를 주석으로)
+- Swift 5 언어 모드 사용, Swift 6 언어 모드로 전환해도 깨지지 않게 작성. iOS 18.0+ / SwiftUI 전용 (UIKit은 불가피할 때만, 사유를 주석으로)
   - 배포 타겟을 17.0 → 18.0으로 올림(2026-09-16). 지원 기기 범위는 17.0과 동일(iPhone XS/XR부터) — `.onScrollGeometryChange` 등 iOS 18 API를 가용성 분기 없이 쓰기 위한 결정
 - `@Observable` 기반 MVVM. 뷰에 비즈니스 로직을 두지 않는다
 - 비동기는 **async/await만**. Combine 신규 사용 금지
 - 네비게이션은 `NavigationStack` + `NavigationPath`. `NavigationView` 금지
-- Swift 6 strict concurrency 준수 (`Sendable`, actor isolation)
+- Swift 6 strict concurrency 기준으로 작성 (`Sendable`, actor isolation) — 지금은 Swift 5 모드라 경고로만 보여도 Swift 6에선 에러가 되므로 남기지 않는다
 - 인증: KakaoSDK, AuthenticationServices
 
 ---
@@ -54,7 +54,10 @@ protocol VoteRepository {
 - **force unwrapping(`!`) 금지.** `guard let` / `if let` / `??` 사용
 - `try!`, `as!` 금지
 - UI를 갱신하는 ViewModel 메서드에는 `@MainActor` 명시
-- 뷰가 50줄을 넘거나 두 곳 이상에서 쓰이면 별도 파일로 추출
+- 뷰 분리는 줄 수·사용 횟수가 아니라 가독성과 변경 단위로 판단한다
+  - 같은 개념이라 항상 같이 바뀌어야 하는 뷰(디자인 시스템 요소 등)는 별도 파일로 공용화
+  - 우연히 비슷하거나 작은 조각은 각 화면에 따로 둬도 된다
+  - 한 화면 안의 조각은 계산 프로퍼티나 `private struct`로 나눠 `body`가 목차처럼 읽히게 한다
 - 하드코딩된 문자열·색상 금지 (상수, Asset Catalog 사용)
 - 새 SPM 패키지 추가 전 반드시 확인받을 것. 버전은 고정
 
@@ -90,6 +93,7 @@ xcodebuild test -scheme <SCHEME> \
 - 브랜치 `feat/`, `fix/` 프리픽스. `main` 직접 push 금지 (PR 필수)
 - 커밋 메시지 한국어, `feat:` `fix:` `refactor:` `chore:` 프리픽스
 - 한 커밋에 한 가지 변경
+- PR 본문·커밋 메시지에 Claude Code 작업 표시(`Generated with Claude Code`, `Co-Authored-By` 등)를 넣지 않는다
 
 ---
 
