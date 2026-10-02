@@ -41,9 +41,9 @@ final class MyPageRouter: Router<MyPageRoute> {}
 
 두 패턴이 섞여 있는 건 지금 Router 패턴으로 옮겨가는 중이라 자연스러운 상태다. 화면 하나에 목적지가 여러 개로 늘어나면(지금 `MainView`처럼) Router로 옮기는 걸 고려하고, 목적지가 1~2개뿐이면 기존 bool 패턴이 더 간단하다.
 
-## ViewModel — 문서와 실제가 다른 지점
+## ViewModel — `@Observable`
 
-`CLAUDE.md`는 "`@Observable` 기반 MVVM"이라 명시하지만, 실제로 화면 ViewModel 10개는 전부 `ObservableObject` + `@Published`(Combine 기반)다. `@Observable`은 이번에 추가한 Router 3개뿐이다. iOS 17+ 타겟이라 `@Observable`로 전환 자체는 가능하지만, 기존 ViewModel 10개를 한 번에 옮기는 건 손댈 파일이 많고 UI 쪽 재검증이 필요해서 이번 정리 범위에 넣지 않았다. 새 ViewModel을 추가할 땐 `@Observable`을 쓰고, 기존 것들은 건드릴 일이 생겼을 때 그 김에 옮기는 정도가 현실적이다.
+ViewModel과 Router는 전부 `@Observable`(Observation, iOS 17+)이다. `ObservableObject`/`@Published`/`@StateObject`/`@ObservedObject`/`@EnvironmentObject`는 더 이상 쓰지 않는다(2026-10-02 기준 0곳). 뷰에서는 소유하면 `@State`, 읽기만 하면 `let`, 바인딩이 필요하면 `@Bindable`, 주입은 `@Environment(Type.self)`로 받는다.
 
 ## 공용 컴포넌트 (`DesignSystem/Components`)
 
@@ -69,6 +69,5 @@ CLAUDE.md는 "하드코딩된 문자열·색상 금지"를 명시한다. 색상�
 ## 알고 있지만 이번에 안 건드린 것
 
 - **확인 모달 4종 통합** — 위 참고. UI 스타일 판단 필요.
-- **ViewModel 전체 `@Observable` 전환** — 범위가 크고 UI 재검증 필요.
 - **네비게이션 두 패턴 통일** — 아직 자연스러운 과도기.
 - **Mock 데이터 리터럴 중복** — 실 API 연동 때 자연 소멸.
