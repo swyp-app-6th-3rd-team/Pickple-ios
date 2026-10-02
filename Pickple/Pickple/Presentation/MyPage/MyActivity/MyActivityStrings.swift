@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 9/4/26.
 //
+// 1차 리팩토링 완료 - 10월 2일
 
 import Foundation
 

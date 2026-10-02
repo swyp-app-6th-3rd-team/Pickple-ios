@@ -5,6 +5,7 @@
 //  Created by 박윤수 on 10/2/26.
 //
 //  나의 활동 > 댓글 탭 목록. 리포지토리(fetchCommentedPosts)가 모든 페이지를 한 번에 받아와서 다음 페이지 요청이 없다.
+// 1차 리팩토링 완료 - 10월 2일
 
 import SwiftUI
 

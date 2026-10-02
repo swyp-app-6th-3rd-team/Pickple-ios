@@ -5,6 +5,7 @@
 //  Created by 박윤수 on 9/7/26.
 //
 // 1차 점검 완료
+// 1차 리팩토링 완료 - 10월 2일
 
 import SwiftUI
 
