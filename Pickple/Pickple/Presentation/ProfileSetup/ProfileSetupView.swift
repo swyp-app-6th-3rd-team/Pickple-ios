@@ -26,7 +26,7 @@ struct ProfileSetupView: View {
                 Spacer()
             }
             
-            //XMARK: - Profile Image
+            //MARK: - Profile Image
             PickpleProfile(
                 selectedImage: profileViewModel.selectedImage,
                 type: .onCamera,
@@ -40,7 +40,7 @@ struct ProfileSetupView: View {
             
             Spacer()
             
-            //XMARK: - Button
+            //MARK: - Button
             ProfileConfirmButton(profileViewModel: profileViewModel, onCompleted: {
                 showsTermsAgreement = true
             })
