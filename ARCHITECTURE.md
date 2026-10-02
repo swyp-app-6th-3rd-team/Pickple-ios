@@ -18,12 +18,12 @@ Core        → 화면 하나에 속하지 않는 공용 인프라(Router 베이
 
 화면 단위로 폴더가 나뉘어 있다: `Main`(+ `CardStackView`/`HotPost`/`Mission`/`Ranking` 하위), `Community`, `MyPage`(+ `Extra`/`Info`/`Post`/`Profile`/`Status` 하위), `MyAccount`, `MyActivity`, `MyBadge`, `MyGrade`, `Post`(+ `PostDetail`/`Steps` 하위), `Login`, `DesignSystem`(공용 컴포넌트).
 
-**뷰가 50줄을 넘거나 다른 파일에서도 쓰이면 분리한다**(CLAUDE.md 규칙). 화면 하나가 커지면 `PostDetailView.swift`처럼 View 자체 + 그 화면에서만 쓰는 하위 뷰/타입이 한 파일에 뒤섞이기 쉬운데, 이번에 아래처럼 정리했다:
+**뷰 분리는 줄 수·사용 횟수가 아니라 가독성과 변경 단위로 판단한다**(CLAUDE.md 규칙, 2026-10-02 변경 — 이전엔 "50줄 초과 또는 두 곳 이상 사용 시 분리"). 화면 하나가 커지면 `PostDetailView.swift`처럼 View 자체 + 그 화면에서만 쓰는 하위 뷰/타입이 한 파일에 뒤섞이기 쉬운데, 이번에 아래처럼 정리했다:
 
 - `PostDetailView.swift` (346줄 → 225줄): `CarouselBottomKey`(PreferenceKey), `PostDetailConfirmAction`(enum), `PostDetailContent`(스크롤 본문)를 각각 별도 파일로 뺐다.
 - `PostWriteFlowView.swift` (164줄): `PostWriteFlowStepContent`, `PostWriteFlowButtonRow`를 별도 파일로 뺐다.
 
-기준: **화면의 최상위 진입점(NavigationDestination이 되는 View)만 `XxxView.swift`에 남기고, 그 화면에서만 쓰는 하위 조각도 각자 파일로.** private 접근제어자는 같은 파일 안에서만 의미가 있으므로, 분리하면서 `private` → 기본(internal)으로 바꿔야 한다.
+기준: **같이 바뀌어야 하는 공용 뷰는 별도 파일, 우연히 비슷하거나 작은 조각은 각 화면에 따로, 한 화면 안의 조각은 계산 프로퍼티나 같은 파일의 `private struct`로.** 위 두 정리는 이전 기준(하위 조각도 각자 파일로)으로 한 것이라, 지금 기준으로는 화면 안 조각을 파일로 빼는 건 필수가 아니다(예: `TermsAgreementView.TermsToggleSection`은 계산 프로퍼티). 별도 파일로 뺄 땐 `private` → 기본(internal)으로 바꿔야 한다.
 
 ## 네비게이션 — 두 패턴이 공존한다
 
