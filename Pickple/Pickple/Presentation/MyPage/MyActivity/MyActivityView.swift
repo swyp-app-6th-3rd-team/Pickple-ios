@@ -43,7 +43,7 @@ struct MyActivityView: View {
             }
             .padding(.leading, 20)
             .padding(.vertical, 12)
-            .zIndex(1)
+            .zIndex(1) // 다른 화면 위로
             
             Group {
                 switch selectedTabIndex {
@@ -69,8 +69,6 @@ struct MyActivityView: View {
                     EmptyView()
                 }
             }
-            // 정렬 옵션을 바꾸면 현재 보고 있는 탭만 새 sort로 다시 처음부터 불러온다 —
-            // 서버가 정렬을 해주므로 클라이언트에서 다시 섞을 필요가 없다.
             .onChange(of: selectedValue) { _, _ in
                 Task {
                     switch selectedTabIndex {
