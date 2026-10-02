@@ -17,7 +17,6 @@ struct ProfileConfirmButton: View {
         Button(action: onCompleted) {
             Text(ProfileSetupStrings.confirmButton)
         }
-        .frame(maxWidth: .infinity) //반응형
         .buttonStyle(.pickple(isEnabled ? .enabled : .disabled, 56))
         .disabled(!isEnabled)
     }

@@ -45,7 +45,6 @@ struct TermsAgreementView: View {
             }) {
                 Text(TermsAgreementStrings.startButton)
             }
-            .frame(maxWidth: .infinity)
             .buttonStyle(.pickple(isRequiredAgreed ? .enabled : .disabled, 56))
             .disabled(!isRequiredAgreed)
             
