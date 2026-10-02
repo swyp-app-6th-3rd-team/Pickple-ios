@@ -48,36 +48,22 @@ struct MyActivityView: View {
             Group {
                 switch selectedTabIndex {
                 case 0:
-                    MyActivityListView(
-                        items: myActivityViewModel.votedPosts,
-                        onReachEnd: { post in Task { await myActivityViewModel.loadMoreVotedPostsIfNeeded(currentPost: post) } },
-                        onTapItem: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) },
-                        // MyActivityVotedPostCardView는 타입과 무관하게 항상 thumbnailUrl 한 장만 쓴다
-                        // (CommunityPostCardView와 달리 A/B에서도 product 이미지로 안 바뀜).
-                        prefetchImageURLs: { $0.thumbnailUrl.map { [$0] } ?? [] }
-                    ) { post in
-                        MyActivityVotedPostCardView(post: post)
-                    }
+                    MyActivityVotedListView(
+                        myActivityViewModel: myActivityViewModel,
+                        onTapPost: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) }
+                    )
                     .task { await myActivityViewModel.loadVotedPosts(sort: sortOrder) }
-
                 case 1:
-                    MyActivityListView(
-                        items: myActivityViewModel.commentedActivities,
-                        onTapItem: { activity in myPageRouter.push(.postDetail(postId: activity.referencedPost.id, type: activity.referencedPost.type)) },
-                        prefetchImageURLs: { activity in activity.referencedPost.thumbnailUrl.map { [$0] } ?? [] }
-                    ) { activity in
-                        MyActivityCommentActivityRow(activity: activity)
-                    }
+                    MyActivityCommentListView(
+                        myActivityViewModel: myActivityViewModel,
+                        onTapActivity: { activity in myPageRouter.push(.postDetail(postId: activity.referencedPost.id, type: activity.referencedPost.type)) }
+                    )
                     .task { await myActivityViewModel.loadCommentedPosts(sort: sortOrder) }
                 case 2:
-                    MyActivityListView(
-                        items: myActivityViewModel.writtenPosts,
-                        onReachEnd: { post in Task { await myActivityViewModel.loadMoreWrittenPostsIfNeeded(currentPost: post) } },
-                        onTapItem: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) },
-                        prefetchImageURLs: { $0.thumbnailUrl.map { [$0] } ?? [] }
-                    ) { post in
-                        MyActivityWrittenPostCardView(post: post)
-                    }
+                    MyActivityWrittenListView(
+                        myActivityViewModel: myActivityViewModel,
+                        onTapPost: { post in myPageRouter.push(.postDetail(postId: post.id, type: post.type)) }
+                    )
                     .task { await myActivityViewModel.loadWrittenPosts(sort: sortOrder) }
                 default:
                     EmptyView()
