@@ -4,6 +4,7 @@
 //
 //  Created by 박윤수 on 8/26/26.
 //
+// 1차 리팩토링 완료 - 10월 2일
 
 enum ProfileSetupStrings{
     static let profileTitle = "프로필을 설정해주세요"
