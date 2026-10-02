@@ -25,69 +25,90 @@ struct PickpleSortButton: View {
     @State private var isCollapsing = false
 
     var body: some View {
-        VStack(alignment: alignment, spacing: 4) {
-            Button(action: {
-                withAnimation(.spring()) {
-                    isExpanded.toggle()
-                }
-            }) {
-                HStack(spacing: 2) {
-                    Text(selectedValue)
-                        .pickpleTypography(.body02_600)
-                        .foregroundStyle(Color.neutral50)
-
-                    Image("PickpleArrowFill")
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .foregroundStyle(Color.neutral30)
-                        .rotationEffect(.degrees(isExpanded ? 180 : 0))
-                }
-            }
-            
-            if isExpanded {
-                VStack(alignment: .leading, spacing: 0) {
-                    ForEach(options, id: \.self) { option in
-                        Button(action: {
-                            selectedValue = option
-                            isCollapsing = true
-                            withAnimation(.spring()) {
-                                isExpanded = false
-                            } completion: {
-                                isCollapsing = false
-                            }
-                        }) {
-                            HStack {
-                                Text(option)
-                                    .pickpleTypography(.body01_500)
-                                    .foregroundStyle(Color.neutral70)
-
-                                Spacer()
-
-                                if option == selectedValue {
-                                    Image("PickpleCheck")
-                                        .resizable()
-                                        .frame(width: 16, height: 16)
-                                        .foregroundStyle(Color.neutral70)
-                                }
-                            }
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 8)
-                        }
+        headerLabel
+            .floatingOverSiblings(alignment: overlayAlignment) {
+                VStack(alignment: alignment, spacing: 4) {
+                    headerButton
+                    if isExpanded {
+                        optionList
                     }
                 }
-                .allowsHitTesting(!isCollapsing)
-                .frame(width: 162, height: 96)
-                .background(Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 8)
-                        
-                        .stroke(Color.navy10, lineWidth: 1)
-                    
-                }
-                .shadow(color: Color.black.opacity(0.1), radius: 10)
-                
             }
+    }
+
+    private var overlayAlignment: Alignment {
+        switch alignment {
+        case .trailing: return .topTrailing
+        case .center: return .top
+        default: return .topLeading
+        }
+    }
+
+    private var headerButton: some View {
+        Button(action: {
+            withAnimation(.spring()) {
+                isExpanded.toggle()
+            }
+        }) {
+            headerLabel
+        }
+    }
+
+    private var optionList: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(options, id: \.self) { option in
+                Button(action: {
+                    selectedValue = option
+                    isCollapsing = true
+                    withAnimation(.spring()) {
+                        isExpanded = false
+                    } completion: {
+                        isCollapsing = false
+                    }
+                }) {
+                    HStack {
+                        Text(option)
+                            .pickpleTypography(.body01_500)
+                            .foregroundStyle(Color.neutral70)
+
+                        Spacer()
+
+                        if option == selectedValue {
+                            Image("PickpleCheck")
+                                .resizable()
+                                .frame(width: 16, height: 16)
+                                .foregroundStyle(Color.neutral70)
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 8)
+                }
+            }
+        }
+        .allowsHitTesting(!isCollapsing)
+        .frame(width: 162, height: 96)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay {
+            RoundedRectangle(cornerRadius: 8)
+                
+                .stroke(Color.navy10, lineWidth: 1)
+            
+        }
+        .shadow(color: Color.black.opacity(0.1), radius: 10)
+    }
+
+    private var headerLabel: some View {
+        HStack(spacing: 2) {
+            Text(selectedValue)
+                .pickpleTypography(.body02_600)
+                .foregroundStyle(Color.neutral50)
+
+            Image("PickpleArrowFill")
+                .resizable()
+                .frame(width: 20, height: 20)
+                .foregroundStyle(Color.neutral30)
+                .rotationEffect(.degrees(isExpanded ? 180 : 0))
         }
     }
 }
@@ -99,17 +120,10 @@ struct PickpleSortButton: View {
 
         var body: some View {
             PickpleSortButton(
-                isExpanded: .constant(false),
-                selectedValue: .constant(selectedValue),
+                isExpanded: $isExpanded,
+                selectedValue: $selectedValue,
                 options: ["최신순", "오래된 순"]
             )
-            .floatingOverSiblings {
-                PickpleSortButton(
-                    isExpanded: $isExpanded,
-                    selectedValue: $selectedValue,
-                    options: ["최신순", "오래된 순"]
-                )
-            }
         }
     }
     return PreviewWrapper()

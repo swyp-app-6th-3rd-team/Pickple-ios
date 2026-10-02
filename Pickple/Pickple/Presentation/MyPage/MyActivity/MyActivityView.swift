@@ -38,10 +38,7 @@ struct MyActivityView: View {
             PickpleTabBar(tabs: MyActivityStrings.tabs, selectedIndex: $selectedTabIndex)
 
             HStack {
-                PickpleSortButton(isExpanded: .constant(false), selectedValue: $selectedValue, options: MyActivityStrings.sortOptions)
-                    .floatingOverSiblings {
-                        PickpleSortButton(isExpanded: $isShown, selectedValue: $selectedValue, options: MyActivityStrings.sortOptions)
-                    }
+                PickpleSortButton(isExpanded: $isShown, selectedValue: $selectedValue, options: MyActivityStrings.sortOptions)
                 Spacer()
             }
             .padding(.leading, 20)
