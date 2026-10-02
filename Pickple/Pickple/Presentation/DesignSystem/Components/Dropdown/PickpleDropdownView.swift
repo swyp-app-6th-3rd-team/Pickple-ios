@@ -46,6 +46,9 @@ struct PickpleDropdownView: View {
                 .padding(.horizontal, 21)
                 .frame(maxWidth: .infinity, minHeight: 56)
             }
+            // 펼쳐진 동안엔 헤더가 탭을 받지 않아서, 다시 누른 탭은 화면의 collapsesOnTapOutside가
+            // 받아 닫는다 — 헤더도 같이 받으면 바깥 탭이 닫은 걸 toggle()이 다시 열어버린다.
+            .allowsHitTesting(!isExpanded)
 
             // 펼쳐지는 리스트 영역
             if isExpanded {
