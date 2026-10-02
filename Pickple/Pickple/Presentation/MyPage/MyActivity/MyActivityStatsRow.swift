@@ -21,7 +21,7 @@ struct MyActivityStatsRow: View {
             Text("·")
             Text(createdAt.relativeTimeDescription)
         }
-        .pickpleTypography(.label_600)
+        .pickpleTypography(.label_500)
         .foregroundStyle(Color.neutral30)
     }
 }
