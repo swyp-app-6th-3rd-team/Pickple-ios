@@ -8,11 +8,6 @@
 
 import SwiftUI
 
-enum PickpleTextFieldAccessory: Equatable {
-    case none
-    case text(String)
-}
-
 enum PickpleTextFieldStateType: Equatable {
     case _default
     case ing
@@ -48,34 +43,18 @@ enum PickpleTextFieldStateType: Equatable {
     }
 }
 
-struct PickpleTextFieldAccessoryView: View {
-    let accessory: PickpleTextFieldAccessory
-    
-    var body: some View {
-        switch accessory {
-        case .none:
-            EmptyView()
-        case .text(let text):
-            Text(text)
-                .pickpleTypography(.body02_600)
-                .foregroundStyle(Color.neutral40)
-        }
-    }
-}
 
 struct PickpleTextField: View {
     @Binding var text: String
     
     let placeholder: String
-    var trailingAccessory: PickpleTextFieldAccessory = .none
     var title: String = ""
     var caption: String = ""
     var state: PickpleTextFieldStateType = ._default
-    
+    var trailingText: String? = nil
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            
             if !title.isEmpty {
                 Text(title)
                     .pickpleTypography(.body02_600)
@@ -98,8 +77,10 @@ struct PickpleTextField: View {
                     
                     Spacer()
                     
-                    if trailingAccessory != .none {
-                        PickpleTextFieldAccessoryView(accessory: trailingAccessory)
+                    if let trailing = trailingText {
+                        Text(trailing)
+                            .pickpleTypography(.body02_600)
+                            .foregroundStyle(Color.neutral40)
                     }
                 }
                 .padding(.horizontal, 20)
@@ -126,7 +107,7 @@ struct PickpleTextField: View {
         PickpleTextField(text: .constant(""), placeholder: "Text")
         
         // 트레일링 텍스트 액세서리
-        PickpleTextField(text: .constant(""), placeholder: "", trailingAccessory: .text("Text"))
+        PickpleTextField(text: .constant(""), placeholder: "", trailingText: "text")
         
         // 상태별 (에러/성공/설명)
         PickpleTextField(text: .constant("error"), placeholder: "Text", caption: "error", state: .error)
