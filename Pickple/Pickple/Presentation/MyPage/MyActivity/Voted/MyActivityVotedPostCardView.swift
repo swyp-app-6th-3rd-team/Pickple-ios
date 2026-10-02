@@ -17,7 +17,17 @@ struct MyActivityVotedPostCardView: View {
         VStack(spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 8) {
-                    MyActivityPostCardTitle(title: post.title, decription: post.description)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(post.title)
+                            .lineLimit(1)
+                            .pickpleTypography(.body01_600)
+                            .foregroundStyle(Color.black)
+
+                        Text(post.description)
+                            .lineLimit(1, reservesSpace: true)
+                            .pickpleTypography(.body02_400)
+                            .foregroundStyle(Color.neutral40)
+                    }
 
                     MyActivityStatsRow(type: post.type, voteCount: post.voteCount, commentCount: post.commentCount, createdAt: post.createdAt)
                 }
