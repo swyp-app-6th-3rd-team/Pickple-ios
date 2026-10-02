@@ -25,8 +25,8 @@ struct ProductPriceFieldBlock: View {
             PickpleTextField(
                 text: $displayText,
                 placeholder: "\(AB) 가격을 입력해 주세요",
-                trailingAccessory: .text(PostViewStrings.priceUnit),
-                state: isFocused ? .ing : ._default
+                state: isFocused ? .ing : ._default,
+                trailingText: PostViewStrings.priceUnit
             )
             .focused($isFocused)
             .keyboardType(.numberPad)
