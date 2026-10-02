@@ -14,7 +14,7 @@ struct ProfileConfirmButton: View {
     var onCompleted: () -> Void = {}
 
     var body: some View {
-        Button(action: { onCompleted() }) {
+        Button(action: onCompleted) {
             Text(ProfileSetupStrings.confirmButton)
         }
         .frame(maxWidth: .infinity) //반응형
