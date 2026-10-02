@@ -102,19 +102,17 @@ struct CommunityView: View {
                 }
 
                 if showsLoginRequired {
-                    PickpleDialogOverlay(onTapDismiss: { showsLoginRequired = false }) {
-                        PickpleConfirmDialog(
-                            title: CommunityStrings.loginRequiredTitle,
-                            description: CommunityStrings.loginRequiredDescription,
-                            cancelTitle: CommunityStrings.cancel,
-                            confirmTitle: CommunityStrings.login,
-                            onCancel: { showsLoginRequired = false },
-                            onConfirm: {
-                                showsLoginRequired = false
-                                appRequestLogin()
-                            }
-                        )
-                    }
+                    PickpleConfirmDialog(
+                        title: CommunityStrings.loginRequiredTitle,
+                        description: CommunityStrings.loginRequiredDescription,
+                        cancelTitle: CommunityStrings.cancel,
+                        confirmTitle: CommunityStrings.login,
+                        onCancel: { showsLoginRequired = false },
+                        onConfirm: {
+                            showsLoginRequired = false
+                            appRequestLogin()
+                        }
+                    )
                 }
             }
             // .task는 이 화면이 다시 나타날 때마다(상세화면 갔다가 뒤로가기 등) 재실행된다

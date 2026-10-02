@@ -115,51 +115,45 @@ struct MyPageView: View {
             .onTabBarHideScroll(isScrolledDown: isScrolledDown)
 
             if showsLoginRequired {
-                PickpleDialogOverlay {
-                    PickpleConfirmDialog(
-                        title: MainStrings.loginRequiredTitle,
-                        description: MainStrings.loginRequiredDescription,
-                        cancelTitle: MainStrings.cancel,
-                        confirmTitle: MainStrings.login,
-                        onCancel: { showsLoginRequired = false },
-                        onConfirm: {
-                            showsLoginRequired = false
-                            appRequestLogin()
-                        }
-                    )
-                }
+                PickpleConfirmDialog(
+                    title: MainStrings.loginRequiredTitle,
+                    description: MainStrings.loginRequiredDescription,
+                    cancelTitle: MainStrings.cancel,
+                    confirmTitle: MainStrings.login,
+                    onCancel: { showsLoginRequired = false },
+                    onConfirm: {
+                        showsLoginRequired = false
+                        appRequestLogin()
+                    }
+                )
             }
 
             if showsMyPostsLoginRequired {
-                PickpleDialogOverlay {
-                    PickpleConfirmDialog(
-                        title: MyPageStrings.myPostsLoginRequiredTitle,
-                        description: MyPageStrings.myPostsLoginRequiredDescription,
-                        cancelTitle: MainStrings.cancel,
-                        confirmTitle: MainStrings.login,
-                        onCancel: { showsMyPostsLoginRequired = false },
-                        onConfirm: {
-                            showsMyPostsLoginRequired = false
-                            appRequestLogin()
-                        }
-                    )
-                }
+                PickpleConfirmDialog(
+                    title: MyPageStrings.myPostsLoginRequiredTitle,
+                    description: MyPageStrings.myPostsLoginRequiredDescription,
+                    cancelTitle: MainStrings.cancel,
+                    confirmTitle: MainStrings.login,
+                    onCancel: { showsMyPostsLoginRequired = false },
+                    onConfirm: {
+                        showsMyPostsLoginRequired = false
+                        appRequestLogin()
+                    }
+                )
             }
 
             if showsInfoLoginRequired {
-                PickpleDialogOverlay {
-                    PickpleConfirmDialog(
-                        title: MyPageStrings.infoLoginRequiredTitle,
-                        description: MyPageStrings.infoLoginRequiredDescription,
-                        cancelTitle: MainStrings.cancel,
-                        confirmTitle: MainStrings.login,
-                        onCancel: { showsInfoLoginRequired = false },
-                        onConfirm: {
-                            showsInfoLoginRequired = false
-                            appRequestLogin()
-                        }
-                    )
-                }
+                PickpleConfirmDialog(
+                    title: MyPageStrings.infoLoginRequiredTitle,
+                    description: MyPageStrings.infoLoginRequiredDescription,
+                    cancelTitle: MainStrings.cancel,
+                    confirmTitle: MainStrings.login,
+                    onCancel: { showsInfoLoginRequired = false },
+                    onConfirm: {
+                        showsInfoLoginRequired = false
+                        appRequestLogin()
+                    }
+                )
             }
         }
         .task {

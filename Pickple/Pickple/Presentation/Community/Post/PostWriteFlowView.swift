@@ -104,16 +104,14 @@ struct PostWriteFlowView: View {
             
 
             if showsLeaveConfirm {
-                PickpleDialogOverlay(onTapDismiss: { showsLeaveConfirm = false }) {
-                    PickpleConfirmDialog(
-                        title: PostViewStrings.leaveConfirmTitle,
-                        description: PostViewStrings.leaveConfirmDescription,
-                        cancelTitle: PostViewStrings.leaveConfirmCancel,
-                        confirmTitle: PostViewStrings.leaveConfirmConfirm,
-                        onCancel: { showsLeaveConfirm = false },
-                        onConfirm: { dismiss() }
-                    )
-                }
+                PickpleConfirmDialog(
+                    title: PostViewStrings.leaveConfirmTitle,
+                    description: PostViewStrings.leaveConfirmDescription,
+                    cancelTitle: PostViewStrings.leaveConfirmCancel,
+                    confirmTitle: PostViewStrings.leaveConfirmConfirm,
+                    onCancel: { showsLeaveConfirm = false },
+                    onConfirm: { dismiss() }
+                )
             }
         }
         .pickpleToast(isPresented: $showsFailureToast, message: postViewModel.isEditing ? PostViewStrings.submitEditFailedToast : PostViewStrings.submitFailedToast)

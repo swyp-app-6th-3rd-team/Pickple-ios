@@ -95,35 +95,31 @@ struct MainView: View {
             }
 
             if cardStackViewModel.showsLoginRequired {
-                PickpleDialogOverlay {
-                    PickpleConfirmDialog(
-                        title: MainStrings.loginRequiredTitle,
-                        description: MainStrings.loginRequiredDescription,
-                        cancelTitle: MainStrings.cancel,
-                        confirmTitle: MainStrings.login,
-                        onCancel: { cardStackViewModel.showsLoginRequired = false },
-                        onConfirm: {
-                            cardStackViewModel.showsLoginRequired = false
-                            appRequestLogin()
-                        }
-                    )
-                }
+                PickpleConfirmDialog(
+                    title: MainStrings.loginRequiredTitle,
+                    description: MainStrings.loginRequiredDescription,
+                    cancelTitle: MainStrings.cancel,
+                    confirmTitle: MainStrings.login,
+                    onCancel: { cardStackViewModel.showsLoginRequired = false },
+                    onConfirm: {
+                        cardStackViewModel.showsLoginRequired = false
+                        appRequestLogin()
+                    }
+                )
             }
             
             if showsBadgeLoginRequired {
-                PickpleDialogOverlay {
-                    PickpleConfirmDialog(
-                        title: MainStrings.loginRequiredTitle,
-                        description: MainStrings.loginRequiredDescription,
-                        cancelTitle: MainStrings.cancel,
-                        confirmTitle: MainStrings.login,
-                        onCancel: { showsBadgeLoginRequired = false },
-                        onConfirm: {
-                            showsBadgeLoginRequired = false
-                            appRequestLogin()
-                        }
-                    )
-                }
+                PickpleConfirmDialog(
+                    title: MainStrings.loginRequiredTitle,
+                    description: MainStrings.loginRequiredDescription,
+                    cancelTitle: MainStrings.cancel,
+                    confirmTitle: MainStrings.login,
+                    onCancel: { showsBadgeLoginRequired = false },
+                    onConfirm: {
+                        showsBadgeLoginRequired = false
+                        appRequestLogin()
+                    }
+                )
             }
         }
         // .task는 이 화면이 처음 생성될 때 딱 한 번만 실행된다 — 게시글 상세 등 다른 화면에서
