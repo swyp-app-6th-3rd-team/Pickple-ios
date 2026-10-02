@@ -1,5 +1,5 @@
 //
-//  ProfileButtonView.swift
+//  ProfileConfirmButton.swift
 //  Pickple
 //
 //  Created by 박윤수 on 9/1/26.
@@ -9,7 +9,7 @@
 
 import SwiftUI
 
-struct ProfileButtonView: View {
+struct ProfileConfirmButton: View {
     let profileViewModel: ProfileSetupViewModel
     var onCompleted: () -> Void = {}
 
@@ -28,5 +28,5 @@ struct ProfileButtonView: View {
 }
 
 #Preview {
-    ProfileButtonView(profileViewModel: ProfileSetupViewModel())
+    ProfileConfirmButton(profileViewModel: ProfileSetupViewModel())
 }

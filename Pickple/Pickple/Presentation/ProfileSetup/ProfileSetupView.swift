@@ -41,7 +41,7 @@ struct ProfileSetupView: View {
             Spacer()
             
             //XMARK: - Button
-            ProfileButtonView(profileViewModel: profileViewModel, onCompleted: {
+            ProfileConfirmButton(profileViewModel: profileViewModel, onCompleted: {
                 showsTermsAgreement = true
             })
             .padding(.horizontal, 20)
