@@ -93,6 +93,7 @@ xcodebuild test -scheme <SCHEME> \
 - 브랜치 `feat/`, `fix/` 프리픽스. `main` 직접 push 금지 (PR 필수)
 - 커밋 메시지 한국어, `feat:` `fix:` `refactor:` `chore:` 프리픽스
 - 한 커밋에 한 가지 변경
+- PR 본문·커밋 메시지에 Claude Code 작업 표시(`Generated with Claude Code`, `Co-Authored-By` 등)를 넣지 않는다
 
 ---
 
