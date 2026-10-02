@@ -27,7 +27,7 @@ struct PickpleConfirmDialog: View {
 
                 if let description {
                     Text(description)
-                        .pickpleTypography(.body01_500)
+                        .pickpleTypography(.body01_400)
                         .foregroundStyle(Color.neutral70)
                         .multilineTextAlignment(.center)
                 }
