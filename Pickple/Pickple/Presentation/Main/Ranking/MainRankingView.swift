@@ -144,19 +144,17 @@ struct MainRankingView: View {
         }
         .overlay {
             if showsLoginRequired {
-                PickpleDialogOverlay {
-                    PickpleConfirmDialog(
-                        title: MainStrings.loginRequiredTitle,
-                        description: MainStrings.loginRequiredDescription,
-                        cancelTitle: MainStrings.cancel,
-                        confirmTitle: MainStrings.login,
-                        onCancel: { showsLoginRequired = false },
-                        onConfirm: {
-                            showsLoginRequired = false
-                            appRequestLogin()
-                        }
-                    )
-                }
+                PickpleConfirmDialog(
+                    title: MainStrings.loginRequiredTitle,
+                    description: MainStrings.loginRequiredDescription,
+                    cancelTitle: MainStrings.cancel,
+                    confirmTitle: MainStrings.login,
+                    onCancel: { showsLoginRequired = false },
+                    onConfirm: {
+                        showsLoginRequired = false
+                        appRequestLogin()
+                    }
+                )
             }
         }
     }

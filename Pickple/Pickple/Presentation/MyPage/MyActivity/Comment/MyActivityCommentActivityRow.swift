@@ -5,6 +5,7 @@
 //  Created by 박윤수 on 9/7/26.
 //
 // 1차 점검 완료
+// 1차 리팩토링 완료 - 10월 2일
 
 import SwiftUI
 
@@ -26,7 +27,7 @@ struct MyActivityCommentActivityRow: View {
                         // 줄 수(0~2줄)와 상관없이 항상 2줄 높이를 예약해서 아래 참조글 줄 위치가 안 흔들리게 한다.
                         Text(activity.content)
                             .lineLimit(2, reservesSpace: true)
-                            .pickpleTypography(.body02_600)
+                            .pickpleTypography(.body02_500)
                             .foregroundStyle(Color.black)
                                         
                     HStack(spacing: 4) {

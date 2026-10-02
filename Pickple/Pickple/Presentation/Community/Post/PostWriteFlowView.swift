@@ -71,19 +71,9 @@ struct PostWriteFlowView: View {
                         }
                     }
                 }
-                // 배경(Color.white)에 onTapGesture를 걸었더니 ScrollView가 빈 공간까지
-                // 포함해서 자기 프레임 전체를 스크롤 제스처용으로 히트테스트하고 있어서
-                // 터치가 배경까지 안 내려왔다 — dismissKeyboardOnTap()처럼 simultaneousGesture로
-                // ScrollView 자체에 걸면 스크롤을 막지 않으면서 탭도 같이 인식된다.
-                .simultaneousGesture(
-                    TapGesture().onEnded {
-                        if isCategoryExpanded {
-                            withAnimation(.spring()) {
-                                isCategoryExpanded = false
-                            }
-                        }
-                    }
-                )
+                // 배경(Color.white)에 걸면 ScrollView가 자기 프레임 전체를 스크롤 제스처용으로
+                // 히트테스트해서 터치가 배경까지 안 내려온다 — ScrollView 자체에 건다.
+                .collapsesOnTapOutside($isCategoryExpanded)
                 // 포커스된 입력 필드가 키보드에 가려지지 않고 키보드 위 16pt 지점에 보이게 한다.
                 // 필드마다 흩어진 FocusState를 하나로 합치지 않고, ScrollView 아래쪽에 키보드
                 // 높이만큼 safeAreaInset을 예약해서 그 영역을 "스크롤 불가 영역"으로 만드는
@@ -104,16 +94,14 @@ struct PostWriteFlowView: View {
             
 
             if showsLeaveConfirm {
-                PickpleDialogOverlay(onTapDismiss: { showsLeaveConfirm = false }) {
-                    PickpleConfirmDialog(
-                        title: PostViewStrings.leaveConfirmTitle,
-                        description: PostViewStrings.leaveConfirmDescription,
-                        cancelTitle: PostViewStrings.leaveConfirmCancel,
-                        confirmTitle: PostViewStrings.leaveConfirmConfirm,
-                        onCancel: { showsLeaveConfirm = false },
-                        onConfirm: { dismiss() }
-                    )
-                }
+                PickpleConfirmDialog(
+                    title: PostViewStrings.leaveConfirmTitle,
+                    description: PostViewStrings.leaveConfirmDescription,
+                    cancelTitle: PostViewStrings.leaveConfirmCancel,
+                    confirmTitle: PostViewStrings.leaveConfirmConfirm,
+                    onCancel: { showsLeaveConfirm = false },
+                    onConfirm: { dismiss() }
+                )
             }
         }
         .pickpleToast(isPresented: $showsFailureToast, message: postViewModel.isEditing ? PostViewStrings.submitEditFailedToast : PostViewStrings.submitFailedToast)

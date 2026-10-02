@@ -34,7 +34,7 @@ struct MyBadgeView: View {
                 VStack(spacing: 24) {
                     VStack(spacing: 4) {
                         Text(MyBadgeStrings.collectionStatus)
-                            .pickpleTypography(.title01)
+                            .pickpleTypography(.title01_600)
                             .foregroundStyle(Color.black)
 
                         Text(MyBadgeStrings.collectedCount(myBadgeViewModel.unlockedCount))

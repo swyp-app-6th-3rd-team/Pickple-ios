@@ -13,15 +13,6 @@ struct PickpleDropdownView: View {
     @Binding var selectedValue: String
 
     let options: [String]
-    // 리스트가 접히는 도중엔(헤더를 다시 눌러 닫든, 화면 배경을 탭해서 닫든) 옵션 버튼이
-    // 여전히 화면에 남아 탭을 그대로 받아버려서 엉뚱한 항목이 선택되는 문제가 있었다.
-    // isExpanded가 꺼지는 순간(트리거가 어디서 왔든) onChange로 감지해 isCollapsing을
-    // 세우고, 옵션 버튼 action 안에서 guard로 막는다 — action은 렌더링이 아니라 탭이
-    // 눌리는 시점에 실행되므로 애니메이션 타이밍과 무관하게 항상 최신 상태를 본다.
-    // 헤더 버튼은 값을 잘못 선택할 위험이 없어 가드를 걸지 않는다 — 걸면 닫힌 뒤
-    // isCollapsing이 풀리기 전까진 재오픈 토글 자체가 막혀버린다(isExpanded가 바뀌어야
-    // onChange가 풀어주는데, 그 토글을 가드가 먼저 막아버리는 순환 문제).
-    @State private var isCollapsing = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -46,6 +37,9 @@ struct PickpleDropdownView: View {
                 .padding(.horizontal, 21)
                 .frame(maxWidth: .infinity, minHeight: 56)
             }
+            // 펼쳐진 동안엔 헤더가 탭을 받지 않아서, 다시 누른 탭은 화면의 collapsesOnTapOutside가
+            // 받아 닫는다 — 헤더도 같이 받으면 바깥 탭이 닫은 걸 toggle()이 다시 열어버린다.
+            .allowsHitTesting(!isExpanded)
 
             // 펼쳐지는 리스트 영역
             if isExpanded {
@@ -55,7 +49,9 @@ struct PickpleDropdownView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(options, id: \.self) { option in
                         Button(action: {
-                            guard !isCollapsing else { return }
+                            // 사라지는 중인 목록은 닫히기 직전 상태로 그려져 탭을 받을 수 있다 —
+                            // 탭 시점의 실제 값으로 확인해 이미 닫혔으면 무시한다.
+                            guard isExpanded else { return }
                             selectedValue = option
                             withAnimation(.spring()) {
                                 isExpanded = false
@@ -75,7 +71,6 @@ struct PickpleDropdownView: View {
                     .padding(.horizontal, 16)
 
                 }
-                .allowsHitTesting(!isCollapsing)
             }
         }
         .background(Color.white)
@@ -83,13 +78,6 @@ struct PickpleDropdownView: View {
         .overlay {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color.navy10, lineWidth: 1)
-        }
-        .onChange(of: isExpanded) { oldValue, newValue in
-            if newValue {
-                isCollapsing = false
-            } else if oldValue {
-                isCollapsing = true
-            }
         }
     }
 }

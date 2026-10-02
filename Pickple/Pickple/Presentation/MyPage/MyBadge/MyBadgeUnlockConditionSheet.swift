@@ -17,7 +17,7 @@ struct MyBadgeUnlockConditionSheet: View {
         VStack(spacing: 16) {
             VStack(spacing: 12) {
                 Text(badge.title)
-                    .pickpleTypography(.title01)
+                    .pickpleTypography(.title01_600)
                     .foregroundStyle(Color.black)
                 
                 Image(badge.iconOffName)

@@ -26,17 +26,10 @@ struct CommunityHeaderView: View {
 
             HStack {
                 PickpleSortButton(
-                    isExpanded: .constant(false),
+                    isExpanded: $communityViewModel.isSortExpanded,
                     selectedValue: $communityViewModel.sortOption,
                     options: CommunityViewModel.sortOptions
                 )
-                .floatingOverSiblings {
-                    PickpleSortButton(
-                        isExpanded: $communityViewModel.isSortExpanded,
-                        selectedValue: $communityViewModel.sortOption,
-                        options: CommunityViewModel.sortOptions
-                    )
-                }
 
                 Spacer()
             }

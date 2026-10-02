@@ -18,7 +18,7 @@ struct MainHotPostSection: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(MainStrings.hotPostSectionTitle)
-                    .pickpleTypography(.title01)
+                    .pickpleTypography(.title01_600)
                     .foregroundStyle(Color.black)
                 
                 Spacer()

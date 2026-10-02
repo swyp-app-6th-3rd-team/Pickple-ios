@@ -6,6 +6,7 @@
 //
 //  나의 활동 카드 3종(투표/작성글/댓글)이 공통으로 쓰는 "투표수·댓글수·작성시각" 한 줄.
 // 1차 점검 완료 - 9월 13일
+// 1차 리팩토링 완료 - 10월 2일
 
 import SwiftUI
 
@@ -21,7 +22,7 @@ struct MyActivityStatsRow: View {
             Text("·")
             Text(createdAt.relativeTimeDescription)
         }
-        .pickpleTypography(.label_600)
+        .pickpleTypography(.label_500)
         .foregroundStyle(Color.neutral30)
     }
 }

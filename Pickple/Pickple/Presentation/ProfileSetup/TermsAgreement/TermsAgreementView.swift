@@ -61,7 +61,7 @@ struct TermsAgreementView: View {
         HStack {
             VStack(alignment: .leading, spacing: 8) {
                 Text(TermsAgreementStrings.welcomeTitle)
-                    .pickpleTypography(.title01)
+                    .pickpleTypography(.title01_600)
                     .foregroundStyle(Color.black)
                 
                 Text(TermsAgreementStrings.welcomeDescription)

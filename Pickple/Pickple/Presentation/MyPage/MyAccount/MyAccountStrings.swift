@@ -16,7 +16,7 @@ enum MyAccountStrings {
     static let logoutConfirmTitle = "로그아웃 할까요?"
 
     static let leaveConfirmTitle = "정말 탈퇴하시나요?"
-    static let leaveConfirmDescription = "탈퇴하시면 지금까지의 모든 데이터가\n날라가고 다시는 볼 수 없어요"
+    static let leaveConfirmDescription = "탈퇴하시면 지금까지의 모든 데이터가\n삭제되고 다시는 볼 수 없어요"
     static let leaveConfirmButton = "나가기"
 
     static let deleteAccountFailedTitle = "탈퇴 실패"
