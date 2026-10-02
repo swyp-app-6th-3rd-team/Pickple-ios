@@ -22,8 +22,8 @@ struct ProductNameFieldBlock: View {
             PickpleTextField(
                 text: $name,
                 placeholder: PostViewStrings.productNamePlaceholder,
-                trailingAccessory: .text("\(name.count)/\(maxLength)"),
-                state: isFocused ? .ing : ._default
+                state: isFocused ? .ing : ._default,
+                trailingText: ("\(name.count)/\(maxLength)")
             )
             .focused($isFocused)
             .onChange(of: name) { _, newValue in
