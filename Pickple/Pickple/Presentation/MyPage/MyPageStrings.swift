@@ -9,9 +9,9 @@ import Foundation
 
 enum MyPageStrings {
     static let extraSectionTitle = "기타"
-    static let account = "계정 관리"
+    static let account = "계정관리"
     static let privatePolicy = "개인정보처리방침"
-    static let terms = "이용 약관"
+    static let terms = "이용약관"
     static let version = "버전 정보"
 
     static let infoSectionTitle = "마이페이지"
