@@ -11,11 +11,8 @@ import SwiftUI
 struct MyPageView: View {
     let myPageViewModel: MyPageViewModel
     @Environment(MyPageRouter.self) private var myPageRouter
-    @Environment(\.appRequestLogin) private var appRequestLogin
+    @Environment(\.showLoginPrompt) private var showLoginPrompt
     @Environment(\.apiClient) private var apiClient
-    @State private var showsLoginRequired = false
-    @State private var showsMyPostsLoginRequired = false
-    @State private var showsInfoLoginRequired = false
     // "새 투표 올리기"를 커뮤니티 작성 버튼과 동일하게 동작시키는 데 쓴다 — 유형 선택
     // 시트 → 작성 화면(fullScreenCover) → 성공 시 상세로 push + 토스트, 순서까지 같다.
     @State private var showsTypeSelection = false
@@ -38,7 +35,7 @@ struct MyPageView: View {
             }
             ScrollView {
                     VStack(spacing: 0) {
-                        MyPageProfileHeaderView(myPageViewModel: myPageViewModel, onLoginTapped: { showsLoginRequired = true })
+                        MyPageProfileHeaderView(myPageViewModel: myPageViewModel, onLoginTapped: { showLoginPrompt(.main) })
 
                         MyPageStatusView(
                             myPageViewModel: myPageViewModel,
@@ -46,7 +43,7 @@ struct MyPageView: View {
                                 if myPageViewModel.isLoggedIn {
                                     myPageRouter.push(.activity(initialTab: tab))
                                 } else {
-                                    showsMyPostsLoginRequired = true
+                                    showLoginPrompt(.myPosts)
                                 }
                             }
                         )
@@ -58,18 +55,17 @@ struct MyPageView: View {
                                 if myPageViewModel.isLoggedIn {
                                     myPageRouter.push(.activity(initialTab: 0))
                                 } else {
-                                    showsMyPostsLoginRequired = true
+                                    showLoginPrompt(.myPosts)
                                 }
                             },
                             onTapAddPost: {
-                                // 게스트는 로그인 유도 모달을 띄운다. "내가 올린 투표" 영역 문구를 써야 해서
-                                // 계정 관리/프로필 헤더가 쓰는 showsLoginRequired와 다이얼로그를 분리한다.
+                                // 게스트는 "내가 올린 투표" 영역 문구로 로그인 유도 모달을 띄운다.
                                 // 로그인 상태면 커뮤니티의 작성 버튼과 똑같이 유형 선택 시트를 띄운다.
                                 if myPageViewModel.isLoggedIn {
                                     composePostViewModel = PostViewModel(postWriteRepository: RemotePostWriteRepository(apiClient: apiClient))
                                     showsTypeSelection = true
                                 } else {
-                                    showsMyPostsLoginRequired = true
+                                    showLoginPrompt(.myPosts)
                                 }
                             }
                         )
@@ -83,14 +79,14 @@ struct MyPageView: View {
                                 if myPageViewModel.isLoggedIn {
                                     myPageRouter.push(.grade)
                                 } else {
-                                    showsInfoLoginRequired = true
+                                    showLoginPrompt(.myPageInfo)
                                 }
                             },
                             onTapBadge: {
                                 if myPageViewModel.isLoggedIn {
                                     myPageRouter.push(.badge)
                                 } else {
-                                    showsInfoLoginRequired = true
+                                    showLoginPrompt(.myPageInfo)
                                 }
                             }
                         )
@@ -104,7 +100,7 @@ struct MyPageView: View {
                                 if myPageViewModel.isLoggedIn {
                                     myPageRouter.push(.account)
                                 } else {
-                                    showsInfoLoginRequired = true
+                                    showLoginPrompt(.myPageInfo)
                                 }
                             }
                         )
@@ -113,48 +109,6 @@ struct MyPageView: View {
 
             }
             .onTabBarHideScroll(isScrolledDown: isScrolledDown)
-
-            if showsLoginRequired {
-                PickpleConfirmDialog(
-                    title: MainStrings.loginRequiredTitle,
-                    description: MainStrings.loginRequiredDescription,
-                    cancelTitle: MainStrings.cancel,
-                    confirmTitle: MainStrings.login,
-                    onCancel: { showsLoginRequired = false },
-                    onConfirm: {
-                        showsLoginRequired = false
-                        appRequestLogin()
-                    }
-                )
-            }
-
-            if showsMyPostsLoginRequired {
-                PickpleConfirmDialog(
-                    title: MyPageStrings.myPostsLoginRequiredTitle,
-                    description: MyPageStrings.myPostsLoginRequiredDescription,
-                    cancelTitle: MainStrings.cancel,
-                    confirmTitle: MainStrings.login,
-                    onCancel: { showsMyPostsLoginRequired = false },
-                    onConfirm: {
-                        showsMyPostsLoginRequired = false
-                        appRequestLogin()
-                    }
-                )
-            }
-
-            if showsInfoLoginRequired {
-                PickpleConfirmDialog(
-                    title: MyPageStrings.infoLoginRequiredTitle,
-                    description: MyPageStrings.infoLoginRequiredDescription,
-                    cancelTitle: MainStrings.cancel,
-                    confirmTitle: MainStrings.login,
-                    onCancel: { showsInfoLoginRequired = false },
-                    onConfirm: {
-                        showsInfoLoginRequired = false
-                        appRequestLogin()
-                    }
-                )
-            }
         }
         .task {
             await myPageViewModel.loadUserInfo()

@@ -48,9 +48,9 @@ ViewModel과 Router는 전부 `@Observable`(Observation, iOS 17+)이다. `Observ
 ## 공용 컴포넌트 (`DesignSystem/Components`)
 
 - **`PickpleGNB`**: 화면 상단 바(뒤로가기/타이틀/우측 액션). `tint`(아이콘·텍스트 색)와 `background`(배경색) 파라미터가 있다(기본값은 기존과 동일해서 대부분 화면엔 영향 없음). `PostDetailView`가 스크롤에 따라 이 둘을 동적으로 바꾸는 식으로 쓴다.
-- **`PickpleDialogOverlay`**: 화면 전체를 덮는 반투명 배경 위에 중앙 모달을 띄우는 래퍼. `Color.black.opacity(0.4).ignoresSafeArea()`를 화면마다 반복 작성하던 걸 모았다. `onTapDismiss` 옵션으로 바깥 탭 시 닫기도 지원한다.
-  - **주의**: `PickpleConfirmDialog`/`PostLeaveConfirmDialog`처럼 자체 좌우 패딩이 없는 모달만 그대로 끼워 넣을 수 있다. `MyAccountConfirmDialog`/`CommunityLoginRequiredModal`은 컴포넌트 자체에 `.padding(.horizontal, 40)`이 이미 들어있어서, `PickpleDialogOverlay`에 넣으면 패딩이 두 번 겹친다 — 그래서 `MyAccountView`/`CommunityView`는 아직 예전 방식(`Color.black.opacity(0.4)` 직접 작성) 그대로 남아있다.
-- **확인 모달 4종류가 사실상 중복**(`PickpleConfirmDialog`, `MyAccountConfirmDialog`, `PostLeaveConfirmDialog`, `CommunityLoginRequiredModal`): 구조는 거의 동일하고 색상/폰트 크기만 미세하게 다르다. 하나로 합칠 수 있지만 "어느 스타일이 정답인지" 고르는 게 UI 판단이라 이번엔 손대지 않았다.
+- **`PickpleConfirmDialog`**: 제목·설명·취소/확인 버튼 두 개짜리 중앙 확인 다이얼로그. 화면 전체를 덮는 딤(`Color.black.opacity(0.6).ignoresSafeArea()`)과 좌우 여백 40까지 컴포넌트가 직접 그린다(2026-10-02, 예전 `PickpleDialogOverlay` 래퍼는 항상 이 다이얼로그만 감싸서 합치고 삭제). 예전 확인 모달 4종(`MyAccountConfirmDialog` 등)도 이미 이 하나로 정리됐다.
+  - **부모가 `ZStack`이어야 한다**: 화면 위에 겹쳐 보이려면 `ZStack { 화면; if shows { PickpleConfirmDialog(...) } }` 형태로 둔다.
+  - **탭 루트 화면의 로그인 유도 다이얼로그는 예외**: 화면 안에 그리면 하단 탭바(`TabView`가 화면 바깥에 그림)가 딤에 안 덮이고 눌린다. 그래서 화면은 `@Environment(\.showLoginPrompt)`로 `LoginPrompt` 종류만 요청하고, `PickpleTabView`가 `TabView.overlay`에 그린다(`Main/LoginPrompt.swift`). `fullScreenCover`로 띄운 화면(글쓰기 등)은 `TabView`보다 위층이라 이 방식이 가려지므로 화면 안에 직접 그린다.
 
 ## 문자열 상수 (`XxxStrings.swift`)
 
@@ -68,6 +68,5 @@ CLAUDE.md는 "하드코딩된 문자열·색상 금지"를 명시한다. 색상�
 
 ## 알고 있지만 이번에 안 건드린 것
 
-- **확인 모달 4종 통합** — 위 참고. UI 스타일 판단 필요.
 - **네비게이션 두 패턴 통일** — 아직 자연스러운 과도기.
 - **Mock 데이터 리터럴 중복** — 실 API 연동 때 자연 소멸.

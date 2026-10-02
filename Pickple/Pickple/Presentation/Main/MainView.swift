@@ -12,9 +12,8 @@ struct MainView: View {
     @State private var mainViewModel: MainViewModel
     @State private var cardStackViewModel: CardStackViewModel
     @Environment(MainRouter.self) private var mainRouter
-    @Environment(\.appRequestLogin) private var appRequestLogin
+    @Environment(\.showLoginPrompt) private var showLoginPrompt
     @State private var isMissionExpanded = false
-    @State private var showsBadgeLoginRequired = false
     var onRequestCommunityTab: (() -> Void)? = nil
     // 아래로 스크롤하면 하단 탭바를 숨기는 데 쓴다 — PickpleTabView가 이걸로 전달받아
     // .toolbar(_, for: .tabBar) 노출 여부에 같이 반영한다.
@@ -61,7 +60,7 @@ struct MainView: View {
                             isLoggedIn: mainViewModel.isLoggedIn,
                             missions: mainViewModel.missions,
                             isExpanded: $isMissionExpanded,
-                            onLoginTapped: { showsBadgeLoginRequired = true }
+                            onLoginTapped: { showLoginPrompt(.main) }
                         )
                         .padding(.top, 30) //카드 + 미션 간격
                         .padding(.horizontal, 20)
@@ -93,34 +92,13 @@ struct MainView: View {
                     await cardStackViewModel.refreshCards()
                 }
             }
-
-            if cardStackViewModel.showsLoginRequired {
-                PickpleConfirmDialog(
-                    title: MainStrings.loginRequiredTitle,
-                    description: MainStrings.loginRequiredDescription,
-                    cancelTitle: MainStrings.cancel,
-                    confirmTitle: MainStrings.login,
-                    onCancel: { cardStackViewModel.showsLoginRequired = false },
-                    onConfirm: {
-                        cardStackViewModel.showsLoginRequired = false
-                        appRequestLogin()
-                    }
-                )
-            }
-            
-            if showsBadgeLoginRequired {
-                PickpleConfirmDialog(
-                    title: MainStrings.loginRequiredTitle,
-                    description: MainStrings.loginRequiredDescription,
-                    cancelTitle: MainStrings.cancel,
-                    confirmTitle: MainStrings.login,
-                    onCancel: { showsBadgeLoginRequired = false },
-                    onConfirm: {
-                        showsBadgeLoginRequired = false
-                        appRequestLogin()
-                    }
-                )
-            }
+        }
+        // 게스트가 카드에 투표하면 CardStackViewModel이 showsLoginRequired를 켠다 —
+        // 다이얼로그는 탭바까지 덮도록 PickpleTabView가 그리므로 요청만 넘기고 바로 끈다.
+        .onChange(of: cardStackViewModel.showsLoginRequired) { _, shows in
+            guard shows else { return }
+            cardStackViewModel.showsLoginRequired = false
+            showLoginPrompt(.main)
         }
         // .task는 이 화면이 처음 생성될 때 딱 한 번만 실행된다 — 게시글 상세 등 다른 화면에서
         // 투표하고 홈으로 돌아와도 카드스택은 그 변화를 몰라 예전(미투표) 상태 그대로 남는

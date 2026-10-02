@@ -11,6 +11,7 @@ import SwiftUI
 struct PickpleTabView: View {
     @Environment(\.apiClient) private var apiClient
     @Environment(\.isLoggedIn) private var isLoggedIn
+    @Environment(\.appRequestLogin) private var appRequestLogin
     @State private var selectedTab = 0
     @State private var mainRouter = MainRouter()
     @State private var communityRouter = CommunityRouter()
@@ -22,6 +23,8 @@ struct PickpleTabView: View {
     @State private var mainScrolledDown = false
     @State private var myPageScrolledDown = false
     @State private var communityScrolledDown = false
+    // 탭 루트 화면이 요청한 로그인 유도 다이얼로그 — TabView 위에 그려서 탭바까지 덮는다.
+    @State private var loginPrompt: LoginPrompt?
 
     init(myPageViewModel: MyPageViewModel = MyPageViewModel()) {
         _myPageViewModel = State(initialValue: myPageViewModel)
@@ -133,6 +136,22 @@ struct PickpleTabView: View {
             .tag(2)
         }
         .tint(Color.navy60)
+        .overlay {
+            if let loginPrompt {
+                PickpleConfirmDialog(
+                    title: loginPrompt.title,
+                    description: loginPrompt.description,
+                    cancelTitle: loginPrompt.cancelTitle,
+                    confirmTitle: loginPrompt.confirmTitle,
+                    onCancel: { self.loginPrompt = nil },
+                    onConfirm: {
+                        self.loginPrompt = nil
+                        appRequestLogin()
+                    }
+                )
+            }
+        }
+        .environment(\.showLoginPrompt) { loginPrompt = $0 }
         // 탭을 떠날 때 그 탭의 네비게이션 스택을 비워둔다 — 그래야 다른 탭에 갔다가 다시
         // 돌아왔을 때 마지막에 보던 상세 화면이 아니라 항상 목록(루트)부터 보인다.
         .onChange(of: selectedTab) { oldValue, _ in

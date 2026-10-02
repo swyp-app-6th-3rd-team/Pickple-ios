@@ -69,25 +69,22 @@ struct PickpleConfirmDialog: View {
 }
 
 #Preview("설명 있음") {
-    ZStack {
-        PickpleConfirmDialog(
-            title: "게시글을 삭제할까요?",
-            description: "게시글을 삭제하면 다시는\n볼 수 없어요",
-            cancelTitle: "취소",
-            confirmTitle: "삭제",
-            onCancel: {},
-            onConfirm: {}
-        )
-    }
+    PickpleConfirmDialog(
+        title: "게시글을 삭제할까요?",
+        description: "게시글을 삭제하면 다시는\n볼 수 없어요",
+        cancelTitle: "취소",
+        confirmTitle: "삭제",
+        onCancel: {},
+        onConfirm: {}
+    )
 }
 
 #Preview("설명 없음") {
-        PickpleConfirmDialog(
-            title: "로그아웃 하시겠습니까?",
-            cancelTitle: "취소",
-            confirmTitle: "로그아웃",
-            onCancel: {},
-            onConfirm: {}
-        )
-    
+    PickpleConfirmDialog(
+        title: "로그아웃 하시겠습니까?",
+        cancelTitle: "취소",
+        confirmTitle: "로그아웃",
+        onCancel: {},
+        onConfirm: {}
+    )
 }
