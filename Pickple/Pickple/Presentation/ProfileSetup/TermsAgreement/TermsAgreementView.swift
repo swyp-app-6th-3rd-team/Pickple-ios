@@ -34,7 +34,7 @@ struct TermsAgreementView: View {
                     pushNotificationOn: $pushNotificationOn
                 )
                 
-                TermsToggleSection
+                termsToggleSection
             }
             Button(action: {
                 Task {
@@ -72,7 +72,7 @@ struct TermsAgreementView: View {
     }
     
     //MARK: - TermsToggleSection
-    private var TermsToggleSection: some View {
+    private var termsToggleSection: some View {
         VStack(spacing: 16) {
             TermsToggleRow(isOn: $personalDataOn, title: TermsAgreementStrings.personalDataTitle, url: TermsAgreementStrings.privacy)
             TermsToggleRow(isOn: $serviceTermsOn, title: TermsAgreementStrings.serviceTermsTitle, url: TermsAgreementStrings.ToU)
