@@ -49,9 +49,6 @@ struct PickpleDropdownView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(options, id: \.self) { option in
                         Button(action: {
-                            // 사라지는 중인 목록은 닫히기 직전 상태로 그려져 탭을 받을 수 있다 —
-                            // 탭 시점의 실제 값으로 확인해 이미 닫혔으면 무시한다.
-                            guard isExpanded else { return }
                             selectedValue = option
                             withAnimation(.spring()) {
                                 isExpanded = false
