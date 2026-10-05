@@ -42,7 +42,9 @@ struct PickpleDropdownView: View {
             .allowsHitTesting(!isExpanded)
 
             // 펼쳐지는 리스트 영역
-            if isExpanded {
+            // if로 넣고 빼면 사라지는 애니메이션 동안 목록이 닫히기 직전 상태로 얼어서 탭을
+            // 받는다 — 항상 그려두고 높이를 0으로 접어야 allowsHitTesting이 닫히는 순간 바로 반영된다.
+            VStack(alignment: .leading, spacing: 0) {
                 Divider()
                     .foregroundStyle(Color.navy10)
 
@@ -69,6 +71,11 @@ struct PickpleDropdownView: View {
 
                 }
             }
+            .frame(height: isExpanded ? nil : 0, alignment: .top)
+            .clipped()
+            .opacity(isExpanded ? 1 : 0)
+            .allowsHitTesting(isExpanded)
+            .accessibilityHidden(!isExpanded)
         }
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 8))

@@ -20,9 +20,12 @@ struct PickpleSortButton: View {
             .floatingOverSiblings(alignment: overlayAlignment) {
                 VStack(alignment: alignment, spacing: 4) {
                     headerButton
-                    if isExpanded {
-                        optionList
-                    }
+                    // if로 넣고 빼면 사라지는 애니메이션 동안 목록이 닫히기 직전 상태로 얼어서 탭을
+                    // 받는다 — 항상 그려두고 숨겨야 allowsHitTesting이 닫히는 순간 바로 반영된다.
+                    optionList
+                        .opacity(isExpanded ? 1 : 0)
+                        .allowsHitTesting(isExpanded)
+                        .accessibilityHidden(!isExpanded)
                 }
             }
     }
