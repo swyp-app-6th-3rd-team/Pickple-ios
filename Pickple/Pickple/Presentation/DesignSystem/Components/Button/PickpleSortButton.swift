@@ -20,9 +20,12 @@ struct PickpleSortButton: View {
             .floatingOverSiblings(alignment: overlayAlignment) {
                 VStack(alignment: alignment, spacing: 4) {
                     headerButton
-                    if isExpanded {
-                        optionList
-                    }
+                    // if로 넣고 빼면 사라지는 애니메이션 동안 목록이 닫히기 직전 상태로 얼어서 탭을
+                    // 받는다 — 항상 그려두고 숨겨야 allowsHitTesting이 닫히는 순간 바로 반영된다.
+                    optionList
+                        .opacity(isExpanded ? 1 : 0)
+                        .allowsHitTesting(isExpanded)
+                        .accessibilityHidden(!isExpanded)
                 }
             }
     }
@@ -52,9 +55,6 @@ struct PickpleSortButton: View {
         VStack(alignment: .leading, spacing: 0) {
             ForEach(options, id: \.self) { option in
                 Button(action: {
-                    // 사라지는 중인 목록은 닫히기 직전 상태로 그려져 탭을 받을 수 있다 —
-                    // 탭 시점의 실제 값으로 확인해 이미 닫혔으면 무시한다.
-                    guard isExpanded else { return }
                     selectedValue = option
                     withAnimation(.spring()) {
                         isExpanded = false
