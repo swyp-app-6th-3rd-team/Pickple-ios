@@ -11,11 +11,13 @@ import SwiftUI
 // 글 유형이 정해진 뒤의 작성 화면. 유형별 입력을 전부 한 화면에 모아서 보여주고,
 // 상단 게이지가 필수 항목 채움 정도를 보여준다.
 struct PostWriteFlowView: View {
-    let postViewModel: PostViewModel
+    // 호출부가 만들어 넘기면, 실기기 첫 실행 때 유형 선택 시트와 작성 화면 커버 클로저가 서로 다른
+    // 인스턴스를 봐서 유형이 기본값(찬반)으로 뜨는 문제가 있었다 — 작성 한 번의 수명과 맞게 이 화면이 소유한다.
+    @State private var postViewModel: PostViewModel
     // 게시/수정 성공 시 호출 — 호출부가 이 화면을 어떻게 닫고 어디로 보여줄지 결정한다
     // (여기서 직접 상세 화면을 push하면, 그 화면에서 뒤로가기를 눌렀을 때 이 작성 화면으로
     // 되돌아와버리는 문제가 있었다).
-    var onPostSaved: (Int, VoteType) -> Void = { _, _ in }
+    private let onPostSaved: (Int, VoteType) -> Void
     @Environment(\.dismiss) private var dismiss
 
     @State private var isCategoryExpanded = false
@@ -23,6 +25,20 @@ struct PostWriteFlowView: View {
     @State private var showsFailureToast = false
 
     private let categoryOptions = PostViewStrings.categoryOptions
+
+    // 새 글 작성
+    init(type: VoteType, postWriteRepository: PostWriteRepository, onPostSaved: @escaping (Int, VoteType) -> Void = { _, _ in }) {
+        let viewModel = PostViewModel(postWriteRepository: postWriteRepository)
+        viewModel.selectedType = type
+        _postViewModel = State(initialValue: viewModel)
+        self.onPostSaved = onPostSaved
+    }
+
+    // 기존 글 수정
+    init(editing post: PostDetail, postWriteRepository: PostWriteRepository, onPostSaved: @escaping (Int, VoteType) -> Void = { _, _ in }) {
+        _postViewModel = State(initialValue: .editing(post, postWriteRepository: postWriteRepository))
+        self.onPostSaved = onPostSaved
+    }
 
     var body: some View {
         ZStack {
@@ -154,28 +170,19 @@ private extension View {
 }
 
 #Preview("찬반") {
-    let viewModel = PostViewModel()
-    viewModel.selectedType = .forAgainst
-
-    return NavigationStack {
-        PostWriteFlowView(postViewModel: viewModel)
+    NavigationStack {
+        PostWriteFlowView(type: .forAgainst, postWriteRepository: MockPostWriteRepository())
     }
 }
 
 #Preview("A/B") {
-    let viewModel = PostViewModel()
-    viewModel.selectedType = .ab
-
-    return NavigationStack {
-        PostWriteFlowView(postViewModel: viewModel)
+    NavigationStack {
+        PostWriteFlowView(type: .ab, postWriteRepository: MockPostWriteRepository())
     }
 }
 
 #Preview("일반") {
-    let viewModel = PostViewModel()
-    viewModel.selectedType = .text
-
-    return NavigationStack {
-        PostWriteFlowView(postViewModel: viewModel)
+    NavigationStack {
+        PostWriteFlowView(type: .text, postWriteRepository: MockPostWriteRepository())
     }
 }

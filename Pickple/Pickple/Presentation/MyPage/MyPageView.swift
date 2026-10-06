@@ -17,7 +17,6 @@ struct MyPageView: View {
     // 시트 → 작성 화면(fullScreenCover) → 성공 시 상세로 push + 토스트, 순서까지 같다.
     @State private var showsTypeSelection = false
     @State private var writeFlowType: VoteType?
-    @State private var composePostViewModel = PostViewModel()
     // 새 글 등록 성공 토스트는 이 화면이 아니라 상세 화면으로 push된 뒤에 보여야 해서,
     // 이 화면 자신의 토스트가 아니라 상위(PickpleBottomNav의 NavigationStack)에서 띄운다.
     var onPostCreated: () -> Void = {}
@@ -62,7 +61,6 @@ struct MyPageView: View {
                                 // 게스트는 "내가 올린 투표" 영역 문구로 로그인 유도 모달을 띄운다.
                                 // 로그인 상태면 커뮤니티의 작성 버튼과 똑같이 유형 선택 시트를 띄운다.
                                 if myPageViewModel.isLoggedIn {
-                                    composePostViewModel = PostViewModel(postWriteRepository: RemotePostWriteRepository(apiClient: apiClient))
                                     showsTypeSelection = true
                                 } else {
                                     showLoginPrompt(.myPosts)
@@ -116,19 +114,18 @@ struct MyPageView: View {
         }
         .sheet(isPresented: $showsTypeSelection) {
             PostTypeSelectionSheet { type in
-                composePostViewModel.selectedType = type
                 showsTypeSelection = false
                 writeFlowType = type
             }
             .presentationDetents([.height(224)])
             .presentationDragIndicator(.visible)
         }
-        .fullScreenCover(item: $writeFlowType) { _ in
+        .fullScreenCover(item: $writeFlowType) { type in
             NavigationStack {
                 // 성공 시 이 모달을 닫고, 마이페이지 탭의 실제 네비게이션 스택에 상세 화면을
                 // push한다 — 그래야 상세 화면에서 뒤로가기를 누르면 작성 화면이 아니라
                 // 마이페이지로 돌아간다.
-                PostWriteFlowView(postViewModel: composePostViewModel, onPostSaved: { postId, type in
+                PostWriteFlowView(type: type, postWriteRepository: RemotePostWriteRepository(apiClient: apiClient), onPostSaved: { postId, type in
                     myPageRouter.push(.postDetail(postId: postId, type: type))
                     onPostCreated()
                 })

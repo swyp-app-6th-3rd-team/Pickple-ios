@@ -27,7 +27,6 @@ struct PostDetailView: View {
     // 닫힌 뒤(.sheet의 onDismiss)에 포커스를 주도록 여기 기억해둔다.
     @State private var pendingCommentEditFocus = false
     @State private var navigatesToEdit = false
-    @State private var editingPostViewModel = PostViewModel()
     @FocusState private var isCommentFieldFocused: Bool
     @State private var carouselBottomY: CGFloat = .infinity
 
@@ -169,10 +168,7 @@ struct PostDetailView: View {
                 isMine: postDetailViewModel.post?.isMine ?? true,
                 onEdit: {
                     showsMoreMenu = false
-                    if let post = postDetailViewModel.post {
-                        editingPostViewModel = .editing(post, postWriteRepository: RemotePostWriteRepository(apiClient: apiClient))
-                        navigatesToEdit = true
-                    }
+                    navigatesToEdit = postDetailViewModel.post != nil
                 },
                 onDelete: {
                     showsMoreMenu = false
@@ -218,10 +214,12 @@ struct PostDetailView: View {
         .navigationDestination(isPresented: $navigatesToEdit) {
             // 수정 성공 후 새 상세 화면을 push하는 대신, 이 화면(이미 스택에 있던 원본)으로
             // 그냥 돌아와서 데이터만 새로 불러온다 — 그래야 뒤로가기가 작성 화면으로 되돌아가지 않는다.
-            PostWriteFlowView(postViewModel: editingPostViewModel, onPostSaved: { _, _ in
-                Task { await postDetailViewModel.loadPostDetail() }
-                showsSuccessToast = true
-            })
+            if let post = postDetailViewModel.post {
+                PostWriteFlowView(editing: post, postWriteRepository: RemotePostWriteRepository(apiClient: apiClient), onPostSaved: { _, _ in
+                    Task { await postDetailViewModel.loadPostDetail() }
+                    showsSuccessToast = true
+                })
+            }
         }
         .pickpleToast(isPresented: $showsSuccessToast, message: PostViewStrings.submitEditSucceededToast)
         .pickpleToast(isPresented: $showsDeleteFailureToast, message: PostDetailStrings.deleteFailedToast)
