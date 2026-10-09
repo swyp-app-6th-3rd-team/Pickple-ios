@@ -13,11 +13,6 @@ struct ForAgainstWriteView: View {
     @Binding var isCategoryExpanded: Bool
     let categoryOptions: [String]
 
-    private var isNameFilled: Bool { postViewModel.product.hasName }
-    private var isPhotoFilled: Bool { postViewModel.product.hasPhoto }
-    private var isPriceFilled: Bool { !postViewModel.product.price.isEmpty }
-    private var isUrlFilled: Bool { !postViewModel.product.url.isEmpty }
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
             Text(PostViewStrings.forAgainstStepOneTitle)

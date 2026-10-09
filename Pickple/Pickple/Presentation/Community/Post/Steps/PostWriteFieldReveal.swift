@@ -31,8 +31,9 @@ private struct FieldRevealModifier: ViewModifier {
                 content.transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
+        // onChange 안의 상태 변경은 호출부의 .animation(value:)이 잡지 못해서 여기서 직접 애니메이션을 건다.
         .onChange(of: isVisible) { _, newValue in
-            if newValue { hasBeenRevealed = true }
+            if newValue { withAnimation(.easeInOut) { hasBeenRevealed = true } }
         }
     }
 }
