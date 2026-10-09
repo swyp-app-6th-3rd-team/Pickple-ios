@@ -20,8 +20,6 @@ struct ABWriteView: View {
     private var areNamesFilled: Bool { isANameFilled && isBNameFilled }
 
     private var arePhotosFilled: Bool { postViewModel.productA.hasPhoto && postViewModel.productB.hasPhoto }
-    private var arePricesFilled: Bool { !postViewModel.productA.price.isEmpty && !postViewModel.productB.price.isEmpty }
-    private var areUrlsFilled: Bool { !postViewModel.productA.url.isEmpty && !postViewModel.productB.url.isEmpty }
 
     // 카테고리·주제까지 채워야 상품명 섹션 다음 단계로 넘어간다("기본"으로 같이 보이는 건 상품명까지).
     private var isBasicInfoFilled: Bool {
@@ -67,16 +65,11 @@ struct ABWriteView: View {
                 .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled && arePhotosFilled))
 
             ProductURLSectionView(postViewModel: postViewModel)
-                .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled && arePhotosFilled && arePricesFilled))
+                .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled && arePhotosFilled))
 
             DescriptionFieldBlock(text: $postViewModel.description, maxLength: postViewModel.descriptionMaxLength)
-                .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled && arePhotosFilled && arePricesFilled && areUrlsFilled))
+                .revealed(postViewModel.isEditing || (isBasicInfoFilled && areNamesFilled && arePhotosFilled))
         }
-        .animation(.easeInOut, value: isBasicInfoFilled)
-        .animation(.easeInOut, value: areNamesFilled)
-        .animation(.easeInOut, value: arePhotosFilled)
-        .animation(.easeInOut, value: arePricesFilled)
-        .animation(.easeInOut, value: areUrlsFilled)
     }
 }
 
